@@ -30,7 +30,7 @@ export const InstallCard: FC<Props> = ({ platform, isInstalled, extDetected, onT
               ? (isInstalled
                 ? t("activeDescription", { platform: platform.name })
                 : t("addDescription", { platform: platform.name }))
-              : "Installe l'extension Presence Discord pour activer cette présence."}
+              : "Installe l'extension DP_PROJECT_NAME pour activer cette présence."}
           </p>
           <button
             onClick={onToggle}

@@ -20,7 +20,7 @@ export function KofiModal({ isOpen, onClose }: KofiModalProps) {
   }
 
   const triggerDownload = () => {
-    const COMPANION_DOWNLOAD_URL = "https://github.com/q-kimi/Presence-Discord/raw/main/dist/Presence-Discord-Extension.zip"
+    const COMPANION_DOWNLOAD_URL = "https://github.com/q-kimi/DP-PROJECT-NAME/raw/main/dist/DP-PROJECT-NAME-Extension.zip"
     const a = document.createElement("a")
     a.href = COMPANION_DOWNLOAD_URL
     a.download = ""

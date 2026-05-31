@@ -99,7 +99,7 @@ export const Footer: FC = (): ReactElement => {
               </Button>
 
               <a
-                href="https://github.com/q-kimi/Presence-Discord"
+                href="https://github.com/q-kimi/DP-PROJECT-NAME"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={buttonVariants({

@@ -83,8 +83,8 @@ export const CtaSection: FC = (): ReactElement => {
               )}
 
               <a 
-                href="https://github.com/q-kimi/Presence-Discord/raw/main/dist/Presence-Discord-Extension.zip" 
-                download="Presence-Discord-Extension.zip"
+                href="https://github.com/q-kimi/DP-PROJECT-NAME/raw/main/dist/DP-PROJECT-NAME-Extension.zip" 
+                download="DP-PROJECT-NAME-Extension.zip"
                 className={buttonVariants({ variant: "secondary" })}
               >
                 <Download className="w-6 h-6" />

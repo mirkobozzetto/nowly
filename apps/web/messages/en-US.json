@@ -26,7 +26,7 @@
     "steps": [
       {
         "title": "Install the app",
-        "description": "Download and install Presence Discord on your Windows computer. Setup only takes a few seconds."
+        "description": "Download and install DP_PROJECT_NAME on your Windows computer. Setup only takes a few seconds."
       },
       {
         "title": "Connect Discord",
@@ -50,7 +50,7 @@
     "free": "Free"
   },
   "Footer": {
-    "copyright": "© 2026 Presence Discord. All rights reserved.",
+    "copyright": "© 2026 DP_PROJECT_NAME. All rights reserved.",
     "trademark": "Discord is a registered trademark of",
     "support": "Support the project",
     "thanks": "Thank you!",
@@ -62,7 +62,7 @@
     "english": "English"
   },
   "CompanionWindow": {
-    "windowTitle": "Presence Discord",
+    "windowTitle": "DP_PROJECT_NAME",
     "service": "Netflix",
     "season": "Season {season}",
     "moviePosterAlt": "Movie poster",
@@ -93,13 +93,13 @@
     "skip": "No thanks, download directly"
   },
   "Meta": {
-    "title": "Presence Discord | Automatic Rich Presence",
+    "title": "DP_PROJECT_NAME | Automatic Rich Presence",
     "description": "Automatically show what you're watching in your Discord status. YouTube, Twitch, Plex, Prime Video, Cinepulse, and more."
   },
   "MarketplacePage": {
     "badge": "Marketplace",
     "title": "Supported platforms",
-    "description": "Discover every platform compatible with Presence Discord",
+    "description": "Discover every platform compatible with DP_PROJECT_NAME",
     "searchPlaceholder": "Search a platform...",
     "sortLabel": "Sort by:",
     "sortPopular": "Popularity",
