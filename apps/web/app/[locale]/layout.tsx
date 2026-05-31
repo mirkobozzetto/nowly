@@ -6,7 +6,9 @@ import { notFound } from "next/navigation"
 import { FC, PropsWithChildren } from "react"
 
 type Props = PropsWithChildren & {
-  params: Promise<{ locale: string }>
+  params: Promise<{
+    locale: string
+  }>
 }
 
 const LocaleLayout: FC<Props> = async ({ children, params }) => {
