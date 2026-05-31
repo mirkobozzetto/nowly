@@ -1,6 +1,16 @@
 import { Button } from "@/components/ui/button"
+import { setRequestLocale } from "next-intl/server"
+import { FC } from "react"
 
-export default function Page() {
+type Props = {
+  params: Promise<{ locale: string }>
+}
+
+const Page: FC<Props> = async ({ params }) => {
+  const { locale } = await params
+
+  setRequestLocale(locale)
+
   return (
     <div className="flex min-h-svh p-6">
       <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
@@ -17,3 +27,5 @@ export default function Page() {
     </div>
   )
 }
+
+export default Page
