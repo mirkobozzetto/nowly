@@ -144,6 +144,7 @@
     "betaNote": "Version bêta - Des bugs peuvent survenir",
     "comingSoon": "Bientôt disponible",
     "waiting": "En attente",
+    "source": "Source",
     "back": "Retour au marketplace",
     "activeDescription": "{platform} est actif dans votre extension",
     "addDescription": "Ajoutez {platform} à votre présence Discord",
