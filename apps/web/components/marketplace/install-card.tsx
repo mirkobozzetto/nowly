@@ -11,11 +11,14 @@ import type { FC, ReactElement } from "react";
 type Props = {
   platform: Platform
   isInstalled: boolean
+  needsUpdate: boolean
   extDetected: boolean
-  onToggle: () => void
+  loading?: boolean
+  onInstall: () => void
+  onUninstall: () => void
 };
 
-export const InstallCard: FC<Props> = ({ platform, isInstalled, extDetected, onToggle }): ReactElement => {
+export const InstallCard: FC<Props> = ({ platform, isInstalled, needsUpdate, extDetected, loading, onInstall, onUninstall }): ReactElement => {
   const t = useTranslations("MarketplaceDetail");
   const noExtText = "Installe l'extension " + PROJECT_NAME + " pour activer cette présence.";
 
@@ -25,39 +28,53 @@ export const InstallCard: FC<Props> = ({ platform, isInstalled, extDetected, onT
         <>
           <h3 className="font-bold mb-2">
             {extDetected
-              ? (isInstalled ? t("installed") : t("ready"))
+              ? (needsUpdate ? t("updateAvailable") : isInstalled ? t("installed") : t("ready"))
               : "Extension non détectée"}
           </h3>
           <p className="text-sm text-muted-foreground mb-4">
             {extDetected
-              ? (isInstalled
-                ? t("activeDescription", { platform: platform.name })
-                : t("addDescription", { platform: platform.name }))
+              ? (needsUpdate
+                ? t("updateDescription", { platform: platform.name })
+                : isInstalled
+                  ? t("activeDescription", { platform: platform.name })
+                  : t("addDescription", { platform: platform.name }))
               : noExtText}
           </p>
-          <button
-            onClick={onToggle}
-            disabled={!extDetected}
-            className={cn(
-              "w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all", {
-                "bg-card-2 text-muted-foreground border border-border cursor-not-allowed opacity-60": !extDetected,
-                "bg-success/10 text-success border border-success/20 hover:bg-success/20": extDetected && isInstalled,
-                "bg-foreground text-background hover:bg-[#e4e4e7]": extDetected && !isInstalled
-              }
-            )}
-          >
-            {isInstalled ? (
-              <>
-                <CheckCircle className="w-4 h-4" />
-                {t("installedAction")}
-              </>
-            ) : (
-              <>
+
+          {(!isInstalled || needsUpdate) && (
+            <button
+              onClick={onInstall}
+              disabled={!extDetected || loading}
+              className={cn(
+                "w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all", {
+                  "bg-card-2 text-muted-foreground border border-border cursor-not-allowed opacity-60": !extDetected || loading,
+                  "bg-warning/10 text-warning border border-warning/20 hover:bg-warning/20": extDetected && needsUpdate && !loading,
+                  "bg-foreground text-background hover:bg-[#e4e4e7]": extDetected && !isInstalled && !loading
+                }
+              )}
+            >
+              {loading ? (
+                <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+              ) : needsUpdate ? (
                 <Download className="w-4 h-4" />
-                {t("installAction")}
-              </>
-            )}
-          </button>
+              ) : (
+                <Download className="w-4 h-4" />
+              )}
+              {loading ? t("installing") : needsUpdate ? t("updateAction") : t("installAction")}
+            </button>
+          )}
+
+          {isInstalled && extDetected && !loading && (
+            <button
+              onClick={onUninstall}
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20 mt-2"
+            >
+              {t("uninstallAction")}
+            </button>
+          )}
         </>
       ) : (
         <>

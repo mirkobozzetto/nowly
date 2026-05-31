@@ -17,6 +17,7 @@ export interface Platform {
   iconColor: string
   category: PlatformCategory
   status: PlatformStatus
+  version: string | null
   activeUsers: number
   totalInstalls: number
   rating: number

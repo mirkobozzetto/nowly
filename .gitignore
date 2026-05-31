@@ -7,7 +7,8 @@ dist
 apps/native/
 
 # Extension (managed separately)
-apps/extension/
+# apps/extension/
+apps/mvp-chromium-extension/
 
 # Local environment variables
 .env.local

@@ -15,6 +15,7 @@
   --accent: #22d3ee;
   --discord: #5865F2;
   --success: #22c55e;
+  --warning: #f59e0b;
   --destructive: #ef4444;
   
   /* Text colors */
@@ -73,6 +74,7 @@
   --color-card-hover: var(--card-hover);
   --color-discord: var(--discord);
   --color-success: var(--success);
+  --color-warning: var(--warning);
   --color-dim-foreground: var(--dim-foreground);
   --color-border-light: var(--border-light);
 }
