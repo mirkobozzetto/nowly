@@ -1,0 +1,56 @@
+name: Presence Update
+
+on:
+  pull_request:
+    types: [closed]
+    paths:
+      - "packages/websites/src/**/metadata.json"
+      - "packages/websites/src/**/presence.ts"
+
+jobs:
+  update:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Detect changed presences
+        id: presences
+        run: |
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+          NEW=""
+          MODIFIED=""
+
+          for file in $(git diff --name-only --diff-filter=ADR "$BASE"..."$HEAD" -- "packages/websites/src/*/" 2>/dev/null); do
+            slug=$(echo "$file" | cut -d'/' -f5)
+            status=$(git diff --name-status "$BASE"..."$HEAD" -- "packages/websites/src/*/$slug/metadata.json" | head -1 | cut -f1)
+            if [ "$status" = "A" ]; then
+              NEW="$NEW $slug"
+            elif [ "$status" = "M" ]; then
+              MODIFIED="$MODIFIED $slug"
+            fi
+          done
+
+          echo "new=$(echo $NEW | xargs)" >> $GITHUB_OUTPUT
+          echo "modified=$(echo $MODIFIED | xargs)" >> $GITHUB_OUTPUT
+
+      - name: Sync new presences
+        if: steps.presences.outputs.new != ''
+        env:
+          API_URL: ${{ secrets.API_URL }}
+          API_SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
+        run: node packages/websites/scripts/presence.mjs ${{ steps.presences.outputs.new }} --new
+
+      - name: Sync modified presences
+        if: steps.presences.outputs.modified != ''
+        env:
+          API_URL: ${{ secrets.API_URL }}
+          API_SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
+        run: node packages/websites/scripts/presence.mjs ${{ steps.presences.outputs.modified }}

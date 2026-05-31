@@ -1,0 +1,124 @@
+import { readFileSync, readdirSync, existsSync } from "fs"
+import { join, dirname } from "path"
+import { fileURLToPath } from "url"
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const ROOT = join(__dirname, "..", "..", "..")
+const SRC = join(__dirname, "..", "src")
+const API_BASE = process.env.API_URL ?? "http://localhost:3000"
+
+let API_KEY = process.env.API_SECRET_KEY
+if (!API_KEY) {
+  try {
+    const envPath = join(ROOT, "apps", "web", ".env.local")
+    const envContent = readFileSync(envPath, "utf-8")
+    for (const line of envContent.split("\n")) {
+      const trimmed = line.trim()
+      if (trimmed.startsWith("API_SECRET_KEY=")) {
+        API_KEY = trimmed.replace(/^API_SECRET_KEY=/, "").replace(/^["']|["']$/g, "")
+        break
+      }
+    }
+  } catch {
+    // .env.local not found, proceed without key
+  }
+}
+
+const headers = { "Content-Type": "application/json" }
+if (API_KEY) headers["Authorization"] = `Bearer ${API_KEY}`
+
+function getPresences() {
+  return readdirSync(SRC, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && /^[A-Z]$/.test(d.name))
+    .flatMap((letterDir) =>
+      readdirSync(join(SRC, letterDir.name), { withFileTypes: true })
+        .filter((d) => d.isDirectory() && existsSync(join(SRC, letterDir.name, d.name, "metadata.json")))
+        .map((d) => ({
+          slug: d.name,
+          letter: letterDir.name,
+        })),
+    )
+}
+
+function bumpVersion(current) {
+  const parts = current.split(".").map(Number)
+  parts[2] = (parts[2] || 0) + 1
+  return parts.join(".")
+}
+
+async function callApi(method, path, body) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  })
+  if (!res.ok) {
+    const text = await res.text()
+    console.error(`  API error (${res.status}): ${text}`)
+    return { ok: false }
+  }
+  return { ok: true }
+}
+
+async function processPresence(slug, name, forceNew) {
+  console.log(`\nProcessing ${name} (${slug})...`)
+
+  const infoRes = await fetch(`${API_BASE}/api/p/${slug}`)
+  if (!infoRes.ok) {
+    console.warn(`  Presence not found on API, treating as new`)
+  }
+
+  let currentVersion = null
+  try {
+    const data = await infoRes.json()
+    currentVersion = data.version ?? null
+  } catch {
+    // treat as new
+  }
+
+  const isNew = forceNew || !currentVersion
+
+  if (isNew) {
+    console.log("  New presence - setting addedAt + initial version")
+    await callApi("PUT", `/api/p/${slug}/added`, { date: new Date().toISOString().split("T")[0] })
+    await callApi("PUT", `/api/p/${slug}/version`, { version: "1.0.0" })
+    console.log("  Version set to 1.0.0")
+  } else {
+    const nextVersion = bumpVersion(currentVersion)
+    console.log(`  Modified presence - bumping ${currentVersion} -> ${nextVersion}`)
+    await callApi("PUT", `/api/p/${slug}/updated`, { date: new Date().toISOString().split("T")[0] })
+    await callApi("PUT", `/api/p/${slug}/version`, { version: nextVersion })
+    console.log(`  Version bumped to ${nextVersion}`)
+  }
+}
+
+async function main() {
+  const args = process.argv.slice(2)
+  const forceNew = args.includes("--new")
+
+  const presences = getPresences()
+
+  if (args.length === 0 || args[0].startsWith("--")) {
+    for (const p of presences) {
+      await processPresence(p.slug, p.slug, forceNew)
+    }
+  } else {
+    for (const arg of args) {
+      if (arg.startsWith("--")) continue
+      const p = presences.find((pr) => pr.slug === arg)
+      if (p) {
+        await processPresence(p.slug, p.slug, forceNew)
+      } else {
+        console.warn(`Presence "${arg}" not found in filesystem, treating as new`)
+        await processPresence(arg, arg, true)
+      }
+    }
+  }
+
+  console.log("\nDone.")
+}
+
+main().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})

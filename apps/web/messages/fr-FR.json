@@ -148,6 +148,7 @@
     "back": "Retour au marketplace",
     "activeDescription": "{platform} est actif dans votre extension",
     "addDescription": "Ajoutez {platform} à votre présence Discord",
+    "yourRating": "Votre note",
     "comingSoonDescription": "Le support de {platform} est en cours de développement."
   }
 }

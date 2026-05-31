@@ -3,5 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "description": "Presence monorepo",
-  "scripts": {}
+  "scripts": {
+    "presence:register": "node packages/websites/scripts/presence.mjs --new",
+    "presence:update": "node packages/websites/scripts/presence.mjs",
+    "presence:sync-all": "node packages/websites/scripts/presence.mjs"
+  }
 }
