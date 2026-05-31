@@ -1,5 +1,6 @@
 "use client"
 
+import { PROJECT_REPOSITORY_URL } from "@/lib/constants"
 import { Heart } from "lucide-react"
 import { Button, buttonVariants } from "@/components/l-ui/button"
 import {
@@ -99,7 +100,7 @@ export const Footer: FC = (): ReactElement => {
               </Button>
 
               <a
-                href="https://github.com/q-kimi/DP-PROJECT-NAME"
+                href={PROJECT_REPOSITORY_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={buttonVariants({

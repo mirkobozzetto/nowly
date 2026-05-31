@@ -5,6 +5,7 @@ import type { FC, ReactElement } from "react"
 import { useEffect, useState } from "react"
 import { Button, buttonVariants } from "@/components/l-ui/button"
 import { KofiModal } from "@/components/ui/kofi-modal"
+import { PROJECT_EXTENSION_DOWNLOAD_URL, PROJECT_EXTENSION_FILENAME } from "@/lib/constants"
 import { CheckCircle, Crosshair, Download, Shield } from "lucide-react"
 
 type BrowserType = "chrome" | "edge" | "firefox" | "safari" | "other"
@@ -83,8 +84,8 @@ export const CtaSection: FC = (): ReactElement => {
               )}
 
               <a 
-                href="https://github.com/q-kimi/DP-PROJECT-NAME/raw/main/dist/DP-PROJECT-NAME-Extension.zip" 
-                download="DP-PROJECT-NAME-Extension.zip"
+                href={PROJECT_EXTENSION_DOWNLOAD_URL}
+                download={PROJECT_EXTENSION_FILENAME}
                 className={buttonVariants({ variant: "secondary" })}
               >
                 <Download className="w-6 h-6" />

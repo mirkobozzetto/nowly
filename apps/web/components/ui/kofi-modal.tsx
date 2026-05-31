@@ -1,5 +1,6 @@
 "use client"
 
+import { PROJECT_EXTENSION_DOWNLOAD_URL } from "@/lib/constants"
 import { useEffect, useState } from "react"
 
 interface KofiModalProps {
@@ -20,7 +21,7 @@ export function KofiModal({ isOpen, onClose }: KofiModalProps) {
   }
 
   const triggerDownload = () => {
-    const COMPANION_DOWNLOAD_URL = "https://github.com/q-kimi/DP-PROJECT-NAME/raw/main/dist/DP-PROJECT-NAME-Extension.zip"
+    const COMPANION_DOWNLOAD_URL = PROJECT_EXTENSION_DOWNLOAD_URL
     const a = document.createElement("a")
     a.href = COMPANION_DOWNLOAD_URL
     a.download = ""

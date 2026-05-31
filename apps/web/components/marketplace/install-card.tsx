@@ -1,6 +1,7 @@
 "use client"
 
 import { Card } from "@/components/l-ui/card"
+import { PROJECT_NAME } from "@/lib/constants"
 import type { Platform } from "@/lib/data/platforms"
 import { CheckCircle, Download } from "lucide-react"
 import { useTranslations } from "next-intl"
@@ -15,6 +16,7 @@ type Props = {
 
 export const InstallCard: FC<Props> = ({ platform, isInstalled, extDetected, onToggle }): ReactElement => {
   const t = useTranslations("MarketplaceDetail")
+  const noExtText = "Installe l'extension " + PROJECT_NAME + " pour activer cette présence."
 
   return (
     <Card size="sm" className="bg-linear-to-b from-card to-surface">
@@ -30,7 +32,7 @@ export const InstallCard: FC<Props> = ({ platform, isInstalled, extDetected, onT
               ? (isInstalled
                 ? t("activeDescription", { platform: platform.name })
                 : t("addDescription", { platform: platform.name }))
-              : "Installe l'extension DP_PROJECT_NAME pour activer cette présence."}
+              : noExtText}
           </p>
           <button
             onClick={onToggle}
