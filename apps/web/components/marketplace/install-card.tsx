@@ -1,22 +1,23 @@
-"use client"
+"use client";
 
-import { Card } from "@/components/l-ui/card"
-import { PROJECT_NAME } from "@/lib/constants"
-import type { Platform } from "@/lib/data/platforms"
-import { CheckCircle, Download } from "lucide-react"
-import { useTranslations } from "next-intl"
-import type { FC, ReactElement } from "react"
+import { Card } from "@/components/l-ui/card";
+import { cn } from "@/lib/utils";
+import { PROJECT_NAME } from "@/lib/constants";
+import type { Platform } from "@/lib/data/platforms";
+import { CheckCircle, Download } from "lucide-react";
+import { useTranslations } from "next-intl";
+import type { FC, ReactElement } from "react";
 
 type Props = {
   platform: Platform
   isInstalled: boolean
   extDetected: boolean
   onToggle: () => void
-}
+};
 
 export const InstallCard: FC<Props> = ({ platform, isInstalled, extDetected, onToggle }): ReactElement => {
-  const t = useTranslations("MarketplaceDetail")
-  const noExtText = "Installe l'extension " + PROJECT_NAME + " pour activer cette présence."
+  const t = useTranslations("MarketplaceDetail");
+  const noExtText = "Installe l'extension " + PROJECT_NAME + " pour activer cette présence.";
 
   return (
     <Card size="sm" className="bg-linear-to-b from-card to-surface">
@@ -37,13 +38,13 @@ export const InstallCard: FC<Props> = ({ platform, isInstalled, extDetected, onT
           <button
             onClick={onToggle}
             disabled={!extDetected}
-            className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all ${
-              !extDetected
-                ? "bg-card-2 text-muted-foreground border border-border cursor-not-allowed opacity-60"
-                : isInstalled
-                  ? "bg-success/10 text-success border border-success/20 hover:bg-success/20"
-                  : "bg-foreground text-background hover:bg-[#e4e4e7]"
-            }`}
+            className={cn(
+              "w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all", {
+                "bg-card-2 text-muted-foreground border border-border cursor-not-allowed opacity-60": !extDetected,
+                "bg-success/10 text-success border border-success/20 hover:bg-success/20": extDetected && isInstalled,
+                "bg-foreground text-background hover:bg-[#e4e4e7]": extDetected && !isInstalled
+              }
+            )}
           >
             {isInstalled ? (
               <>
@@ -73,5 +74,5 @@ export const InstallCard: FC<Props> = ({ platform, isInstalled, extDetected, onT
         </>
       )}
     </Card>
-  )
-}
+  );
+};

@@ -1,25 +1,24 @@
-"use client"
+"use client";
 
-import { Card, CardDescription, CardTitle } from "@/components/l-ui/card"
-import { getLocalizedDescription, getLocalizedLongDescription } from "@/lib/data/localized"
-import type { Platform } from "@/lib/data/platforms"
-import { useTranslations } from "next-intl"
-import type { FC, ReactElement } from "react"
-import { InstallBadge } from "./install-badge"
-
-const ASSET_URL = (slug: string, type: string) => `/api/p/${slug}/assets/${type}`
+import { ASSET_URL } from "@/lib/assets";
+import { Card, CardDescription, CardTitle } from "@/components/l-ui/card";
+import { getLocalizedDescription, getLocalizedLongDescription } from "@/lib/data/localized";
+import type { Platform } from "@/lib/data/platforms";
+import { useTranslations } from "next-intl";
+import type { FC, ReactElement } from "react";
+import { InstallBadge } from "./install-badge";
 
 type Props = {
   platform: Platform
   isInstalled: boolean
   isExtDetected: boolean
   locale: string
-}
+};
 
 export const HeaderCard: FC<Props> = ({ platform, isInstalled, isExtDetected, locale }): ReactElement => {
-  const t = useTranslations("MarketplaceDetail")
-  const tCategories = useTranslations("MarketplacePage")
-  const categoryLabel = tCategories(`categories.${platform.category}`)
+  const t = useTranslations("MarketplaceDetail");
+  const tCategories = useTranslations("MarketplacePage");
+  const categoryLabel = tCategories(`categories.${platform.category}`);
 
   return (
     <Card>
@@ -33,10 +32,10 @@ export const HeaderCard: FC<Props> = ({ platform, isInstalled, isExtDetected, lo
             alt={platform.name}
             className="w-14 h-14 object-contain"
             onError={(e) => {
-              const img = e.currentTarget
-              img.src = ASSET_URL(platform.slug, "logo")
-              const parent = img.parentElement
-              if (parent) parent.style.backgroundColor = "transparent"
+              const img = e.currentTarget;
+              img.src = ASSET_URL(platform.slug, "logo");
+              const parent = img.parentElement;
+              if (parent) parent.style.backgroundColor = "transparent";
             }}
           />
         </div>
@@ -58,5 +57,5 @@ export const HeaderCard: FC<Props> = ({ platform, isInstalled, isExtDetected, lo
         <CardDescription>{getLocalizedLongDescription(platform, locale)}</CardDescription>
       </div>
     </Card>
-  )
-}
+  );
+};

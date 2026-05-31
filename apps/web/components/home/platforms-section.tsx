@@ -1,88 +1,28 @@
-import type { FC, ReactElement } from "react"
-import Link from "next/link"
-import { useLocale, useTranslations } from "next-intl"
+"use client";
 
-const platforms = {
-  available: [
-    { name: "YouTube", icon: "youtube", color: "#ff0000" },
-    { name: "Twitch", icon: "twitch", color: "#9146ff" },
-    { name: "Prime Video", icon: "prime", color: "#00a8e1" },
-    { name: "Plex", icon: "plex", color: "#e5a00d" },
-    { name: "Netflix", icon: "netflix", color: "#E50914" },
-    { name: "Spotify", icon: "spotify", color: "#1db954" },
-  ],
-  soon: [
-    { name: "Disney+", icon: "disney", color: "#113CCF" },
-    { name: "HBO Max", icon: "hbo", color: "#542EE0" },
-    { name: "Apple TV", icon: "apple", color: "#A1A1A6" },
-    { name: "Crunchyroll", icon: "crunchyroll", color: "#F47521" },
-  ],
-}
-
-type PlatformIconProps = {
-  icon: string
-  color: string
-}
-
-const PlatformIcon: FC<PlatformIconProps> = ({ icon, color }): ReactElement => {
-  const icons: Record<string, ReactElement> = {
-    youtube: (
-      <svg viewBox="0 0 24 24" fill={color} className="w-6 h-6">
-        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-      </svg>
-    ),
-    twitch: (
-      <svg viewBox="0 0 24 24" fill={color} className="w-6 h-6">
-        <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/>
-      </svg>
-    ),
-    prime: (
-      <svg viewBox="0 0 24 24" fill={color} className="w-6 h-6">
-        <path d="M1.08 15.36c-.06-.06-.12-.12-.12-.24 0-.06 0-.12.06-.18C3.42 11.64 7.98 9.6 12.96 9.6c2.94 0 6 .54 8.64 1.68.36.12.6.48.48.84-.12.36-.42.54-.78.48-.06 0-.12 0-.18-.06-2.46-1.02-5.28-1.56-8.16-1.56-4.62 0-8.88 1.86-11.16 4.8-.12.12-.3.18-.48.18-.12 0-.18 0-.24-.06zM21.72 17.1c-.18.24-.54.36-.84.18-2.4-1.44-5.4-1.8-8.94-1.02-.36.06-.66-.12-.72-.48-.06-.36.12-.66.48-.72 3.84-.84 7.14-.42 9.84 1.2.3.18.36.54.18.84z"/>
-      </svg>
-    ),
-    plex: (
-      <svg viewBox="0 0 24 24" fill={color} className="w-6 h-6">
-        <path d="M11.643 0H4.68l7.679 12L4.68 24h6.963l7.677-12z"/>
-      </svg>
-    ),
-    netflix: (
-      <svg viewBox="0 0 24 24" fill={color} className="w-6 h-6">
-        <path d="M5.398 0v.006c3.028 8.556 5.37 15.175 8.348 23.596 2.344.058 4.85.398 4.854.398-2.8-7.924-5.923-16.747-8.487-24zm8.489 0v9.63L18.6 22.951c-.043-7.86-.004-15.913.002-22.95zM5.398 1.05V24c1.873-.225 2.81-.312 4.715-.398v-9.22z"/>
-      </svg>
-    ),
-    spotify: (
-      <svg viewBox="0 0 24 24" fill={color} className="w-6 h-6">
-        <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-      </svg>
-    ),
-    disney: (
-      <svg viewBox="0 0 24 24" fill={color} className="w-6 h-6">
-        <path d="M2.056 6.834c-.162.096-.227.263-.114.448.114.186.357.267.585.186.276-.08.454-.317.39-.54-.08-.276-.39-.373-.585-.276-.05.032-.162.096-.276.182zm.684 3.24c.098-.032.26-.032.39 0 .082.032.196.08.276.13.146.065.228.097.374.097.178 0 .293-.08.358-.146.065-.08.098-.194.098-.324 0-.146-.082-.276-.195-.39-.146-.146-.39-.276-.618-.276-.26 0-.52.098-.715.26-.18.147-.358.39-.455.618-.13.276-.18.585-.18.91 0 .39.13.78.39 1.072.26.293.618.455 1.007.455.34 0 .65-.13.878-.357.195-.195.325-.455.39-.732.033-.163.017-.26-.096-.325-.097-.065-.244-.016-.308.114-.065.114-.163.26-.293.374-.146.114-.325.178-.503.178-.212 0-.39-.08-.536-.228-.163-.162-.26-.406-.26-.666 0-.195.033-.39.098-.553.065-.163.163-.31.276-.406.082-.065.163-.114.26-.147zm5.673-3.11c-.114-.032-.276 0-.358.114l-.52.715c-.162-.227-.455-.52-.78-.68-.39-.212-.845-.308-1.3-.26-.537.064-1.04.293-1.446.65-.39.358-.666.813-.78 1.3-.13.487-.097 1.007.08 1.478.162.455.47.86.878 1.154.39.276.862.422 1.3.422.276 0 .553-.033.81-.114.568-.178 1.073-.536 1.414-.99l.52.716c.082.114.26.146.374.065.114-.082.146-.244.065-.358l-1.707-2.356c.227-.39.47-.78.763-1.122l.065-.065c.17-.194.325-.358.52-.487.082-.065.195-.13.293-.178.146-.082.26-.146.358-.244.082-.065.147-.162.098-.276-.065-.146-.212-.195-.39-.162-.163.016-.31.065-.455.13-.13.065-.26.146-.39.227-.195.146-.39.325-.568.536-.114.114-.195.244-.293.358l-.52-.732c-.082-.114-.244-.146-.358-.065zm-2.487 3.793c-.276.08-.585.065-.845-.05-.325-.13-.585-.39-.732-.698-.163-.325-.195-.7-.114-1.04.082-.374.276-.7.585-.942.293-.244.65-.373 1.007-.39.293-.016.585.033.845.146.276.114.52.31.7.553l-1.446 1.997v.424zm11.04-.39c-.082-.016-.163 0-.228.065-.082.082-.114.195-.05.293l.358.65c-.163.098-.342.147-.553.147-.276 0-.536-.114-.732-.31-.163-.163-.276-.39-.325-.634-.016-.163-.033-.293-.065-.455-.016-.114-.114-.195-.228-.178-.13.016-.195.114-.195.228 0 .146.016.31.033.455.065.325.212.634.455.878.26.26.585.422.943.455.26.016.503-.032.732-.145l.114.212c.05.082.146.13.244.114.098-.016.163-.082.195-.163l-.536-1.48c-.033-.065-.082-.114-.163-.13zm-1.186-2.01c-.114-.016-.212.05-.26.163-.016.032-.016.082-.016.114 0 .1.05.195.163.244.146.065.276.016.342-.082.065-.113.032-.26-.082-.342-.05-.065-.098-.082-.146-.098zm1.073.715c-.13 0-.244.082-.276.212l-.39 1.284c-.016.082-.016.163.016.228.065.114.195.163.31.114.098-.032.162-.114.195-.212l.39-1.3c.033-.13-.032-.26-.163-.293-.016-.016-.05-.033-.082-.033zm3.728 1.024c-.26-.244-.52-.487-.845-.65-.244-.13-.503-.196-.78-.18-.39.017-.763.18-1.04.455-.276.276-.455.634-.536 1.007-.065.325-.05.683.065.99.114.325.325.617.602.83.292.227.65.34 1.023.34.26 0 .52-.05.763-.163.276-.114.52-.293.7-.52.163-.212.276-.455.342-.715.082-.34.05-.714-.114-1.04-.033-.065-.114-.114-.195-.097-.082.016-.146.082-.163.163-.016.26-.016.553-.098.813-.05.163-.146.325-.276.455-.13.13-.276.228-.455.293-.146.05-.293.082-.455.065-.212-.016-.422-.082-.585-.212-.195-.13-.358-.325-.455-.536-.098-.228-.114-.488-.05-.732.066-.276.212-.52.423-.7.178-.145.406-.242.634-.26.178-.016.358.017.52.098.26.114.47.31.65.536.05.065.13.097.212.082.082-.016.146-.082.163-.163.016-.114-.017-.227-.065-.325zm1.3-.845c-.163 0-.293.13-.293.293 0 .163.13.293.293.293.163 0 .293-.13.293-.293 0-.163-.13-.293-.293-.293zm2.683 3.516l-.487-.65c.358-.26.585-.65.65-1.073.05-.39-.034-.813-.244-1.17-.227-.374-.585-.667-1.007-.796-.39-.114-.813-.082-1.187.08-.406.18-.732.488-.926.894-.195.406-.26.86-.146 1.3.114.455.374.845.747 1.1.308.212.68.31 1.04.293.276-.016.536-.098.763-.228l.228.31c.082.114.244.146.358.065.114-.082.146-.244.065-.358l-.065-.097.212.33zm-1.56-.536c-.228.082-.487.082-.715.016-.26-.082-.487-.26-.65-.487-.146-.212-.228-.455-.228-.715 0-.228.065-.455.178-.65.13-.228.325-.406.553-.52.212-.098.455-.13.683-.082.26.05.52.178.7.39.162.178.26.406.292.65.033.244-.016.503-.13.715-.114.228-.31.406-.52.52-.066.065-.114.113-.163.163zm3.25.13l-.422-.585c.066-.065.114-.114.163-.178.195-.26.325-.553.374-.86.065-.375 0-.765-.163-1.106-.13-.276-.34-.504-.586-.65-.325-.196-.7-.26-1.073-.212-.585.082-1.105.422-1.414.91-.26.422-.342.925-.227 1.397.114.47.406.877.81 1.137.31.196.666.293 1.024.26.276-.016.553-.097.78-.26l.098.146c.082.114.244.146.358.065.098-.065.13-.195.082-.31l-.26-.357.455.603zm-1.137-.568c-.276.114-.585.13-.86.05-.293-.098-.553-.293-.715-.553-.163-.26-.228-.553-.196-.862.033-.26.147-.52.326-.715.178-.195.406-.325.65-.39.228-.05.472-.016.683.098.228.114.406.293.52.52.114.212.163.455.146.7-.016.292-.114.568-.293.78-.065.13-.163.26-.26.373zm1.787-3.6c-.163 0-.293.13-.293.293 0 .163.13.293.293.293.163 0 .293-.13.293-.293 0-.163-.13-.293-.293-.293z"/>
-      </svg>
-    ),
-    hbo: (
-      <svg viewBox="0 0 24 24" fill={color} className="w-6 h-6">
-        <path d="M7.042 16.896H4.414v-3.754H2.708v3.754H.038V7.104H2.71v3.6h1.704v-3.6h2.628zm8.128-.022c-.778 0-1.376-.203-1.794-.609-.418-.406-.627-.958-.627-1.656V9.376c0-.672.21-1.212.63-1.62s.988-.612 1.704-.612c.712 0 1.279.204 1.7.612.421.408.631.948.631 1.62v5.233c0 .698-.21 1.25-.63 1.656-.42.406-1.015.609-1.782.609h.168zm-.008-1.692c.06 0 .112-.018.156-.054.044-.036.066-.084.066-.144V9.472c0-.06-.022-.108-.066-.144-.044-.036-.096-.054-.156-.054-.06 0-.108.018-.15.054-.042.036-.063.084-.063.144v5.512c0 .06.02.108.062.144.041.036.09.054.15.054zm-4.234 1.692h.004V7.104h3.504v9.792h-.004c-.616-.008-1.088-.209-1.416-.602s-.492-.924-.492-1.593V9.16c0-.476.105-.867.315-1.173.21-.306.563-.511 1.06-.615-.572.096-1.026.329-1.361.699s-.503.855-.503 1.458v5.541c0 .626.187 1.124.56 1.495.373.372.876.565 1.509.58h.003l-3.18-.003z"/>
-      </svg>
-    ),
-    apple: (
-      <svg viewBox="0 0 24 24" fill={color} className="w-6 h-6">
-        <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701z"/>
-      </svg>
-    ),
-    crunchyroll: (
-      <svg viewBox="0 0 24 24" fill={color} className="w-6 h-6">
-        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm3.45 16.56a5.4 5.4 0 1 1 1.86-10.2 5.4 5.4 0 0 1-1.86 10.2zm2.1-5.82a2.7 2.7 0 1 1-5.4 0 2.7 2.7 0 0 1 5.4 0z"/>
-      </svg>
-    ),
-  }
-  return icons[icon] || <div className="w-6 h-6 bg-muted-foreground/20 rounded" />
-}
+import { ASSET_URL } from "@/lib/assets";
+import { metadataToPlatform } from "@/lib/data/presence-adapter";
+import type { Platform } from "@/lib/data/platforms";
+import type { Metadata } from "@presence/websites";
+import type { FC, ReactElement } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 
 export const PlatformsSection: FC = (): ReactElement => {
-  const locale = useLocale()
-  const t = useTranslations("PlatformsSection")
+  const locale = useLocale();
+  const t = useTranslations("PlatformsSection");
+  const [platforms, setPlatforms] = useState<Platform[]>([]);
+
+  useEffect(() => {
+    fetch("/api/p")
+      .then((res) => res.json())
+      .then((metadata: Metadata[]) => setPlatforms(metadata.map(metadataToPlatform)))
+      .catch(() => {});
+  }, []);
+
+  const available = platforms.filter((p) => p.status === "available");
+  const soon = platforms.filter((p) => p.status === "soon");
 
   return (
     <section className="py-24 border-b border-border">
@@ -100,51 +40,63 @@ export const PlatformsSection: FC = (): ReactElement => {
         </div>
 
         <div className="flex flex-col gap-12">
-          {/* Available Platforms */}
-          <div>
-            <h3 className="text-sm font-bold text-dim-foreground uppercase tracking-[0.1em] mb-5 border-l-[3px] border-border pl-3">
-              {t("availableHeading")}
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {platforms.available.map((platform) => (
-                <Link
-                  key={platform.name}
-                  href={`/${locale}/marketplace/${platform.name.toLowerCase().replace(/\s+/g, "-")}`}
-                  className="bg-card border border-border rounded-lg p-5 text-center transition-all hover:border-muted-foreground hover:bg-card-hover hover:-translate-y-0.5 cursor-pointer"
-                >
-                  <div className="w-9 h-9 mx-auto mb-3 flex items-center justify-center">
-                    <PlatformIcon icon={platform.icon} color={platform.color} />
-                  </div>
-                  <span className="font-semibold text-sm text-foreground">{platform.name}</span>
-                </Link>
-              ))}
+          {available.length > 0 && (
+            <div>
+              <h3 className="text-sm font-bold text-dim-foreground uppercase tracking-[0.1em] mb-5 border-l-[3px] border-border pl-3">
+                {t("availableHeading")}
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {available.map((platform) => (
+                  <Link
+                    key={platform.slug}
+                    href={`/${locale}/marketplace/${platform.slug}`}
+                    className="bg-card border border-border rounded-lg p-5 text-center transition-all hover:border-muted-foreground hover:bg-card-hover hover:-translate-y-0.5 cursor-pointer"
+                  >
+                    <div className="w-9 h-9 mx-auto mb-3 flex items-center justify-center">
+                      <img
+                        src={ASSET_URL(platform.slug, "icon")}
+                        alt={platform.name}
+                        className="w-full h-full object-contain"
+                        loading="lazy"
+                      />
+                    </div>
+                    <span className="font-semibold text-sm text-foreground">{platform.name}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Coming Soon */}
-          <div>
-            <h3 className="text-sm font-bold text-dim-foreground uppercase tracking-[0.1em] mb-5 border-l-[3px] border-border pl-3">
-              {t("comingSoonHeading")}
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {platforms.soon.map((platform) => (
-                <div
-                  key={platform.name}
-                  className="bg-transparent border border-border border-dashed rounded-lg p-5 text-center opacity-60 hover:opacity-90 hover:border-solid transition-all relative"
-                >
-                  <span className="absolute top-2 right-2 text-[9px] font-bold text-dim-foreground bg-background px-1.5 py-0.5 rounded border border-border">
-                    {t("comingSoonBadge")}
-                  </span>
-                  <div className="w-9 h-9 mx-auto mb-3 flex items-center justify-center">
-                    <PlatformIcon icon={platform.icon} color={platform.color} />
+          {soon.length > 0 && (
+            <div>
+              <h3 className="text-sm font-bold text-dim-foreground uppercase tracking-[0.1em] mb-5 border-l-[3px] border-border pl-3">
+                {t("comingSoonHeading")}
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {soon.map((platform) => (
+                  <div
+                    key={platform.slug}
+                    className="bg-transparent border border-border border-dashed rounded-lg p-5 text-center opacity-60 hover:opacity-90 hover:border-solid transition-all relative"
+                  >
+                    <span className="absolute top-2 right-2 text-[9px] font-bold text-dim-foreground bg-background px-1.5 py-0.5 rounded border border-border">
+                      {t("comingSoonBadge")}
+                    </span>
+                    <div className="w-9 h-9 mx-auto mb-3 flex items-center justify-center">
+                      <img
+                        src={ASSET_URL(platform.slug, "icon")}
+                        alt={platform.name}
+                        className="w-full h-full object-contain"
+                        loading="lazy"
+                      />
+                    </div>
+                    <span className="font-semibold text-sm text-foreground">{platform.name}</span>
                   </div>
-                  <span className="font-semibold text-sm text-foreground">{platform.name}</span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
