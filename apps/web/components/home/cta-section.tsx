@@ -5,6 +5,7 @@ import type { FC, ReactElement } from "react"
 import { useEffect, useState } from "react"
 import { Button, buttonVariants } from "@/components/l-ui/button"
 import { KofiModal } from "@/components/ui/kofi-modal"
+import { CheckCircle, Crosshair, Download, Shield } from "lucide-react"
 
 type BrowserType = "chrome" | "edge" | "firefox" | "safari" | "other"
 
@@ -68,11 +69,7 @@ export const CtaSection: FC = (): ReactElement => {
                   onClick={handleDownload}
                   variant="primary"
                 >
-                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
+                  <Download className="w-6 h-6" />
                   {t("downloadFor", {browser: browserLabel})}
                 </Button>
               ) : (
@@ -80,11 +77,7 @@ export const CtaSection: FC = (): ReactElement => {
                   disabled
                   variant="secondary"
                 >
-                  <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
+                  <Download className="w-6 h-6" />
                   {t("comingSoon", {browser: browserLabel})}
                 </Button>
               )}
@@ -94,37 +87,22 @@ export const CtaSection: FC = (): ReactElement => {
                 download="Presence-Discord-Extension.zip"
                 className={buttonVariants({ variant: "secondary" })}
               >
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
+                <Download className="w-6 h-6" />
                 {t("extension")}
               </a>
             </div>
 
             <div className="flex justify-center gap-6 flex-wrap mt-8 pt-8 border-t border-border">
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10"/>
-                  <circle cx="12" cy="12" r="4"/>
-                  <line x1="21.17" y1="8" x2="12" y2="8"/>
-                  <line x1="3.95" y1="6.06" x2="8.54" y2="14"/>
-                  <line x1="10.88" y1="21.94" x2="15.46" y2="14"/>
-                </svg>
+                <Crosshair className="w-4 h-4" />
                 {t("platforms")}
               </div>
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
+                <Shield className="w-4 h-4" />
                 {t("openSource")}
               </div>
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                  <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
+                <CheckCircle className="w-4 h-4" />
                 {t("free")}
               </div>
             </div>

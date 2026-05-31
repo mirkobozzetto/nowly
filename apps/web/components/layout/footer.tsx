@@ -1,5 +1,6 @@
 "use client"
 
+import { Heart } from "lucide-react"
 import { Button, buttonVariants } from "@/components/l-ui/button"
 import {
   Select,
@@ -90,13 +91,7 @@ export const Footer: FC = (): ReactElement => {
                     : "hover:border-red-500/40 hover:text-foreground hover:bg-red-500/5"
                 )}
               >
-                <svg
-                  className={cn("w-3.5 h-3.5 text-red-400 transition-transform", thanked && "scale-125")}
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                </svg>
+                <Heart className={cn("w-3.5 h-3.5 text-red-400 transition-transform", thanked && "scale-125")} fill="currentColor" />
                 <span className="transition-all">{thanked ? t("thanks") : t("support")}</span>
                 {countdown !== null && (
                   <span className="text-xs text-dim-foreground">({t("redirect", {countdown})})</span>

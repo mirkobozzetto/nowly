@@ -1,18 +1,18 @@
 "use client"
 
+import { Search, Star, Users } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import type { FC, ReactElement } from "react"
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 
-import { PlatformIcon, StatusBadge } from "@/components/marketplace/platform-utils"
-import { categories, platforms, type Platform, type PlatformCategory } from "@/lib/data/platforms"
+const ASSET_URL = (slug: string, type: string) => `/api/p/${slug}/assets/${type}`
+import { categories, type Platform, type PlatformCategory } from "@/lib/data/platforms"
+import { metadataToPlatform } from "@/lib/data/presence-adapter"
+import { getLocalizedDescription } from "@/lib/data/localized"
+import type { Metadata } from "@presence/websites"
 
 type SortOption = "name-asc" | "name-desc" | "popular" | "recent"
-
-type PlatformCardProps = {
-  platform: Platform
-}
 
 const MarketplacePage: FC = (): ReactElement => {
   const locale = useLocale()
@@ -20,6 +20,14 @@ const MarketplacePage: FC = (): ReactElement => {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategories, setSelectedCategories] = useState<PlatformCategory[]>([])
   const [sortBy, setSortBy] = useState<SortOption>("popular")
+  const [platforms, setPlatforms] = useState<Platform[]>([])
+
+  useEffect(() => {
+    fetch("/api/p")
+      .then((res) => res.json())
+      .then((metadata: Metadata[]) => setPlatforms(metadata.map(metadataToPlatform)))
+      .catch(() => {})
+  }, [])
 
   const filteredPlatforms = useMemo(() => {
     let result = [...platforms]
@@ -53,7 +61,7 @@ const MarketplacePage: FC = (): ReactElement => {
     }
 
     return result
-  }, [searchQuery, selectedCategories, sortBy])
+  }, [searchQuery, selectedCategories, sortBy, platforms])
 
   const toggleCategory = (category: PlatformCategory): void => {
     setSelectedCategories((prev) =>
@@ -79,16 +87,7 @@ const MarketplacePage: FC = (): ReactElement => {
         </div>
 
         <div className="relative mb-6">
-          <svg
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-dim-foreground"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.35-4.35" />
-          </svg>
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-dim-foreground" />
           <input
             type="text"
             placeholder={t("searchPlaceholder")}
@@ -159,11 +158,19 @@ const MarketplacePage: FC = (): ReactElement => {
   )
 }
 
-type PlatformCardPropsWithLocale = PlatformCardProps & {
+type PlatformCardProps = {
+  platform: Platform
   locale: string
 }
 
-const PlatformCard: FC<PlatformCardPropsWithLocale> = ({ platform, locale }): ReactElement => {
+const PlatformCard: FC<PlatformCardProps> = ({ platform, locale }): ReactElement => {
+  const handleImgError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget
+    img.src = ASSET_URL(platform.slug, "logo")
+    const parent = img.parentElement
+    if (parent) parent.style.backgroundColor = "transparent"
+  }
+
   return (
     <Link
       href={`/${locale}/marketplace/${platform.slug}`}
@@ -175,36 +182,35 @@ const PlatformCard: FC<PlatformCardPropsWithLocale> = ({ platform, locale }): Re
     >
       <div className="flex items-start gap-4">
         <div
-          className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
+          className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden"
           style={{ backgroundColor: `${platform.iconColor}15` }}
         >
-          <PlatformIcon icon={platform.icon} color={platform.iconColor} className="w-7 h-7" />
+          <img
+            src={ASSET_URL(platform.slug, "icon")}
+            alt={platform.name}
+            className="w-8 h-8 object-contain"
+            loading="lazy"
+            onError={handleImgError}
+          />
         </div>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="font-semibold text-foreground truncate">{platform.name}</h3>
-            <StatusBadge status={platform.status} />
+            {/* <StatusBadge status={platform.status} /> */}
           </div>
           <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-            {platform.description}
+            {getLocalizedDescription(platform, locale)}
           </p>
 
           {platform.status === "available" && (
             <div className="flex items-center gap-4 text-xs text-dim-foreground">
               <span className="flex items-center gap-1">
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
+                <Users className="w-3.5 h-3.5" />
                 {platform.activeUsers.toLocaleString()}
               </span>
               <span className="flex items-center gap-1">
-                <svg className="w-3.5 h-3.5 fill-amber-500" viewBox="0 0 24 24">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
+                <Star className="w-3.5 h-3.5 fill-amber-500" />
                 {platform.rating}
               </span>
             </div>

@@ -1,5 +1,6 @@
 "use client"
 
+import { Minus, Square, X } from "lucide-react"
 import type { FC, ReactElement } from "react"
 import { useEffect, useState } from "react"
 import { useTranslations } from "next-intl"
@@ -62,19 +63,13 @@ export const CompanionWindow: FC = (): ReactElement => {
           </div>
           <div className="flex h-full">
             <button className="w-[46px] h-full flex items-center justify-center hover:bg-white/10 transition-colors">
-              <svg className="w-2.5 h-2.5 stroke-white" fill="none" strokeWidth="1.5" viewBox="0 0 10 10">
-                <path d="M1 5h8" />
-              </svg>
+              <Minus className="w-2.5 h-2.5 text-white" />
             </button>
             <button className="w-[46px] h-full flex items-center justify-center hover:bg-white/10 transition-colors">
-              <svg className="w-2.5 h-2.5 stroke-white" fill="none" strokeWidth="1.5" viewBox="0 0 10 10">
-                <rect x="1" y="1" width="8" height="8" />
-              </svg>
+              <Square className="w-2.5 h-2.5 text-white" />
             </button>
             <button className="w-[46px] h-full flex items-center justify-center hover:bg-[#e81123] transition-colors group">
-              <svg className="w-2.5 h-2.5 stroke-white" fill="none" strokeWidth="1.5" viewBox="0 0 10 10">
-                <path d="M1 1l8 8M9 1l-8 8" />
-              </svg>
+              <X className="w-2.5 h-2.5 text-white" />
             </button>
           </div>
         </div>
