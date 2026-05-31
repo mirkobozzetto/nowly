@@ -1,36 +1,52 @@
-import { ThemeProvider } from "@/components/theme-provider"
-import { routing } from "@/i18n/routing"
-import { hasLocale, NextIntlClientProvider } from "next-intl"
-import { getMessages, setRequestLocale } from "next-intl/server"
+import type { Metadata } from "next"
+import { NextIntlClientProvider } from "next-intl"
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
-import { FC, PropsWithChildren } from "react"
+import type { ReactElement, ReactNode } from "react"
 
-type Props = PropsWithChildren & {
+import { Footer } from "@/components/layout/footer"
+import { Navbar } from "@/components/layout/navbar"
+import { routing } from "@/i18n/routing"
+
+type Props = Readonly<{
+  children: ReactNode
   params: Promise<{
     locale: string
   }>
+}>
+
+const generateStaticParams = (): Array<{ locale: string }> => {
+  return routing.locales.map((locale) => ({ locale }))
 }
 
-const LocaleLayout: FC<Props> = async ({ children, params }) => {
+const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "Meta" })
+
+  return {
+    title: t("title"),
+    description: t("description"),
+  }
+}
+
+const LocaleLayout = async ({ children, params }: Props): Promise<ReactElement> => {
   const { locale } = await params
 
-  if (!hasLocale(routing.locales, locale)) {
+  if (!routing.locales.includes(locale as (typeof routing.locales)[number])) {
     notFound()
   }
 
   setRequestLocale(locale)
-
   const messages = await getMessages()
 
   return (
-    <NextIntlClientProvider messages={messages}>
-      <ThemeProvider>{children}</ThemeProvider>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <Navbar />
+      {children}
+      <Footer />
     </NextIntlClientProvider>
   )
 }
 
+export { generateMetadata, generateStaticParams }
 export default LocaleLayout
-
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
-}

@@ -1,31 +1,18 @@
-import { Button } from "@/components/ui/button"
-import { setRequestLocale } from "next-intl/server"
-import { FC } from "react"
+import { CtaSection } from "@/components/home/cta-section"
+import { HeroSection } from "@/components/home/hero-section"
+import { PlatformsSection } from "@/components/home/platforms-section"
+import { StepsSection } from "@/components/home/steps-section"
+import type { FC, ReactElement } from "react"
 
-type Props = {
-  params: Promise<{ locale: string }>
-}
-
-const Page: FC<Props> = async ({ params }) => {
-  const { locale } = await params
-
-  setRequestLocale(locale)
-
+const HomePage: FC = (): ReactElement => {
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
-    </div>
+    <main>
+      <HeroSection />
+      <PlatformsSection />
+      <StepsSection />
+      <CtaSection />
+    </main>
   )
 }
 
-export default Page
+export default HomePage
