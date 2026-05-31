@@ -1,0 +1,57 @@
+{
+  "name": "YouTube",
+  "version": "1.0.0",
+  "author": {
+    "name": "Gaëtan H",
+    "github": "steellgold"
+  },
+  "contributors": [
+    { "name": "KiMi", "github": "q-kimi" },
+    { "name": "Sophie", "github": "sophiebits" },
+    { "name": "Alex", "github": "alexdev" },
+    { "name": "Jordan", "github": "jordandev" }
+  ],
+  "url": [
+    "youtube.com",
+    "www.youtube.com",
+    "youtu.be",
+    "music.youtube.com"
+  ],
+  "regExp": "^https?://(www|music|m)\\.youtube\\.com/",
+  "color": "#FF0033",
+  "category": "streaming",
+  "tags": [
+    "video",
+    "media",
+    "streaming"
+  ],
+  "description": {
+    "en-US": "Watch and share videos on the world's largest video platform.",
+    "fr-FR": "Regardez et partagez des vidéos sur la plus grande plateforme vidéo au monde."
+  },
+  "longDescription": {
+    "en-US": "YouTube is the world's most popular video sharing platform. With Presence Discord, automatically display the video you're watching, whether it's music, tutorials, live streams or any other content. Your friends can see exactly what you're watching in real time.",
+    "fr-FR": "YouTube est la plateforme de partage de vidéos la plus populaire au monde. Avec Presence Discord, affichez automatiquement la vidéo que vous regardez, qu'il s'agisse de musique, de tutoriels, de streams en direct ou de tout autre contenu. Vos amis pourront voir exactement ce que vous visionnez en temps réel."
+  },
+  "features": {
+    "en-US": [
+      "Automatic video detection",
+      "Display title and channel name",
+      "Real-time watch time",
+      "Live stream and premiere support",
+      "Video thumbnail display"
+    ],
+    "fr-FR": [
+      "Détection automatique des vidéos",
+      "Affichage du titre et de la chaîne",
+      "Temps de visionnage en temps réel",
+      "Support des lives et premières",
+      "Miniature de la vidéo"
+    ]
+  },
+  "assets": {
+    "logo": "logo.png",
+    "icon": "icon.png",
+    "thumbnail": "thumbnail.jpg"
+  }
+}
