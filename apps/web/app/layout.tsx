@@ -1,3 +1,4 @@
+import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
 import { Geist_Mono, Inter } from "next/font/google"
 import { FC, PropsWithChildren } from "react"
@@ -12,7 +13,11 @@ const RootLayout: FC<PropsWithChildren> = ({ children }) => {
       suppressHydrationWarning
       className={cn("antialiased", fontMono.variable, "font-sans", inter.variable)}
     >
-      <body>{children}</body>
+      <body>
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   )
 }
