@@ -108,10 +108,10 @@
     "sortNameDesc": "Z - A",
     "categories": {
       "streaming": "Streaming",
-      "musique": "Music",
+      "music": "Music",
       "tv": "TV & Movies",
       "anime": "Anime",
-      "autre": "Other"
+      "other": "Other"
     },
     "results": "{count, plural, one {# platform found} other {# platforms found}}",
     "empty": "No platform found",
@@ -127,7 +127,9 @@
     "about": "About",
     "supportedUrls": "Supported URL(s)",
     "features": "Features",
-    "contributors": "Contributor(s)",
+    "authorLabel": "Author",
+    "contributorLabel": "Contributor",
+    "development": "Development",
     "stats": "Stats",
     "activeUsers": "Active users",
     "totalInstalls": "Total installs",
