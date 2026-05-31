@@ -1,5 +1,5 @@
-export type PlatformCategory = "streaming" | "music" | "tv" | "anime" | "other"
-export type PlatformStatus = "available" | "soon" | "beta"
+export type PlatformCategory = "streaming" | "music" | "tv" | "anime" | "other";
+export type PlatformStatus = "available" | "soon" | "beta";
 
 export interface Contributor {
   name: string
@@ -39,4 +39,4 @@ export const categories: { value: PlatformCategory; label: string }[] = [
   { value: "tv", label: "TV & Films" },
   { value: "anime", label: "Anime" },
   { value: "other", label: "Other" },
-]
+];

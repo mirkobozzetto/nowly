@@ -1,11 +1,11 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import type { Contributor } from "@/lib/data/platforms"
-import type { FC, ReactElement } from "react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { Contributor } from "@/lib/data/platforms";
+import type { FC, ReactElement } from "react";
 
 type Props = {
   contributor: Contributor
   label?: string
-}
+};
 
 export const AuthorItem: FC<Props> = ({ contributor, label }): ReactElement => (
   <a
@@ -27,4 +27,4 @@ export const AuthorItem: FC<Props> = ({ contributor, label }): ReactElement => (
       </span>
     )}
   </a>
-)
+);

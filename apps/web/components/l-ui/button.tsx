@@ -1,22 +1,22 @@
-import type { ButtonHTMLAttributes, FC, ReactElement, ReactNode } from "react"
-import { cn } from "@/lib/utils"
+import type { ButtonHTMLAttributes, FC, ReactElement, ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
-type Variant = "primary" | "accent" | "secondary" | "disabled"
-type Size = "sm" | "md" | "lg"
+type Variant = "primary" | "accent" | "secondary" | "disabled";
+type Size = "sm" | "md" | "lg";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode
   className?: string
   size?: Size
   variant?: Variant
-}
+};
 
 type ButtonVariantsOptions = {
   className?: string
   disabled?: boolean
   size?: Size
   variant?: Variant
-}
+};
 
 const variantClasses: Record<Variant, string> = {
   primary:
@@ -27,13 +27,13 @@ const variantClasses: Record<Variant, string> = {
     "bg-card-2 text-foreground border border-border hover:border-muted-foreground hover:bg-card-hover",
   disabled:
     "bg-card-2 text-muted-foreground border border-border cursor-not-allowed opacity-60",
-}
+};
 
 const sizeClasses: Record<Size, string> = {
   sm: "px-4 py-2 text-sm",
   md: "px-5 py-2.5 text-sm",
   lg: "px-10 py-4 text-lg",
-}
+};
 
 export const buttonVariants = ({
   className,
@@ -41,15 +41,15 @@ export const buttonVariants = ({
   size = "lg",
   variant = "secondary",
 }: ButtonVariantsOptions = {}): string => {
-  const computedVariant = disabled ? "disabled" : variant
+  const computedVariant = disabled ? "disabled" : variant;
 
   return cn(
     "inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all",
     sizeClasses[size],
     variantClasses[computedVariant],
     className,
-  )
-}
+  );
+};
 
 export const Button: FC<Props> = ({
   children,
@@ -67,5 +67,5 @@ export const Button: FC<Props> = ({
     >
       {children}
     </button>
-  )
-}
+  );
+};

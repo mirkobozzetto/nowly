@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import { Card, CardTitle } from "@/components/l-ui/card"
-import type { Contributor } from "@/lib/data/platforms"
-import { ExternalLink } from "lucide-react"
-import { useTranslations } from "next-intl"
-import type { FC, ReactElement } from "react"
-import { AuthorItem } from "./author-item"
+import { Card, CardTitle } from "@/components/l-ui/card";
+import type { Contributor } from "@/lib/data/platforms";
+import { ExternalLink } from "lucide-react";
+import { useTranslations } from "next-intl";
+import type { FC, ReactElement } from "react";
+import { AuthorItem } from "./author-item";
 
 type Props = {
   author: Contributor
   contributors: Contributor[]
   sourceUrl?: string
-}
+};
 
 export const DevelopmentCard: FC<Props> = ({ author, contributors, sourceUrl }): ReactElement => {
-  const t = useTranslations("MarketplaceDetail")
+  const t = useTranslations("MarketplaceDetail");
 
   return (
     <Card size="sm">
@@ -40,5 +40,5 @@ export const DevelopmentCard: FC<Props> = ({ author, contributors, sourceUrl }):
         <AuthorItem key={index} contributor={contributor} label={t("contributorLabel")} />
       ))}
     </Card>
-  )
-}
+  );
+};

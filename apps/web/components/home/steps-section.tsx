@@ -1,12 +1,12 @@
-import { useTranslations } from "next-intl"
-import type { FC, ReactElement } from "react"
+import { useTranslations } from "next-intl";
+import type { FC, ReactElement } from "react";
 
 export const StepsSection: FC = (): ReactElement => {
-  const t = useTranslations("StepsSection")
+  const t = useTranslations("StepsSection");
   const steps = t.raw("steps") as Array<{
     title: string
     description: string
-  }>
+  }>;
 
   return (
     <section className="py-24 border-b border-border">
@@ -41,5 +41,5 @@ export const StepsSection: FC = (): ReactElement => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};

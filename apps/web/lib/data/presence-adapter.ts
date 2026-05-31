@@ -1,19 +1,19 @@
-import type { Metadata } from "@presence/websites/types"
-import type { Platform, PlatformCategory, Contributor } from "./platforms"
+import type { Metadata } from "@presence/websites/types";
+import type { Platform, PlatformCategory, Contributor } from "./platforms";
 
 function toContributor(c: { name: string; github?: string }): Contributor {
   return {
     name: c.name,
     github: c.github,
     avatar: c.github ? `https://github.com/${c.github}.png` : undefined,
-  }
+  };
 }
 
-const FALLBACK_LOCALE = "en-US"
+const FALLBACK_LOCALE = "en-US";
 
 export function metadataToPlatform(m: Metadata): Platform {
-  const slug = m.slug ?? m.name.toLowerCase().replace(/\s+/g, "-")
-  const desc = m.description?.[FALLBACK_LOCALE] ?? ""
+  const slug = m.slug ?? m.name.toLowerCase().replace(/\s+/g, "-");
+  const desc = m.description?.[FALLBACK_LOCALE] ?? "";
   return {
     id: slug,
     slug,
@@ -38,5 +38,5 @@ export function metadataToPlatform(m: Metadata): Platform {
       longDescription: m.longDescription,
       features: m.features,
     },
-  }
+  };
 }

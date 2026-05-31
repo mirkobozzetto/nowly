@@ -1,56 +1,56 @@
-"use client"
+"use client";
 
-import { PROJECT_REPOSITORY_URL } from "@/lib/constants"
-import { Heart } from "lucide-react"
-import { Button, buttonVariants } from "@/components/l-ui/button"
+import { PROJECT_REPOSITORY_URL } from "@/lib/constants";
+import { Heart } from "lucide-react";
+import { Button, buttonVariants } from "@/components/l-ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { cn } from "@/lib/utils"
-import { useLocale, useTranslations } from "next-intl"
-import { usePathname, useRouter } from "next/navigation"
-import type { FC, ReactElement } from "react"
-import { useState } from "react"
-import { LocaleFlag } from "../locale-flag"
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import { useLocale, useTranslations } from "next-intl";
+import { usePathname, useRouter } from "next/navigation";
+import type { FC, ReactElement } from "react";
+import { useState } from "react";
+import { LocaleFlag } from "../locale-flag";
 
 export const Footer: FC = (): ReactElement => {
-  const [thanked, setThanked] = useState(false)
-  const [countdown, setCountdown] = useState<number | null>(null)
-  const locale = useLocale()
-  const pathname = usePathname()
-  const router = useRouter()
-  const t = useTranslations("Footer")
+  const [thanked, setThanked] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const locale = useLocale();
+  const pathname = usePathname();
+  const router = useRouter();
+  const t = useTranslations("Footer");
 
   const handleSupport = (): void => {
-    if (thanked) return
+    if (thanked) return;
 
-    setThanked(true)
-    setCountdown(3)
+    setThanked(true);
+    setCountdown(3);
 
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev === null || prev <= 1) {
-          clearInterval(timer)
-          window.open("https://ko-fi.com/qkimi_", "_blank", "noopener,noreferrer")
+          clearInterval(timer);
+          window.open("https://ko-fi.com/qkimi_", "_blank", "noopener,noreferrer");
           setTimeout(() => {
-            setThanked(false)
-            setCountdown(null)
-          }, 500)
-          return null
+            setThanked(false);
+            setCountdown(null);
+          }, 500);
+          return null;
         }
-        return prev - 1
-      })
-    }, 1000)
-  }
+        return prev - 1;
+      });
+    }, 1000);
+  };
 
   const handleLocaleChange = (value: string): void => {
-    const nextPath = pathname.replace(/^\/(fr-FR|en-US)(?=\/|$)/, `/${value}`)
-    router.push(`${nextPath}${window.location.search}`)
-  }
+    const nextPath = pathname.replace(/^\/(fr-FR|en-US)(?=\/|$)/, `/${value}`);
+    router.push(`${nextPath}${window.location.search}`);
+  };
 
   return (
     <footer className="py-8 border-t border-border text-dim-foreground text-sm">
@@ -95,7 +95,7 @@ export const Footer: FC = (): ReactElement => {
                 <Heart className={cn("w-3.5 h-3.5 text-red-400 transition-transform", thanked && "scale-125")} fill="currentColor" />
                 <span className="transition-all">{thanked ? t("thanks") : t("support")}</span>
                 {countdown !== null && (
-                  <span className="text-xs text-dim-foreground">({t("redirect", {countdown})})</span>
+                  <span className="text-xs text-dim-foreground">({t("redirect", { countdown })})</span>
                 )}
               </Button>
 
@@ -132,5 +132,5 @@ export const Footer: FC = (): ReactElement => {
         </div>
       </div>
     </footer>
-  )
-}
+  );
+};

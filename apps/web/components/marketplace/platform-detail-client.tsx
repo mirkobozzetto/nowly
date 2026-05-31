@@ -1,64 +1,64 @@
-"use client"
+"use client";
 
-import { KofiModal } from "@/components/ui/kofi-modal"
-import { PROJECT_PRESENCES_SOURCE_URL } from "@/lib/constants"
-import { type Platform } from "@/lib/data/platforms"
-import { ArrowLeft, ChevronRight } from "lucide-react"
-import { useLocale, useTranslations } from "next-intl"
-import Link from "next/link"
-import type { FC, ReactElement } from "react"
-import { useCallback, useEffect, useState } from "react"
-import { DevelopmentCard } from "./development-card"
-import { FeaturesCard } from "./features-card"
-import { HeaderCard } from "./header-card"
-import { InstallCard } from "./install-card"
-import { StatsCard } from "./stats-card"
-import { SupportedUrlsCard } from "./supported-urls-card"
+import { KofiModal } from "@/components/ui/kofi-modal";
+import { PROJECT_PRESENCES_SOURCE_URL } from "@/lib/constants";
+import { type Platform } from "@/lib/data/platforms";
+import { ArrowLeft, ChevronRight } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
+import type { FC, ReactElement } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { DevelopmentCard } from "./development-card";
+import { FeaturesCard } from "./features-card";
+import { HeaderCard } from "./header-card";
+import { InstallCard } from "./install-card";
+import { StatsCard } from "./stats-card";
+import { SupportedUrlsCard } from "./supported-urls-card";
 
 type Props = {
   platform: Platform
-}
+};
 
 export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
-  const locale = useLocale()
-  const t = useTranslations("MarketplaceDetail")
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isInstalled, setIsInstalled] = useState(false)
-  const [extDetected, setExtDetected] = useState(false)
+  const locale = useLocale();
+  const t = useTranslations("MarketplaceDetail");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isInstalled, setIsInstalled] = useState(false);
+  const [extDetected, setExtDetected] = useState(false);
 
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       if (event.data?.type === "EXT_DETECTED") {
-        setExtDetected(true)
-        window.postMessage({ type: "EXT_GET_INSTALLED" }, window.location.origin)
+        setExtDetected(true);
+        window.postMessage({ type: "EXT_GET_INSTALLED" }, window.location.origin);
       }
       if (event.data?.type === "EXT_INSTALLED_LIST") {
-        setIsInstalled(!!event.data.presences[platform.slug])
+        setIsInstalled(!!event.data.presences[platform.slug]);
       }
       if (event.data?.type === "EXT_INSTALL_RESULT" && event.data.slug === platform.slug) {
-        setIsInstalled(event.data.success)
+        setIsInstalled(event.data.success);
       }
-    }
-    window.addEventListener("message", handler)
-    return () => window.removeEventListener("message", handler)
-  }, [platform.slug])
+    };
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
+  }, [platform.slug]);
 
   const toggleInstall = useCallback((): void => {
     if (extDetected) {
       window.postMessage(
         { type: "EXT_INSTALL_PRESENCE", slug: platform.slug, enable: !isInstalled },
         window.location.origin
-      )
+      );
     } else {
-      setIsInstalled(!isInstalled)
+      setIsInstalled(!isInstalled);
     }
-  }, [extDetected, isInstalled, platform.slug])
+  }, [extDetected, isInstalled, platform.slug]);
 
   return (
     <>
       <main className="min-h-screen pt-24 pb-16">
         <div className="max-w-300 mx-auto px-6">
-          <nav className="flex items-center gap-2 text-sm text-dim-foreground mb-8">
+          <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
             <Link href={`/${locale}/marketplace`} className="hover:text-foreground transition-colors">
               {t("breadcrumbHome")}
             </Link>
@@ -79,7 +79,7 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
                 contributors={platform.contributors}
                 sourceUrl={`${PROJECT_PRESENCES_SOURCE_URL}/${platform.name.charAt(0)}/${platform.name}/`}
               />
-              <StatsCard platform={platform} locale={locale} />
+              <StatsCard platform={platform} locale={locale} slug={platform.slug} canRate={extDetected && isInstalled} />
               <InstallCard platform={platform} isInstalled={isInstalled} extDetected={extDetected} onToggle={toggleInstall} />
 
               <Link
@@ -96,5 +96,5 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
 
       <KofiModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
-  )
-}
+  );
+};

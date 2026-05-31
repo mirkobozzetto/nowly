@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import { buttonVariants } from "@/components/l-ui/button"
-import { cn } from "@/lib/utils"
-import { Download, Radio } from "lucide-react"
-import { useLocale, useTranslations } from "next-intl"
-import Link from "next/link"
-import type { FC, ReactElement } from "react"
-import { useEffect, useState } from "react"
+import { buttonVariants } from "@/components/l-ui/button";
+import { cn } from "@/lib/utils";
+import { Download, Radio } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
+import type { FC, ReactElement } from "react";
+import { useEffect, useState } from "react";
 
 export const Navbar: FC = (): ReactElement => {
-  const [scrolled, setScrolled] = useState(false)
-  const locale = useLocale()
-  const t = useTranslations("Navbar")
+  const [scrolled, setScrolled] = useState(false);
+  const locale = useLocale();
+  const t = useTranslations("Navbar");
 
   useEffect(() => {
     const handleScroll = (): void => {
-      setScrolled(window.scrollY > 20)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <nav
@@ -56,5 +56,5 @@ export const Navbar: FC = (): ReactElement => {
         </div>
       </div>
     </nav>
-  )
-}
+  );
+};

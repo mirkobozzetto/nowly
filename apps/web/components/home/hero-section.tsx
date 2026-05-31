@@ -1,60 +1,60 @@
-"use client"
+"use client";
 
-import type { FC, ReactElement } from "react"
-import { useEffect, useState } from "react"
-import Link from "next/link"
-import { useLocale, useTranslations } from "next-intl"
-import { CompanionWindow } from "./companion-window"
-import { KofiModal } from "@/components/ui/kofi-modal"
+import { KofiModal } from "@/components/ui/kofi-modal";
+import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
+import type { FC, ReactElement } from "react";
+import { useState } from "react";
+import { CompanionWindow } from "./companion-window";
 
-type BrowserType = "chrome" | "edge" | "firefox" | "safari" | "other"
+// type BrowserType = "chrome" | "edge" | "firefox" | "safari" | "other";
 
-const detectBrowser = (): BrowserType => {
-  if (typeof window === "undefined") return "chrome"
+// const detectBrowser = (): BrowserType => {
+//   if (typeof window === "undefined") return "chrome";
   
-  const ua = navigator.userAgent.toLowerCase()
+//   const ua = navigator.userAgent.toLowerCase();
   
-  if (ua.includes("edg/")) return "edge"
-  if (ua.includes("chrome") && !ua.includes("edg/")) return "chrome"
-  if (ua.includes("firefox")) return "firefox"
-  if (ua.includes("safari") && !ua.includes("chrome")) return "safari"
+//   if (ua.includes("edg/")) return "edge";
+//   if (ua.includes("chrome") && !ua.includes("edg/")) return "chrome";
+//   if (ua.includes("firefox")) return "firefox";
+//   if (ua.includes("safari") && !ua.includes("chrome")) return "safari";
   
-  return "other"
-}
+//   return "other";
+// };
 
-const isChromiumBased = (browser: BrowserType): boolean => {
-  return browser === "chrome" || browser === "edge"
-}
+// const isChromiumBased = (browser: BrowserType): boolean => {
+//   return browser === "chrome" || browser === "edge";
+// };
 
 export const HeroSection: FC = (): ReactElement => {
-  const [browser, setBrowser] = useState<BrowserType>("chrome")
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const locale = useLocale()
-  const t = useTranslations("HeroSection")
+  // const [browser, setBrowser] = useState<BrowserType>("chrome");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const locale = useLocale();
+  const t = useTranslations("HeroSection");
 
-  useEffect(() => {
-    setBrowser(detectBrowser())
-  }, [])
+  // useEffect(() => {
+  //   setBrowser(detectBrowser());
+  // }, []);
 
-  const isSupported = isChromiumBased(browser)
+  // const isSupported = isChromiumBased(browser);
 
-  const handleDownload = (): void => {
-    if (!isSupported) return
-    setIsModalOpen(true)
-  }
+  // const handleDownload = (): void => {
+  //   if (!isSupported) return;
+  //   setIsModalOpen(true);
+  // };
 
   return (
     <>
       <section className="min-h-screen flex items-center py-[120px_0_60px] relative overflow-hidden">
-        <div className="max-w-[1200px] mx-auto px-6 relative z-[2]">
+        <div className="max-w-300 mx-auto px-6 relative z-2">
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_480px] gap-12 items-center">
             {/* Content */}
-            <div className="max-w-[540px] lg:max-w-none">
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-accent/10 text-accent border border-accent/20 text-[11px] font-bold uppercase tracking-[0.05em] mb-4">
+            <div className="max-w-135 lg:max-w-none">
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-accent/10 text-accent border border-accent/20 text-[11px] font-bold uppercase tracking-wider mb-4">
                 {t("badge")}
               </div>
               
-              <h1 className="text-[clamp(3rem,5vw,4.5rem)] font-extrabold leading-[1.1] tracking-tight mb-6 bg-gradient-to-br from-white to-muted-foreground bg-clip-text text-transparent">
+              <h1 className="text-[clamp(3rem,5vw,4.5rem)] font-extrabold leading-[1.1] tracking-tight mb-6 bg-linear-to-br from-white to-muted-foreground bg-clip-text text-transparent">
                 {t("title")}<br/>
                 <span className="text-accent">{t("titleAccent")}</span>
               </h1>
@@ -83,5 +83,5 @@ export const HeroSection: FC = (): ReactElement => {
 
       <KofiModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
-  )
-}
+  );
+};

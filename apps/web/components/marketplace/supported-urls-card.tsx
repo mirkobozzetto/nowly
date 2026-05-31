@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { Card, CardTitle } from "@/components/l-ui/card"
-import { useTranslations } from "next-intl"
-import type { FC, ReactElement } from "react"
+import { Card, CardTitle } from "@/components/l-ui/card";
+import { useTranslations } from "next-intl";
+import type { FC, ReactElement } from "react";
 
 type Props = {
   urls: string[]
-}
+};
 
 export const SupportedUrlsCard: FC<Props> = ({ urls }): ReactElement => {
-  const t = useTranslations("MarketplaceDetail")
+  const t = useTranslations("MarketplaceDetail");
 
   return (
     <Card>
@@ -25,5 +25,5 @@ export const SupportedUrlsCard: FC<Props> = ({ urls }): ReactElement => {
         ))}
       </div>
     </Card>
-  )
-}
+  );
+};

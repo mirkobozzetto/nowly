@@ -1,42 +1,42 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import type { FC, ReactElement } from "react"
-import { useEffect, useState } from "react"
-import { Button, buttonVariants } from "@/components/l-ui/button"
-import { KofiModal } from "@/components/ui/kofi-modal"
-import { PROJECT_EXTENSION_DOWNLOAD_URL, PROJECT_EXTENSION_FILENAME } from "@/lib/constants"
-import { CheckCircle, Crosshair, Download, Shield } from "lucide-react"
+import { useTranslations } from "next-intl";
+import type { FC, ReactElement } from "react";
+import { useEffect, useState } from "react";
+import { Button, buttonVariants } from "@/components/l-ui/button";
+import { KofiModal } from "@/components/ui/kofi-modal";
+import { PROJECT_EXTENSION_DOWNLOAD_URL, PROJECT_EXTENSION_FILENAME } from "@/lib/constants";
+import { CheckCircle, Crosshair, Download, Shield } from "lucide-react";
 
-type BrowserType = "chrome" | "edge" | "firefox" | "safari" | "other"
+type BrowserType = "chrome" | "edge" | "firefox" | "safari" | "other";
 
 const detectBrowser = (): BrowserType => {
-  if (typeof window === "undefined") return "chrome"
+  if (typeof window === "undefined") return "chrome";
   
-  const ua = navigator.userAgent.toLowerCase()
+  const ua = navigator.userAgent.toLowerCase();
   
-  if (ua.includes("edg/")) return "edge"
-  if (ua.includes("chrome") && !ua.includes("edg/")) return "chrome"
-  if (ua.includes("firefox")) return "firefox"
-  if (ua.includes("safari") && !ua.includes("chrome")) return "safari"
+  if (ua.includes("edg/")) return "edge";
+  if (ua.includes("chrome") && !ua.includes("edg/")) return "chrome";
+  if (ua.includes("firefox")) return "firefox";
+  if (ua.includes("safari") && !ua.includes("chrome")) return "safari";
   
-  return "other"
-}
+  return "other";
+};
 
 const isChromiumBased = (browser: BrowserType): boolean => {
-  return browser === "chrome" || browser === "edge"
-}
+  return browser === "chrome" || browser === "edge";
+};
 
 export const CtaSection: FC = (): ReactElement => {
-  const [browser, setBrowser] = useState<BrowserType>("chrome")
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const t = useTranslations("CtaSection")
+  const [browser, setBrowser] = useState<BrowserType>("chrome");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const t = useTranslations("CtaSection");
 
   useEffect(() => {
-    setBrowser(detectBrowser())
-  }, [])
+    setBrowser(detectBrowser());
+  }, []);
 
-  const isSupported = isChromiumBased(browser)
+  const isSupported = isChromiumBased(browser);
   const browserLabel = browser === "chrome"
     ? "Chrome"
     : browser === "edge"
@@ -45,12 +45,12 @@ export const CtaSection: FC = (): ReactElement => {
         ? "Firefox"
         : browser === "safari"
           ? "Safari"
-          : t("browser")
+          : t("browser");
 
   const handleDownload = (): void => {
-    if (!isSupported) return
-    setIsModalOpen(true)
-  }
+    if (!isSupported) return;
+    setIsModalOpen(true);
+  };
 
   return (
     <>
@@ -71,7 +71,7 @@ export const CtaSection: FC = (): ReactElement => {
                   variant="primary"
                 >
                   <Download className="w-6 h-6" />
-                  {t("downloadFor", {browser: browserLabel})}
+                  {t("downloadFor", { browser: browserLabel })}
                 </Button>
               ) : (
                 <Button
@@ -79,7 +79,7 @@ export const CtaSection: FC = (): ReactElement => {
                   variant="secondary"
                 >
                   <Download className="w-6 h-6" />
-                  {t("comingSoon", {browser: browserLabel})}
+                  {t("comingSoon", { browser: browserLabel })}
                 </Button>
               )}
 
@@ -113,5 +113,5 @@ export const CtaSection: FC = (): ReactElement => {
 
       <KofiModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
-  )
-}
+  );
+};

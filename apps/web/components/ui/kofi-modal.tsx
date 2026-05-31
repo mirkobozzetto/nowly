@@ -1,7 +1,8 @@
-"use client"
+"use client";
 
-import { PROJECT_EXTENSION_DOWNLOAD_URL } from "@/lib/constants"
-import { useEffect, useState } from "react"
+import { cn } from "@/lib/utils";
+import { PROJECT_EXTENSION_DOWNLOAD_URL } from "@/lib/constants";
+import { useEffect, useState } from "react";
 
 interface KofiModalProps {
   isOpen: boolean
@@ -9,66 +10,72 @@ interface KofiModalProps {
 }
 
 export function KofiModal({ isOpen, onClose }: KofiModalProps) {
-  const [isClosing, setIsClosing] = useState(false)
+  const [isClosing, setIsClosing] = useState(false);
 
   const handleClose = (callback?: () => void) => {
-    setIsClosing(true)
+    setIsClosing(true);
     setTimeout(() => {
-      setIsClosing(false)
-      onClose()
-      if (callback) callback()
-    }, 250)
-  }
+      setIsClosing(false);
+      onClose();
+      if (callback) callback();
+    }, 250);
+  };
 
   const triggerDownload = () => {
-    const COMPANION_DOWNLOAD_URL = PROJECT_EXTENSION_DOWNLOAD_URL
-    const a = document.createElement("a")
-    a.href = COMPANION_DOWNLOAD_URL
-    a.download = ""
-    a.click()
-  }
+    const COMPANION_DOWNLOAD_URL = PROJECT_EXTENSION_DOWNLOAD_URL;
+    const a = document.createElement("a");
+    a.href = COMPANION_DOWNLOAD_URL;
+    a.download = "";
+    a.click();
+  };
 
   const handleSupport = () => {
     handleClose(() => {
-      window.open("https://ko-fi.com/qkimi_", "_blank", "noopener,noreferrer")
-      triggerDownload()
-    })
-  }
+      window.open("https://ko-fi.com/qkimi_", "_blank", "noopener,noreferrer");
+      triggerDownload();
+    });
+  };
 
   const handleSkip = () => {
-    handleClose(triggerDownload)
-  }
+    handleClose(triggerDownload);
+  };
 
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      handleClose()
+      handleClose();
     }
-  }
+  };
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden"
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = ""
+      document.body.style.overflow = "";
     }
     return () => {
-      document.body.style.overflow = ""
-    }
-  }, [isOpen])
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
-  if (!isOpen && !isClosing) return null
+  if (!isOpen && !isClosing) return null;
 
   return (
     <div
       onClick={handleOverlayClick}
-      className={`fixed inset-0 z-[500] flex items-center justify-center bg-black/80 backdrop-blur-lg transition-opacity duration-200 ${
-        isClosing ? "opacity-0" : "opacity-100 animate-in fade-in"
-      }`}
+      className={cn(
+        "fixed inset-0 z-[500] flex items-center justify-center bg-black/80 backdrop-blur-lg transition-opacity duration-200", {
+          "opacity-0": isClosing,
+          "opacity-100 animate-in fade-in": !isClosing
+        }
+      )}
     >
       <div
-        className={`bg-card border border-border-light rounded-2xl max-w-[400px] w-[calc(100%-40px)] overflow-hidden shadow-[0_32px_72px_rgba(0,0,0,0.8)] transition-all duration-300 ${
-          isClosing ? "opacity-0 translate-y-2.5" : "opacity-100 translate-y-0 animate-in slide-in-from-bottom-5"
-        }`}
+        className={cn(
+          "bg-card border border-border-light rounded-2xl max-w-[400px] w-[calc(100%-40px)] overflow-hidden shadow-[0_32px_72px_rgba(0,0,0,0.8)] transition-all duration-300", {
+            "opacity-0 translate-y-2.5": isClosing,
+            "opacity-100 translate-y-0 animate-in slide-in-from-bottom-5": !isClosing
+          }
+        )}
       >
         {/* Header */}
         <div className="bg-card-2 border-b border-border px-7 py-9 text-center">
@@ -119,5 +126,5 @@ export function KofiModal({ isOpen, onClose }: KofiModalProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
