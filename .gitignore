@@ -2,3 +2,13 @@ node_modules
 dist
 .next
 *.tsbuildinfo
+
+# Native host (Go binaries)
+apps/native/cmd/host/host.exe
+apps/native/cmd/installer/installer.exe
+apps/native/cmd/uninstaller/uninstaller.exe
+apps/native/cmd/installer/assets/
+apps/native/cmd/uninstaller/assets/
+
+# Extension (managed separately)
+apps/extension/
