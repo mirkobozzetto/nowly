@@ -3,7 +3,7 @@
 import { KofiModal } from "@/components/ui/kofi-modal"
 import { PROJECT_PRESENCES_SOURCE_URL } from "@/lib/constants"
 import { type Platform } from "@/lib/data/platforms"
-import { ArrowLeft, ChevronRight, ExternalLink } from "lucide-react"
+import { ArrowLeft, ChevronRight } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import Link from "next/link"
 import type { FC, ReactElement } from "react"
@@ -74,19 +74,13 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
             </div>
 
             <div className="space-y-6">
-              <DevelopmentCard author={platform.author} contributors={platform.contributors} />
+              <DevelopmentCard
+                author={platform.author}
+                contributors={platform.contributors}
+                sourceUrl={`${PROJECT_PRESENCES_SOURCE_URL}/${platform.name.charAt(0)}/${platform.name}/`}
+              />
               <StatsCard platform={platform} locale={locale} />
               <InstallCard platform={platform} isInstalled={isInstalled} extDetected={extDetected} onToggle={toggleInstall} />
-
-              <a
-                href={`${PROJECT_PRESENCES_SOURCE_URL}/${platform.name.charAt(0)}/${platform.name}/`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <ExternalLink className="w-4 h-4" />
-                {t("source")}
-              </a>
 
               <Link
                 href={`/${locale}/marketplace`}
