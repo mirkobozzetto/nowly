@@ -1,0 +1,150 @@
+{
+  "Navbar": {
+    "marketplace": "Marketplace",
+    "downloadDesktop": "Download Companion",
+    "downloadShort": "Download"
+  },
+  "HeroSection": {
+    "badge": "New",
+    "title": "Your Discord activity,",
+    "titleAccent": "synced.",
+    "description": "The easiest way to automatically show what you're watching. Series, movies, or streams, your status stays up to date.",
+    "cta": "Browse presences"
+  },
+  "PlatformsSection": {
+    "sectionLabel": "Platforms",
+    "title": "Your favorite services",
+    "description": "Compatible with the most popular streaming platforms",
+    "availableHeading": "Available",
+    "comingSoonHeading": "Coming soon",
+    "comingSoonBadge": "Soon"
+  },
+  "StepsSection": {
+    "sectionLabel": "How it works",
+    "title": "Simple as that",
+    "description": "Three steps to show what you're watching",
+    "steps": [
+      {
+        "title": "Install the app",
+        "description": "Download and install Presence Discord on your Windows computer. Setup only takes a few seconds."
+      },
+      {
+        "title": "Connect Discord",
+        "description": "The app automatically detects Discord and establishes the connection. No manual configuration required."
+      },
+      {
+        "title": "Watch content",
+        "description": "Launch your favorite streaming platform and your Discord status updates automatically."
+      }
+    ]
+  },
+  "CtaSection": {
+    "title": "Get started now",
+    "description": "No subscription required. Lightweight and secure.",
+    "downloadFor": "Download for {browser}",
+    "comingSoon": "{browser} - Coming soon",
+    "extension": "Download extension",
+    "browser": "Browser",
+    "platforms": "Chrome / Edge",
+    "openSource": "Open source",
+    "free": "Free"
+  },
+  "Footer": {
+    "copyright": "© 2026 Presence Discord. All rights reserved.",
+    "trademark": "Discord is a registered trademark of",
+    "support": "Support the project",
+    "thanks": "Thank you!",
+    "redirect": "Redirecting in {countdown}s",
+    "openSource": "Open source",
+    "authorAlt": "Author",
+    "languageLabel": "Show the site in",
+    "french": "French",
+    "english": "English"
+  },
+  "CompanionWindow": {
+    "windowTitle": "Presence Discord",
+    "service": "Netflix",
+    "season": "Season {season}",
+    "moviePosterAlt": "Movie poster",
+    "title": "Stranger Things",
+    "episode": "Episode 4 - Dear Billy",
+    "logs": [
+      {
+        "time": "12:34:56",
+        "text": "Discord RPC connected",
+        "type": "success"
+      },
+      {
+        "time": "12:34:57",
+        "text": "Watching media on Netflix",
+        "type": "highlight"
+      },
+      {
+        "time": "12:34:58",
+        "text": "Presence updated successfully",
+        "type": "success"
+      }
+    ]
+  },
+  "KofiModal": {
+    "title": "The project is free",
+    "description": "Built alone, on my spare time. A coffee helps keep things moving.",
+    "support": "Support on Ko-fi",
+    "skip": "No thanks, download directly"
+  },
+  "Meta": {
+    "title": "Presence Discord | Automatic Rich Presence",
+    "description": "Automatically show what you're watching in your Discord status. YouTube, Twitch, Plex, Prime Video, Cinepulse, and more."
+  },
+  "MarketplacePage": {
+    "badge": "Marketplace",
+    "title": "Supported platforms",
+    "description": "Discover every platform compatible with Presence Discord",
+    "searchPlaceholder": "Search a platform...",
+    "sortLabel": "Sort by:",
+    "sortPopular": "Popularity",
+    "sortRecent": "Most recent",
+    "sortNameAsc": "A - Z",
+    "sortNameDesc": "Z - A",
+    "categories": {
+      "streaming": "Streaming",
+      "musique": "Music",
+      "tv": "TV & Movies",
+      "anime": "Anime",
+      "autre": "Other"
+    },
+    "results": "{count, plural, one {# platform found} other {# platforms found}}",
+    "empty": "No platform found",
+    "reset": "Reset filters"
+  },
+  "Common": {
+    "statusAvailable": "Available",
+    "statusSoon": "Soon",
+    "statusBeta": "Beta"
+  },
+  "MarketplaceDetail": {
+    "breadcrumbHome": "Marketplace",
+    "about": "About",
+    "supportedUrls": "Supported URL(s)",
+    "features": "Features",
+    "contributors": "Contributor(s)",
+    "stats": "Stats",
+    "activeUsers": "Active users",
+    "totalInstalls": "Total installs",
+    "rating": "Rating",
+    "addedAt": "Added on",
+    "lastUpdated": "Last updated",
+    "ready": "Ready to use",
+    "installed": "Presence installed",
+    "installAction": "Install",
+    "installedAction": "Installed",
+    "betaLabel": "Beta",
+    "betaNote": "Beta version - Bugs may occur",
+    "comingSoon": "Coming soon",
+    "waiting": "Waiting",
+    "back": "Back to marketplace",
+    "activeDescription": "{platform} is active in your extension",
+    "addDescription": "Add {platform} to your Discord presence",
+    "comingSoonDescription": "Support for {platform} is currently being developed."
+  }
+}
