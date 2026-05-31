@@ -1,16 +1,30 @@
-import { NextResponse } from "next/server"
-import { getPresence } from "@presence/websites"
+import { metadataToPlatform } from "@/lib/data/presence-adapter";
+import { getPresenceStats } from "@/lib/data/presence-stats";
+import { getPresence } from "@presence/websites";
+import { NextResponse } from "next/server";
 
-export async function GET(
+export const GET = async (
   _request: Request,
-  { params }: { params: Promise<{ slug: string }> }
-) {
-  const { slug } = await params
-  const presence = getPresence(slug)
+  { params }: { params: Promise<{ slug: string }> },
+) => {
+  const { slug: raw } = await params;
+  const slug = raw.toLowerCase();
+  const presence = getPresence(slug);
 
   if (!presence) {
-    return NextResponse.json({ error: "Presence not found" }, { status: 404 })
+    return NextResponse.json({ error: "Presence not found" }, { status: 404 });
   }
 
-  return NextResponse.json(presence)
-}
+  const platform = metadataToPlatform(presence);
+  const stats = await getPresenceStats(slug);
+
+  return NextResponse.json({
+    ...platform,
+    totalInstalls: stats.totalInstalls,
+    activeUsers: stats.activeUsers,
+    rating: stats.rating,
+    version: stats.version ?? platform.version,
+    addedAt: stats.addedAt ?? platform.addedAt,
+    lastUpdated: stats.lastUpdated ?? platform.lastUpdated,
+  });
+};
