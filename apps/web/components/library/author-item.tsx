@@ -20,9 +20,10 @@ export const AuthorItem: FC<Props> = ({ contributor, label }): ReactElement => (
       ) : null}
       <AvatarFallback>{contributor.name.charAt(0).toUpperCase()}</AvatarFallback>
     </Avatar>
+
     <span className="text-sm text-foreground flex-1">{contributor.name}</span>
     {label && (
-      <span className="text-[10px] font-bold uppercase tracking-[0.05em] text-dim-foreground">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-dim-foreground">
         {label}
       </span>
     )}

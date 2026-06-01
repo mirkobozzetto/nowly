@@ -19,7 +19,7 @@ export const DevelopmentCard: FC<Props> = ({ author, contributors, sourceUrl }):
   return (
     <Card size="sm">
       <div className="flex items-center justify-between mb-4">
-        <CardTitle as="h3" className="text-foreground normal-case tracking-normal mb-0">{t("development")}</CardTitle>
+        <CardTitle className="flex items-center gap-1.5 text-foreground normal-case tracking-normal">{t("development")}</CardTitle>
         {sourceUrl && (
           <a
             href={sourceUrl}

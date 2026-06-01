@@ -1,7 +1,7 @@
 "use client";
 
-import { KofiModal } from "@/components/ui/kofi-modal";
 import { Dialog, DialogAction, DialogCancel, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogMedia, DialogTitle } from "@/components/l-ui/dialog";
+import { KofiModal } from "@/components/ui/kofi-modal";
 import { PROJECT_PRESENCES_SOURCE_URL } from "@/lib/constants";
 import { type Platform } from "@/lib/data/platforms";
 import { ArrowLeft, ChevronRight } from "lucide-react";
@@ -14,6 +14,7 @@ import { DevelopmentCard } from "./development-card";
 import { FeaturesCard } from "./features-card";
 import { HeaderCard } from "./header-card";
 import { InstallCard } from "./install-card";
+import { SettingsCard } from "./settings-card";
 import { StatsCard } from "./stats-card";
 import { SupportedUrlsCard } from "./supported-urls-card";
 
@@ -174,19 +175,20 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
             <span className="text-foreground">{platform.name}</span>
           </nav>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.85fr)] gap-6">
-            <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.85fr)] gap-4">
+            <div className="space-y-4">
               <HeaderCard platform={platform} isInstalled={isInstalled} isExtDetected={extDetected} locale={locale} />
               <SupportedUrlsCard urls={platform.supportedUrls} />
               <FeaturesCard platform={platform} locale={locale} />
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-4">
               <DevelopmentCard
                 author={platform.author}
                 contributors={platform.contributors}
                 sourceUrl={`${PROJECT_PRESENCES_SOURCE_URL}/${platform.name.charAt(0)}/${platform.name}/`}
               />
+              <SettingsCard platform={platform} />
               <StatsCard platform={{ ...platform, totalInstalls }} locale={locale} slug={platform.slug} canRate={extDetected && isInstalled} />
               <InstallCard platform={platform} isInstalled={isInstalled} needsUpdate={needsUpdate} extDetected={extDetected} loading={loading} onInstall={handleInstall} onUninstall={handleUninstall} />
 
