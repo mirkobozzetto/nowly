@@ -1,0 +1,14 @@
+{
+  "extensionName": {
+    "message": "Nowly"
+  },
+  "extensionDescription": {
+    "message": "Synchronise vos présences web avec Discord."
+  },
+  "playing": {
+    "message": "En lecture"
+  },
+  "paused": {
+    "message": "En pause"
+  }
+}

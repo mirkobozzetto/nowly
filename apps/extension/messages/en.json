@@ -1,0 +1,18 @@
+{
+  "appName": "Nowly",
+  "subtitle": "Discord companion",
+  "marketplace": "Marketplace",
+  "installed": "Installed presences",
+  "emptyTitle": "No presences installed",
+  "emptyDescription": "Install a presence from the marketplace.",
+  "current": "Now playing",
+  "nothingPlaying": "Nothing detected",
+  "nativeConnected": "Native connected",
+  "nativeDisconnected": "Native unavailable",
+  "enabled": "Enabled",
+  "disabled": "Disabled",
+  "enable": "Enable",
+  "disable": "Disable",
+  "remove": "Remove",
+  "version": "v{version}"
+}
