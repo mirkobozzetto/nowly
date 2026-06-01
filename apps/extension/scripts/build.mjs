@@ -72,7 +72,7 @@ const copyStatic = () => {
       join(DIST, "icons", `icon${size}.png`),
     );
   }
-  copyFileSync(join(ROOT, "..", "web", "public", "app_title.png"), join(DIST, "app_title.png"));
+  copyFileSync(join(ROOT, "..", "web", "public", "app_title_white.png"), join(DIST, "app_title_white.png"));
   cpSync(join(ROOT, "_locales"), join(DIST, "_locales"), { recursive: true });
 };
 
