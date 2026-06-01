@@ -1,7 +1,7 @@
-import { readFileSync, writeFileSync, readdirSync, existsSync, cpSync, mkdirSync } from "fs"
-import { join, dirname } from "path"
-import { fileURLToPath } from "url"
 import * as esbuild from "esbuild"
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "fs"
+import { dirname, join } from "path"
+import { fileURLToPath } from "url"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const SRC = join(__dirname, "..", "src")
@@ -10,14 +10,14 @@ const PRESENCE_SDK = join(__dirname, "..", "..", "presence", "src", "index.ts")
 
 const nowlyPresencePlugin = {
   name: "nowly-presence",
-  setup(build) {
+  setup: (build) => {
     build.onResolve({ filter: /^@nowly\/presence$/ }, () => ({
       path: PRESENCE_SDK,
     }))
   },
 }
 
-function extractSettings(source) {
+const extractSettings = (source) => {
   const fnMatch = source.match(/(?:new\s+)?Presence\.Settings\s*\(/)
   if (!fnMatch) return null
 
@@ -30,20 +30,28 @@ function extractSettings(source) {
 
   while (i < source.length && depth > 0) {
     const c = source[i]
+
     if (isEsc) {
       isEsc = false
     } else if (inStr) {
       if (c === "\\") isEsc = true
       else if (c === quote) inStr = false
     } else {
-      if (c === '"' || c === "'" || c === "`") { inStr = true; quote = c }
-      else if (c === "(") depth++
-      else if (c === ")") depth--
+      if (c === "\"" || c === "'" || c === "`") {
+        inStr = true
+        quote = c
+      } else if (c === "(") {
+        depth++
+      } else if (c === ")") {
+        depth--
+      }
     }
+
     i++
   }
 
   if (depth !== 0) return null
+
   const objStr = source.slice(startParen, i - 1)
 
   try {
@@ -54,13 +62,14 @@ function extractSettings(source) {
   }
 }
 
-async function build() {
+const build = async () => {
   mkdirSync(join(DIST, "presences"), { recursive: true })
 
   const presences = readdirSync(SRC, { withFileTypes: true })
     .filter((d) => d.isDirectory())
     .flatMap((letterDir) => {
       const letterPath = join(SRC, letterDir.name)
+
       return readdirSync(letterPath, { withFileTypes: true })
         .filter((d) => d.isDirectory())
         .map((presenceDir) => ({
@@ -89,7 +98,6 @@ async function build() {
 
     mkdirSync(distPresenceDir, { recursive: true })
 
-    // Build presence.ts bundle
     if (existsSync(presenceTsPath)) {
       const result = await esbuild.build({
         entryPoints: [presenceTsPath],
@@ -110,9 +118,9 @@ async function build() {
 
       console.log(`\u2713 Built ${presence.slug}`)
 
-      // Extract and write settings
       const source = readFileSync(presenceTsPath, "utf-8")
       const settings = extractSettings(source)
+
       if (settings) {
         writeFileSync(join(distPresenceDir, "settings.json"), JSON.stringify(settings, null, 2))
         metadata.settings = settings
@@ -120,16 +128,15 @@ async function build() {
       }
     }
 
-    // Copy assets
     if (existsSync(assetsDir)) {
       const distAssetsDir = join(distPresenceDir, "assets")
+
       mkdirSync(distAssetsDir, { recursive: true })
       cpSync(assetsDir, distAssetsDir, { recursive: true })
       console.log(`  Assets copied for ${presence.slug}`)
     }
   }
 
-  // Write registry
   writeFileSync(join(DIST, "registry.json"), JSON.stringify(registry, null, 2))
   console.log(`\n\u2713 Registry written (${registry.length} presences)`)
 }
