@@ -88,7 +88,9 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
     try {
       const [metadata, bundle] = await Promise.all([
         fetch(`/api/p/${platform.slug}/metadata`).then((r) => r.json()),
-        fetch(`/api/p/${platform.slug}/bundle`).then((r) => r.text()),
+        fetch(`/api/p/${platform.slug}/bundle?v=${encodeURIComponent(platform.version ?? "dev")}`, {
+          cache: "no-store",
+        }).then((r) => r.text()),
       ]);
 
       if (!isInstalled) {

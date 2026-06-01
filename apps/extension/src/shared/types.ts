@@ -89,6 +89,7 @@ export type ExtensionMessageType =
   | "GET_PRESENCES"
   | "GET_INSTALLED"
   | "GET_NATIVE_STATUS"
+  | "CONNECT_NATIVE"
   | "GET_CURRENT_ACTIVITY"
   | "GET_DEBUG"
   | "TOGGLE_PRESENCE"

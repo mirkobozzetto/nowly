@@ -1,4 +1,4 @@
-import { ExternalLink, PauseCircle, PlayCircle, Power, Trash2, Wifi, WifiOff } from "lucide-react";
+import { ExternalLink, PauseCircle, PlayCircle, Power, RefreshCw, Trash2, Wifi, WifiOff } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { assetUrl } from "../shared/api";
@@ -14,12 +14,29 @@ type NativeStatus = {
 const sendMessage = <T,>(type: string, payload?: unknown): Promise<T> =>
   chrome.runtime.sendMessage({ source: "PRESENCES_POPUP", type, payload });
 
-const StatusPill: FC<{ nativeStatus: NativeStatus }> = ({ nativeStatus }): ReactElement => {
+const StatusPill: FC<{ nativeStatus: NativeStatus; onConnect: () => void }> = ({
+  nativeStatus,
+  onConnect,
+}): ReactElement => {
   const Icon = nativeStatus.connected ? Wifi : WifiOff;
+  const isConnecting = nativeStatus.status === "connecting";
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-border bg-card-2 px-2.5 py-1.5 text-xs text-muted-foreground">
+    <div
+      className="flex items-center gap-2 rounded-lg border border-border bg-card-2 px-2 py-1.5 text-xs text-muted-foreground"
+      title={nativeStatus.status}
+    >
       <Icon className={nativeStatus.connected ? "h-3.5 w-3.5 text-success" : "h-3.5 w-3.5 text-destructive"} />
       <span>{nativeStatus.connected ? t("nativeConnected") : t("nativeDisconnected")}</span>
+      <button
+        type="button"
+        aria-label={t("connectNative")}
+        title={t("connectNative")}
+        onClick={onConnect}
+        disabled={isConnecting}
+        className="ml-1 flex h-5 w-5 items-center justify-center rounded-md text-muted-foreground hover:bg-card-hover hover:text-foreground disabled:cursor-wait disabled:opacity-50"
+      >
+        <RefreshCw className={`h-3.5 w-3.5 ${isConnecting ? "animate-spin" : ""}`} />
+      </button>
     </div>
   );
 };
@@ -163,6 +180,12 @@ const App: FC = (): ReactElement => {
     });
   };
 
+  const connectNative = (): void => {
+    void sendMessage<NativeStatus>("CONNECT_NATIVE").then((status) => {
+      setNativeStatus(status ?? { connected: false, status: "unknown" });
+    });
+  };
+
   return (
     <main className="w-[390px] bg-background p-4 text-foreground">
       <header className="mb-4 flex items-center justify-between">
@@ -170,7 +193,7 @@ const App: FC = (): ReactElement => {
           <h1 className="text-lg font-extrabold leading-tight">{t("appName")}</h1>
           <p className="text-xs text-muted-foreground">{t("subtitle")}</p>
         </div>
-        <StatusPill nativeStatus={nativeStatus} />
+        <StatusPill nativeStatus={nativeStatus} onConnect={connectNative} />
       </header>
 
       <div className="mb-4">
@@ -182,6 +205,14 @@ const App: FC = (): ReactElement => {
           <span className="font-semibold text-foreground">{debug.stage}</span>
           {" · "}
           {debug.message}
+          {nativeStatus.status !== "connected" && nativeStatus.status !== "ok" && (
+            <>
+              <br />
+              <span className="font-semibold text-foreground">native</span>
+              {" · "}
+              {nativeStatus.status}
+            </>
+          )}
         </div>
       )}
 

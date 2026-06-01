@@ -20,7 +20,7 @@ export const GET = async (
   return new NextResponse(bundle, {
     headers: {
       "Content-Type": "application/javascript; charset=utf-8",
-      "Cache-Control": "public, max-age=31536000, immutable",
+      "Cache-Control": "no-store",
     },
   });
 };
