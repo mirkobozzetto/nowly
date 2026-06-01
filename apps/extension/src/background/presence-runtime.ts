@@ -1,6 +1,6 @@
 export const USER_SCRIPT_MESSAGE_SOURCE = "NOWLY_PRESENCE";
 
-export const createPresenceRuntime = (slug: string, name: string, bundle: string, settings: Record<string, unknown> = {}): string => `
+export const createPresenceRuntime = (slug: string, name: string, bundle: string, settings: Record<string, unknown> = {}, webBaseUrl = "http://localhost:3000"): string => `
 (() => {
   "use strict";
 
@@ -8,6 +8,7 @@ export const createPresenceRuntime = (slug: string, name: string, bundle: string
   const NOWLY_NAME = ${JSON.stringify(name)};
   const NOWLY_SOURCE = ${JSON.stringify(USER_SCRIPT_MESSAGE_SOURCE)};
   const NOWLY_SETTINGS = ${JSON.stringify(settings)};
+  const NOWLY_ASSETS_BASE = ${JSON.stringify(`${webBaseUrl}/api/p/${slug}/assets`)};
   const listeners = new Map();
   const instances = [];
   const storage = new Map();
@@ -81,6 +82,11 @@ export const createPresenceRuntime = (slug: string, name: string, bundle: string
   }
 
   globalThis.Presence = Presence;
+  const Assets = globalThis.Assets = {
+    Logo: NOWLY_ASSETS_BASE + "/logo",
+    Icon: NOWLY_ASSETS_BASE + "/icon",
+    Thumbnail: NOWLY_ASSETS_BASE + "/thumbnail",
+  };
 
   const ctx = {
     setActivity(data) {

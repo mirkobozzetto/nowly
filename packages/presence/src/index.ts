@@ -108,14 +108,21 @@ export type PresenceInstance<S extends Record<string, unknown> = Record<string, 
   error(message: string): void;
 };
 
+export type PresenceAssets = {
+  readonly Logo: string;
+  readonly Icon: string;
+  readonly Thumbnail: string;
+};
+
 export type PresenceConstructor = {
   new(): PresenceInstance;
   new<S extends Record<string, unknown>>(settings: S): PresenceInstance<S>;
-  Settings: new <T extends Record<string, SettingDefinition>>(definitions: T) => InferSettings<T>;
+  Settings: <T extends Record<string, SettingDefinition>>(definitions: T) => InferSettings<T>;
 };
 
 declare global {
   const Presence: PresenceConstructor;
+  const Assets: PresenceAssets;
 }
 
 export const createMediaTimestamps = (

@@ -69,7 +69,7 @@ export const PresenceSettingsPanel: FC<Props> = ({ definitions, slug }): ReactEl
   const settingKeys = Object.entries(definitions);
 
   return (
-    <div className="border-t border-border">
+    <div className="border-b border-border">
       <button
         type="button"
         onClick={() => setOpen(!open)}

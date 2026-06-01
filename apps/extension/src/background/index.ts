@@ -120,7 +120,7 @@ const unregisterPresenceScript = async (slug: string): Promise<void> => {
 const getPresenceRuntime = async (slug: string, name: string, bundle: string): Promise<string> => {
   const allSettings = await getPresenceSettings();
   const presenceSettings = allSettings[slug] ?? {};
-  return createPresenceRuntime(slug, name, bundle, presenceSettings);
+  return createPresenceRuntime(slug, name, bundle, presenceSettings, WEB_BASE_URL);
 };
 
 const registerPresenceScript = async (slug: string, presence: StoredPresence): Promise<{ ok: boolean; error?: string }> => {
