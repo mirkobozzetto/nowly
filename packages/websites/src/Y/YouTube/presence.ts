@@ -1,12 +1,4 @@
-import { PresenceType, type PresenceData } from "../../types"
-
-declare const Presence: {
-  new(options?: { clientId?: string }): {
-    on(eventName: "UpdateData", listener: () => void | Promise<void>): void
-    setActivity(data: PresenceData): Promise<void>
-    clearActivity(): void
-  }
-}
+import { createMediaTimestamps, PresenceType } from "@nowly/presence"
 
 const presence = new Presence()
 
@@ -55,7 +47,6 @@ presence.on("UpdateData", async () => {
 
   const title = findTitle()
   const videoId = new URLSearchParams(window.location.search).get("v")
-  const now = Math.floor(Date.now() / 1000)
   const isPlaying = !video.paused
 
   await presence.setActivity({
@@ -65,8 +56,7 @@ presence.on("UpdateData", async () => {
     largeImageText: title,
     smallImageKey: isPlaying ? "play" : "pause",
     smallImageText: isPlaying ? "Playing" : "Paused",
-    startTimestamp: isPlaying ? now - Math.floor(video.currentTime) : undefined,
-    endTimestamp: isPlaying && Number.isFinite(video.duration) ? now + Math.floor(video.duration - video.currentTime) : undefined,
+    ...createMediaTimestamps(video),
     type: PresenceType.Watching,
     buttons: [{ label: "Watch Video", url: window.location.href.split("&")[0] }],
   })

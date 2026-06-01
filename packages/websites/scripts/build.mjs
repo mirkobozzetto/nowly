@@ -6,6 +6,16 @@ import * as esbuild from "esbuild"
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const SRC = join(__dirname, "..", "src")
 const DIST = join(__dirname, "..", "dist")
+const PRESENCE_SDK = join(__dirname, "..", "..", "presence", "src", "index.ts")
+
+const nowlyPresencePlugin = {
+  name: "nowly-presence",
+  setup(build) {
+    build.onResolve({ filter: /^@nowly\/presence$/ }, () => ({
+      path: PRESENCE_SDK,
+    }))
+  },
+}
 
 async function build() {
   mkdirSync(join(DIST, "presences"), { recursive: true })
@@ -53,6 +63,7 @@ async function build() {
         minify: false,
         target: "es2022",
         platform: "browser",
+        plugins: [nowlyPresencePlugin],
       })
 
       if (result.errors.length > 0) {

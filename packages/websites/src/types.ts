@@ -1,23 +1,7 @@
-export interface PresenceData {
-  details?: string;
-  state?: string;
-  startTimestamp?: number;
-  endTimestamp?: number;
-  largeImageKey?: string;
-  largeImageText?: string;
-  smallImageKey?: string;
-  smallImageText?: string;
-  type?: number;
-  buttons?: { label: string; url: string }[];
-}
+export type { PresenceData } from "@nowly/presence";
+export { PresenceType } from "@nowly/presence";
 
-export const PresenceType = {
-  Playing: 0,
-  Streaming: 1,
-  Listening: 2,
-  Watching: 3,
-  Competing: 5,
-} as const;
+import type { PresenceData } from "@nowly/presence";
 
 export interface PresenceContext {
   setActivity(data: PresenceData): void;

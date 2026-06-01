@@ -20,8 +20,7 @@ export const createPresenceRuntime = (slug: string, name: string, bundle: string
   };
 
   class Presence {
-    constructor(options = {}) {
-      this.options = options;
+    constructor() {
       instances.push(this);
     }
 
