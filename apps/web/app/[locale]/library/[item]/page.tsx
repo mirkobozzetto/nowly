@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactElement } from "react";
 
@@ -19,6 +20,36 @@ const generateStaticParams = () => {
   return registry.map((m) => ({
     item: m.slug,
   }));
+};
+
+const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
+  const { item: raw } = await params;
+  const item = raw.toLowerCase();
+  const metadata = getPresence(item);
+  const platform = metadata ? metadataToPlatform(metadata) : undefined;
+
+  if (!platform) {
+    return { title: "Not Found" };
+  }
+
+  const title = `${platform.name} Presence — Nowly`;
+  const description = `Install the ${platform.name} presence for Nowly and automatically display what you're watching on ${platform.name} in your Discord status.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+    },
+    twitter: {
+      title,
+      description,
+    },
+    alternates: {
+      canonical: `/library/${item}`,
+    },
+  };
 };
 
 const PlatformDetailPage = async ({ params }: Props): Promise<ReactElement> => {
@@ -48,5 +79,5 @@ const PlatformDetailPage = async ({ params }: Props): Promise<ReactElement> => {
   );
 };
 
-export { generateStaticParams };
+export { generateMetadata, generateStaticParams };
 export default PlatformDetailPage;

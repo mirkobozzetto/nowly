@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 import type { FC, ReactElement } from "react";
 
-type Props = {
-  params: Promise<{ locale: string }>;
+const generateMetadata = (): Metadata => {
+  return {
+    title: "Changelog — Nowly",
+    description: "Latest updates and changes to Nowly.",
+    openGraph: {
+      title: "Changelog — Nowly",
+      description: "Latest updates and changes to Nowly.",
+    },
+  };
 };
 
-const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "Legal" });
-  return { title: t("changelog.title") };
-};
-
-const ChangelogPage: FC = async (): Promise<ReactElement> => {
+const ChangelogPage: FC = (): ReactElement => {
   return (
     <main className="max-w-3xl mx-auto px-6 py-24">
       <h1 className="text-3xl font-bold tracking-tight mb-8">Changelog</h1>
