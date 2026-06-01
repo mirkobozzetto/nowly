@@ -27,6 +27,7 @@ export interface Platform {
   author: Contributor
   contributors: Contributor[]
   features: string[]
+  settings?: Record<string, unknown>
   localized?: {
     description?: Record<string, string>
     longDescription?: Record<string, string>

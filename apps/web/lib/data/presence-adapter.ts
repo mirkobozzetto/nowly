@@ -24,6 +24,7 @@ export function metadataToPlatform(m: Metadata): Platform {
     iconColor: m.color,
     category: m.category as PlatformCategory,
     status: "available",
+    version: m.version ?? null,
     activeUsers: 0,
     totalInstalls: 0,
     rating: 0,
@@ -33,6 +34,7 @@ export function metadataToPlatform(m: Metadata): Platform {
     author: toContributor(m.author),
     contributors: (m.contributors ?? []).map(toContributor),
     features: m.features?.[FALLBACK_LOCALE] ?? [],
+    settings: m.settings ?? undefined,
     localized: {
       description: m.description,
       longDescription: m.longDescription,
