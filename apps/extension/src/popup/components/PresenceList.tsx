@@ -1,8 +1,6 @@
 import type { FC, ReactElement } from "react";
-import { t } from "../../shared/i18n";
 import type { InstalledPresences, PresenceMetadata } from "../../shared/types";
 import { EmptyState } from "./EmptyState";
-import { MarketplaceLink } from "./MarketplaceLink";
 import { PresenceListItem } from "./PresenceListItem";
 
 type Props = {
@@ -40,10 +38,6 @@ export const PresenceList: FC<Props> = ({ entries, onRemove, onToggle }): ReactE
 
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-3">
-      <div className="flex items-center justify-end">
-        <MarketplaceLink />
-      </div>
-
       {entries.length === 0 ? (
         <EmptyState />
       ) : (
