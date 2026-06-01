@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { ReactElement } from "react";
 
-import { PlatformDetailClient } from "@/components/marketplace/platform-detail-client";
+import { PlatformDetailClient } from "@/components/library/platform-detail-client";
 import { metadataToPlatform } from "@/lib/data/presence-adapter";
 import { getPresenceStats } from "@/lib/data/presence-stats";
 import { getPresence, getRegistry } from "@nowly/websites";

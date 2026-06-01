@@ -167,7 +167,7 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
       <main className="min-h-screen pt-24 pb-16">
         <div className="max-w-300 mx-auto px-6">
           <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
-            <Link href={`/${locale}/marketplace`} className="hover:text-foreground transition-colors">
+            <Link href={`/${locale}/library`} className="hover:text-foreground transition-colors">
               {t("breadcrumbHome")}
             </Link>
             <ChevronRight className="w-4 h-4" />
@@ -191,7 +191,7 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
               <InstallCard platform={platform} isInstalled={isInstalled} needsUpdate={needsUpdate} extDetected={extDetected} loading={loading} onInstall={handleInstall} onUninstall={handleUninstall} />
 
               <Link
-                href={`/${locale}/marketplace`}
+                href={`/${locale}/library`}
                 className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />

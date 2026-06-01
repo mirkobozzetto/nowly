@@ -34,12 +34,12 @@ export const Navbar: FC = (): ReactElement => {
       <div className="max-w-300 mx-auto px-6">
         <div className="flex items-center justify-between">
           <Link href={`/${locale}`}>
-            <img src="/app_title.png" alt="Nowly" className="h-8 w-auto" />
+            <img src="/app_title_white.png" alt="Nowly" className="h-8 w-auto" />
           </Link>
           
           <div className="flex items-center gap-3">
             <Link
-              href={`/${locale}/marketplace`}
+               href={`/${locale}/library`}
               className={_buttonVariants({ variant: "link" })}
             >
               {t("marketplace")}

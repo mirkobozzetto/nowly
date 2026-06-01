@@ -30,7 +30,7 @@ export const PlatformCard: FC<PlatformCardProps> = ({ platform, locale }): React
 
   return (
     <Link
-      href={`/${locale}/marketplace/${platform.slug}`}
+       href={`/${locale}/library/${platform.slug}`}
       className={cn(
         "group bg-card border rounded-lg transition-colors hover:bg-card-hover overflow-hidden", {
           "border-dashed border-border opacity-70 hover:opacity-100": platform.status === "soon",

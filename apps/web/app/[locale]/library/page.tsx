@@ -1,6 +1,6 @@
 "use client";
 
-import { PlatformCard } from "@/components/marketplace/platform-card";
+import { PlatformCard } from "@/components/library/platform-card";
 import { categories, type Platform, type PlatformCategory } from "@/lib/data/platforms";
 import { metadataToPlatform } from "@/lib/data/presence-adapter";
 import { cn } from "@/lib/utils";
