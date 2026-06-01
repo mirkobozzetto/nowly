@@ -6,68 +6,49 @@ type Props = {
   params: Promise<{ locale: string }>;
 };
 
-const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "Legal" });
-  return { title: t("privacy.title") };
+const generateMetadata = (): Metadata => {
+  return {
+    title: "Privacy Policy — Nowly",
+    description: "Privacy Policy for Nowly. Learn how your data is processed locally and what information is collected.",
+    openGraph: {
+      title: "Privacy Policy — Nowly",
+      description: "Privacy Policy for Nowly. Learn how your data is processed locally and what information is collected.",
+    },
+  };
 };
 
-const PrivacyPage: FC = async (): Promise<ReactElement> => {
+const PrivacyPage: FC<Props> = async ({ params }: Props): Promise<ReactElement> => {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "PrivacyPage" });
+
   return (
     <main className="max-w-3xl mx-auto px-6 py-24">
-      <h1 className="text-3xl font-bold tracking-tight mb-8">Privacy Policy</h1>
+      <h1 className="text-3xl font-bold tracking-tight mb-12">
+        {t("title")}
+      </h1>
 
-      <div className="prose prose-zinc dark:prose-invert max-w-none space-y-6 text-muted-foreground">
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor,
-          nisl eget ultricies tincidunt, nisl nisl aliquam nisl, eget ultricies
-          nisl nisl eget nisl.
-        </p>
+      <div className="space-y-12 text-muted-foreground">
+        <p className="text-sm text-dim-foreground">{t("lastUpdated")}</p>
+        <div
+          className="leading-relaxed space-y-2 [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:no-underline"
+          dangerouslySetInnerHTML={{ __html: t.raw("intro") as string }}
+        />
 
-        <h2 className="text-xl font-semibold text-foreground mt-10 mb-4">
-          1. Information We Collect
-        </h2>
-        <p>
-          Pellentesque habitant morbi tristique senectus et netus et malesuada
-          fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae,
-          ultricies eget, tempor sit amet, ante.
-        </p>
-        <p>
-          Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae
-          est. Mauris placerat eleifend leo. Quisque sit amet est et sapien
-          ullamcorper pharetra.
-        </p>
-
-        <h2 className="text-xl font-semibold text-foreground mt-10 mb-4">
-          2. How We Use Your Information
-        </h2>
-        <p>
-          Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet,
-          ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi
-          vitae est.
-        </p>
-        <p>
-          Mauris placerat eleifend leo. Quisque sit amet est et sapien
-          ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, commodo
-          vitae, ornare sit amet, wisi.
-        </p>
-
-        <h2 className="text-xl font-semibold text-foreground mt-10 mb-4">
-          3. Data Sharing
-        </h2>
-        <p>
-          Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum
-          orci, sagittis tempus lacus enim ac dui. Donec non enim in turpis
-          pulvinar facilisis.
-        </p>
-
-        <h2 className="text-xl font-semibold text-foreground mt-10 mb-4">
-          4. Contact
-        </h2>
-        <p>
-          Ut felis. Praesent dapibus, neque id cursus faucibus, tortor neque
-          egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat.
-        </p>
+        {Array.from({ length: 11 }, (_, i) => {
+          const num = String(i + 1).padStart(2, "0");
+          return (
+            <div key={i}>
+              <span className="text-accent font-mono text-sm font-bold block mb-3">{num}</span>
+              <h2 className="text-xl font-semibold text-foreground mb-4">
+                {t(`s${num}title`)}
+              </h2>
+              <div
+                className="leading-relaxed space-y-2 [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:no-underline"
+                dangerouslySetInnerHTML={{ __html: t.raw(`s${num}body`) as string }}
+              />
+            </div>
+          );
+        })}
       </div>
     </main>
   );
