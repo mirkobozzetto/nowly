@@ -36,12 +36,22 @@ func main() {
 		switch message.Type {
 		case contract.MessagePing:
 			logger.Printf("native <- PING")
+			// Best-effort attempt to connect to Discord so the extension can detect
+			// a successful setup without requiring an activity update first.
+			_ = client.Connect()
 			status := "connected"
-			if client.Connected() {
+			discordConnected := client.Connected()
+			if discordConnected {
 				status = "discord connected"
 			}
-			logger.Printf("native -> PONG connected=true status=%q", status)
-			_ = protocol.Write(contract.Pong(true, status))
+
+			var profile *contract.DiscordProfile
+			if p := client.Profile(); discordConnected && p != nil {
+				profile = &contract.DiscordProfile{ID: p.ID, Username: p.Username, GlobalName: p.GlobalName, Avatar: p.Avatar}
+			}
+
+			logger.Printf("native -> PONG connected=true discordConnected=%v status=%q", discordConnected, status)
+			_ = protocol.Write(contract.PongWithProfile(true, discordConnected, status, profile))
 
 		case contract.MessageSetActivity:
 			logger.Printf("native <- SET_ACTIVITY presence=%+v", message.Presence)

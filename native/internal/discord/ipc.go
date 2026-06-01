@@ -23,7 +23,15 @@ type Client struct {
 	clientID string
 	conn     io.ReadWriteCloser
 	ready    bool
+	profile  *Profile
 	logger   *logging.Logger
+}
+
+type Profile struct {
+	ID         string
+	Username   string
+	GlobalName string
+	Avatar     string
 }
 
 type Packet struct {
@@ -41,6 +49,10 @@ func (c *Client) SetLogger(logger *logging.Logger) {
 
 func (c *Client) Connected() bool {
 	return c.conn != nil && c.ready
+}
+
+func (c *Client) Profile() *Profile {
+	return c.profile
 }
 
 func (c *Client) Connect() error {
@@ -79,6 +91,10 @@ func (c *Client) Connect() error {
 		c.Close()
 		return errors.New("discord handshake failed")
 	}
+
+	// Snapshot the user identity from the READY payload so the extension can
+	// show a real connected preview.
+	c.profile = parseReadyProfile(packet.Data)
 
 	c.ready = true
 	c.log("discord connected")
@@ -153,6 +169,29 @@ func (c *Client) Close() {
 	}
 	c.conn = nil
 	c.ready = false
+	c.profile = nil
+}
+
+func parseReadyProfile(payload map[string]any) *Profile {
+	data, ok := payload["data"].(map[string]any)
+	if !ok {
+		return nil
+	}
+	user, ok := data["user"].(map[string]any)
+	if !ok {
+		return nil
+	}
+
+	id, _ := user["id"].(string)
+	username, _ := user["username"].(string)
+	if id == "" || username == "" {
+		return nil
+	}
+
+	globalName, _ := user["global_name"].(string)
+	avatar, _ := user["avatar"].(string)
+
+	return &Profile{ID: id, Username: username, GlobalName: globalName, Avatar: avatar}
 }
 
 func (c *Client) writeCommand(payload map[string]any) error {
