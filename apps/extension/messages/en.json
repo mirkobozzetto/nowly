@@ -1,10 +1,10 @@
 {
   "appName": "Nowly",
   "subtitle": "Discord Companion",
-  "marketplace": "Marketplace",
+  "marketplace": "Library",
   "installed": "Installed Presences",
   "emptyTitle": "No Presences Installed",
-  "emptyDescription": "Install a presence from the marketplace.",
+  "emptyDescription": "Install a presence from the library.",
   "current": "Current Activity",
   "nothingPlaying": "No Activity Detected",
   "nativeConnected": "Companion Connected",
@@ -20,8 +20,8 @@
   "settingsTab": "Settings",
   "connection": "Connection",
   "connectionDescription": "Manage the connection between the extension, the native companion, and Discord.",
-  "marketplaceDescription": "Install, update, or remove your presences from the Nowly marketplace.",
-  "openMarketplace": "Open Marketplace",
+  "marketplaceDescription": "Install, update, or remove your presences from the Nowly library.",
+  "openMarketplace": "Open Library",
   "debug": "Debug",
   "settings": "Settings",
   "close": "Close",
@@ -45,7 +45,7 @@
   "onboardingDiscordConnected": "Discord connected.",
 
   "onboardingStep3Title": "3. Marketplace",
-  "onboardingStep3Body": "Presences are installed and managed through the marketplace. Each presence adds a detector for a supported website and can be enabled or removed at any time.",
+  "onboardingStep3Body": "Presences are installed and managed through the library. Each presence adds a detector for a supported website and can be enabled or removed at any time.",
 
   "onboardingUserScriptsTitle": "User Scripts Permission",
   "onboardingUserScriptsBody": "Nowly installs presences using user scripts. This is a sensitive permission because it allows code to run on the websites you visit. To reduce risk, presences are digitally signed and verified locally before installation, and only the minimum activity data required is sent to the native companion to update your Discord status. Enable “Allow User Scripts” only if you understand and accept how this works.",
@@ -58,5 +58,6 @@
   "displayCategory": "By category",
   "displayAlphabetical": "Alphabetical",
   "separateActive": "Separate current activity",
-  "separateActiveDescription": "Hides the active presence from the list."
+  "separateActiveDescription": "Hides the active presence from the list.",
+  "checkUpdates": "Check for Updates"
 }

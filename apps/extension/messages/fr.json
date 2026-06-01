@@ -1,10 +1,10 @@
 {
   "appName": "Nowly",
   "subtitle": "Compagnon Discord",
-  "marketplace": "Marketplace",
+  "marketplace": "Bibliothèque",
   "installed": "Présences installées",
   "emptyTitle": "Aucune présence installée",
-  "emptyDescription": "Installez une présence depuis le marketplace.",
+  "emptyDescription": "Installez une présence depuis la bibliothèque de présences.",
   "current": "En cours",
   "nothingPlaying": "Aucune activité détectée",
   "nativeConnected": "Compagnon connecté",
@@ -20,8 +20,8 @@
   "settingsTab": "Réglages",
   "connection": "Connexion",
   "connectionDescription": "Gérez la connexion entre l'extension, le compagnon natif et Discord.",
-  "marketplaceDescription": "Installez, mettez à jour ou supprimez vos présences depuis le marketplace Nowly.",
-  "openMarketplace": "Ouvrir le marketplace",
+  "marketplaceDescription": "Installez, mettez à jour ou supprimez vos présences depuis la bibliothèque de présences Nowly.",
+  "openMarketplace": "Ouvrir la bibliothèque",
   "debug": "Débogage",
   "settings": "Réglages",
   "close": "Fermer",
@@ -44,8 +44,8 @@
   "onboardingDiscordWaiting": "En attente de connexion à Discord (vérifiez que Discord est lancé).",
   "onboardingDiscordConnected": "Discord connecté.",
 
-  "onboardingStep3Title": "3. Marketplace",
-  "onboardingStep3Body": "Les présences s'installent et se gèrent depuis le marketplace. Chaque présence ajoute un détecteur pour un site pris en charge, activable ou supprimable à tout moment.",
+  "onboardingStep3Title": "3. Bibliothèque de présences",
+  "onboardingStep3Body": "Les présences s'installent et se gèrent depuis la bibliothèque de présences. Chaque présence ajoute un détecteur pour un site pris en charge, activable ou supprimable à tout moment.",
 
   "onboardingUserScriptsTitle": "Permission des scripts utilisateur",
   "onboardingUserScriptsBody": "Nowly installe les présences sous forme de scripts utilisateur. Cette permission est sensible : elle autorise l'exécution de code sur les pages visitées. Pour limiter les risques, les présences sont signées et vérifiées localement avant leur installation, et seules les données d'activité strictement nécessaires sont transmises au compagnon natif afin de mettre à jour votre statut Discord. Activez « Autoriser les scripts utilisateur » uniquement si vous comprenez et acceptez ce fonctionnement.",
@@ -58,5 +58,6 @@
   "displayCategory": "Par catégorie",
   "displayAlphabetical": "Alphabétique",
   "separateActive": "Séparer l'activité en cours",
-  "separateActiveDescription": "Masque la présence active de la liste."
+  "separateActiveDescription": "Masque la présence active de la liste.",
+  "checkUpdates": "Vérifier les mises à jour"
 }
