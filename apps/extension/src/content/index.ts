@@ -1,7 +1,14 @@
-import { EXT_WEB_SOURCE } from "../shared/constants";
+import { EXT_WEB_SOURCE, WEB_BASE_URL } from "../shared/constants";
 import type { WebMessage } from "../shared/types";
 
 const USER_SCRIPT_MESSAGE_SOURCE = "NOWLY_PRESENCE";
+const MARKETPLACE_ORIGIN = new URL(WEB_BASE_URL).origin;
+const WEB_MESSAGE_TYPES = new Set([
+  "INSTALL_PRESENCE",
+  "UPDATE_PRESENCE",
+  "UNINSTALL_PRESENCE",
+  "GET_INSTALLED",
+]);
 
 const sendRuntimeMessage = async <T = unknown>(message: Record<string, unknown>): Promise<T | null> => {
   try {
@@ -21,13 +28,17 @@ const broadcastDetected = (): void => {
 };
 
 window.addEventListener("message", (event: MessageEvent<WebMessage>) => {
+  if (event.origin !== MARKETPLACE_ORIGIN) return;
+
   if (event.data?.source === EXT_WEB_SOURCE && event.data.type === "PING") {
     window.postMessage({ source: EXT_WEB_SOURCE, type: "EXT_DETECTED" }, "*");
   }
 });
 
 window.addEventListener("message", (event: MessageEvent<WebMessage>) => {
+  if (event.origin !== MARKETPLACE_ORIGIN) return;
   if (event.data?.source !== EXT_WEB_SOURCE || event.data.type === "PING") return;
+  if (!WEB_MESSAGE_TYPES.has(event.data.type)) return;
 
   sendRuntimeMessage({
       source: "PRESENCES_CONTENT",
@@ -40,7 +51,7 @@ window.addEventListener("message", (event: MessageEvent<WebMessage>) => {
         {
           source: EXT_WEB_SOURCE,
           type: event.data.type === "GET_INSTALLED" ? "INSTALLED_PRESENCES" : `${event.data.type}_RESULT`,
-          payload: response,
+          payload: response ?? { ok: false, error: "background unavailable" },
           messageId: event.data.messageId,
         },
         "*",

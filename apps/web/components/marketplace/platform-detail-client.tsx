@@ -86,12 +86,9 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
 
     setLoading(true);
     try {
-      const [metadata, bundle] = await Promise.all([
-        fetch(`/api/p/${platform.slug}/metadata`).then((r) => r.json()),
-        fetch(`/api/p/${platform.slug}/bundle?v=${encodeURIComponent(platform.version ?? "dev")}`, {
+      const release = await fetch(`/api/p/${platform.slug}/release?v=${encodeURIComponent(platform.version ?? "dev")}`, {
           cache: "no-store",
-        }).then((r) => r.text()),
-      ]);
+        }).then((r) => r.json());
 
       if (!isInstalled) {
         fireAndForget(`/api/p/${platform.slug}/installs`, { method: "POST" });
@@ -104,15 +101,14 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
           type: needsUpdate ? "UPDATE_PRESENCE" : "INSTALL_PRESENCE",
           payload: {
             slug: platform.slug,
-            metadata: { ...metadata, slug: platform.slug },
-            bundle,
+            release,
           },
         },
         "*",
       );
 
       setIsInstalled(true);
-      setInstalledVersion(metadata.version ?? null);
+      setInstalledVersion(release.version ?? null);
       setLoading(false);
     } catch {
       setLoading(false);

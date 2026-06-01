@@ -11,6 +11,14 @@ export interface PresenceData {
   buttons?: { label: string; url: string }[];
 }
 
+export const PresenceType = {
+  Playing: 0,
+  Streaming: 1,
+  Listening: 2,
+  Watching: 3,
+  Competing: 5,
+} as const;
+
 export interface PresenceContext {
   setActivity(data: PresenceData): void;
   clearActivity(): void;

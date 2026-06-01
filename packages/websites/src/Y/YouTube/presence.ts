@@ -1,4 +1,4 @@
-import type { PresenceData } from "../../types.js"
+import { PresenceType, type PresenceData } from "../../types"
 
 declare const Presence: {
   new(options?: { clientId?: string }): {
@@ -67,7 +67,7 @@ presence.on("UpdateData", async () => {
     smallImageText: isPlaying ? "Playing" : "Paused",
     startTimestamp: isPlaying ? now - Math.floor(video.currentTime) : undefined,
     endTimestamp: isPlaying && Number.isFinite(video.duration) ? now + Math.floor(video.duration - video.currentTime) : undefined,
-    type: 3,
+    type: PresenceType.Watching,
     buttons: [{ label: "Watch Video", url: window.location.href.split("&")[0] }],
   })
 })

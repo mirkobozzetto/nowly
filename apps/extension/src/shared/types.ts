@@ -56,9 +56,20 @@ export type PresenceMetadata = {
   };
 };
 
-export type StoredPresence = {
+export type PresenceRelease = {
+  slug: string;
+  version: string;
   metadata: PresenceMetadata;
   bundle: string;
+  sha256: string;
+  metadataHash: string;
+  signature: string;
+  signedAt: string;
+};
+
+export type StoredPresence = {
+  metadata: PresenceMetadata;
+  release: PresenceRelease;
   enabled: boolean;
   installedAt: number;
   updatedAt?: number;

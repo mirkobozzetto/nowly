@@ -87,48 +87,52 @@ const PresenceRow: FC<{
   presence: StoredPresence;
   onToggle: (slug: string, enabled: boolean) => void;
   onRemove: (slug: string) => void;
-}> = ({ slug, presence, onToggle, onRemove }): ReactElement => (
-  <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:bg-card-hover">
-    <div
-      className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg"
-      style={{ backgroundColor: `${presence.metadata.color}20` }}
-    >
-      <img src={assetUrl(slug, "icon")} alt="" className="h-7 w-7 object-contain" />
-    </div>
+}> = ({ slug, presence, onToggle, onRemove }): ReactElement | null => {
+  if (!presence?.metadata) return null;
 
-    <div className="min-w-0 flex-1">
-      <div className="flex items-center gap-2">
-        <p className="truncate text-sm font-semibold">{presence.metadata.name}</p>
-        <span className="ml-auto shrink-0 text-[10px] font-bold uppercase text-dim-foreground">
-          {presence.metadata.category}
-        </span>
+  return (
+    <div className="flex items-center gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:bg-card-hover">
+      <div
+        className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg"
+        style={{ backgroundColor: `${presence.metadata.color}20` }}
+      >
+        <img src={assetUrl(slug, "icon")} alt="" className="h-7 w-7 object-contain" />
       </div>
-      <p className="truncate text-xs text-muted-foreground">
-        {presence.enabled ? t("enabled") : t("disabled")}
-        {presence.metadata.version ? ` · ${t("version", { version: presence.metadata.version })}` : ""}
-      </p>
-    </div>
 
-    <button
-      type="button"
-      aria-label={presence.enabled ? t("disable") : t("enable")}
-      title={presence.enabled ? t("disable") : t("enable")}
-      onClick={() => onToggle(slug, !presence.enabled)}
-      className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card-2 text-muted-foreground hover:text-foreground"
-    >
-      <Power className="h-4 w-4" />
-    </button>
-    <button
-      type="button"
-      aria-label={t("remove")}
-      title={t("remove")}
-      onClick={() => onRemove(slug)}
-      className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card-2 text-muted-foreground hover:text-destructive"
-    >
-      <Trash2 className="h-4 w-4" />
-    </button>
-  </div>
-);
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <p className="truncate text-sm font-semibold">{presence.metadata.name}</p>
+          <span className="ml-auto shrink-0 text-[10px] font-bold uppercase text-dim-foreground">
+            {presence.metadata.category}
+          </span>
+        </div>
+        <p className="truncate text-xs text-muted-foreground">
+          {presence.enabled ? t("enabled") : t("disabled")}
+          {presence.metadata.version ? ` · ${t("version", { version: presence.metadata.version })}` : ""}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        aria-label={presence.enabled ? t("disable") : t("enable")}
+        title={presence.enabled ? t("disable") : t("enable")}
+        onClick={() => onToggle(slug, !presence.enabled)}
+        className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card-2 text-muted-foreground hover:text-foreground"
+      >
+        <Power className="h-4 w-4" />
+      </button>
+      <button
+        type="button"
+        aria-label={t("remove")}
+        title={t("remove")}
+        onClick={() => onRemove(slug)}
+        className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-card-2 text-muted-foreground hover:text-destructive"
+      >
+        <Trash2 className="h-4 w-4" />
+      </button>
+    </div>
+  );
+};
 
 const App: FC = (): ReactElement => {
   const [presences, setPresences] = useState<InstalledPresences>({});

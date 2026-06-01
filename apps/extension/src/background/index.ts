@@ -1,5 +1,7 @@
-import type { ExtensionMessage, InstalledPresences, PresenceData, PresenceDebug, StoredPresence } from "../shared/types";
+import type { ExtensionMessage, InstalledPresences, PresenceData, PresenceDebug, PresenceRelease, StoredPresence } from "../shared/types";
 import { connectNative, mapPresenceData, onNativeResponse, postNative, reconnectNative, refreshNativeStatus } from "./native";
+import { createPresenceRuntime, USER_SCRIPT_MESSAGE_SOURCE } from "./presence-runtime";
+import { verifyPresenceRelease } from "./release-security";
 import { getCurrentActivity, getDebug, getPresences, setCurrentActivity, setDebug, setPresences } from "./storage";
 
 const respond = <T>(sendResponse: (response?: T) => void, value: T): void => sendResponse(value);
@@ -28,8 +30,6 @@ type ChromeWithUserScripts = typeof chrome & {
   };
 };
 
-const USER_SCRIPT_MESSAGE_SOURCE = "NOWLY_PRESENCE";
-
 onNativeResponse((message) => {
   if (message.type === "ERROR") {
     void setDebug({
@@ -51,6 +51,15 @@ onNativeResponse((message) => {
 
 const userScriptId = (slug: string): string => `nowly-presence-${slug}`;
 
+const visiblePresences = (presences: InstalledPresences): InstalledPresences =>
+  Object.fromEntries(
+    Object.entries(presences).filter(([, presence]) => (
+      presence?.metadata?.slug
+      && presence.metadata.name
+      && Array.isArray(presence.metadata.url)
+    )),
+  ) as InstalledPresences;
+
 const toMatchPatterns = (urls: string[]): string[] => {
   const patterns = new Set<string>();
 
@@ -67,6 +76,7 @@ const toMatchPatterns = (urls: string[]): string[] => {
     }
 
     const host = raw.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+    if (host === "*" || host === "*.*" || host === "<all_urls>") continue;
     patterns.add(`*://${host}/*`);
 
     if (!host.startsWith("*.") && !host.startsWith("*.")) {
@@ -76,131 +86,6 @@ const toMatchPatterns = (urls: string[]): string[] => {
 
   return [...patterns];
 };
-
-const presenceRuntime = (slug: string, name: string, bundle: string): string => `
-(() => {
-  "use strict";
-
-  const NOWLY_SLUG = ${JSON.stringify(slug)};
-  const NOWLY_NAME = ${JSON.stringify(name)};
-  const NOWLY_SOURCE = ${JSON.stringify(USER_SCRIPT_MESSAGE_SOURCE)};
-  const listeners = new Map();
-  const instances = [];
-  const storage = new Map();
-
-  const post = (type, payload = {}) => {
-    window.postMessage({
-      source: NOWLY_SOURCE,
-      type,
-      payload: { slug: NOWLY_SLUG, ...payload },
-    }, "*");
-  };
-
-  class Presence {
-    constructor(options = {}) {
-      this.options = options;
-      instances.push(this);
-    }
-
-    on(eventName, listener) {
-      const eventListeners = listeners.get(this) ?? new Map();
-      const callbacks = eventListeners.get(eventName) ?? [];
-      callbacks.push(listener);
-      eventListeners.set(eventName, callbacks);
-      listeners.set(this, eventListeners);
-    }
-
-    setActivity(data) {
-      if (!data) {
-        this.clearActivity();
-        return Promise.resolve();
-      }
-
-      post("ACTIVITY_UPDATE", { activity: { name: NOWLY_NAME, ...data } });
-      return Promise.resolve();
-    }
-
-    clearActivity() {
-      post("CLEAR_ACTIVITY");
-    }
-
-    getStrings(strings) {
-      return Promise.resolve(strings);
-    }
-
-    getSetting() {
-      return Promise.resolve(undefined);
-    }
-
-    info(message) {
-      post("DEBUG", { stage: "presence", message: String(message) });
-    }
-
-    error(message) {
-      post("DEBUG", { stage: "presence-error", message: String(message) });
-    }
-  }
-
-  globalThis.Presence = Presence;
-
-  const ctx = {
-    setActivity(data) {
-      post("ACTIVITY_UPDATE", { activity: { name: NOWLY_NAME, ...data } });
-    },
-    clearActivity() {
-      post("CLEAR_ACTIVITY");
-    },
-    storage,
-  };
-
-  try {
-    ${bundle}
-
-    const factory = typeof __PRESENCE__ !== "undefined" && __PRESENCE__?.default
-      ? __PRESENCE__.default
-      : undefined;
-
-    factory?.init?.(ctx);
-
-    const tick = () => {
-      try {
-        factory?.tick?.(ctx);
-
-        for (const instance of instances) {
-          const eventListeners = listeners.get(instance);
-          const callbacks = eventListeners?.get("UpdateData") ?? [];
-          for (const callback of callbacks) {
-            Promise.resolve(callback()).catch((error) => {
-              post("DEBUG", {
-                stage: "presence-error",
-                message: error instanceof Error ? error.message : "UpdateData failed",
-              });
-            });
-          }
-        }
-      } catch (error) {
-        post("DEBUG", {
-          stage: "presence-error",
-          message: error instanceof Error ? error.message : "presence tick failed",
-        });
-      }
-    };
-
-    tick();
-    const timer = setInterval(tick, 5000);
-    window.addEventListener("pagehide", () => {
-      clearInterval(timer);
-      factory?.destroy?.();
-      post("CLEAR_ACTIVITY");
-    });
-  } catch (error) {
-    post("DEBUG", {
-      stage: "presence-error",
-      message: error instanceof Error ? error.message : "presence bundle failed",
-    });
-  }
-})();
-`;
 
 const unregisterPresenceScript = async (slug: string): Promise<void> => {
   const userScripts = (chrome as ChromeWithUserScripts).userScripts;
@@ -222,16 +107,21 @@ const registerPresenceScript = async (slug: string, presence: StoredPresence): P
     return { ok: false, error: "chrome.userScripts unavailable. Enable Developer Mode / Allow User Scripts for this extension." };
   }
 
-  const matches = toMatchPatterns(presence.metadata.url);
+  if (!presence.release) return { ok: false, error: "presence release is not signed" };
+  const verified = await verifyPresenceRelease(presence.release, slug);
+  if (!verified.ok) return verified;
+
+  const metadata = presence.release.metadata;
+  const matches = toMatchPatterns(metadata.url);
   if (!matches.length) return { ok: false, error: "presence has no valid URL patterns" };
-  if (!presence.bundle?.trim()) return { ok: false, error: "presence has no bundle" };
+  if (!presence.release.bundle?.trim()) return { ok: false, error: "presence has no bundle" };
 
   try {
     await unregisterPresenceScript(slug);
     const script: RegisteredUserScript = {
       id: userScriptId(slug),
       matches,
-      js: [{ code: presenceRuntime(slug, presence.metadata.name, presence.bundle) }],
+      js: [{ code: createPresenceRuntime(slug, metadata.name, presence.release.bundle) }],
       runAt: "document_idle",
       allFrames: false,
       world: "USER_SCRIPT",
@@ -274,12 +164,15 @@ const syncPresenceScripts = async (presences: InstalledPresences): Promise<void>
 };
 
 const installPresence = async (payload: unknown): Promise<{ ok: boolean; error?: string }> => {
-  const presence = payload as { slug: string; metadata: StoredPresence["metadata"]; bundle: string };
+  const presence = payload as { slug: string; release: PresenceRelease };
+  const verified = await verifyPresenceRelease(presence.release, presence.slug);
+  if (!verified.ok) return verified;
+
   const presences = await getPresences();
 
   presences[presence.slug] = {
-    metadata: presence.metadata,
-    bundle: presence.bundle,
+    metadata: presence.release.metadata,
+    release: presence.release,
     enabled: true,
     installedAt: presences[presence.slug]?.installedAt ?? Date.now(),
     updatedAt: Date.now(),
@@ -289,12 +182,71 @@ const installPresence = async (payload: unknown): Promise<{ ok: boolean; error?:
   return registerPresenceScript(presence.slug, presences[presence.slug]);
 };
 
+const clampText = (value: string | undefined, maxLength: number): string | undefined => {
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  return trimmed.length > maxLength ? trimmed.slice(0, maxLength) : trimmed;
+};
+
+const normalizeTimestamp = (value: number | undefined): number | undefined => {
+  if (!Number.isFinite(value)) return undefined;
+  if (!value || value <= 0) return undefined;
+  return Math.floor(value > 10_000_000_000 ? value / 1000 : value);
+};
+
+const normalizeImage = (value: string | undefined): string | undefined => {
+  if (!value) return undefined;
+  if (value.startsWith("http://")) return undefined;
+  if (value.startsWith("https://")) return value;
+  if (/^[a-z0-9_-]{1,64}$/i.test(value)) return value;
+  return undefined;
+};
+
+const normalizeActivity = (activity: PresenceData, fallbackName: string): PresenceData => {
+  const allowedTypes = new Set([0, 1, 2, 3, 5]);
+  return {
+    name: clampText(activity.name, 128) ?? fallbackName,
+    details: clampText(activity.details, 128),
+    state: clampText(activity.state, 128),
+    startTimestamp: normalizeTimestamp(activity.startTimestamp),
+    endTimestamp: normalizeTimestamp(activity.endTimestamp),
+    largeImageKey: normalizeImage(activity.largeImageKey),
+    largeImageText: clampText(activity.largeImageText, 128),
+    smallImageKey: normalizeImage(activity.smallImageKey),
+    smallImageText: clampText(activity.smallImageText, 128),
+    type: allowedTypes.has(activity.type ?? 0) ? activity.type : 0,
+    buttons: activity.buttons
+      ?.filter((button) => button.url.startsWith("https://"))
+      .slice(0, 2)
+      .map((button) => ({
+        label: clampText(button.label, 32) ?? "Open",
+        url: button.url,
+      })),
+  };
+};
+
 const handleActivityUpdate = async (
   slug: string,
   activity: PresenceData,
   tabId?: number,
 ): Promise<{ ok: boolean }> => {
-  const presence = mapPresenceData(activity);
+  const presences = await getPresences();
+  const stored = presences[slug];
+  if (!stored?.release) return { ok: false };
+
+  const verified = await verifyPresenceRelease(stored.release, slug);
+  if (!verified.ok) {
+    await setDebug({
+      stage: "security",
+      message: `[${slug}] ${verified.error ?? "release verification failed"}`,
+      updatedAt: Date.now(),
+    });
+    return { ok: false };
+  }
+
+  const normalizedActivity = normalizeActivity(activity, stored.release.metadata.name);
+  const presence = mapPresenceData(normalizedActivity);
 
   if (tabId) activeTabId = tabId;
 
@@ -330,7 +282,7 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
   switch (message.type) {
     case "GET_PRESENCES":
     case "GET_INSTALLED":
-      getPresences().then((presences) => respond(sendResponse, presences));
+      getPresences().then((presences) => respond(sendResponse, visiblePresences(presences)));
       return true;
 
     case "GET_NATIVE_STATUS":
@@ -351,7 +303,12 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
 
     case "INSTALL_PRESENCE":
     case "UPDATE_PRESENCE":
-      installPresence(message.payload).then((result) => respond(sendResponse, result));
+      installPresence(message.payload)
+        .then((result) => respond(sendResponse, result))
+        .catch((error) => respond(sendResponse, {
+          ok: false,
+          error: error instanceof Error ? error.message : "presence install failed",
+        }));
       return true;
 
     case "UNINSTALL_PRESENCE":
