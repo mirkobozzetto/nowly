@@ -157,6 +157,8 @@
     "activeDescription": "{platform} está activa en tu extensión",
     "addDescription": "Añade {platform} a tu presencia de Discord",
     "yourRating": "Tu valoración",
-    "comingSoonDescription": "La compatibilidad con {platform} está actualmente en desarrollo."
+    "comingSoonDescription": "La compatibilidad con {platform} está actualmente en desarrollo.",
+    "settings": "Ajustes",
+    "settingsAvailableInExtension": "Configura estos ajustes desde la extensión de Nowly."
   }
 }
