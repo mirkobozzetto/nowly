@@ -1,9 +1,10 @@
-import { Power, Settings, Trash2, X } from "lucide-react";
+import { Settings } from "lucide-react";
 import type { FC, MouseEvent, ReactElement } from "react";
 import { useEffect, useRef, useState } from "react";
 import { assetUrl } from "../../shared/api";
 import { t } from "../../shared/i18n";
 import type { StoredPresence } from "../../shared/types";
+import { PresenceActions } from "./PresenceActions";
 
 type Props = {
   onOpenMarketplace: (slug: string) => void;
@@ -81,47 +82,16 @@ export const PresenceListItem: FC<Props> = ({ onOpenMarketplace, onRemove, onTog
       </button>
       </div>
 
-      <div
-        className={
-          actionsOpen
-            ? "absolute inset-0 flex items-center justify-end gap-1.5 bg-linear-to-l from-card via-card/90 to-card/45 px-3 opacity-100 backdrop-blur-md transition-all"
-            : "pointer-events-none absolute inset-0 flex translate-x-full items-center justify-end gap-1.5 bg-linear-to-l from-card via-card/90 to-card/45 px-3 opacity-0 backdrop-blur-md transition-all"
-        }
-      >
-        <button
-          type="button"
-          aria-label={presence.enabled ? t("disable") : t("enable")}
-          title={presence.enabled ? t("disable") : t("enable")}
-          onClick={() => {
-            onToggle(slug, !presence.enabled);
-            setActionsOpen(false);
-          }}
-          className="flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card-2 px-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <Power className="h-4 w-4" />
-          {presence.enabled ? t("disable") : t("enable")}
-        </button>
-        <button
-          type="button"
-          aria-label={t("remove")}
-          title={t("remove")}
-          onClick={() => onRemove(slug)}
-          className="flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card-2 px-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-destructive"
-        >
-          <Trash2 className="h-4 w-4" />
-          {t("uninstall")}
-        </button>
-        <button
-          type="button"
-          aria-label={t("close")}
-          title={t("close")}
-          onClick={() => setActionsOpen(false)}
-          className="flex h-8 items-center gap-1.5 rounded-lg border border-border bg-card-2 px-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <X className="h-4 w-4" />
-          {t("close")}
-        </button>
-      </div>
+      <PresenceActions
+        enabled={presence.enabled}
+        onClose={() => setActionsOpen(false)}
+        onRemove={() => onRemove(slug)}
+        onToggle={() => {
+          onToggle(slug, !presence.enabled);
+          setActionsOpen(false);
+        }}
+        visible={actionsOpen}
+      />
     </article>
   );
 };
