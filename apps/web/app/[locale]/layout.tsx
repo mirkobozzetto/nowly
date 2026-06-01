@@ -1,5 +1,6 @@
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
+import { Toaster } from "@/components/l-ui/sonner";
 import { routing } from "@/i18n/routing";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
@@ -50,6 +51,7 @@ const LocaleLayout = async ({ children, params }: Props): Promise<ReactElement> 
       <Navbar />
       {children}
       <Footer />
+      <Toaster />
     </NextIntlClientProvider>
   );
 };

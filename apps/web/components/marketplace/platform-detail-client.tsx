@@ -9,6 +9,7 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { DevelopmentCard } from "./development-card";
 import { FeaturesCard } from "./features-card";
 import { HeaderCard } from "./header-card";
@@ -48,18 +49,21 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
     const ping = setInterval(() => {
       window.postMessage({ source: EXT_SOURCE, type: "PING" }, "*");
     }, 300);
-    setTimeout(() => clearInterval(ping), 3000);
+    const pingTimeout = setTimeout(() => clearInterval(ping), 5000);
+
+    let gotInstalledResponse = false;
 
     const handler = (event: MessageEvent) => {
       const msg = event.data ?? {};
 
       if (msg.type === "EXT_DETECTED") {
-        clearInterval(ping);
         setExtDetected(true);
-        window.postMessage(
-          { source: EXT_SOURCE, type: "GET_INSTALLED", messageId: nextId() },
-          "*",
-        );
+        if (!gotInstalledResponse) {
+          window.postMessage(
+            { source: EXT_SOURCE, type: "GET_INSTALLED", messageId: nextId() },
+            "*",
+          );
+        }
       }
 
       if (msg.source === EXT_SOURCE && msg.type === "INSTALLED_PRESENCES") {
@@ -67,19 +71,47 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
         if (installed) {
           setIsInstalled(true);
           setInstalledVersion(installed.metadata?.version ?? null);
+          gotInstalledResponse = true;
+          clearInterval(ping);
+          clearTimeout(pingTimeout);
+        } else if (msg.payload?.ok !== false) {
+          gotInstalledResponse = true;
+          clearInterval(ping);
+          clearTimeout(pingTimeout);
         }
       }
 
-      if (msg.type === "EXT_INSTALL_RESULT" && msg.slug === platform.slug) {
-        setIsInstalled(msg.success);
+      if (msg.source === EXT_SOURCE && msg.type === "INSTALL_PRESENCE_RESULT") {
+        if (msg.payload?.ok) {
+          setIsInstalled(true);
+          toast.success(t("installSuccess", { platform: platform.name }));
+        } else {
+          setIsInstalled(false);
+          setInstalledVersion(null);
+          setLoading(false);
+          toast.error(t("installError", { platform: platform.name }));
+        }
+      }
+
+      if (msg.source === EXT_SOURCE && msg.type === "UNINSTALL_PRESENCE_RESULT") {
+        if (msg.payload?.ok) {
+          setIsInstalled(false);
+          setInstalledVersion(null);
+          toast.success(t("uninstallSuccess", { platform: platform.name }));
+        }
       }
     };
     window.addEventListener("message", handler);
-    return () => window.removeEventListener("message", handler);
+    return () => {
+      window.removeEventListener("message", handler);
+      clearInterval(ping);
+      clearTimeout(pingTimeout);
+    };
   }, [platform.slug]);
 
   const handleInstall = useCallback(async (): Promise<void> => {
     if (!extDetected) {
+      toast.info(t("extNotDetected"));
       setIsInstalled(!isInstalled);
       return;
     }
@@ -99,6 +131,7 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
         {
           source: EXT_SOURCE,
           type: needsUpdate ? "UPDATE_PRESENCE" : "INSTALL_PRESENCE",
+          messageId: nextId(),
           payload: {
             slug: platform.slug,
             release,
@@ -111,6 +144,7 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
       setInstalledVersion(release.version ?? null);
       setLoading(false);
     } catch {
+      toast.error(t("installError", { platform: platform.name }));
       setLoading(false);
     }
   }, [extDetected, isInstalled, platform.slug, needsUpdate]);
@@ -123,7 +157,7 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
     setIsInstalled(false);
     setInstalledVersion(null);
     window.postMessage(
-      { source: EXT_SOURCE, type: "UNINSTALL_PRESENCE", payload: { slug: platform.slug } },
+      { source: EXT_SOURCE, type: "UNINSTALL_PRESENCE", messageId: nextId(), payload: { slug: platform.slug } },
       "*",
     );
   }, [platform.slug]);

@@ -28,7 +28,7 @@ async function build() {
         .filter((d) => d.isDirectory())
         .map((presenceDir) => ({
           letter: letterDir.name,
-          slug: presenceDir.name.toLowerCase(),
+          slug: presenceDir.name.toLowerCase().replace(/\s+/g, "-"),
           path: join(letterPath, presenceDir.name),
         }))
     })

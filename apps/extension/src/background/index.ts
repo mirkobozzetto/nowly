@@ -179,6 +179,12 @@ const syncPresenceScripts = async (presences: InstalledPresences): Promise<void>
   }
 };
 
+const broadcastPresencesChanged = (): void => {
+  chrome.runtime.sendMessage({ source: "PRESENCES_BACKGROUND", type: "PRESENCES_CHANGED" }).catch(() => {
+    // No extension pages (popup/sidepanel) are open — that's fine.
+  });
+};
+
 const installPresence = async (payload: unknown): Promise<{ ok: boolean; error?: string }> => {
   const presence = payload as { slug: string; release: PresenceRelease };
   const verified = await verifyPresenceRelease(presence.release, presence.slug);
@@ -195,6 +201,7 @@ const installPresence = async (payload: unknown): Promise<{ ok: boolean; error?:
   };
 
   await setPresences(presences);
+  broadcastPresencesChanged();
   return registerPresenceScript(presence.slug, presences[presence.slug]);
 };
 
@@ -343,6 +350,7 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
         delete presences[slug];
 
         await setPresences(presences);
+        broadcastPresencesChanged();
         await unregisterPresenceScript(slug);
         await handleClearActivity();
         respond(sendResponse, { ok: true });

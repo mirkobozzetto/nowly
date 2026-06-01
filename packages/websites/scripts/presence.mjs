@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync, existsSync } from "fs"
-import { join, dirname } from "path"
+import { join, dirname, relative } from "path"
 import { fileURLToPath } from "url"
+import { execSync } from "child_process"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, "..", "..", "..")
@@ -27,6 +28,16 @@ if (!API_KEY) {
 const headers = { "Content-Type": "application/json" }
 if (API_KEY) headers["Authorization"] = `Bearer ${API_KEY}`
 
+function gitHasChanges(dir) {
+  const rel = relative(ROOT, dir)
+  try {
+    const out = execSync(`git status --porcelain -- "${rel}"`, { encoding: "utf-8", cwd: ROOT }).trim()
+    return out.length > 0
+  } catch {
+    return true
+  }
+}
+
 function getPresences() {
   return readdirSync(SRC, { withFileTypes: true })
     .filter((d) => d.isDirectory() && /^[A-Z]$/.test(d.name))
@@ -34,8 +45,9 @@ function getPresences() {
       readdirSync(join(SRC, letterDir.name), { withFileTypes: true })
         .filter((d) => d.isDirectory() && existsSync(join(SRC, letterDir.name, d.name, "metadata.json")))
         .map((d) => ({
-          slug: d.name,
+          slug: d.name.toLowerCase().replace(/\s+/g, "-"),
           letter: letterDir.name,
+          dirName: d.name,
         })),
     )
 }
@@ -60,8 +72,15 @@ async function callApi(method, path, body) {
   return { ok: true }
 }
 
-async function processPresence(slug, name, forceNew) {
+async function processPresence(slug, name, forceNew, opts = {}) {
   console.log(`\nProcessing ${name} (${slug})...`)
+
+  if (!forceNew && opts.dir) {
+    if (!gitHasChanges(opts.dir)) {
+      console.log("  No changes detected, skipping")
+      return
+    }
+  }
 
   const infoRes = await fetch(`${API_BASE}/api/p/${slug}`)
   if (!infoRes.ok) {
@@ -83,13 +102,14 @@ async function processPresence(slug, name, forceNew) {
     await callApi("PUT", `/api/p/${slug}/added`, { date: new Date().toISOString().split("T")[0] })
     await callApi("PUT", `/api/p/${slug}/version`, { version: "1.0.0" })
     console.log("  Version set to 1.0.0")
-  } else {
-    const nextVersion = bumpVersion(currentVersion)
-    console.log(`  Modified presence - bumping ${currentVersion} -> ${nextVersion}`)
-    await callApi("PUT", `/api/p/${slug}/updated`, { date: new Date().toISOString().split("T")[0] })
-    await callApi("PUT", `/api/p/${slug}/version`, { version: nextVersion })
-    console.log(`  Version bumped to ${nextVersion}`)
+    return
   }
+
+  const nextVersion = bumpVersion(currentVersion)
+  console.log(`  Modified presence - bumping ${currentVersion} -> ${nextVersion}`)
+  await callApi("PUT", `/api/p/${slug}/updated`, { date: new Date().toISOString().split("T")[0] })
+  await callApi("PUT", `/api/p/${slug}/version`, { version: nextVersion })
+  console.log(`  Version bumped to ${nextVersion}`)
 }
 
 async function main() {
@@ -99,10 +119,13 @@ async function main() {
   const presences = getPresences()
 
   if (args.length === 0 || args[0].startsWith("--")) {
+    // bulk mode: only process presences with uncommitted changes
     for (const p of presences) {
-      await processPresence(p.slug, p.slug, forceNew)
+      const dir = join(SRC, p.letter, p.dirName)
+      await processPresence(p.slug, p.slug, forceNew, { dir })
     }
   } else {
+    // explicit slugs: always process (no git skip)
     for (const arg of args) {
       if (arg.startsWith("--")) continue
       const p = presences.find((pr) => pr.slug === arg)

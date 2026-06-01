@@ -57,8 +57,31 @@ export const useExtensionState = (): ExtensionState => {
     };
 
     refresh();
-    const interval = window.setInterval(refresh, 10000);
-    return () => window.clearInterval(interval);
+    const interval = window.setInterval(refresh, 3000);
+
+    const onStorageChanged = (
+      changes: Record<string, chrome.storage.StorageChange>,
+      areaName: string,
+    ): void => {
+      if (areaName !== "local") return;
+      if (changes.presences || changes.settings || changes.currentActivity || changes.debug) {
+        refresh();
+      }
+    };
+    chrome.storage.onChanged.addListener(onStorageChanged);
+
+    const onRuntimeMessage = (message: Record<string, unknown>): void => {
+      if (message.source === "PRESENCES_BACKGROUND" && message.type === "PRESENCES_CHANGED") {
+        refresh();
+      }
+    };
+    chrome.runtime.onMessage.addListener(onRuntimeMessage);
+
+    return () => {
+      window.clearInterval(interval);
+      chrome.storage.onChanged.removeListener(onStorageChanged);
+      chrome.runtime.onMessage.removeListener(onRuntimeMessage);
+    };
   }, []);
 
   const togglePresence = (slug: string, enabled: boolean): void => {
