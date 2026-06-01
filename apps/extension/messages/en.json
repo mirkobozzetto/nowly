@@ -9,6 +9,7 @@
   "nothingPlaying": "Nothing detected",
   "nativeConnected": "Native connected",
   "nativeDisconnected": "Native unavailable",
+  "connectNative": "Connect",
   "enabled": "Enabled",
   "disabled": "Disabled",
   "enable": "Enable",
