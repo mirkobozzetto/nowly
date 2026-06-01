@@ -17,6 +17,43 @@ const nowlyPresencePlugin = {
   },
 }
 
+function extractSettings(source) {
+  const fnMatch = source.match(/(?:new\s+)?Presence\.Settings\s*\(/)
+  if (!fnMatch) return null
+
+  const startParen = fnMatch.index + fnMatch[0].length
+  let depth = 1
+  let i = startParen
+  let inStr = false
+  let quote = null
+  let isEsc = false
+
+  while (i < source.length && depth > 0) {
+    const c = source[i]
+    if (isEsc) {
+      isEsc = false
+    } else if (inStr) {
+      if (c === "\\") isEsc = true
+      else if (c === quote) inStr = false
+    } else {
+      if (c === '"' || c === "'" || c === "`") { inStr = true; quote = c }
+      else if (c === "(") depth++
+      else if (c === ")") depth--
+    }
+    i++
+  }
+
+  if (depth !== 0) return null
+  const objStr = source.slice(startParen, i - 1)
+
+  try {
+    return new Function(`return (${objStr})`)()
+  } catch (e) {
+    console.warn(`  Failed to evaluate settings: ${e.message}`)
+    return null
+  }
+}
+
 async function build() {
   mkdirSync(join(DIST, "presences"), { recursive: true })
 
@@ -71,7 +108,16 @@ async function build() {
         continue
       }
 
-      console.log(`✓ Built ${presence.slug}`)
+      console.log(`\u2713 Built ${presence.slug}`)
+
+      // Extract and write settings
+      const source = readFileSync(presenceTsPath, "utf-8")
+      const settings = extractSettings(source)
+      if (settings) {
+        writeFileSync(join(distPresenceDir, "settings.json"), JSON.stringify(settings, null, 2))
+        metadata.settings = settings
+        console.log(`  Settings extracted for ${presence.slug}`)
+      }
     }
 
     // Copy assets
@@ -85,7 +131,7 @@ async function build() {
 
   // Write registry
   writeFileSync(join(DIST, "registry.json"), JSON.stringify(registry, null, 2))
-  console.log(`\n✓ Registry written (${registry.length} presences)`)
+  console.log(`\n\u2713 Registry written (${registry.length} presences)`)
 }
 
 build().catch((err) => {

@@ -7,6 +7,7 @@ export interface PresenceContext {
   setActivity(data: PresenceData): void;
   clearActivity(): void;
   storage: Map<string, unknown>;
+  settings: Record<string, unknown>;
 }
 
 export interface PresenceFactory {
@@ -31,6 +32,7 @@ export interface Metadata {
   category: "streaming" | "music" | "tv" | "anime" | "other";
   tags: string[];
   features?: Record<string, string[]>;
+  settings?: Record<string, unknown>;
   assets: {
     logo: string;
     icon: string;
