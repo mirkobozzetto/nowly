@@ -39,14 +39,14 @@ const findUploader = (): string =>
 
 presence.on("UpdateData", async () => {
   const video = findVideo()
+  const videoId = new URLSearchParams(window.location.search).get("v")
 
-  if (!video) {
+  if (!video || !videoId) {
     presence.clearActivity()
     return
   }
 
   const title = findTitle()
-  const videoId = new URLSearchParams(window.location.search).get("v")
   const isPlaying = !video.paused
 
   await presence.setActivity({

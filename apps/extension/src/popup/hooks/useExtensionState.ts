@@ -8,6 +8,7 @@ type ExtensionState = {
   connectNative: () => void;
   debug: PresenceDebug | null;
   entries: Array<[string, InstalledPresences[string]]>;
+  isCheckingUpdates: boolean;
   nativeStatus: NativeStatus;
   presences: InstalledPresences;
   removePresence: (slug: string) => void;
@@ -34,6 +35,7 @@ export const useExtensionState = (): ExtensionState => {
   const [nativeStatus, setNativeStatus] = useState<NativeStatus>(FALLBACK_NATIVE_STATUS);
   const [debug, setDebug] = useState<PresenceDebug | null>(null);
   const [updates, setUpdates] = useState<Record<string, string>>({});
+  const [isCheckingUpdates, setIsCheckingUpdates] = useState(false);
   const [settings, setSettingsState] = useState<ExtensionSettings>(FALLBACK_SETTINGS);
 
   const entries = useMemo(() => Object.entries(presences), [presences]);
@@ -44,14 +46,12 @@ export const useExtensionState = (): ExtensionState => {
       sendMessage<CurrentActivity | null>("GET_CURRENT_ACTIVITY"),
       sendMessage<NativeStatus>("GET_NATIVE_STATUS"),
       sendMessage<PresenceDebug | null>("GET_DEBUG"),
-      sendMessage<Record<string, string>>("CHECK_UPDATES"),
       sendMessage<ExtensionSettings>("GET_SETTINGS"),
-    ]).then(([nextPresences, nextActivity, nextNativeStatus, nextDebug, nextUpdates, nextSettings]) => {
+    ]).then(([nextPresences, nextActivity, nextNativeStatus, nextDebug, nextSettings]) => {
       setPresences(nextPresences ?? {});
       setActivity(nextActivity ?? null);
       setNativeStatus(nextNativeStatus ?? FALLBACK_NATIVE_STATUS);
       setDebug(nextDebug ?? null);
-      setUpdates(nextUpdates ?? {});
       setSettingsState(nextSettings ?? FALLBACK_SETTINGS);
     });
   }, []);
@@ -105,6 +105,17 @@ export const useExtensionState = (): ExtensionState => {
     });
   };
 
+  const checkUpdates = useCallback((): void => {
+    setIsCheckingUpdates(true);
+    void sendMessage<Record<string, string>>("CHECK_UPDATES")
+      .then((nextUpdates) => {
+        setUpdates(nextUpdates ?? {});
+      })
+      .finally(() => {
+        setIsCheckingUpdates(false);
+      });
+  }, []);
+
   const connectNative = (): void => {
     setNativeStatus((current) => ({ ...current, status: "connecting" }));
     void sendMessage<NativeStatus>("CONNECT_NATIVE").then((status) => {
@@ -120,10 +131,11 @@ export const useExtensionState = (): ExtensionState => {
 
   return {
     activity,
-    checkUpdates: refresh,
+    checkUpdates,
     connectNative,
     debug,
     entries,
+    isCheckingUpdates,
     nativeStatus,
     presences,
     removePresence,

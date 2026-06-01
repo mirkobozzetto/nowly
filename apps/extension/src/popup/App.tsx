@@ -10,7 +10,7 @@ import { useLocalePreference } from "./hooks/useLocalePreference";
 import { resolveLocale } from "../shared/i18n";
 
 const App: FC = (): ReactElement => {
-  const { activity, checkUpdates, connectNative, debug, entries, nativeStatus, presences, removePresence, togglePresence, updates, settings } =
+  const { activity, connectNative, debug, entries, nativeStatus, presences, removePresence, togglePresence, updates, settings } =
     useExtensionState();
   const { localePreference } = useLocalePreference();
 
@@ -27,7 +27,7 @@ const App: FC = (): ReactElement => {
 
   return (
     <AppShell>
-      <Header checkUpdates={checkUpdates} nativeStatus={nativeStatus} onConnect={connectNative} />
+      <Header nativeStatus={nativeStatus} onConnect={connectNative} />
       <CurrentActivityCard activity={activity} presences={presences} />
       <DebugNotice debug={debug} nativeStatus={nativeStatus} />
       <PresenceList

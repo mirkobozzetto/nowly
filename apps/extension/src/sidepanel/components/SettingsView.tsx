@@ -1,4 +1,4 @@
-import { ChevronDown, ExternalLink, ShieldCheck } from "lucide-react";
+import { ChevronDown, ExternalLink, RefreshCw, ShieldCheck } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { LocaleFlag } from "../../popup/components/LocaleFlag";
 import { NativeStatusButton } from "../../popup/components/NativeStatusButton";
@@ -9,6 +9,8 @@ import type { ExtensionSettings } from "../../shared/types";
 import { DisplaySettings } from "./DisplaySettings";
 
 type Props = {
+  checkUpdates: () => void;
+  isCheckingUpdates: boolean;
   localePreference: LocalePreference;
   nativeStatus: NativeStatus;
   onConnect: () => void;
@@ -32,6 +34,8 @@ const marketplaceLocale = (preference: LocalePreference): "fr-FR" | "en-US" | "e
 };
 
 export const SettingsView: FC<Props> = ({
+  checkUpdates,
+  isCheckingUpdates,
   localePreference,
   nativeStatus,
   onConnect,
@@ -76,15 +80,27 @@ export const SettingsView: FC<Props> = ({
     <section className="rounded-lg border border-border bg-card p-4">
       <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("marketplace")}</h2>
       <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("marketplaceDescription")}</p>
-      <a
-        href={`${WEB_BASE_URL}/${marketplaceLocale(localePreference)}/library`}
-        target="_blank"
-        rel="noreferrer"
-        className="inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card-2 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
-      >
-        {t("openMarketplace")}
-        <ExternalLink className="h-3.5 w-3.5" />
-      </a>
+      <div className="flex items-center gap-2">
+        <a
+          href={`${WEB_BASE_URL}/${marketplaceLocale(localePreference)}/library`}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card-2 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
+        >
+          {t("openMarketplace")}
+          <ExternalLink className="h-3.5 w-3.5" />
+        </a>
+        <button
+          type="button"
+          aria-label={t("checkUpdates")}
+          title={t("checkUpdates")}
+          onClick={checkUpdates}
+          disabled={isCheckingUpdates}
+          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card-2 text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground disabled:opacity-50"
+        >
+          <RefreshCw className={`h-4 w-4 ${isCheckingUpdates ? "animate-spin" : ""}`} />
+        </button>
+      </div>
     </section>
   </section>
 );
