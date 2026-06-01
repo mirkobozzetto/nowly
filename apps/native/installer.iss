@@ -55,16 +55,20 @@ Filename: "powershell.exe"; Parameters: "-Command ""Remove-MpPreference -Exclusi
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   ManifestPath: string;
+  HostPath: string;
   Manifest: string;
 begin
   if CurStep = ssPostInstall then
   begin
     ManifestPath := ExpandConstant('{app}\{#HostName}.json');
+    HostPath := ExpandConstant('{app}\{#MyAppExeName}');
+    StringChange(HostPath, '\', '\\');
+
     Manifest :=
       '{' + #13#10 +
       '  "name": "{#HostName}",' + #13#10 +
       '  "description": "Nowly Native Messaging Host",' + #13#10 +
-      '  "path": "' + ExpandConstant('{app}\{#MyAppExeName}') + '",' + #13#10 +
+      '  "path": "' + HostPath + '",' + #13#10 +
       '  "type": "stdio",' + #13#10 +
       '  "allowed_origins": [' + #13#10 +
       '    "chrome-extension://{#ExtensionID}/"' + #13#10 +
