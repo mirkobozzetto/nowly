@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { FC, ReactElement } from "react";
 import { useState } from "react";
@@ -115,6 +116,24 @@ export const Footer: FC = (): ReactElement => {
                 {t("openSource")}
               </a>
             </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 mt-2">
+            <Link href={`/${locale}/faq`} className="hover:text-foreground transition-colors">
+              {t("faq")}
+            </Link>
+            <span className="opacity-30">·</span>
+            <Link href={`/${locale}/changelog`} className="hover:text-foreground transition-colors">
+              {t("changelog")}
+            </Link>
+            <span className="opacity-30">·</span>
+            <Link href={`/${locale}/privacy`} className="hover:text-foreground transition-colors">
+              {t("privacy")}
+            </Link>
+            <span className="opacity-30">·</span>
+            <Link href={`/${locale}/tos`} className="hover:text-foreground transition-colors">
+              {t("tos")}
+            </Link>
           </div>
 
           <div className="flex justify-start">

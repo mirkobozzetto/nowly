@@ -1,6 +1,6 @@
 import { metadataToPlatform } from "@/lib/data/presence-adapter";
 import { getPresenceStats } from "@/lib/data/presence-stats";
-import { getPresence } from "@presence/websites";
+import { getPresence } from "@nowly/websites";
 import { NextResponse } from "next/server";
 
 export const GET = async (

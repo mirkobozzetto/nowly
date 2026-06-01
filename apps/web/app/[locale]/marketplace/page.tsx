@@ -1,14 +1,14 @@
 "use client";
 
+import { PlatformCard } from "@/components/marketplace/platform-card";
 import { categories, type Platform, type PlatformCategory } from "@/lib/data/platforms";
 import { metadataToPlatform } from "@/lib/data/presence-adapter";
 import { cn } from "@/lib/utils";
-import type { Metadata } from "@presence/websites";
+import type { Metadata } from "@nowly/websites";
 import { Search } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { PlatformCard } from "@/components/marketplace/platform-card";
 
 type SortOption = "name-asc" | "name-desc" | "popular" | "recent";
 

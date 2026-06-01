@@ -1,12 +1,11 @@
+import { Footer } from "@/components/layout/footer";
+import { Navbar } from "@/components/layout/navbar";
+import { routing } from "@/i18n/routing";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import type { ReactElement, ReactNode } from "react";
-
-import { Footer } from "@/components/layout/footer";
-import { Navbar } from "@/components/layout/navbar";
-import { routing } from "@/i18n/routing";
 
 type Props = Readonly<{
   children: ReactNode
@@ -26,6 +25,13 @@ const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
   return {
     title: t("title"),
     description: t("description"),
+    icons: {
+      icon: [
+        { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+        { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      ],
+      apple: "/apple-icon.png",
+    },
   };
 };
 

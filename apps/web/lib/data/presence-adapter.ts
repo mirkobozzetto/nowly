@@ -1,4 +1,4 @@
-import type { Metadata } from "@presence/websites/types";
+import type { Metadata } from "@nowly/websites/types";
 import type { Platform, PlatformCategory, Contributor } from "./platforms";
 
 function toContributor(c: { name: string; github?: string }): Contributor {

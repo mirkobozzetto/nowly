@@ -1,25 +1,25 @@
 import { getLocale } from "next-intl/server";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Geist, Instrument_Sans } from "next/font/google";
 import type { PropsWithChildren, ReactElement } from "react";
 import "./globals.css";
 
-const inter = Inter({ 
+const instrumentSans = Instrument_Sans({ 
   subsets: ["latin"],
-  variable: "--font-inter",
-  weight: ["400", "500", "600", "700", "800"]
+  variable: "--font-heading",
+  weight: ["400", "500", "600", "700"]
 });
 
-const jetbrainsMono = JetBrains_Mono({ 
+const geist = Geist({ 
   subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-  weight: ["400", "500"]
+  variable: "--font-sans",
+  weight: ["400", "500", "600", "700"]
 });
 
 const RootLayout = async ({ children }: PropsWithChildren): Promise<ReactElement> => {
   const locale = await getLocale();
 
   return (
-    <html lang={locale} className={`${inter.variable} ${jetbrainsMono.variable} bg-background`}>
+    <html lang={locale} className={`${instrumentSans.variable} ${geist.variable} bg-background`}>
       <body className="font-sans antialiased">
         {children}
       </body>

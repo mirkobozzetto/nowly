@@ -4,7 +4,7 @@ dist
 *.tsbuildinfo
 
 # Native host (Go binaries)
-apps/native/
+native/dist/
 
 # Extension (managed separately)
 # apps/extension/

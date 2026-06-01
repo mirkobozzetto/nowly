@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getRegistry } from "@presence/websites";
+import { getRegistry } from "@nowly/websites";
 
 export const GET = async () => {
   const presences = getRegistry();

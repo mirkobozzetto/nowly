@@ -3,7 +3,7 @@
 import { ASSET_URL } from "@/lib/assets";
 import { metadataToPlatform } from "@/lib/data/presence-adapter";
 import type { Platform } from "@/lib/data/platforms";
-import type { Metadata } from "@presence/websites";
+import type { Metadata } from "@nowly/websites";
 import type { FC, ReactElement } from "react";
 import { useEffect, useState } from "react";
 import Link from "next/link";

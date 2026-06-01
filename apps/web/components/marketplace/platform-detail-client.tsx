@@ -16,7 +16,7 @@ import { InstallCard } from "./install-card";
 import { StatsCard } from "./stats-card";
 import { SupportedUrlsCard } from "./supported-urls-card";
 
-const EXT_SOURCE = "DP_PROJECT_NAME_WEB";
+const EXT_SOURCE = "Nowly";
 let _msgId = 0;
 function nextId(): string {
   _msgId += 1;

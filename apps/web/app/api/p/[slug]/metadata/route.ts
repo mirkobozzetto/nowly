@@ -1,4 +1,4 @@
-import { getPresence } from "@presence/websites";
+import { getPresence } from "@nowly/websites";
 import { NextResponse } from "next/server";
 import { getPresenceStats } from "@/lib/data/presence-stats";
 
