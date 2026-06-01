@@ -1,4 +1,4 @@
-import { Settings } from "lucide-react";
+import { BellRing, Settings } from "lucide-react";
 import type { FC, MouseEvent, ReactElement } from "react";
 import { useEffect, useRef, useState } from "react";
 import { assetUrl } from "../../shared/api";
@@ -50,8 +50,11 @@ export const PresenceListItem: FC<Props> = ({ onOpenMarketplace, onRemove, onTog
 
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-foreground">{presence.metadata.name}</p>
-        <div className="mt-1 flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
-          <span className={presence.enabled ? "h-1.5 w-1.5 rounded-full bg-accent" : "h-1.5 w-1.5 rounded-full bg-dim-foreground"} />
+        <div className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
+          <span
+            className="h-1.5 w-1.5 rounded-full"
+            style={{ backgroundColor: presence.enabled ? presence.metadata.color : "var(--color-dim-foreground)" }}
+          />
           <span className="truncate">
             {presence.enabled ? t("enabled") : t("disabled")}
             {presence.metadata.version ? ` - ${t("version", { version: presence.metadata.version })}` : ""}
@@ -62,9 +65,19 @@ export const PresenceListItem: FC<Props> = ({ onOpenMarketplace, onRemove, onTog
                   event.stopPropagation();
                   onOpenMarketplace(slug);
                 }}
-                className="ml-1.5 inline-flex items-center gap-0.5 rounded bg-orange-500/15 px-1 py-0.5 text-[10px] font-medium text-orange-400 hover:bg-orange-500/25"
+                className="ml-1.5 inline-flex items-center gap-0.5 rounded px-1 py-0.5 text-[10px] font-medium transition-colors"
+                style={{
+                  backgroundColor: `${presence.metadata.color}26`,
+                  color: presence.metadata.color,
+                }}
+                onPointerEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = `${presence.metadata.color}40`;
+                }}
+                onPointerLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = `${presence.metadata.color}26`;
+                }}
               >
-                {t("updateAvailable")} v{updateAvailable}
+                <BellRing className="h-3 w-3" /> {updateAvailable}
               </button>
             ) : null}
           </span>
