@@ -3,12 +3,12 @@
     "message": "Nowly"
   },
   "extensionDescription": {
-    "message": "Synchronise vos présences web avec Discord."
+    "message": "Partage automatiquement votre activité web sur Discord."
   },
   "playing": {
-    "message": "En lecture"
+    "message": "En cours de lecture"
   },
   "paused": {
-    "message": "En pause"
+    "message": "Lecture en pause"
   }
 }

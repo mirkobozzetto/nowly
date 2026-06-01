@@ -304,6 +304,16 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
       respond(sendResponse, refreshNativeStatus());
       return false;
 
+    case "GET_USER_SCRIPTS_STATUS":
+      respond(sendResponse, {
+        enabled: Boolean((chrome as unknown as { userScripts?: unknown }).userScripts),
+        requiresUserToggle: true,
+        reason: (chrome as unknown as { userScripts?: unknown }).userScripts
+          ? undefined
+          : "chrome.userScripts unavailable. Enable Developer Mode / Allow User Scripts for this extension.",
+      });
+      return false;
+
     case "CONNECT_NATIVE":
       respond(sendResponse, reconnectNative());
       return false;

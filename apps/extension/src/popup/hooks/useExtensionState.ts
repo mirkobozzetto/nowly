@@ -16,6 +16,7 @@ type ExtensionState = {
 const FALLBACK_NATIVE_STATUS: NativeStatus = {
   connected: false,
   status: "unknown",
+  discordConnected: false,
 };
 
 export const useExtensionState = (): ExtensionState => {

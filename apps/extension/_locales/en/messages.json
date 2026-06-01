@@ -3,12 +3,12 @@
     "message": "Nowly"
   },
   "extensionDescription": {
-    "message": "Sync your web presences with Discord."
+    "message": "Share your web activity on Discord automatically."
   },
   "playing": {
     "message": "Playing"
   },
   "paused": {
-    "message": "Paused"
+    "message": "Playback Paused"
   }
 }

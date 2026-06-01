@@ -6,10 +6,23 @@ export type NativeMessage =
   | { type: "CLEAR_ACTIVITY" };
 
 export type NativeResponse =
-  | { type: "PONG"; connected: boolean; status: string }
+  | {
+      type: "PONG";
+      connected: boolean;
+      status: string;
+      discordConnected?: boolean;
+      profile?: DiscordProfileSnapshot | null;
+    }
   | { type: "CONNECTED" }
   | { type: "OK" }
   | { type: "ERROR"; error: string };
+
+export type DiscordProfileSnapshot = {
+  id: string;
+  username: string;
+  globalName?: string;
+  avatar?: string;
+};
 
 export type PresencePayload = {
   name?: string;
@@ -100,6 +113,7 @@ export type ExtensionMessageType =
   | "GET_PRESENCES"
   | "GET_INSTALLED"
   | "GET_NATIVE_STATUS"
+  | "GET_USER_SCRIPTS_STATUS"
   | "CONNECT_NATIVE"
   | "GET_CURRENT_ACTIVITY"
   | "GET_DEBUG"
@@ -110,6 +124,14 @@ export type ExtensionMessageType =
   | "INSTALL_PRESENCE"
   | "UPDATE_PRESENCE"
   | "DEBUG";
+
+export type UserScriptsStatus = {
+  enabled: boolean;
+  reason?: string;
+  // Chrome requires an explicit user toggle in the extension details UI.
+  // This is surfaced so onboarding can explain what to do.
+  requiresUserToggle?: boolean;
+};
 
 export type WebMessage = {
   source: typeof import("./constants").EXT_WEB_SOURCE;

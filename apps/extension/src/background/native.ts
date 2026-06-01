@@ -1,10 +1,12 @@
 import { NATIVE_HOST } from "../shared/constants";
 import type { NativeMessage, NativeResponse, PresenceData, PresencePayload } from "../shared/types";
+import { setNativeProfile, setNativeSeenConnectedOnce } from "./storage";
 
 let nativePort: chrome.runtime.Port | null = null;
 let connected = false;
 let status = "not connected";
 let connecting = false;
+let discordConnected = false;
 const responseListeners = new Set<(message: NativeResponse) => void>();
 
 export const mapPresenceData = (data: PresenceData): PresencePayload => ({
@@ -20,19 +22,19 @@ export const mapPresenceData = (data: PresenceData): PresencePayload => ({
   type: data.type,
 });
 
-export const getNativeStatus = () => ({ connected, status });
+export const getNativeStatus = () => ({ connected, status, discordConnected });
 
 export const onNativeResponse = (listener: (message: NativeResponse) => void): (() => void) => {
   responseListeners.add(listener);
   return () => responseListeners.delete(listener);
 };
 
-export const refreshNativeStatus = (): { connected: boolean; status: string } => {
+export const refreshNativeStatus = (): { connected: boolean; status: string; discordConnected: boolean } => {
   postNative({ type: "PING" });
   return getNativeStatus();
 };
 
-export const reconnectNative = (): { connected: boolean; status: string } => {
+export const reconnectNative = (): { connected: boolean; status: string; discordConnected: boolean } => {
   if (nativePort && (connected || connecting)) {
     postNative({ type: "PING" });
     return getNativeStatus();
@@ -48,6 +50,7 @@ export const reconnectNative = (): { connected: boolean; status: string } => {
 
   nativePort = null;
   connected = false;
+  discordConnected = false;
   status = "connecting";
   connectNative();
   return getNativeStatus();
@@ -82,6 +85,15 @@ export const connectNative = (): void => {
       connecting = false;
       connected = message.connected;
       status = message.status;
+
+
+      discordConnected = Boolean(message.discordConnected);
+      if (discordConnected) {
+        void setNativeSeenConnectedOnce(true);
+      }
+      if (message.profile) {
+        void setNativeProfile(message.profile);
+      }
     }
 
     if (message.type === "ERROR") {
@@ -93,6 +105,7 @@ export const connectNative = (): void => {
   nativePort.onDisconnect.addListener(() => {
     connecting = false;
     connected = false;
+    discordConnected = false;
     status = chrome.runtime.lastError?.message ?? "native disconnected";
     nativePort = null;
   });

@@ -1,8 +1,9 @@
-import type { CurrentActivity, InstalledPresences, PresenceDebug } from "../shared/types";
+import type { CurrentActivity, DiscordProfileSnapshot, InstalledPresences, PresenceDebug } from "../shared/types";
 
 const PRESENCES_KEY = "presences";
 const ACTIVITY_KEY = "currentActivity";
 const DEBUG_KEY = "presenceDebug";
+const ONBOARDING_KEY = "onboarding";
 
 export const getPresences = (): Promise<InstalledPresences> =>
   chrome.storage.local.get(PRESENCES_KEY).then((result) => (
@@ -27,3 +28,35 @@ export const getDebug = (): Promise<PresenceDebug | null> =>
 
 export const setDebug = (debug: PresenceDebug): Promise<void> =>
   chrome.storage.local.set({ [DEBUG_KEY]: debug });
+
+export type OnboardingState = {
+  onboardingCompleted: boolean;
+  nativeSeenConnectedOnce: boolean;
+  nativeProfile?: DiscordProfileSnapshot | null;
+};
+
+const DEFAULT_ONBOARDING: OnboardingState = {
+  onboardingCompleted: false,
+  nativeSeenConnectedOnce: false,
+  nativeProfile: null,
+};
+
+export const getOnboarding = async (): Promise<OnboardingState> => {
+  const result = await chrome.storage.local.get(ONBOARDING_KEY);
+  const value = result[ONBOARDING_KEY] as Partial<OnboardingState> | undefined;
+  return {
+    ...DEFAULT_ONBOARDING,
+    ...(value ?? {}),
+  };
+};
+
+export const setOnboarding = async (partial: Partial<OnboardingState>): Promise<void> => {
+  const current = await getOnboarding();
+  await chrome.storage.local.set({ [ONBOARDING_KEY]: { ...current, ...partial } satisfies OnboardingState });
+};
+
+export const setNativeSeenConnectedOnce = (seen: boolean): Promise<void> =>
+  setOnboarding({ nativeSeenConnectedOnce: seen });
+
+export const setNativeProfile = (profile: DiscordProfileSnapshot | null): Promise<void> =>
+  setOnboarding({ nativeProfile: profile });
