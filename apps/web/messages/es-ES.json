@@ -1,0 +1,158 @@
+{
+  "Navbar": {
+    "marketplace": "Marketplace",
+    "downloadDesktop": "Descargar aplicación",
+    "downloadFor": "Descargar para {browser}",
+    "downloadShort": "Descargar"
+  },
+  "HeroSection": {
+    "badge": "Nuevo",
+    "title": "Tu actividad de Discord,",
+    "titleAccent": "sincronizada.",
+    "description": "La forma más sencilla de mostrar automáticamente lo que estás viendo. Series, películas o directos: tu estado de Discord siempre estará actualizado.",
+    "cta": "Explorar presencias"
+  },
+  "PlatformsSection": {
+    "sectionLabel": "Plataformas",
+    "title": "Tus servicios favoritos",
+    "description": "Compatible con las plataformas de streaming más populares",
+    "availableHeading": "Disponibles",
+    "comingSoonHeading": "Próximamente",
+    "comingSoonBadge": "Próximamente"
+  },
+  "StepsSection": {
+    "sectionLabel": "Cómo funciona",
+    "title": "Así de simple",
+    "description": "Tres pasos para mostrar lo que estás viendo",
+    "steps": [
+      {
+        "title": "Instala Nowly",
+        "description": "Descarga e instala Nowly en tu ordenador con Windows. La configuración solo lleva unos segundos."
+      },
+      {
+        "title": "Conecta Discord",
+        "description": "Nowly detecta Discord automáticamente y establece la conexión. No se requiere ninguna configuración manual."
+      },
+      {
+        "title": "Disfruta del contenido",
+        "description": "Abre tu plataforma favorita y tu estado de Discord se actualizará automáticamente."
+      }
+    ]
+  },
+  "CtaSection": {
+    "title": "Empieza ahora",
+    "description": "Sin suscripción. Ligero y seguro.",
+    "downloadFor": "Descargar para {browser}",
+    "comingSoon": "Próximamente",
+    "extension": "Descargar extensión",
+    "browser": "Navegador",
+    "platforms": "Compatible con navegadores basados en Chromium",
+    "openSource": "Código abierto",
+    "free": "Gratis"
+  },
+  "Footer": {
+    "copyright": "© 2026 Nowly.",
+    "trademark": "Discord es una marca registrada de",
+    "support": "Apoyar el proyecto",
+    "thanks": "¡Gracias!",
+    "redirect": "Redirigiendo en {countdown}s",
+    "openSource": "Código abierto",
+    "authorAlt": "Autor",
+    "languageLabel": "Mostrar el sitio en",
+    "french": "Francés",
+    "english": "Inglés",
+    "spanish": "Español",
+    "faq": "FAQ",
+    "changelog": "Registro de cambios",
+    "privacy": "Política de privacidad",
+    "tos": "Términos del servicio"
+  },
+  "KofiModal": {
+    "title": "El proyecto es gratuito",
+    "description": "Desarrollado por una sola persona en su tiempo libre. Un café ayuda a mantener el proyecto en marcha.",
+    "support": "Apoyar en Ko-fi",
+    "skip": "No, gracias. Descargar directamente"
+  },
+  "Meta": {
+    "title": "Nowly | Rich Presence automática para Discord",
+    "description": "Muestra automáticamente lo que ves en tu estado de Discord. YouTube, Twitch, Plex, Prime Video, Cinepulse y mucho más."
+  },
+  "Legal": {
+    "privacy": {
+      "title": "Política de privacidad"
+    },
+    "tos": {
+      "title": "Términos del servicio"
+    },
+    "faq": {
+      "title": "FAQ"
+    },
+    "changelog": {
+      "title": "Registro de cambios"
+    }
+  },
+  "MarketplacePage": {
+    "badge": "Marketplace",
+    "title": "Plataformas compatibles",
+    "description": "Descubre todas las plataformas compatibles con Nowly",
+    "searchPlaceholder": "Buscar una plataforma...",
+    "sortLabel": "Ordenar por:",
+    "sortPopular": "Popularidad",
+    "sortRecent": "Más recientes",
+    "sortNameAsc": "A - Z",
+    "sortNameDesc": "Z - A",
+    "categories": {
+      "streaming": "Streaming",
+      "music": "Música",
+      "tv": "TV y películas",
+      "anime": "Anime",
+      "other": "Otros"
+    },
+    "results": "{count, plural, one {# plataforma encontrada} other {# plataformas encontradas}}",
+    "empty": "No se ha encontrado ninguna plataforma",
+    "reset": "Restablecer filtros"
+  },
+  "Common": {
+    "statusAvailable": "Disponible",
+    "statusSoon": "Próximamente",
+    "statusBeta": "Beta"
+  },
+  "MarketplaceDetail": {
+    "breadcrumbHome": "Marketplace",
+    "about": "Acerca de",
+    "supportedUrls": "URL compatibles",
+    "features": "Características",
+    "authorLabel": "Autor",
+    "contributorLabel": "Colaborador",
+    "development": "Desarrollo",
+    "stats": "Estadísticas",
+    "activeUsers": "Usuarios activos",
+    "totalInstalls": "Instalaciones totales",
+    "rating": "Valoración",
+    "addedAt": "Añadido el",
+    "lastUpdated": "Última actualización",
+    "ready": "Disponible ahora",
+    "installed": "Presencia instalada",
+    "installAction": "Instalar",
+    "installedAction": "Instalada",
+    "installing": "Instalando...",
+    "updateAction": "Actualizar",
+    "updateAvailable": "Actualización disponible",
+    "updateDescription": "Hay una nueva versión disponible para la presencia {platform}.",
+    "uninstallAction": "Desinstalar",
+    "uninstallConfirmTitle": "Eliminar presencia",
+    "uninstallConfirmDescription": "Si {platform} tenía datos de configuración, se perderán de forma permanente.",
+    "uninstallConfirmAction": "Eliminar",
+    "uninstallConfirmCancel": "Cancelar",
+    "betaLabel": "Beta",
+    "betaNote": "Versión beta. Es posible que encuentres errores.",
+    "comingSoon": "Próximamente",
+    "waiting": "En espera",
+    "source": "Código fuente",
+    "back": "Volver al marketplace",
+    "activeDescription": "{platform} está activa en tu extensión",
+    "addDescription": "Añade {platform} a tu presencia de Discord",
+    "yourRating": "Tu valoración",
+    "comingSoonDescription": "La compatibilidad con {platform} está actualmente en desarrollo."
+  }
+}

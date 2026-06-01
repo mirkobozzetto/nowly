@@ -49,7 +49,7 @@ export const Footer: FC = (): ReactElement => {
   };
 
   const handleLocaleChange = (value: string): void => {
-    const nextPath = pathname.replace(/^\/(fr-FR|en-US)(?=\/|$)/, `/${value}`);
+    const nextPath = pathname.replace(/^\/(fr-FR|en-US|es-ES)(?=\/|$)/, `/${value}`);
     router.push(`${nextPath}${window.location.search}`);
   };
 
@@ -145,6 +145,7 @@ export const Footer: FC = (): ReactElement => {
               <SelectContent>
                 <SelectItem value="fr-FR">{t("french")}</SelectItem>
                 <SelectItem value="en-US">{t("english")}</SelectItem>
+                <SelectItem value="es-ES">{t("spanish")}</SelectItem>
               </SelectContent>
             </Select>
           </div>

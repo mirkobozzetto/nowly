@@ -1,7 +1,7 @@
 {
   "Navbar": {
     "marketplace": "Marketplace",
-    "downloadDesktop": "Télécharger Companion",
+    "downloadDesktop": "Télécharger l'application",
     "downloadFor": "Télécharger pour {browser}",
     "downloadShort": "Télécharger"
   },
@@ -9,8 +9,8 @@
     "badge": "Nouveau",
     "title": "Votre activité Discord,",
     "titleAccent": "synchronisée.",
-    "description": "L'outil ultime pour afficher automatiquement ce que vous regardez. Séries, films ou streams, votre statut reste à jour.",
-    "cta": "Voir les présences"
+    "description": "La façon la plus simple d'afficher automatiquement ce que vous regardez. Séries, films ou streams, votre statut Discord reste toujours à jour.",
+    "cta": "Découvrir les présences"
   },
   "PlatformsSection": {
     "sectionLabel": "Plateformes",
@@ -22,45 +22,46 @@
   },
   "StepsSection": {
     "sectionLabel": "Comment ça marche",
-    "title": "Simple comme bonjour",
+    "title": "Aussi simple que ça",
     "description": "Trois étapes pour afficher ce que vous regardez",
     "steps": [
       {
-        "title": "Installez l'application",
+        "title": "Installez Nowly",
         "description": "Téléchargez et installez Nowly sur votre ordinateur Windows. L'installation ne prend que quelques secondes."
       },
       {
         "title": "Connectez Discord",
-        "description": "L'application détecte automatiquement Discord et établit la connexion. Aucune configuration manuelle n'est requise."
+        "description": "Nowly détecte automatiquement Discord et établit la connexion. Aucune configuration manuelle n'est nécessaire."
       },
       {
-        "title": "Regardez du contenu",
-        "description": "Lancez votre plateforme de streaming favorite et votre statut Discord se met à jour automatiquement."
+        "title": "Profitez de votre contenu",
+        "description": "Ouvrez votre plateforme favorite et votre statut Discord se mettra automatiquement à jour."
       }
     ]
   },
   "CtaSection": {
-    "title": "Commencez maintenant",
+    "title": "Commencez dès maintenant",
     "description": "Aucun abonnement requis. Léger et sécurisé.",
     "downloadFor": "Télécharger pour {browser}",
     "comingSoon": "Bientôt disponible",
     "extension": "Télécharger l'extension",
     "browser": "Navigateur",
-    "platforms": "Navigateurs basés sur Chromium supportés",
+    "platforms": "Compatible avec les navigateurs basés sur Chromium",
     "openSource": "Open source",
     "free": "Gratuit"
   },
   "Footer": {
-    "copyright": "© 2026 Nowly. Tous droits réservés.",
+    "copyright": "© 2026 Nowly.",
     "trademark": "Discord est une marque déposée de",
     "support": "Soutenir le projet",
-    "thanks": "Merci beaucoup !",
+    "thanks": "Merci !",
     "redirect": "Redirection dans {countdown}s",
     "openSource": "Open source",
     "authorAlt": "Auteur",
     "languageLabel": "Afficher le site en",
     "french": "Français",
     "english": "Anglais",
+    "spanish": "Espagnol",
     "faq": "FAQ",
     "changelog": "Notes de version",
     "privacy": "Politique de confidentialité",
@@ -68,13 +69,13 @@
   },
   "KofiModal": {
     "title": "Le projet est gratuit",
-    "description": "Développé seul, sur mon temps libre. Un café aide à faire avancer les choses.",
+    "description": "Développé par une seule personne sur son temps libre. Un café aide à faire avancer le projet.",
     "support": "Soutenir sur Ko-fi",
     "skip": "Non merci, télécharger directement"
   },
   "Meta": {
-    "title": "Nowly | Rich Presence automatique",
-    "description": "Affichez automatiquement ce que vous regardez dans votre statut Discord. YouTube, Twitch, Plex, Prime Video, Cinepulse et plus."
+    "title": "Nowly | Rich Presence automatique pour Discord",
+    "description": "Affichez automatiquement ce que vous regardez dans votre statut Discord. YouTube, Twitch, Plex, Prime Video, Cinepulse et bien plus encore."
   },
   "Legal": {
     "privacy": {
@@ -92,7 +93,7 @@
   },
   "MarketplacePage": {
     "badge": "Marketplace",
-    "title": "Plateformes supportées",
+    "title": "Plateformes compatibles",
     "description": "Découvrez toutes les plateformes compatibles avec Nowly",
     "searchPlaceholder": "Rechercher une plateforme...",
     "sortLabel": "Trier par :",
@@ -105,7 +106,7 @@
       "music": "Musique",
       "tv": "TV et films",
       "anime": "Anime",
-      "other": "Autre"
+      "other": "Autres"
     },
     "results": "{count, plural, one {# plateforme trouvée} other {# plateformes trouvées}}",
     "empty": "Aucune plateforme trouvée",
@@ -119,19 +120,19 @@
   "MarketplaceDetail": {
     "breadcrumbHome": "Marketplace",
     "about": "À propos",
-    "supportedUrls": "URL(s) prise(s) en charge",
+    "supportedUrls": "URL compatibles",
     "features": "Fonctionnalités",
     "authorLabel": "Auteur",
     "contributorLabel": "Contributeur",
     "development": "Développement",
     "stats": "Statistiques",
     "activeUsers": "Utilisateurs actifs",
-    "totalInstalls": "Total installations",
+    "totalInstalls": "Installations totales",
     "rating": "Note",
     "addedAt": "Ajoutée le",
     "lastUpdated": "Dernière mise à jour",
-    "ready": "Prêt à utiliser",
-    "installed": "Presence installée",
+    "ready": "Disponible maintenant",
+    "installed": "Présence installée",
     "installAction": "Installer",
     "installedAction": "Installée",
     "installing": "Installation...",
@@ -140,18 +141,18 @@
     "updateDescription": "Une nouvelle version de la présence {platform} est disponible.",
     "uninstallAction": "Désinstaller",
     "uninstallConfirmTitle": "Supprimer la présence",
-    "uninstallConfirmDescription": "Si {platform} avait des données de configuration, elles seront définitivement perdues.",
+    "uninstallConfirmDescription": "Si {platform} contient des données de configuration, elles seront définitivement perdues.",
     "uninstallConfirmAction": "Supprimer",
     "uninstallConfirmCancel": "Annuler",
     "betaLabel": "Bêta",
-    "betaNote": "Version bêta - Des bugs peuvent survenir",
+    "betaNote": "Version bêta. Des erreurs peuvent survenir.",
     "comingSoon": "Bientôt disponible",
     "waiting": "En attente",
-    "source": "Source",
+    "source": "Code source",
     "back": "Retour au marketplace",
-    "activeDescription": "{platform} est actif dans votre extension",
+    "activeDescription": "{platform} est active dans votre extension",
     "addDescription": "Ajoutez {platform} à votre présence Discord",
     "yourRating": "Votre note",
-    "comingSoonDescription": "Le support de {platform} est en cours de développement."
+    "comingSoonDescription": "La prise en charge de {platform} est actuellement en cours de développement."
   }
 }
