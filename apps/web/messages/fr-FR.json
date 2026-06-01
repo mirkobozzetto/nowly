@@ -2,6 +2,7 @@
   "Navbar": {
     "marketplace": "Marketplace",
     "downloadDesktop": "Télécharger Companion",
+    "downloadFor": "Télécharger pour {browser}",
     "downloadShort": "Télécharger"
   },
   "HeroSection": {
@@ -26,7 +27,7 @@
     "steps": [
       {
         "title": "Installez l'application",
-        "description": "Téléchargez et installez DP_PROJECT_NAME sur votre ordinateur Windows. L'installation ne prend que quelques secondes."
+        "description": "Téléchargez et installez Nowly sur votre ordinateur Windows. L'installation ne prend que quelques secondes."
       },
       {
         "title": "Connectez Discord",
@@ -42,15 +43,15 @@
     "title": "Commencez maintenant",
     "description": "Aucun abonnement requis. Léger et sécurisé.",
     "downloadFor": "Télécharger pour {browser}",
-    "comingSoon": "{browser} - Bientôt",
+    "comingSoon": "Bientôt disponible",
     "extension": "Télécharger l'extension",
     "browser": "Navigateur",
-    "platforms": "Chrome / Edge",
+    "platforms": "Navigateurs basés sur Chromium supportés",
     "openSource": "Open source",
     "free": "Gratuit"
   },
   "Footer": {
-    "copyright": "© 2026 DP_PROJECT_NAME. Tous droits réservés.",
+    "copyright": "© 2026 Nowly. Tous droits réservés.",
     "trademark": "Discord est une marque déposée de",
     "support": "Soutenir le projet",
     "thanks": "Merci beaucoup !",
@@ -59,32 +60,11 @@
     "authorAlt": "Auteur",
     "languageLabel": "Afficher le site en",
     "french": "Français",
-    "english": "Anglais"
-  },
-  "CompanionWindow": {
-    "windowTitle": "DP_PROJECT_NAME",
-    "service": "Netflix",
-    "season": "Saison {season}",
-    "moviePosterAlt": "Affiche du film",
-    "title": "Stranger Things",
-    "episode": "Épisode 4 - Dear Billy",
-    "logs": [
-      {
-        "time": "12:34:56",
-        "text": "Connexion à Discord RPC établie",
-        "type": "success"
-      },
-      {
-        "time": "12:34:57",
-        "text": "Lecture d'un média sur Netflix",
-        "type": "highlight"
-      },
-      {
-        "time": "12:34:58",
-        "text": "Presence mise à jour avec succès",
-        "type": "success"
-      }
-    ]
+    "english": "Anglais",
+    "faq": "FAQ",
+    "changelog": "Notes de version",
+    "privacy": "Politique de confidentialité",
+    "tos": "Conditions d'utilisation"
   },
   "KofiModal": {
     "title": "Le projet est gratuit",
@@ -93,13 +73,27 @@
     "skip": "Non merci, télécharger directement"
   },
   "Meta": {
-    "title": "DP_PROJECT_NAME | Rich Presence automatique",
+    "title": "Nowly | Rich Presence automatique",
     "description": "Affichez automatiquement ce que vous regardez dans votre statut Discord. YouTube, Twitch, Plex, Prime Video, Cinepulse et plus."
+  },
+  "Legal": {
+    "privacy": {
+      "title": "Politique de confidentialité"
+    },
+    "tos": {
+      "title": "Conditions d'utilisation"
+    },
+    "faq": {
+      "title": "FAQ"
+    },
+    "changelog": {
+      "title": "Notes de version"
+    }
   },
   "MarketplacePage": {
     "badge": "Marketplace",
     "title": "Plateformes supportées",
-    "description": "Découvrez toutes les plateformes compatibles avec DP_PROJECT_NAME",
+    "description": "Découvrez toutes les plateformes compatibles avec Nowly",
     "searchPlaceholder": "Rechercher une plateforme...",
     "sortLabel": "Trier par :",
     "sortPopular": "Popularité",
