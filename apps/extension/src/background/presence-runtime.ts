@@ -1,12 +1,13 @@
 export const USER_SCRIPT_MESSAGE_SOURCE = "NOWLY_PRESENCE";
 
-export const createPresenceRuntime = (slug: string, name: string, bundle: string): string => `
+export const createPresenceRuntime = (slug: string, name: string, bundle: string, settings: Record<string, unknown> = {}): string => `
 (() => {
   "use strict";
 
   const NOWLY_SLUG = ${JSON.stringify(slug)};
   const NOWLY_NAME = ${JSON.stringify(name)};
   const NOWLY_SOURCE = ${JSON.stringify(USER_SCRIPT_MESSAGE_SOURCE)};
+  const NOWLY_SETTINGS = ${JSON.stringify(settings)};
   const listeners = new Map();
   const instances = [];
   const storage = new Map();
@@ -22,6 +23,22 @@ export const createPresenceRuntime = (slug: string, name: string, bundle: string
   class Presence {
     constructor() {
       instances.push(this);
+    }
+
+    static Settings(definitions) {
+      if (typeof __PRESENCE_SETTINGS__ !== "undefined") {
+        __PRESENCE_SETTINGS__ = definitions;
+      }
+      if (typeof definitions !== "object" || definitions === null) return {};
+      const defaults = {};
+      for (const [key, value] of Object.entries(definitions)) {
+        if (typeof value === "object" && value !== null && "default" in value) {
+          defaults[key] = value.default;
+        } else {
+          defaults[key] = value;
+        }
+      }
+      return defaults;
     }
 
     on(eventName, listener) {
@@ -73,6 +90,7 @@ export const createPresenceRuntime = (slug: string, name: string, bundle: string
       post("CLEAR_ACTIVITY");
     },
     storage,
+    settings: NOWLY_SETTINGS,
   };
 
   try {
@@ -92,7 +110,7 @@ export const createPresenceRuntime = (slug: string, name: string, bundle: string
           const eventListeners = listeners.get(instance);
           const callbacks = eventListeners?.get("UpdateData") ?? [];
           for (const callback of callbacks) {
-            Promise.resolve(callback()).catch((error) => {
+            Promise.resolve(callback(ctx)).catch((error) => {
               post("DEBUG", {
                 stage: "presence-error",
                 message: error instanceof Error ? error.message : "UpdateData failed",

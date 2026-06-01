@@ -3,7 +3,7 @@ import type { ExtensionMessage, ExtensionSettings, InstalledPresences, PresenceD
 import { connectNative, mapPresenceData, onNativeResponse, postNative, reconnectNative, refreshNativeStatus } from "./native";
 import { createPresenceRuntime, USER_SCRIPT_MESSAGE_SOURCE } from "./presence-runtime";
 import { verifyPresenceRelease } from "./release-security";
-import { getCurrentActivity, getDebug, getPresences, getSettings, setCurrentActivity, setDebug, setPresences, setSettings } from "./storage";
+import { getCurrentActivity, getDebug, getPresenceSettings, getPresences, getSettings, setCurrentActivity, setDebug, setPresences, setPresenceSettings, setSettings } from "./storage";
 
 const respond = <T>(sendResponse: (response?: T) => void, value: T): void => sendResponse(value);
 
@@ -117,6 +117,12 @@ const unregisterPresenceScript = async (slug: string): Promise<void> => {
   }
 };
 
+const getPresenceRuntime = async (slug: string, name: string, bundle: string): Promise<string> => {
+  const allSettings = await getPresenceSettings();
+  const presenceSettings = allSettings[slug] ?? {};
+  return createPresenceRuntime(slug, name, bundle, presenceSettings);
+};
+
 const registerPresenceScript = async (slug: string, presence: StoredPresence): Promise<{ ok: boolean; error?: string }> => {
   const userScripts = (chrome as ChromeWithUserScripts).userScripts;
   if (!userScripts) {
@@ -134,10 +140,11 @@ const registerPresenceScript = async (slug: string, presence: StoredPresence): P
 
   try {
     await unregisterPresenceScript(slug);
+    const code = await getPresenceRuntime(slug, metadata.name, presence.release.bundle);
     const script: RegisteredUserScript = {
       id: userScriptId(slug),
       matches,
-      js: [{ code: createPresenceRuntime(slug, metadata.name, presence.release.bundle) }],
+      js: [{ code }],
       runAt: "document_idle",
       allFrames: false,
       world: "USER_SCRIPT",
@@ -420,6 +427,24 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
     case "SET_SETTINGS":
       setSettings(message.payload as Partial<ExtensionSettings>).then((settings) => respond(sendResponse, settings));
       return true;
+
+    case "GET_PRESENCE_SETTINGS":
+      getPresenceSettings().then((settings) => respond(sendResponse, settings));
+      return true;
+
+    case "SET_PRESENCE_SETTINGS": {
+      const { slug, partial } = message.payload as { slug: string; partial: Record<string, unknown> };
+      void setPresenceSettings(slug, partial).then((settings) => {
+        respond(sendResponse, settings);
+        getPresences().then((presences) => {
+          const stored = presences[slug];
+          if (stored?.enabled && stored.release?.bundle) {
+            void registerPresenceScript(slug, stored);
+          }
+        });
+      });
+      return true;
+    }
 
     case "DEBUG":
       setDebug(message.payload as PresenceDebug).then(() => respond(sendResponse, { ok: true }));
