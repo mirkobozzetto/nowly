@@ -1,18 +1,20 @@
 import { Power, Settings, Trash2, X } from "lucide-react";
-import type { FC, ReactElement } from "react";
+import type { FC, MouseEvent, ReactElement } from "react";
 import { useEffect, useRef, useState } from "react";
 import { assetUrl } from "../../shared/api";
 import { t } from "../../shared/i18n";
 import type { StoredPresence } from "../../shared/types";
 
 type Props = {
+  onOpenMarketplace: (slug: string) => void;
   onRemove: (slug: string) => void;
   onToggle: (slug: string, enabled: boolean) => void;
   presence: StoredPresence;
   slug: string;
+  updateAvailable?: string;
 };
 
-export const PresenceListItem: FC<Props> = ({ onRemove, onToggle, presence, slug }): ReactElement | null => {
+export const PresenceListItem: FC<Props> = ({ onOpenMarketplace, onRemove, onToggle, presence, slug, updateAvailable }): ReactElement | null => {
   const [actionsOpen, setActionsOpen] = useState(false);
   const itemRef = useRef<HTMLElement | null>(null);
 
@@ -52,6 +54,18 @@ export const PresenceListItem: FC<Props> = ({ onRemove, onToggle, presence, slug
           <span className="truncate">
             {presence.enabled ? t("enabled") : t("disabled")}
             {presence.metadata.version ? ` - ${t("version", { version: presence.metadata.version })}` : ""}
+            {updateAvailable ? (
+              <button
+                type="button"
+                onClick={(event: MouseEvent) => {
+                  event.stopPropagation();
+                  onOpenMarketplace(slug);
+                }}
+                className="ml-1.5 inline-flex items-center gap-0.5 rounded bg-orange-500/15 px-1 py-0.5 text-[10px] font-medium text-orange-400 hover:bg-orange-500/25"
+              >
+                {t("updateAvailable")} v{updateAvailable}
+              </button>
+            ) : null}
           </span>
         </div>
       </div>

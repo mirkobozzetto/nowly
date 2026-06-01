@@ -109,6 +109,13 @@ export type WebMessageType =
   | "UNINSTALL_PRESENCE"
   | "GET_INSTALLED";
 
+export type PresenceDisplayMode = "category" | "alphabetical";
+
+export type ExtensionSettings = {
+  presenceDisplayMode: PresenceDisplayMode;
+  separateActivePresence: boolean;
+};
+
 export type ExtensionMessageType =
   | "GET_PRESENCES"
   | "GET_INSTALLED"
@@ -123,7 +130,10 @@ export type ExtensionMessageType =
   | "CLEAR_ACTIVITY"
   | "INSTALL_PRESENCE"
   | "UPDATE_PRESENCE"
-  | "DEBUG";
+  | "DEBUG"
+  | "CHECK_UPDATES"
+  | "GET_SETTINGS"
+  | "SET_SETTINGS";
 
 export type UserScriptsStatus = {
   enabled: boolean;

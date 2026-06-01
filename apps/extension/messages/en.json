@@ -50,5 +50,13 @@
   "onboardingUserScriptsTitle": "User Scripts Permission",
   "onboardingUserScriptsBody": "Nowly installs presences using user scripts. This is a sensitive permission because it allows code to run on the websites you visit. To reduce risk, presences are digitally signed and verified locally before installation, and only the minimum activity data required is sent to the native companion to update your Discord status. Enable “Allow User Scripts” only if you understand and accept how this works.",
   "onboardingUserScriptsHow": "To enable it, open your browser's extensions page, select Nowly, and enable the “Allow User Scripts” option.",
-  "onboardingUserScriptsOpenPage": "Open Extension Page"
+  "onboardingUserScriptsOpenPage": "Open Extension Page",
+
+  "updateAvailable": "Update",
+  "display": "Display",
+  "displayDescription": "Choose how presences are organized in the list.",
+  "displayCategory": "By category",
+  "displayAlphabetical": "Alphabetical",
+  "separateActive": "Separate current activity",
+  "separateActiveDescription": "Hides the active presence from the list."
 }

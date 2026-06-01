@@ -1,8 +1,9 @@
-import type { ExtensionMessage, InstalledPresences, PresenceData, PresenceDebug, PresenceRelease, StoredPresence } from "../shared/types";
+import { WEB_BASE_URL } from "../shared/constants";
+import type { ExtensionMessage, ExtensionSettings, InstalledPresences, PresenceData, PresenceDebug, PresenceRelease, StoredPresence } from "../shared/types";
 import { connectNative, mapPresenceData, onNativeResponse, postNative, reconnectNative, refreshNativeStatus } from "./native";
 import { createPresenceRuntime, USER_SCRIPT_MESSAGE_SOURCE } from "./presence-runtime";
 import { verifyPresenceRelease } from "./release-security";
-import { getCurrentActivity, getDebug, getPresences, setCurrentActivity, setDebug, setPresences } from "./storage";
+import { getCurrentActivity, getDebug, getPresences, getSettings, setCurrentActivity, setDebug, setPresences, setSettings } from "./storage";
 
 const respond = <T>(sendResponse: (response?: T) => void, value: T): void => sendResponse(value);
 
@@ -378,6 +379,38 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
 
     case "CLEAR_ACTIVITY":
       handleClearActivity().then((result) => respond(sendResponse, result));
+      return true;
+
+    case "CHECK_UPDATES":
+      getPresences().then(async (presences) => {
+        const updates: Record<string, string> = {};
+        const slugs = Object.keys(presences);
+        const results = await Promise.allSettled(
+          slugs.map((slug) =>
+            fetch(`${WEB_BASE_URL}/api/p/${slug}/release`)
+              .then((r) => r.json() as Promise<{ version: string }>)
+              .then((data) => ({ slug, latestVersion: data.version }))
+          )
+        );
+        for (const result of results) {
+          if (result.status === "fulfilled") {
+            const { slug, latestVersion } = result.value;
+            const installed = presences[slug].release?.metadata?.version;
+            if (installed && latestVersion !== installed) {
+              updates[slug] = latestVersion;
+            }
+          }
+        }
+        respond(sendResponse, updates);
+      });
+      return true;
+
+    case "GET_SETTINGS":
+      getSettings().then((settings) => respond(sendResponse, settings));
+      return true;
+
+    case "SET_SETTINGS":
+      setSettings(message.payload as Partial<ExtensionSettings>).then((settings) => respond(sendResponse, settings));
       return true;
 
     case "DEBUG":

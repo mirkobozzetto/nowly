@@ -50,5 +50,13 @@
   "onboardingUserScriptsTitle": "Permission des scripts utilisateur",
   "onboardingUserScriptsBody": "Nowly installe les présences sous forme de scripts utilisateur. Cette permission est sensible : elle autorise l'exécution de code sur les pages visitées. Pour limiter les risques, les présences sont signées et vérifiées localement avant leur installation, et seules les données d'activité strictement nécessaires sont transmises au compagnon natif afin de mettre à jour votre statut Discord. Activez « Autoriser les scripts utilisateur » uniquement si vous comprenez et acceptez ce fonctionnement.",
   "onboardingUserScriptsHow": "Pour l'activer, ouvrez la page des extensions de votre navigateur, sélectionnez Nowly, puis activez l'option « Autoriser les scripts utilisateur ».",
-  "onboardingUserScriptsOpenPage": "Ouvrir la page de l'extension"
+  "onboardingUserScriptsOpenPage": "Ouvrir la page de l'extension",
+
+  "updateAvailable": "Màj",
+  "display": "Affichage",
+  "displayDescription": "Choisissez comment les présences sont organisées dans la liste.",
+  "displayCategory": "Par catégorie",
+  "displayAlphabetical": "Alphabétique",
+  "separateActive": "Séparer l'activité en cours",
+  "separateActiveDescription": "Masque la présence active de la liste."
 }

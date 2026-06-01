@@ -1,9 +1,15 @@
-import type { CurrentActivity, DiscordProfileSnapshot, InstalledPresences, PresenceDebug } from "../shared/types";
+import type { CurrentActivity, DiscordProfileSnapshot, ExtensionSettings, InstalledPresences, PresenceDebug, PresenceDisplayMode } from "../shared/types";
 
 const PRESENCES_KEY = "presences";
 const ACTIVITY_KEY = "currentActivity";
 const DEBUG_KEY = "presenceDebug";
 const ONBOARDING_KEY = "onboarding";
+const SETTINGS_KEY = "settings";
+
+export const DEFAULT_SETTINGS: ExtensionSettings = {
+  presenceDisplayMode: "category" as PresenceDisplayMode,
+  separateActivePresence: false,
+};
 
 export const getPresences = (): Promise<InstalledPresences> =>
   chrome.storage.local.get(PRESENCES_KEY).then((result) => (
@@ -60,3 +66,15 @@ export const setNativeSeenConnectedOnce = (seen: boolean): Promise<void> =>
 
 export const setNativeProfile = (profile: DiscordProfileSnapshot | null): Promise<void> =>
   setOnboarding({ nativeProfile: profile });
+
+export const getSettings = async (): Promise<ExtensionSettings> => {
+  const result = await chrome.storage.local.get(SETTINGS_KEY);
+  return { ...DEFAULT_SETTINGS, ...(result[SETTINGS_KEY] as Partial<ExtensionSettings> | undefined) };
+};
+
+export const setSettings = async (partial: Partial<ExtensionSettings>): Promise<ExtensionSettings> => {
+  const current = await getSettings();
+  const next = { ...current, ...partial } satisfies ExtensionSettings;
+  await chrome.storage.local.set({ [SETTINGS_KEY]: next });
+  return next;
+};
