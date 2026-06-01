@@ -5,6 +5,7 @@ import { assetUrl } from "../../shared/api";
 import { t } from "../../shared/i18n";
 import type { StoredPresence } from "../../shared/types";
 import { PresenceActions } from "./PresenceActions";
+import { PresenceSettingsPanel } from "./PresenceSettingsPanel";
 
 type Props = {
   onOpenMarketplace: (slug: string) => void;
@@ -33,6 +34,8 @@ export const PresenceListItem: FC<Props> = ({ onOpenMarketplace, onRemove, onTog
   }, [actionsOpen]);
 
   if (!presence?.metadata) return null;
+
+  const hasSettings = presence.metadata.settings && typeof presence.metadata.settings === "object" && Object.keys(presence.metadata.settings).length > 0;
 
   return (
     <article
@@ -105,6 +108,10 @@ export const PresenceListItem: FC<Props> = ({ onOpenMarketplace, onRemove, onTog
         }}
         visible={actionsOpen}
       />
+
+      {hasSettings && (
+        <PresenceSettingsPanel definitions={presence.metadata.settings as Record<string, unknown>} slug={slug} />
+      )}
     </article>
   );
 };
