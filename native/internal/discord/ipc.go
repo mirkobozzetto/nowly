@@ -1,0 +1,202 @@
+package discord
+
+import (
+	"bytes"
+	"encoding/binary"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"os"
+	"runtime"
+	"time"
+)
+
+const (
+	opHandshake uint32 = 0
+	opFrame     uint32 = 1
+)
+
+type Client struct {
+	clientID string
+	conn     io.ReadWriteCloser
+	ready    bool
+}
+
+type Packet struct {
+	Op   uint32
+	Data map[string]any
+}
+
+func NewClient(clientID string) *Client {
+	return &Client{clientID: clientID}
+}
+
+func (c *Client) Connected() bool {
+	return c.conn != nil && c.ready
+}
+
+func (c *Client) Connect() error {
+	if c.Connected() {
+		return nil
+	}
+
+	c.Close()
+
+	conn, err := os.OpenFile(ipcPath(), os.O_RDWR, 0)
+	if err != nil {
+		return err
+	}
+	c.conn = conn
+
+	if _, err := c.conn.Write(encode(opHandshake, map[string]any{
+		"v":         1,
+		"client_id": c.clientID,
+	})); err != nil {
+		c.Close()
+		return err
+	}
+
+	packet, err := readPacket(c.conn)
+	if err != nil {
+		c.Close()
+		return err
+	}
+
+	if event, _ := packet.Data["evt"].(string); event != "READY" {
+		c.Close()
+		return errors.New("discord handshake failed")
+	}
+
+	c.ready = true
+	return nil
+}
+
+func (c *Client) SetActivity(activity Activity) error {
+	if err := c.Connect(); err != nil {
+		return err
+	}
+
+	err := c.writeCommand(map[string]any{
+		"cmd": "SET_ACTIVITY",
+		"args": map[string]any{
+			"pid":      os.Getpid(),
+			"activity": activity,
+		},
+		"nonce": nonce(),
+	})
+	if err == nil {
+		return nil
+	}
+
+	c.Close()
+	if reconnectErr := c.Connect(); reconnectErr != nil {
+		return reconnectErr
+	}
+	return c.writeCommand(map[string]any{
+		"cmd": "SET_ACTIVITY",
+		"args": map[string]any{
+			"pid":      os.Getpid(),
+			"activity": activity,
+		},
+		"nonce": nonce(),
+	})
+}
+
+func (c *Client) ClearActivity() error {
+	if err := c.Connect(); err != nil {
+		return err
+	}
+
+	err := c.writeCommand(map[string]any{
+		"cmd": "SET_ACTIVITY",
+		"args": map[string]any{
+			"pid":      os.Getpid(),
+			"activity": nil,
+		},
+		"nonce": nonce(),
+	})
+	if err == nil {
+		return nil
+	}
+
+	c.Close()
+	if reconnectErr := c.Connect(); reconnectErr != nil {
+		return reconnectErr
+	}
+	return c.writeCommand(map[string]any{
+		"cmd": "SET_ACTIVITY",
+		"args": map[string]any{
+			"pid":      os.Getpid(),
+			"activity": nil,
+		},
+		"nonce": nonce(),
+	})
+}
+
+func (c *Client) Close() {
+	if c.conn != nil {
+		_ = c.conn.Close()
+	}
+	c.conn = nil
+	c.ready = false
+}
+
+func (c *Client) writeCommand(payload map[string]any) error {
+	if c.conn == nil {
+		return errors.New("discord ipc is not connected")
+	}
+	_, err := c.conn.Write(encode(opFrame, payload))
+	return err
+}
+
+func ipcPath() string {
+	if runtime.GOOS == "windows" {
+		return `\\.\pipe\discord-ipc-0`
+	}
+
+	base := os.Getenv("XDG_RUNTIME_DIR")
+	if base == "" {
+		base = os.Getenv("TMPDIR")
+	}
+	if base == "" {
+		base = "/tmp"
+	}
+	return base + "/discord-ipc-0"
+}
+
+func encode(op uint32, payload any) []byte {
+	body, _ := json.Marshal(payload)
+	buffer := new(bytes.Buffer)
+	_ = binary.Write(buffer, binary.LittleEndian, op)
+	_ = binary.Write(buffer, binary.LittleEndian, uint32(len(body)))
+	_, _ = buffer.Write(body)
+	return buffer.Bytes()
+}
+
+func readPacket(reader io.Reader) (*Packet, error) {
+	var header [8]byte
+	if _, err := io.ReadFull(reader, header[:]); err != nil {
+		return nil, err
+	}
+
+	length := binary.LittleEndian.Uint32(header[4:8])
+	body := make([]byte, length)
+	if _, err := io.ReadFull(reader, body); err != nil {
+		return nil, err
+	}
+
+	var data map[string]any
+	if err := json.Unmarshal(body, &data); err != nil {
+		return nil, fmt.Errorf("decode discord packet: %w", err)
+	}
+
+	return &Packet{
+		Op:   binary.LittleEndian.Uint32(header[0:4]),
+		Data: data,
+	}, nil
+}
+
+func nonce() string {
+	return time.Now().Format("20060102150405.000000000")
+}
