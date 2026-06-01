@@ -15,5 +15,17 @@
   "enable": "Activer",
   "disable": "Désactiver",
   "remove": "Supprimer",
-  "version": "v{version}"
+  "version": "v{version}",
+  "activityTab": "Activité",
+  "settingsTab": "Réglages",
+  "connection": "Connexion",
+  "connectionDescription": "Gérez la connexion entre l'extension, le native host et Discord.",
+  "marketplaceDescription": "Installez, mettez à jour ou supprimez vos présences depuis le marketplace Nowly.",
+  "openMarketplace": "Ouvrir le marketplace",
+  "debug": "Debug",
+  "settings": "Réglages",
+  "close": "Fermer",
+  "uninstall": "Désinstaller",
+  "language": "Langue",
+  "languageDescription": "Utilise la langue du navigateur par défaut, ou force une langue pour Nowly."
 }

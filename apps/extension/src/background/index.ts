@@ -30,6 +30,21 @@ type ChromeWithUserScripts = typeof chrome & {
   };
 };
 
+type ChromeWithSidePanel = typeof chrome & {
+  sidePanel?: {
+    setPanelBehavior(options: { openPanelOnActionClick: boolean }): Promise<void>;
+  };
+};
+
+const enableSidePanelAction = (): void => {
+  const sidePanel = (chrome as ChromeWithSidePanel).sidePanel;
+  if (!sidePanel) return;
+
+  void sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {
+    // Some Chromium builds expose sidePanel without action-click behavior.
+  });
+};
+
 onNativeResponse((message) => {
   if (message.type === "ERROR") {
     void setDebug({
@@ -411,14 +426,20 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 });
 
 chrome.runtime.onStartup.addListener(() => {
+  enableSidePanelAction();
+  void handleClearActivity();
   connectNative();
   getPresences().then((presences) => void syncPresenceScripts(presences));
 });
 
 chrome.runtime.onInstalled.addListener(() => {
+  enableSidePanelAction();
+  void handleClearActivity();
   connectNative();
   getPresences().then((presences) => void syncPresenceScripts(presences));
 });
 
+enableSidePanelAction();
+void handleClearActivity();
 connectNative();
 getPresences().then((presences) => void syncPresenceScripts(presences));

@@ -15,5 +15,17 @@
   "enable": "Enable",
   "disable": "Disable",
   "remove": "Remove",
-  "version": "v{version}"
+  "version": "v{version}",
+  "activityTab": "Activity",
+  "settingsTab": "Settings",
+  "connection": "Connection",
+  "connectionDescription": "Manage the connection between the extension, native host, and Discord.",
+  "marketplaceDescription": "Install, update, or remove your presences from the Nowly marketplace.",
+  "openMarketplace": "Open marketplace",
+  "debug": "Debug",
+  "settings": "Settings",
+  "close": "Close",
+  "uninstall": "Uninstall",
+  "language": "Language",
+  "languageDescription": "Use the browser language by default, or force a language for Nowly."
 }

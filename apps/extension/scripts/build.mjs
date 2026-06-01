@@ -11,16 +11,16 @@ const DIST = join(ROOT, "dist");
 rmSync(DIST, { recursive: true, force: true });
 mkdirSync(DIST, { recursive: true });
 
-const buildPopup = async () => {
+const buildPage = async (name) => {
   await build({
-    root: join(ROOT, "src", "popup"),
+    root: join(ROOT, "src", name),
     base: "./",
     plugins: [react()],
     build: {
-      outDir: join(DIST, "popup"),
+      outDir: join(DIST, name),
       emptyOutDir: true,
       rollupOptions: {
-        input: join(ROOT, "src", "popup", "index.html"),
+        input: join(ROOT, "src", name, "index.html"),
       },
     },
     configFile: false,
@@ -53,6 +53,8 @@ const copyManifest = () => {
   delete manifest.background.type;
   manifest.content_scripts[0].js = ["content.js"];
   manifest.action.default_popup = "popup/index.html";
+  delete manifest.action.default_popup;
+  manifest.side_panel.default_path = "sidepanel/index.html";
   manifest.icons = {
     16: "icons/icon16.png",
     48: "icons/icon48.png",
@@ -70,10 +72,12 @@ const copyStatic = () => {
       join(DIST, "icons", `icon${size}.png`),
     );
   }
+  copyFileSync(join(ROOT, "..", "web", "public", "app_title.png"), join(DIST, "app_title.png"));
   cpSync(join(ROOT, "_locales"), join(DIST, "_locales"), { recursive: true });
 };
 
-await buildPopup();
+await buildPage("popup");
+await buildPage("sidepanel");
 await buildScript("background", join(ROOT, "src", "background", "index.ts"));
 await buildScript("content", join(ROOT, "src", "content", "index.ts"));
 copyManifest();
