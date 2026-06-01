@@ -7,6 +7,7 @@ export interface PresenceData {
   largeImageText?: string;
   smallImageKey?: string;
   smallImageText?: string;
+  type?: number;
   buttons?: { label: string; url: string }[];
 }
 
@@ -27,6 +28,7 @@ export type PlatformStatus = "available" | "soon" | "beta";
 export interface Metadata {
   slug?: string;
   name: string;
+  version?: string;
   author: { name: string; github?: string };
   contributors?: { name: string; github?: string }[];
   description: Record<string, string>;

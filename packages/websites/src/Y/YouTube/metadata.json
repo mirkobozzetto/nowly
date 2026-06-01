@@ -7,10 +7,9 @@
   "url": [
     "youtube.com",
     "www.youtube.com",
-    "youtu.be",
-    "music.youtube.com"
+    "youtu.be"
   ],
-  "regExp": "^https?://(www|music|m)\\.youtube\\.com/",
+  "regExp": "^https?://(www|m)\\.youtube\\.com/",
   "color": "#FF0033",
   "category": "streaming",
   "tags": [
