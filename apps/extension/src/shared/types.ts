@@ -62,6 +62,7 @@ export type PresenceMetadata = {
   category: "streaming" | "music" | "tv" | "anime" | "other";
   tags: string[];
   version?: string | null;
+  settings?: Record<string, unknown>;
   assets: {
     logo: string;
     icon: string;
@@ -116,6 +117,8 @@ export type ExtensionSettings = {
   separateActivePresence: boolean;
 };
 
+export type PresenceSettings = Record<string, unknown>;
+
 export type ExtensionMessageType =
   | "GET_PRESENCES"
   | "GET_INSTALLED"
@@ -133,7 +136,9 @@ export type ExtensionMessageType =
   | "DEBUG"
   | "CHECK_UPDATES"
   | "GET_SETTINGS"
-  | "SET_SETTINGS";
+  | "SET_SETTINGS"
+  | "GET_PRESENCE_SETTINGS"
+  | "SET_PRESENCE_SETTINGS";
 
 export type UserScriptsStatus = {
   enabled: boolean;
