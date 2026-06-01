@@ -1,7 +1,5 @@
 "use client";
 
-import { PROJECT_REPOSITORY_URL } from "@/lib/constants";
-import { Heart } from "lucide-react";
 import { Button, buttonVariants } from "@/components/l-ui/button";
 import {
   Select,
@@ -10,7 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PROJECT_REPOSITORY_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { Heart } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -59,11 +59,19 @@ export const Footer: FC = (): ReactElement => {
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between flex-wrap gap-5">
             <div className="flex items-center gap-3">
-              <img
-                src="https://avatars.githubusercontent.com/u/51194216?v=4"
-                alt={t("authorAlt")}
-                className="w-10 h-10 rounded-full border-2 border-white/10 object-cover shrink-0"
-              />
+              <div className="flex -space-x-4">
+                <img
+                  src="https://avatars.githubusercontent.com/u/51194216?v=4"
+                  alt={t("authorAlt")}
+                  className="w-10 h-10 rounded-full border-2 border-background object-cover shrink-0 relative z-2"
+                />
+
+                <img
+                  src="https://avatars.githubusercontent.com/steellgold?v=4"
+                  alt="steellgold"
+                  className="w-10 h-10 rounded-full border-2 border-background object-cover shrink-0 relative z-1"
+                />
+              </div>
               <div className="text-left">
                 <p className="text-muted-foreground">{t("copyright")}</p>
                 <small className="opacity-60 text-xs">
