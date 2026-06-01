@@ -4,7 +4,7 @@ dist
 *.tsbuildinfo
 
 # Native host (Go binaries)
-native/dist/
+apps/native/dist/
 
 # Extension (managed separately)
 # apps/extension/
@@ -13,3 +13,6 @@ old-native/
 
 # Local environment variables
 .env.local
+
+# Extension signing key (keep secret!)
+extension-key.pem

