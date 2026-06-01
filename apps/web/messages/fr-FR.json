@@ -1,6 +1,6 @@
 {
   "Navbar": {
-    "marketplace": "Marketplace",
+    "marketplace": "Bibliothèque",
     "downloadDesktop": "Télécharger l'application",
     "downloadFor": "Télécharger pour {browser}",
     "downloadShort": "Télécharger"
@@ -92,7 +92,7 @@
     }
   },
   "MarketplacePage": {
-    "badge": "Marketplace",
+    "badge": "Bibliothèque",
     "title": "Plateformes compatibles",
     "description": "Découvrez toutes les plateformes compatibles avec Nowly",
     "searchPlaceholder": "Rechercher une plateforme...",
@@ -118,7 +118,7 @@
     "statusBeta": "Bêta"
   },
   "MarketplaceDetail": {
-    "breadcrumbHome": "Marketplace",
+    "breadcrumbHome": "Bibliothèque",
     "about": "À propos",
     "supportedUrls": "URL compatibles",
     "features": "Fonctionnalités",
@@ -153,7 +153,7 @@
     "comingSoon": "Bientôt disponible",
     "waiting": "En attente",
     "source": "Code source",
-    "back": "Retour au marketplace",
+    "back": "Retour à la bibliothèque",
     "activeDescription": "{platform} est active dans votre extension",
     "addDescription": "Ajoutez {platform} à votre présence Discord",
     "yourRating": "Votre note",
