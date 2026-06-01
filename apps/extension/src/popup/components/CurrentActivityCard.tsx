@@ -1,4 +1,4 @@
-import { CirclePause, CirclePlay, Radio } from "lucide-react";
+import { CirclePlay } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { assetUrl } from "../../shared/api";
 import { t } from "../../shared/i18n";
@@ -34,14 +34,8 @@ export const CurrentActivityCard: FC<Props> = ({ activity, presences }): ReactEl
 
       <div className="relative z-1 flex items-center justify-between border-b border-border px-4 py-3">
         <div className="flex items-center gap-2">
-          <Radio className={hasActivity ? "h-4 w-4 text-accent" : "h-4 w-4 text-dim-foreground"} />
           <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("current")}</h2>
         </div>
-        {hasActivity ? (
-          <CirclePause className="h-4 w-4 text-accent" />
-        ) : (
-          <CirclePlay className="h-4 w-4 text-dim-foreground" />
-        )}
       </div>
 
       <div className="relative z-1 flex items-center gap-3 p-4">

@@ -4,6 +4,7 @@ import { sendMessage, type NativeStatus } from "../lib/messages";
 
 type ExtensionState = {
   activity: CurrentActivity | null;
+  checkUpdates: () => void;
   connectNative: () => void;
   debug: PresenceDebug | null;
   entries: Array<[string, InstalledPresences[string]]>;
@@ -37,25 +38,25 @@ export const useExtensionState = (): ExtensionState => {
 
   const entries = useMemo(() => Object.entries(presences), [presences]);
 
-  useEffect(() => {
-    const refresh = (): void => {
-      void Promise.all([
-        sendMessage<InstalledPresences>("GET_PRESENCES"),
-        sendMessage<CurrentActivity | null>("GET_CURRENT_ACTIVITY"),
-        sendMessage<NativeStatus>("GET_NATIVE_STATUS"),
-        sendMessage<PresenceDebug | null>("GET_DEBUG"),
-        sendMessage<Record<string, string>>("CHECK_UPDATES"),
-        sendMessage<ExtensionSettings>("GET_SETTINGS"),
-      ]).then(([nextPresences, nextActivity, nextNativeStatus, nextDebug, nextUpdates, nextSettings]) => {
-        setPresences(nextPresences ?? {});
-        setActivity(nextActivity ?? null);
-        setNativeStatus(nextNativeStatus ?? FALLBACK_NATIVE_STATUS);
-        setDebug(nextDebug ?? null);
-        setUpdates(nextUpdates ?? {});
-        setSettingsState(nextSettings ?? FALLBACK_SETTINGS);
-      });
-    };
+  const refresh = useCallback((): void => {
+    void Promise.all([
+      sendMessage<InstalledPresences>("GET_PRESENCES"),
+      sendMessage<CurrentActivity | null>("GET_CURRENT_ACTIVITY"),
+      sendMessage<NativeStatus>("GET_NATIVE_STATUS"),
+      sendMessage<PresenceDebug | null>("GET_DEBUG"),
+      sendMessage<Record<string, string>>("CHECK_UPDATES"),
+      sendMessage<ExtensionSettings>("GET_SETTINGS"),
+    ]).then(([nextPresences, nextActivity, nextNativeStatus, nextDebug, nextUpdates, nextSettings]) => {
+      setPresences(nextPresences ?? {});
+      setActivity(nextActivity ?? null);
+      setNativeStatus(nextNativeStatus ?? FALLBACK_NATIVE_STATUS);
+      setDebug(nextDebug ?? null);
+      setUpdates(nextUpdates ?? {});
+      setSettingsState(nextSettings ?? FALLBACK_SETTINGS);
+    });
+  }, []);
 
+  useEffect(() => {
     refresh();
     const interval = window.setInterval(refresh, 3000);
 
@@ -82,7 +83,7 @@ export const useExtensionState = (): ExtensionState => {
       chrome.storage.onChanged.removeListener(onStorageChanged);
       chrome.runtime.onMessage.removeListener(onRuntimeMessage);
     };
-  }, []);
+  }, [refresh]);
 
   const togglePresence = (slug: string, enabled: boolean): void => {
     void sendMessage("TOGGLE_PRESENCE", { slug, enabled }).then(() => {
@@ -119,6 +120,7 @@ export const useExtensionState = (): ExtensionState => {
 
   return {
     activity,
+    checkUpdates: refresh,
     connectNative,
     debug,
     entries,

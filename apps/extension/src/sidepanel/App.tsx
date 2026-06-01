@@ -13,7 +13,7 @@ import { SidepanelNav, type SidepanelView } from "./components/SidepanelNav";
 // import { useOnboardingState } from "./hooks/useOnboardingState";
 
 const App: FC = (): ReactElement => {
-  const { activity, connectNative, debug, entries, nativeStatus, presences, removePresence, togglePresence, updates, settings, setSettings } =
+  const { activity, checkUpdates, connectNative, debug, entries, nativeStatus, presences, removePresence, togglePresence, updates, settings, setSettings } =
     useExtensionState();
   const { localePreference, setLocalePreference } = useLocalePreference();
   const [activeView, setActiveView] = useState<SidepanelView>("activity");
@@ -31,13 +31,13 @@ const App: FC = (): ReactElement => {
   };
 
   const onOpenMarketplace = (slug: string): void => {
-    void chrome.tabs.create({ url: `${WEB_BASE_URL}/${marketplaceLocale()}/marketplace/${slug}` });
+    void chrome.tabs.create({ url: `${WEB_BASE_URL}/${marketplaceLocale()}/library/${slug}` });
   };
 
   return (
     <main className="relative min-h-screen bg-background text-foreground">
       <div className="flex min-h-screen w-full min-w-0 flex-col gap-4 p-3">
-        <Header nativeStatus={nativeStatus} onConnect={connectNative} />
+        <Header checkUpdates={checkUpdates} nativeStatus={nativeStatus} onConnect={connectNative} />
         <SidepanelNav activeView={activeView} onChange={setActiveView} />
 
         {activeView === "activity" && (

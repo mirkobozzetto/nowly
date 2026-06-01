@@ -77,7 +77,7 @@ export const SettingsView: FC<Props> = ({
       <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("marketplace")}</h2>
       <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("marketplaceDescription")}</p>
       <a
-        href={`${WEB_BASE_URL}/${marketplaceLocale(localePreference)}/marketplace`}
+        href={`${WEB_BASE_URL}/${marketplaceLocale(localePreference)}/library`}
         target="_blank"
         rel="noreferrer"
         className="inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card-2 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"

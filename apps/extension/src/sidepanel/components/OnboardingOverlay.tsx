@@ -99,7 +99,7 @@ export const OnboardingOverlay: FC<Props> = ({
                 <div className="flex flex-wrap items-center gap-2">
                   <NativeStatusButton nativeStatus={nativeStatus} onConnect={onConnectNative} />
                   <a
-                    href={`${WEB_BASE_URL}/${marketplaceLocale(localePreference)}/marketplace`}
+                    href={`${WEB_BASE_URL}/${marketplaceLocale(localePreference)}/library`}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card-2 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
