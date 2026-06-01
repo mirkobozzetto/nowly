@@ -3,7 +3,7 @@ package discord
 import "nowly.client/native/internal/contract"
 
 type Activity struct {
-	Name       string      `json:"name"`
+	Name       string      `json:"name,omitempty"`
 	Type       int         `json:"type"`
 	Details    string      `json:"details,omitempty"`
 	State      string      `json:"state,omitempty"`
@@ -26,13 +26,9 @@ type Assets struct {
 func ActivityFromPresence(p contract.PresencePayload) Activity {
 	activity := Activity{
 		Name:    p.Name,
-		Type:    0,
+		Type:    p.Type,
 		Details: p.Details,
 		State:   p.State,
-	}
-
-	if p.Type != 0 {
-		activity.Type = p.Type
 	}
 
 	if p.StartTime > 0 || p.EndTime > 0 {

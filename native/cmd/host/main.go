@@ -7,17 +7,21 @@ import (
 
 	"nowly.client/native/internal/contract"
 	"nowly.client/native/internal/discord"
+	"nowly.client/native/internal/logging"
 	nativeprotocol "nowly.client/native/internal/native"
 )
 
 func main() {
+	logger, _ := logging.New()
+	defer logger.Close()
+	logger.Printf("nowly host starting pid=%d", os.Getpid())
+
 	protocol := nativeprotocol.NewProtocol(os.Stdin, os.Stdout)
 	client := discord.NewClient(contract.DiscordClientID)
+	client.SetLogger(logger)
 	defer client.Close()
 
-	if err := client.Connect(); err == nil {
-		_ = protocol.Write(contract.Connected())
-	}
+	_ = protocol.Write(contract.Connected())
 
 	for {
 		var message contract.NativeMessage
@@ -31,32 +35,42 @@ func main() {
 
 		switch message.Type {
 		case contract.MessagePing:
-			status := "ok"
-			if err := client.Connect(); err != nil {
-				status = err.Error()
+			logger.Printf("native <- PING")
+			status := "connected"
+			if client.Connected() {
+				status = "discord connected"
 			}
-			_ = protocol.Write(contract.Pong(client.Connected(), status))
+			logger.Printf("native -> PONG connected=true status=%q", status)
+			_ = protocol.Write(contract.Pong(true, status))
 
 		case contract.MessageSetActivity:
+			logger.Printf("native <- SET_ACTIVITY presence=%+v", message.Presence)
 			if message.Presence == nil {
+				logger.Printf("native -> ERROR presence missing")
 				_ = protocol.Write(contract.Error("presence missing"))
 				continue
 			}
 			activity := discord.ActivityFromPresence(*message.Presence)
 			if err := client.SetActivity(activity); err != nil {
+				logger.Printf("native -> ERROR %v", err)
 				_ = protocol.Write(contract.Error(err.Error()))
 				continue
 			}
+			logger.Printf("native -> OK set activity")
 			_ = protocol.Write(contract.OK())
 
 		case contract.MessageClearActivity:
+			logger.Printf("native <- CLEAR_ACTIVITY")
 			if err := client.ClearActivity(); err != nil {
+				logger.Printf("native -> ERROR %v", err)
 				_ = protocol.Write(contract.Error(err.Error()))
 				continue
 			}
+			logger.Printf("native -> OK clear activity")
 			_ = protocol.Write(contract.OK())
 
 		default:
+			logger.Printf("native -> ERROR unknown message type %q", message.Type)
 			_ = protocol.Write(contract.Error("unknown message type"))
 		}
 	}

@@ -10,6 +10,8 @@ import (
 	"os"
 	"runtime"
 	"time"
+
+	"nowly.client/native/internal/logging"
 )
 
 const (
@@ -21,6 +23,7 @@ type Client struct {
 	clientID string
 	conn     io.ReadWriteCloser
 	ready    bool
+	logger   *logging.Logger
 }
 
 type Packet struct {
@@ -30,6 +33,10 @@ type Packet struct {
 
 func NewClient(clientID string) *Client {
 	return &Client{clientID: clientID}
+}
+
+func (c *Client) SetLogger(logger *logging.Logger) {
+	c.logger = logger
 }
 
 func (c *Client) Connected() bool {
@@ -42,9 +49,11 @@ func (c *Client) Connect() error {
 	}
 
 	c.Close()
+	c.log("discord connect opening %s", ipcPath())
 
 	conn, err := os.OpenFile(ipcPath(), os.O_RDWR, 0)
 	if err != nil {
+		c.log("discord connect open failed: %v", err)
 		return err
 	}
 	c.conn = conn
@@ -54,14 +63,17 @@ func (c *Client) Connect() error {
 		"client_id": c.clientID,
 	})); err != nil {
 		c.Close()
+		c.log("discord handshake write failed: %v", err)
 		return err
 	}
 
 	packet, err := readPacket(c.conn)
 	if err != nil {
 		c.Close()
+		c.log("discord handshake read failed: %v", err)
 		return err
 	}
+	c.log("discord handshake response: %+v", packet.Data)
 
 	if event, _ := packet.Data["evt"].(string); event != "READY" {
 		c.Close()
@@ -69,6 +81,7 @@ func (c *Client) Connect() error {
 	}
 
 	c.ready = true
+	c.log("discord connected")
 	return nil
 }
 
@@ -146,8 +159,36 @@ func (c *Client) writeCommand(payload map[string]any) error {
 	if c.conn == nil {
 		return errors.New("discord ipc is not connected")
 	}
-	_, err := c.conn.Write(encode(opFrame, payload))
-	return err
+	c.log("discord command -> %+v", payload)
+	if _, err := c.conn.Write(encode(opFrame, payload)); err != nil {
+		c.log("discord command write failed: %v", err)
+		return err
+	}
+
+	packet, err := readPacket(c.conn)
+	if err != nil {
+		c.log("discord command read failed: %v", err)
+		return err
+	}
+	c.log("discord command <- op=%d data=%+v", packet.Op, packet.Data)
+
+	if event, _ := packet.Data["evt"].(string); event == "ERROR" {
+		if data, ok := packet.Data["data"].(map[string]any); ok {
+			code := data["code"]
+			message := data["message"]
+			return fmt.Errorf("discord rpc error %v: %v", code, message)
+		}
+		return errors.New("discord rpc error")
+	}
+
+	return nil
+}
+
+func (c *Client) log(format string, args ...any) {
+	if c.logger == nil {
+		return
+	}
+	c.logger.Printf(format, args...)
 }
 
 func ipcPath() string {
