@@ -1,19 +1,13 @@
-export interface PresenceData {
-  details?: string;
-  state?: string;
-  startTimestamp?: number;
-  endTimestamp?: number;
-  largeImageKey?: string;
-  largeImageText?: string;
-  smallImageKey?: string;
-  smallImageText?: string;
-  buttons?: { label: string; url: string }[];
-}
+export type { PresenceData } from "@nowly/presence";
+export { PresenceType } from "@nowly/presence";
+
+import type { PresenceData } from "@nowly/presence";
 
 export interface PresenceContext {
   setActivity(data: PresenceData): void;
   clearActivity(): void;
   storage: Map<string, unknown>;
+  settings: Record<string, unknown>;
 }
 
 export interface PresenceFactory {
@@ -27,6 +21,7 @@ export type PlatformStatus = "available" | "soon" | "beta";
 export interface Metadata {
   slug?: string;
   name: string;
+  version?: string;
   author: { name: string; github?: string };
   contributors?: { name: string; github?: string }[];
   description: Record<string, string>;
@@ -37,6 +32,7 @@ export interface Metadata {
   category: "streaming" | "music" | "tv" | "anime" | "other";
   tags: string[];
   features?: Record<string, string[]>;
+  settings?: Record<string, unknown>;
   assets: {
     logo: string;
     icon: string;

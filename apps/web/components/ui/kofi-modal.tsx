@@ -1,17 +1,7 @@
 "use client";
 
+import { Dialog, DialogAction, DialogCancel, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogMedia, DialogTitle } from "@/components/l-ui/dialog";
 import { PROJECT_EXTENSION_DOWNLOAD_URL } from "@/lib/constants";
-import {
-  Dialog,
-  DialogAction,
-  DialogCancel,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogMedia,
-  DialogTitle,
-} from "@/components/l-ui/dialog";
 
 interface KofiModalProps {
   isOpen: boolean

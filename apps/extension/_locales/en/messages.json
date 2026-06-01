@@ -1,0 +1,14 @@
+{
+  "extensionName": {
+    "message": "Nowly"
+  },
+  "extensionDescription": {
+    "message": "Share your web activity on Discord automatically."
+  },
+  "playing": {
+    "message": "Playing"
+  },
+  "paused": {
+    "message": "Playback Paused"
+  }
+}

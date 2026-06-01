@@ -3,7 +3,7 @@
 import { ASSET_URL } from "@/lib/assets";
 import { metadataToPlatform } from "@/lib/data/presence-adapter";
 import type { Platform } from "@/lib/data/platforms";
-import type { Metadata } from "@presence/websites";
+import type { Metadata } from "@nowly/websites";
 import type { FC, ReactElement } from "react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -49,7 +49,7 @@ export const PlatformsSection: FC = (): ReactElement => {
                 {available.map((platform) => (
                   <Link
                     key={platform.slug}
-                    href={`/${locale}/marketplace/${platform.slug}`}
+                     href={`/${locale}/library/${platform.slug}`}
                     className="bg-card border border-border rounded-lg p-5 text-center transition-all hover:border-muted-foreground hover:bg-card-hover hover:-translate-y-0.5 cursor-pointer"
                   >
                     <div className="w-9 h-9 mx-auto mb-3 flex items-center justify-center">

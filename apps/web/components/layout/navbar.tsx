@@ -1,8 +1,10 @@
 "use client";
 
 import { buttonVariants } from "@/components/l-ui/button";
+import { buttonVariants as _buttonVariants } from "@/components/ui/button";
+import { useBrowser } from "@/hooks/use-browser";
 import { cn } from "@/lib/utils";
-import { Download, Radio } from "lucide-react";
+import { Download } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
@@ -10,6 +12,7 @@ import { useEffect, useState } from "react";
 
 export const Navbar: FC = (): ReactElement => {
   const [scrolled, setScrolled] = useState(false);
+  const browser = useBrowser();
   const locale = useLocale();
   const t = useTranslations("Navbar");
 
@@ -30,16 +33,14 @@ export const Navbar: FC = (): ReactElement => {
     >
       <div className="max-w-300 mx-auto px-6">
         <div className="flex items-center justify-between">
-          <Link href={`/${locale}`} className="flex items-center gap-2.5 font-bold text-base">
-            <Radio className="w-6 h-6 text-accent" />
-
-            Presence<span className="text-muted-foreground">Discord</span>
+          <Link href={`/${locale}`}>
+            <img src="/app_title_white.png" alt="Nowly" className="h-8 w-auto" />
           </Link>
           
           <div className="flex items-center gap-3">
             <Link
-              href={`/${locale}/marketplace`}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors hidden sm:block"
+               href={`/${locale}/library`}
+              className={_buttonVariants({ variant: "link" })}
             >
               {t("marketplace")}
             </Link>
@@ -48,9 +49,12 @@ export const Navbar: FC = (): ReactElement => {
               href="#download"
               className={buttonVariants({ size: "md", variant: "accent" })}
             >
-              <Download className="w-4 h-4" />
-              <span className="hidden sm:inline">{t("downloadDesktop")}</span>
-              <span className="sm:hidden">{t("downloadShort")}</span>
+              <Download size={16} />
+
+              <span className="hidden sm:inline">
+                {browser ? t("downloadFor", { browser }) : t("downloadDesktop")}
+              </span>
+              <span className="sm:hidden">{browser || t("downloadShort")}</span>
             </Link>
           </div>
         </div>
