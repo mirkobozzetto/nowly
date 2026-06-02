@@ -1,6 +1,7 @@
 "use client";
 
 import { ASSET_URL } from "@/lib/assets";
+import { API_BASE_URL } from "@/lib/constants";
 import { metadataToPlatform } from "@/lib/data/presence-adapter";
 import type { Platform } from "@/lib/data/platforms";
 import type { Metadata } from "@nowly/websites";
@@ -15,7 +16,7 @@ export const PlatformsSection: FC = (): ReactElement => {
   const [platforms, setPlatforms] = useState<Platform[]>([]);
 
   useEffect(() => {
-    fetch("/api/p")
+    fetch(`${API_BASE_URL}/presences`)
       .then((res) => res.json())
       .then((metadata: Metadata[]) => setPlatforms(metadata.map(metadataToPlatform)))
       .catch(() => {});
