@@ -8,7 +8,9 @@
 
 #define HostName "nowly.client"
 #define InstallFolder "NowlyClient"
-#define ExtensionID "abbegmindbabanjcabnmcjmamaoffbam"
+#ifndef EXTENSION_ID
+  #define EXTENSION_ID "abbegmindbabanjcabnmcjmamaoffbam"
+#endif
 
 [Setup]
 AppId={{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}
@@ -22,7 +24,7 @@ DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 OutputDir=dist
 OutputBaseFilename=NowlySetup
-SetupIconFile=
+SetupIconFile=installer.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2/max
 SolidCompression=yes
@@ -38,6 +40,7 @@ Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 Source: "dist\nowly-host.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "dist\nowly-installer.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "dist\nowly-uninstaller.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "installer.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 [Registry]
 Root: HKCU; Subkey: "Software\Google\Chrome\NativeMessagingHosts\{#HostName}"; ValueType: string; ValueData: "{app}\{#HostName}.json"; Flags: uninsdeletekey
@@ -71,7 +74,7 @@ begin
       '  "path": "' + HostPath + '",' + #13#10 +
       '  "type": "stdio",' + #13#10 +
       '  "allowed_origins": [' + #13#10 +
-      '    "chrome-extension://{#ExtensionID}/"' + #13#10 +
+      '    "chrome-extension://{#EXTENSION_ID}/"' + #13#10 +
       '  ]' + #13#10 +
       '}';
 
