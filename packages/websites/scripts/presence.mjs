@@ -6,7 +6,7 @@ import { execSync } from "child_process"
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, "..", "..", "..")
 const SRC = join(__dirname, "..", "src")
-const API_BASE = process.env.API_URL ?? "http://localhost:3000"
+const API_BASE = process.env.API_URL ?? "https://nowly.me"
 
 let API_KEY = process.env.API_SECRET_KEY
 if (!API_KEY) {
