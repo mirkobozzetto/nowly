@@ -57,6 +57,7 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
   const [totalInstalls, setTotalInstalls] = useState(platform.totalInstalls);
   const [showUninstallConfirm, setShowUninstallConfirm] = useState(false);
   const [savedRating, setSavedRating] = useState(0);
+  const [deviceId, setDeviceId] = useState<string | null>(null);
   const [installingVersion, setInstallingVersion] = useState<string | null>(null);
   const [pendingVersion, setPendingVersion] = useState<string | null>(null);
   const [showDowngradeConfirm, setShowDowngradeConfirm] = useState(false);
@@ -89,9 +90,12 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
       }
 
       if (msg.source === EXT_SOURCE && msg.type === "USER_RATINGS") {
-        const ratings = msg.payload as Record<string, number> | undefined;
-        if (ratings?.[platform.slug]) {
-          setSavedRating(ratings[platform.slug]);
+        const payload = msg.payload as { ratings?: Record<string, number>; deviceId?: string } | undefined;
+        if (payload?.ratings?.[platform.slug]) {
+          setSavedRating(payload.ratings[platform.slug]);
+        }
+        if (payload?.deviceId) {
+          setDeviceId(payload.deviceId);
         }
       }
 
@@ -289,6 +293,7 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
                 slug={platform.slug}
                 canRate={extDetected && isInstalled}
                 savedRating={savedRating}
+                deviceId={deviceId}
               />
 
               <InstallVersionsCard

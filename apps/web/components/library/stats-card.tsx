@@ -16,13 +16,14 @@ type Props = {
   slug: string
   canRate?: boolean
   savedRating?: number
+  deviceId?: string | null
 };
 
 const EXT_SOURCE = "Nowly";
 let _msgId = 0;
 const nextId = (): string => `r${_msgId++}_${Date.now()}`;
 
-export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRating }): ReactElement => {
+export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRating, deviceId }): ReactElement => {
   const t = useTranslations("MarketplaceDetail");
   const [userRating, setUserRating] = useState(savedRating ?? 0);
   const [hoveredStar, setHoveredStar] = useState(0);
@@ -43,7 +44,7 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRat
         fetch(`${API_BASE_URL}/presences/${slug}/rating`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ rating }),
+          body: JSON.stringify({ rating, deviceId }),
         }),
         window.postMessage(
           { source: EXT_SOURCE, type: "SAVE_USER_RATING", payload: { slug, rating }, messageId: nextId() },

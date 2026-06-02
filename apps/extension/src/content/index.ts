@@ -4,6 +4,7 @@ import type { WebMessage } from "../shared/types";
 const USER_SCRIPT_MESSAGE_SOURCE = "NOWLY_PRESENCE";
 const IS_UNPACKED = !chrome.runtime.getManifest().update_url;
 const RATINGS_KEY = "userRatings";
+const DEVICE_KEY = "deviceId";
 let MARKETPLACE_ORIGIN = new URL(WEB_BASE_URL).origin;
 const WEB_MESSAGE_TYPES = new Set([
   "INSTALL_PRESENCE",
@@ -25,6 +26,14 @@ const sendRuntimeMessage = async <T = unknown>(message: Record<string, unknown>)
 const getUserRatings = async (): Promise<Record<string, number>> => {
   const result = await chrome.storage.local.get(RATINGS_KEY);
   return (result[RATINGS_KEY] ?? {}) as Record<string, number>;
+};
+
+const getDeviceId = async (): Promise<string> => {
+  const result = await chrome.storage.local.get(DEVICE_KEY);
+  if (result[DEVICE_KEY]) return result[DEVICE_KEY] as string;
+  const id = crypto.randomUUID();
+  await chrome.storage.local.set({ [DEVICE_KEY]: id });
+  return id;
 };
 
 const saveUserRating = async (slug: string, rating: number): Promise<void> => {
@@ -71,9 +80,9 @@ window.addEventListener("message", (event: MessageEvent<WebMessage>) => {
   }
 
   if (msg.type === "GET_USER_RATINGS") {
-    getUserRatings().then((ratings) => {
+    Promise.all([getUserRatings(), getDeviceId()]).then(([ratings, deviceId]) => {
       window.postMessage(
-        { source: EXT_WEB_SOURCE, type: "USER_RATINGS", payload: ratings, messageId: msg.messageId },
+        { source: EXT_WEB_SOURCE, type: "USER_RATINGS", payload: { ratings, deviceId }, messageId: msg.messageId },
         "*",
       );
     });

@@ -76,6 +76,26 @@ export const submitRating = async (
   return { avg: stats.rating, count: stats.ratingCount, distribution: stats.ratingDistribution }
 }
 
+const raterKey = (slug: string) => `presence:${slug}:raters`
+
+export const hasRated = async (slug: string, ip: string): Promise<boolean> => {
+  return redis.sismember(raterKey(slug), ip)
+}
+
+export const markRated = async (slug: string, ip: string): Promise<void> => {
+  await redis.sadd(raterKey(slug), ip)
+}
+
+const deviceKey = (slug: string) => `presence:${slug}:device-raters`
+
+export const hasDeviceRated = async (slug: string, deviceId: string): Promise<boolean> => {
+  return redis.sismember(deviceKey(slug), deviceId)
+}
+
+export const markDeviceRated = async (slug: string, deviceId: string): Promise<void> => {
+  await redis.sadd(deviceKey(slug), deviceId)
+}
+
 export const setUpdated = async (slug: string, date?: string): Promise<void> => {
   await redis.set(key(slug, "updated"), date ?? new Date().toISOString())
 }
