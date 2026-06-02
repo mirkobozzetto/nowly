@@ -213,6 +213,8 @@
     "yourRating": "Your Rating",
     "comingSoonDescription": "Support for {platform} is currently under development.",
     "settings": "Settings",
-    "settingsAvailableInExtension": "Configure these settings from the Nowly extension."
+    "settingsAvailableInExtension": "Configure these settings from the Nowly extension.",
+    "versionHistory": "Version History",
+    "showAllVersions": "Show all {count} versions"
   }
 }

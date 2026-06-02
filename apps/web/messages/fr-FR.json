@@ -211,6 +211,8 @@
     "yourRating": "Votre note",
     "comingSoonDescription": "La prise en charge de {platform} est actuellement en cours de développement.",
     "settings": "Paramètres",
-    "settingsAvailableInExtension": "Configurez ces paramètres depuis l'extension Nowly."
+    "settingsAvailableInExtension": "Configurez ces paramètres depuis l'extension Nowly.",
+    "versionHistory": "Historique des versions",
+    "showAllVersions": "Afficher les {count} versions"
   }
 }

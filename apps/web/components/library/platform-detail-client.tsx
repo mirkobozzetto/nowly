@@ -17,6 +17,7 @@ import { InstallCard } from "./install-card";
 import { SettingsCard } from "./settings-card";
 import { StatsCard } from "./stats-card";
 import { SupportedUrlsCard } from "./supported-urls-card";
+import { VersionHistoryCard } from "./version-history-card";
 
 const EXT_SOURCE = "Nowly";
 let _msgId = 0;
@@ -192,6 +193,7 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
               <HeaderCard platform={platform} isInstalled={isInstalled} isExtDetected={extDetected} locale={locale} />
               <SupportedUrlsCard urls={platform.supportedUrls} />
               <FeaturesCard platform={platform} locale={locale} />
+              <VersionHistoryCard slug={platform.slug} locale={locale} />
             </div>
 
             <div className="space-y-4">

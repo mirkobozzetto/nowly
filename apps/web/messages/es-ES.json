@@ -211,6 +211,8 @@
     "yourRating": "Tu valoración",
     "comingSoonDescription": "La compatibilidad con {platform} está actualmente en desarrollo.",
     "settings": "Ajustes",
-    "settingsAvailableInExtension": "Configura estos ajustes desde la extensión de Nowly."
+    "settingsAvailableInExtension": "Configura estos ajustes desde la extensión de Nowly.",
+    "versionHistory": "Historial de versiones",
+    "showAllVersions": "Mostrar las {count} versiones"
   }
 }

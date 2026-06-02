@@ -6,6 +6,7 @@ import { PRESENCES_DIR } from "@/lib/paths"
 import { canonicalJson, sha256Base64Url, signedPayload, signPresenceRelease } from "@/lib/crypto"
 import { requireAuth } from "@/lib/api-auth"
 import { type VersionEntry, addVersion, getPresenceStats, setVersion, setAdded, setUpdated, getVersionHistory } from "@/lib/redis"
+import { generateChangelog } from "@/lib/openai"
 
 const buildRelease = async (slug: string) => {
   const metadata = getPresence(slug)
@@ -86,5 +87,78 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
     if (body.updated) await setUpdated(slug, body.updated)
 
     return { ok: true }
+  })
+
+  fastify.post("/sync", async (request, reply) => {
+    await requireAuth(request, reply)
+    if (reply.sent) return
+
+    const body = request.body as {
+      presences: {
+        slug: string
+        type: "new" | "modified"
+        name: string
+        author?: string
+        authorGithub?: string
+        description?: string
+      }[]
+      pr?: string
+      prTitle?: string
+    }
+
+    const results: { slug: string; version: string; changelog: string }[] = []
+
+    for (const p of body.presences) {
+      const stats = await getPresenceStats(p.slug)
+      const currentVersion = stats.version
+      const author = p.author || stats.version ? (await getVersionHistory(p.slug))[0]?.author || "unknown" : "unknown"
+
+      if (p.type === "new" || !currentVersion) {
+        const version = "1.0.0"
+        const changelog = await generateChangelog({
+          type: "new",
+          name: p.name,
+          description: p.description,
+        })
+
+        await setVersion(p.slug, version)
+        await setAdded(p.slug)
+        await addVersion(p.slug, {
+          version,
+          changelog,
+          author,
+          authorGithub: p.authorGithub,
+          pr: body.pr,
+          timestamp: Date.now(),
+        })
+
+        results.push({ slug: p.slug, version, changelog })
+      } else {
+        const parts = currentVersion.split(".").map(Number)
+        parts[2] = (parts[2] || 0) + 1
+        const nextVersion = parts.join(".")
+
+        const changelog = await generateChangelog({
+          type: "modified",
+          name: p.name,
+          prTitle: body.prTitle,
+        })
+
+        await setVersion(p.slug, nextVersion)
+        await setUpdated(p.slug)
+        await addVersion(p.slug, {
+          version: nextVersion,
+          changelog,
+          author,
+          authorGithub: p.authorGithub,
+          pr: body.pr,
+          timestamp: Date.now(),
+        })
+
+        results.push({ slug: p.slug, version: nextVersion, changelog })
+      }
+    }
+
+    return { ok: true, results }
   })
 }

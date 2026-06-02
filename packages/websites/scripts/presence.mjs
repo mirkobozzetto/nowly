@@ -8,6 +8,7 @@ const ROOT = join(__dirname, "..", "..", "..")
 const SRC = join(__dirname, "..", "src")
 const API_BASE = process.env.API_URL ?? "https://api.nowly.me"
 let cliChangelog = ""
+let cliPr = ""
 
 let API_KEY = process.env.API_SECRET_KEY
 if (!API_KEY) {
@@ -90,6 +91,25 @@ function getMetadataGithub(dir) {
   }
 }
 
+function getMetadataName(dir) {
+  try {
+    const meta = JSON.parse(readFileSync(join(dir, "metadata.json"), "utf-8"))
+    return meta.name || undefined
+  } catch {
+    return undefined
+  }
+}
+
+function getMetadataDescription(dir) {
+  try {
+    const meta = JSON.parse(readFileSync(join(dir, "metadata.json"), "utf-8"))
+    const desc = meta.description?.["en-US"] || meta.description?.["en"] || Object.values(meta.description ?? {})[0]
+    return desc || undefined
+  } catch {
+    return undefined
+  }
+}
+
 async function processPresence(slug, name, forceNew, opts = {}) {
   console.log(`\nProcessing ${name} (${slug})...`)
 
@@ -118,13 +138,18 @@ async function processPresence(slug, name, forceNew, opts = {}) {
   const authorGithub = opts.dir ? getMetadataGithub(opts.dir) : undefined
 
   if (isNew) {
+    const initialChangelog = opts.dir
+      ? `Add ${getMetadataName(opts.dir) || slug} presence - ${getMetadataDescription(opts.dir) || "Initial release"}`
+      : cliChangelog || "Initial release"
+
     console.log("  New presence - setting addedAt + initial version")
     await callApi("PUT", `/presences/${slug}`, {
       added: new Date().toISOString().split("T")[0],
       version: "1.0.0",
-      changelog: "Initial release",
+      changelog: initialChangelog,
       author: opts.dir ? getGitAuthor(opts.dir) : "unknown",
       authorGithub,
+      pr: cliPr || undefined,
     })
 
     console.log("  Version set to 1.0.0")
@@ -140,6 +165,7 @@ async function processPresence(slug, name, forceNew, opts = {}) {
     changelog: cliChangelog,
     author,
     authorGithub,
+    pr: cliPr || undefined,
   })
 
   console.log(`  Version bumped to ${nextVersion}`)
@@ -150,22 +176,25 @@ async function main() {
   const forceNew = args.includes("--new")
   const changelogArg = args.find((a) => a.startsWith("--changelog="))
   cliChangelog = changelogArg ? changelogArg.replace(/^--changelog=/, "") : ""
+  const prArg = args.find((a) => a.startsWith("--pr="))
+  cliPr = prArg ? prArg.replace(/^--pr=/, "") : ""
 
   const presences = getPresences()
 
-  if (args.length === 0 || args[0].startsWith("--")) {
+  if (args.length === 0 || args.every((a) => a.startsWith("--"))) {
     // bulk mode: only process presences with uncommitted changes
     for (const p of presences) {
       const dir = join(SRC, p.letter, p.dirName)
       await processPresence(p.slug, p.slug, forceNew, { dir })
     }
   } else {
-    // explicit slugs: always process (no git skip)
-    for (const arg of args) {
-      if (arg.startsWith("--")) continue
+    // explicit slugs: always process (no git skip), find the dir if available
+    const slugs = args.filter((a) => !a.startsWith("--"))
+    for (const arg of slugs) {
       const p = presences.find((pr) => pr.slug === arg)
       if (p) {
-        await processPresence(p.slug, p.slug, forceNew)
+        const dir = join(SRC, p.letter, p.dirName)
+        await processPresence(p.slug, p.slug, forceNew, { dir })
       } else {
         console.warn(`Presence "${arg}" not found in filesystem, treating as new`)
         await processPresence(arg, arg, true)
