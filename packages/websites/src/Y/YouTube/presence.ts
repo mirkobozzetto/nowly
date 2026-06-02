@@ -146,8 +146,9 @@ presence.on("UpdateData", async (ctx) => {
     const isPlaying = !video.paused
 
     await presence.setActivity({
-      details: "Watching a Short",
-      state: title,
+      name: "YouTube Shorts",
+      details: title,
+      state: uploader,
       largeImageKey: `https://img.youtube.com/vi/${shortsId}/maxresdefault.jpg`,
       largeImageText: uploader,
       smallImageKey: isPlaying ? "play" : "pause",
