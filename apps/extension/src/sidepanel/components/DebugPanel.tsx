@@ -1,7 +1,7 @@
 import { ChevronDown, ExternalLink, Terminal } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useEffect, useState } from "react";
-import { WEB_BASE_URL } from "../../shared/constants";
+import { API_BASE_URL } from "../../shared/constants";
 import { formatRelativeTime } from "../../popup/lib/format";
 import type { NativeStatus } from "../../popup/lib/messages";
 import { t } from "../../shared/i18n";
@@ -22,17 +22,18 @@ export const DebugPanel: FC<Props> = ({ debug, nativeStatus, settings, onSetting
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    setApiUrl(settings.customApiBaseUrl ?? "");
+    setApiUrl(settings.customApiBaseUrl ?? API_BASE_URL);
   }, [settings.customApiBaseUrl]);
 
   const handleSave = (): void => {
-    onSettingsChange({ customApiBaseUrl: apiUrl.trim() || undefined });
+    const trimmed = apiUrl.trim()
+    onSettingsChange({ customApiBaseUrl: trimmed !== API_BASE_URL ? trimmed : undefined });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
 
   const handleReset = (): void => {
-    setApiUrl("");
+    setApiUrl(API_BASE_URL);
     onSettingsChange({ customApiBaseUrl: undefined });
   };
 
@@ -82,7 +83,7 @@ export const DebugPanel: FC<Props> = ({ debug, nativeStatus, settings, onSetting
                 value={apiUrl}
                 onChange={(e) => setApiUrl(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") handleSave(); }}
-                placeholder={WEB_BASE_URL}
+                placeholder={API_BASE_URL}
                 className="min-w-0 flex-1 rounded-lg border border-border bg-card-2 px-2.5 py-1.5 text-[11px] text-foreground outline-none transition-colors placeholder:text-dim-foreground focus:border-border-light"
               />
               <button
