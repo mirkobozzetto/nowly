@@ -4,6 +4,11 @@
   "version": "1.0.0",
   "description": "Presence monorepo",
   "scripts": {
+    "dev:api": "pnpm --filter @nowly/api dev",
+    "dev:web": "pnpm --filter @nowly/web dev",
+    "build:websites": "pnpm --filter @nowly/websites build",
+    "start:api": "pnpm --filter @nowly/api start",
+    "typecheck:api": "pnpm --filter @nowly/api typecheck",
     "presence:register": "node packages/websites/scripts/presence.mjs --new",
     "presence:update": "node packages/websites/scripts/presence.mjs",
     "presence:sync-all": "node packages/websites/scripts/presence.mjs"

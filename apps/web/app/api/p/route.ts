@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getRegistry } from "@nowly/websites";
+import { presenceApi } from "@/lib/presence-api";
 
 export const GET = async () => {
-  const presences = getRegistry();
-  return NextResponse.json(presences);
+  const presences = await presenceApi.get("/");
+  return NextResponse.json(presences ?? []);
 };

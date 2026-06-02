@@ -1,5 +1,5 @@
-import { setActiveUsers } from "@/lib/data/presence-stats";
 import { NextResponse } from "next/server";
+import { presenceApi } from "@/lib/presence-api";
 
 export const POST = async (
   request: Request,
@@ -8,7 +8,11 @@ export const POST = async (
   const { slug: raw } = await params;
   const slug = raw.toLowerCase();
   const body = await request.json();
-  const count = typeof body.activeUsers === "number" ? body.activeUsers : 1;
-  await setActiveUsers(slug, count);
-  return NextResponse.json({ activeUsers: count });
+  const data = await presenceApi.post(`/${slug}/heartbeat`, body);
+
+  if (!data) {
+    return NextResponse.json({ error: "Failed to update heartbeat" }, { status: 500 });
+  }
+
+  return NextResponse.json(data);
 };

@@ -1,5 +1,5 @@
-import { submitRating } from "@/lib/data/presence-stats";
 import { NextResponse } from "next/server";
+import { presenceApi } from "@/lib/presence-api";
 
 export const POST = async (
   request: Request,
@@ -14,6 +14,11 @@ export const POST = async (
     return NextResponse.json({ error: "Rating must be an integer between 1 and 5" }, { status: 400 });
   }
 
-  const result = await submitRating(slug, rating);
-  return NextResponse.json(result);
+  const data = await presenceApi.post(`/${slug}/rating`, { rating });
+
+  if (!data) {
+    return NextResponse.json({ error: "Failed to submit rating" }, { status: 500 });
+  }
+
+  return NextResponse.json(data);
 };
