@@ -30,19 +30,24 @@ jobs:
           PRESENCES="[]"
 
           FILES=$(git diff --name-only --diff-filter=AMR "$BASE"..."$HEAD" -- "packages/websites/src/*/*/*" 2>/dev/null)
+          SEEN=""
           while IFS= read -r file; do
             [ -z "$file" ] && continue
-            meta_path="$file"
-            slug=$(echo "$meta_path" | cut -d'/' -f5- | cut -d'/' -f1 | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+            dir=$(echo "$file" | rev | cut -d'/' -f2- | rev)
+            meta_path="$dir/metadata.json"
+            slug=$(echo "$dir" | cut -d'/' -f5- | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+            echo "$SEEN" | grep -q "^$slug$" && continue
+            SEEN="$SEEN$slug\n"
 
-            if [ -f "$meta_path" ] && echo "$file" | grep -q "metadata.json"; then
+            meta_status=$(git diff --name-status "$BASE"..."$HEAD" -- "$meta_path" 2>/dev/null | head -1 | cut -f1)
+            type="modified"
+            [ "$meta_status" = "A" ] && type="new"
+
+            if [ -f "$meta_path" ]; then
               name=$(jq -r '.name // ""' "$meta_path")
               author=$(jq -r '.author.name // ""' "$meta_path")
               authorGithub=$(jq -r '.author.github // ""' "$meta_path")
               desc=$(jq -r '.description["en-US"] // .description.en // (.description | to_entries[0].value) // ""' "$meta_path")
-              status=$(git diff --name-status "$BASE"..."$HEAD" -- "$meta_path" | head -1 | cut -f1)
-              type="modified"
-              [ "$status" = "A" ] && type="new"
 
               PRESENCES=$(echo "$PRESENCES" | jq \
                 --arg slug "$slug" \
