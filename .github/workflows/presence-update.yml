@@ -32,9 +32,8 @@ jobs:
           FILES=$(git diff --name-only --diff-filter=AMR "$BASE"..."$HEAD" -- "packages/websites/src/*/*/*" 2>/dev/null)
           while IFS= read -r file; do
             [ -z "$file" ] && continue
-            slug=$(echo "$file" | cut -d'/' -f5- | cut -d'/' -f1)
-            letter=$(echo "$file" | cut -d'/' -f4)
-            meta_path="packages/websites/src/$letter/$slug/metadata.json"
+            meta_path="$file"
+            slug=$(echo "$meta_path" | cut -d'/' -f5- | cut -d'/' -f1 | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
 
             if [ -f "$meta_path" ] && echo "$file" | grep -q "metadata.json"; then
               name=$(jq -r '.name // ""' "$meta_path")
