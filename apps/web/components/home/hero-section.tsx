@@ -7,6 +7,7 @@ import Link from "next/link";
 import type { FC, ReactElement } from "react";
 import { useState } from "react";
 import { buttonVariants } from "../l-ui/button";
+import HighlightedText from "../ui/highlighted-text";
 import { CompanionWindow } from "./companion-window";
 
 export const HeroSection: FC = (): ReactElement => {
@@ -27,7 +28,9 @@ export const HeroSection: FC = (): ReactElement => {
               
               <h1 className="text-[clamp(3rem,5vw,4.5rem)] font-extrabold leading-[1.1] tracking-tight mb-6 bg-linear-to-br from-white to-muted-foreground bg-clip-text text-transparent">
                 {t("title")}<br/>
-                <span className="text-accent underline">{t("titleAccent")}</span>
+                <HighlightedText from="left" delay={0}>
+                  {t("titleAccent")}
+                </HighlightedText>
               </h1>
               
               <p className="text-lg text-muted-foreground mb-8 max-w-[90%]">
