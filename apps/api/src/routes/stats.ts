@@ -17,14 +17,6 @@ export const statsRoutes = async (fastify: FastifyInstance) => {
     return { totalInstalls: total }
   })
 
-  fastify.post<{ Params: { slug: string } }>("/:slug/heartbeat", async (request, _reply) => {
-    const slug = request.params.slug.toLowerCase()
-    const body = request.body as { activeUsers?: number }
-    const count = typeof body?.activeUsers === "number" ? body.activeUsers : 1
-    await setActiveUsers(slug, count)
-    return { activeUsers: count }
-  })
-
   fastify.post<{ Params: { slug: string } }>("/:slug/rating", async (request, reply) => {
     const slug = request.params.slug.toLowerCase()
     const body = request.body as { rating?: number }
