@@ -19,67 +19,92 @@ const settings = Presence.Settings({
 
 const presence = new Presence(settings)
 
-const findVideo = (): HTMLVideoElement | null => {
-  return document.querySelector<HTMLVideoElement>("video")
+const $ = (selector: string, parent?: Element): Element | null =>
+  parent ? parent.querySelector(selector) : document.querySelector(selector)
+
+const $$ = (selector: string): NodeListOf<Element> =>
+  document.querySelectorAll(selector)
+
+const text = (el: Element | null | undefined): string | undefined =>
+  el?.textContent?.trim() || undefined
+
+const findVideo = (): HTMLVideoElement | undefined => {
+  return $("video") as HTMLVideoElement | undefined
 }
 
-const findTitle = (): string | undefined => {
-  const el = document.querySelector(".video-metadata .title")
-  return el?.textContent?.trim() || undefined
+const hasPlayerTabs = (): boolean => {
+  return !!$(".video-player__tabs")
 }
 
-const findSubtitle = (): string | undefined => {
-  const el = document.querySelector(".video-metadata .subtitle-text")
-  return el?.textContent?.trim() || undefined
+const getPageTitle = (): string | undefined => {
+  const og = $<HTMLMetaElement>('meta[property="og:title"]')
+  if (og?.content) return og.content.replace(/ – Apple TV\+$/, "").trim()
+  const title = document.title.replace(/ – Apple TV\+$/, "").trim()
+  return title || undefined
 }
 
-const findGenre = (): string | undefined => {
-  const el = document.querySelector(".metadata-genre")
-  return el?.textContent?.trim() || undefined
+const getPageDescription = (): string | undefined => {
+  const og = $<HTMLMetaElement>('meta[property="og:description"]')
+  if (og?.content) return og.content
+  const meta = $<HTMLMetaElement>('meta[name="description"]')
+  return meta?.content || undefined
 }
 
 const getThumbnail = (): string | undefined => {
   const artwork = navigator.mediaSession.metadata?.artwork
   if (artwork && artwork.length > 0) {
-    return artwork[artwork.length - 1]?.src
+    return artwork[artwork.length - 1].src
   }
-  return undefined
+  const og = $<HTMLMetaElement>('meta[property="og:image"]')
+  return og?.content || undefined
+}
+
+const parseSubtitle = (subtitle: string) => {
+  const parts = subtitle.split(/, | · | • /)
+  const seasonRaw = parts[0]
+  const episodeRaw = parts[1]
+  const episodeTitle = parts.slice(2).join(", ") || undefined
+
+  const seasonNum = seasonRaw ? parseInt(seasonRaw.replace(/^\D/, ""), 10) : undefined
+  const episodeNum = episodeRaw ? parseInt(episodeRaw.replace(/^\D/, ""), 10) : undefined
+
+  return { seasonNum, episodeNum, episodeTitle }
 }
 
 presence.on("UpdateData", async (ctx) => {
-  const { pathname, hostname } = document.location
+  const { pathname, href } = document.location
   const video = findVideo()
-  const isOnPlayer = !!document.querySelector(".video-player__tabs")
+  const playing = video && hasPlayerTabs()
 
-  if (video && isOnPlayer) {
-    const title = findTitle()
-    const subtitle = findSubtitle()
+  if (video && playing) {
+    const title = text($(".video-metadata .title"))
+    const subtitle = text($(".video-metadata .subtitle-text"))
+    const genre = text($(".metadata-genre"))
     const thumbnail = getThumbnail()
+    const isPaused = !!video.paused
 
     const data: Parameters<typeof presence.setActivity>[0] = {
       largeImageKey: thumbnail || Assets.Logo,
       largeImageText: title || "Apple TV+",
       type: PresenceType.Watching,
       buttons: [{
-        label: subtitle ? "Watch Episode" : "Watch Movie",
-        url: window.location.href,
+        label: subtitle ? "Watch Episode" : "Watch Show",
+        url: href,
       }],
     }
 
     if (subtitle) {
-      const parts = subtitle.split(/, | · /)
-      const seasonNum = parts[0] ? parseInt(parts[0].replace(/^\D/, "")) : undefined
-      const episodeNum = parts[1] ? parseInt(parts[1].replace(/^\D/, "")) : undefined
-      const episodeTitle = parts[2] as string | undefined
-
+      const { seasonNum, episodeNum, episodeTitle } = parseSubtitle(subtitle)
       data.details = title || "Apple TV+"
-      data.state = `S${seasonNum}:E${episodeNum} ${episodeTitle || ""}`.trim()
+      data.state = episodeTitle
+        ? `S${seasonNum}:E${episodeNum} ${episodeTitle}`
+        : `Season ${seasonNum}, Episode ${episodeNum}`
     } else {
-      data.details = title || "Apple TV+"
-      data.state = findGenre() || "Movie"
+      data.details = title || getPageTitle() || "Apple TV+"
+      data.state = genre || "Movie"
     }
 
-    if (video.paused) {
+    if (isPaused) {
       data.smallImageKey = "pause"
       data.smallImageText = "Paused"
     } else {
@@ -97,25 +122,49 @@ presence.on("UpdateData", async (ctx) => {
     return
   }
 
-  if (pathname === "/" || pathname.includes("/home")) {
+  if (pathname === "/" || pathname.startsWith("/home")) {
     await presence.setActivity({
       details: "Browsing home",
       largeImageKey: Assets.Logo,
       type: PresenceType.Watching,
     })
-  } else if (pathname.includes("/show/")) {
-    await presence.setActivity({
-      details: "Viewing series",
-      largeImageKey: Assets.Logo,
-      type: PresenceType.Watching,
-    })
-  } else if (pathname.includes("/movie/")) {
-    await presence.setActivity({
-      details: "Viewing movie",
-      largeImageKey: Assets.Logo,
-      type: PresenceType.Watching,
-    })
-  } else {
-    presence.clearActivity()
+    return
   }
+
+  if (pathname.startsWith("/search")) {
+    const query = new URLSearchParams(document.location.search).get("q")
+    await presence.setActivity({
+      details: "Searching",
+      state: query ? `"${query}"` : undefined,
+      largeImageKey: Assets.Logo,
+      type: PresenceType.Watching,
+    })
+    return
+  }
+
+  if (pathname.startsWith("/show/")) {
+    const pageTitle = getPageTitle()
+    await presence.setActivity({
+      details: pageTitle || "Viewing series",
+      state: pageTitle ? undefined : getPageDescription(),
+      largeImageKey: Assets.Logo,
+      type: PresenceType.Watching,
+    })
+    return
+  }
+
+  if (pathname.startsWith("/room/")) {
+    await presence.setActivity({
+      details: "In a SharePlay room",
+      largeImageKey: Assets.Logo,
+      type: PresenceType.Watching,
+    })
+    return
+  }
+
+  await presence.setActivity({
+    details: "Browsing",
+    largeImageKey: Assets.Logo,
+    type: PresenceType.Watching,
+  })
 })
