@@ -131,6 +131,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
         authorGithub?: string
         description?: string
         descriptions?: Record<string, string>
+        bundle?: string
       }[]
       pr?: string
       prTitle?: string
@@ -138,8 +139,11 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
     }
 
     const results: { slug: string; version: string; changelog: string }[] = []
+    const seen = new Set<string>()
 
     for (const p of body.presences) {
+      if (seen.has(p.slug)) continue
+      seen.add(p.slug)
       const stats = await getPresenceStats(p.slug)
       const currentVersion = stats.version
       const author = p.author || (stats.version ? (await getVersionHistory(p.slug))[0]?.author || "unknown" : "unknown")
@@ -159,8 +163,10 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
       const changelog = JSON.stringify(changelogs)
       const displayChangelog = changelogs["en-US"] || ""
 
-      const bundlePath = join(PRESENCES_DIR, p.slug, "bundle.js")
-      const bundle = existsSync(bundlePath) ? readFileSync(bundlePath, "utf-8") : undefined
+      const bundle = p.bundle
+        || (existsSync(join(PRESENCES_DIR, p.slug, "bundle.js"))
+          ? readFileSync(join(PRESENCES_DIR, p.slug, "bundle.js"), "utf-8")
+          : undefined)
 
       if (p.type === "new" || !currentVersion) {
         const version = "1.0.0"
