@@ -1,6 +1,6 @@
 export const USER_SCRIPT_MESSAGE_SOURCE = "NOWLY_PRESENCE";
 
-export const createPresenceRuntime = (slug: string, name: string, bundle: string, settings: Record<string, unknown> = {}, webBaseUrl = "http://localhost:3000"): string => `
+export const createPresenceRuntime = (slug: string, name: string, bundle: string, settings: Record<string, unknown> = {}, webBaseUrl = "https://nowly.me"): string => `
 (() => {
   "use strict";
 

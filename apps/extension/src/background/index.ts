@@ -5,6 +5,18 @@ import { createPresenceRuntime, USER_SCRIPT_MESSAGE_SOURCE } from "./presence-ru
 import { verifyPresenceRelease } from "./release-security";
 import { getCurrentActivity, getDebug, getPresenceSettings, getPresences, getSettings, setCurrentActivity, setDebug, setPresences, setPresenceSettings, setSettings } from "./storage";
 
+let customBaseUrl: string | undefined;
+
+const getEffectiveBaseUrl = (): string => customBaseUrl?.replace(/\/$/, "") || WEB_BASE_URL;
+
+const updateContentScriptsOrigin = async (): Promise<void> => {
+  const origin = new URL(getEffectiveBaseUrl()).origin;
+  const tabs = await chrome.tabs.query({});
+  for (const tab of tabs) {
+    chrome.tabs.sendMessage(tab.id!, { type: "UPDATE_MARKETPLACE_ORIGIN", origin }).catch(() => {});
+  }
+};
+
 const respond = <T>(sendResponse: (response?: T) => void, value: T): void => sendResponse(value);
 
 let activeTabId: number | null = null;
@@ -120,7 +132,7 @@ const unregisterPresenceScript = async (slug: string): Promise<void> => {
 const getPresenceRuntime = async (slug: string, name: string, bundle: string): Promise<string> => {
   const allSettings = await getPresenceSettings();
   const presenceSettings = allSettings[slug] ?? {};
-  return createPresenceRuntime(slug, name, bundle, presenceSettings, WEB_BASE_URL);
+  return createPresenceRuntime(slug, name, bundle, presenceSettings, getEffectiveBaseUrl());
 };
 
 const registerPresenceScript = async (slug: string, presence: StoredPresence): Promise<{ ok: boolean; error?: string }> => {
@@ -402,7 +414,7 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
         const slugs = Object.keys(presences);
         const results = await Promise.allSettled(
           slugs.map((slug) =>
-            fetch(`${WEB_BASE_URL}/api/p/${slug}/release`)
+            fetch(`${getEffectiveBaseUrl()}/api/p/${slug}/release`)
               .then((r) => r.json() as Promise<{ version: string }>)
               .then((data) => ({ slug, latestVersion: data.version }))
           )
@@ -425,7 +437,12 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
       return true;
 
     case "SET_SETTINGS":
-      setSettings(message.payload as Partial<ExtensionSettings>).then((settings) => respond(sendResponse, settings));
+      setSettings(message.payload as Partial<ExtensionSettings>).then((settings) => {
+        const urlChanged = settings.customApiBaseUrl !== customBaseUrl;
+        customBaseUrl = settings.customApiBaseUrl;
+        respond(sendResponse, settings);
+        if (urlChanged) void updateContentScriptsOrigin();
+      });
       return true;
 
     case "GET_PRESENCE_SETTINGS":
@@ -501,10 +518,16 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   }
 });
 
+const initializeCustomBaseUrl = async (): Promise<void> => {
+  const settings = await getSettings();
+  customBaseUrl = settings.customApiBaseUrl;
+};
+
 chrome.runtime.onStartup.addListener(() => {
   enableSidePanelAction();
   void handleClearActivity();
   connectNative();
+  void initializeCustomBaseUrl();
   getPresences().then((presences) => void syncPresenceScripts(presences));
 });
 
@@ -512,10 +535,12 @@ chrome.runtime.onInstalled.addListener(() => {
   enableSidePanelAction();
   void handleClearActivity();
   connectNative();
+  void initializeCustomBaseUrl();
   getPresences().then((presences) => void syncPresenceScripts(presences));
 });
 
 enableSidePanelAction();
 void handleClearActivity();
 connectNative();
+void initializeCustomBaseUrl();
 getPresences().then((presences) => void syncPresenceScripts(presences));

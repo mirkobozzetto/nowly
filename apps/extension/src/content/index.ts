@@ -2,7 +2,7 @@ import { EXT_WEB_SOURCE, WEB_BASE_URL } from "../shared/constants";
 import type { WebMessage } from "../shared/types";
 
 const USER_SCRIPT_MESSAGE_SOURCE = "NOWLY_PRESENCE";
-const MARKETPLACE_ORIGIN = new URL(WEB_BASE_URL).origin;
+let MARKETPLACE_ORIGIN = new URL(WEB_BASE_URL).origin;
 const WEB_MESSAGE_TYPES = new Set([
   "INSTALL_PRESENCE",
   "UPDATE_PRESENCE",
@@ -68,6 +68,12 @@ window.addEventListener("message", (event: MessageEvent) => {
     type: event.data.type,
     payload: event.data.payload,
   });
+});
+
+chrome.runtime.onMessage.addListener((message) => {
+  if (message?.type === "UPDATE_MARKETPLACE_ORIGIN" && typeof message.origin === "string") {
+    MARKETPLACE_ORIGIN = message.origin;
+  }
 });
 
 broadcastDetected();

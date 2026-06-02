@@ -115,6 +115,7 @@ export type PresenceDisplayMode = "category" | "alphabetical";
 export type ExtensionSettings = {
   presenceDisplayMode: PresenceDisplayMode;
   separateActivePresence: boolean;
+  customApiBaseUrl?: string;
 };
 
 export type PresenceSettings = Record<string, unknown>;

@@ -1,20 +1,40 @@
-import { ChevronDown, Terminal } from "lucide-react";
+import { ChevronDown, ExternalLink, Terminal } from "lucide-react";
 import type { FC, ReactElement } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { WEB_BASE_URL } from "../../shared/constants";
 import { formatRelativeTime } from "../../popup/lib/format";
 import type { NativeStatus } from "../../popup/lib/messages";
 import { t } from "../../shared/i18n";
-import type { PresenceDebug } from "../../shared/types";
+import type { ExtensionSettings, PresenceDebug } from "../../shared/types";
 
 type Props = {
   debug: PresenceDebug | null;
   nativeStatus: NativeStatus;
+  settings: ExtensionSettings;
+  onSettingsChange: (partial: Partial<ExtensionSettings>) => void;
 };
 
-export const DebugPanel: FC<Props> = ({ debug, nativeStatus }): ReactElement => {
+export const DebugPanel: FC<Props> = ({ debug, nativeStatus, settings, onSettingsChange }): ReactElement => {
   const [open, setOpen] = useState(false);
   const hasNativeIssue = nativeStatus.status !== "connected" && nativeStatus.status !== "ok";
   const updatedAt = formatRelativeTime(debug?.updatedAt);
+  const [apiUrl, setApiUrl] = useState("");
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    setApiUrl(settings.customApiBaseUrl ?? "");
+  }, [settings.customApiBaseUrl]);
+
+  const handleSave = (): void => {
+    onSettingsChange({ customApiBaseUrl: apiUrl.trim() || undefined });
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleReset = (): void => {
+    setApiUrl("");
+    onSettingsChange({ customApiBaseUrl: undefined });
+  };
 
   return (
     <section className="mt-auto rounded-lg border border-border bg-card">
@@ -48,6 +68,46 @@ export const DebugPanel: FC<Props> = ({ debug, nativeStatus }): ReactElement => 
               {nativeStatus.status}
             </p>
           )}
+
+          <div className="mt-3 border-t border-border pt-3">
+            <label className="text-[11px] font-medium text-dim-foreground">
+              {t("apiBaseUrl")}
+            </label>
+            <p className="mb-1.5 text-[10px] leading-4 text-dim-foreground">
+              {t("apiBaseUrlDescription")}
+            </p>
+            <div className="flex gap-1.5">
+              <input
+                type="text"
+                value={apiUrl}
+                onChange={(e) => setApiUrl(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") handleSave(); }}
+                placeholder={WEB_BASE_URL}
+                className="min-w-0 flex-1 rounded-lg border border-border bg-card-2 px-2.5 py-1.5 text-[11px] text-foreground outline-none transition-colors placeholder:text-dim-foreground focus:border-border-light"
+              />
+              <button
+                type="button"
+                onClick={handleSave}
+                className="shrink-0 rounded-lg border border-border bg-card-2 px-2.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
+              >
+                {saved ? (
+                  <span className="text-success">OK</span>
+                ) : (
+                  t("save")
+                )}
+              </button>
+              {apiUrl.trim() && (
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="shrink-0 rounded-lg border border-border bg-card-2 px-2.5 text-[11px] text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
+                  title={t("reset")}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </section>
