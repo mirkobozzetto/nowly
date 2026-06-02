@@ -118,6 +118,7 @@ export type PresenceConstructor = {
   new(): PresenceInstance;
   new<S extends Record<string, unknown>>(settings: S): PresenceInstance<S>;
   Settings: <T extends Record<string, SettingDefinition>>(definitions: T) => InferSettings<T>;
+  Assets: <T extends Record<string, string>>(assets: T) => { [K in keyof T]: string };
 };
 
 declare global {
