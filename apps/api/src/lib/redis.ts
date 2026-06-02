@@ -98,9 +98,12 @@ export interface VersionEntry {
 
 export const addVersion = async (slug: string, entry: VersionEntry): Promise<void> => {
   const ts = entry.timestamp
+  const clean = Object.fromEntries(
+    Object.entries(entry).filter(([, v]) => v != null),
+  ) as unknown as Record<string, unknown>
   await Promise.all([
     redis.zadd(key(slug, "versions"), { score: ts, member: entry.version }),
-    redis.hset(key(slug, "version", entry.version), entry as unknown as Record<string, unknown>),
+    redis.hset(key(slug, "version", entry.version), clean),
   ])
 }
 
