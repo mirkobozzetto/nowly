@@ -67,7 +67,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
     if (reply.sent) return
 
     const slug = request.params.slug.toLowerCase()
-    const body = request.body as { version?: string; added?: string; updated?: string; changelog?: string; author?: string; pr?: string }
+    const body = request.body as { version?: string; added?: string; updated?: string; changelog?: string; author?: string; authorGithub?: string; pr?: string }
 
     if (body.version) {
       await setVersion(slug, body.version)
@@ -76,6 +76,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
           version: body.version,
           changelog: body.changelog ?? "",
           author: body.author ?? "unknown",
+          authorGithub: body.authorGithub,
           pr: body.pr,
           timestamp: Date.now(),
         })

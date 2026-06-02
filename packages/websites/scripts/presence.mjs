@@ -81,6 +81,15 @@ function getGitAuthor(dir) {
   }
 }
 
+function getMetadataGithub(dir) {
+  try {
+    const meta = JSON.parse(readFileSync(join(dir, "metadata.json"), "utf-8"))
+    return meta.author?.github || undefined
+  } catch {
+    return undefined
+  }
+}
+
 async function processPresence(slug, name, forceNew, opts = {}) {
   console.log(`\nProcessing ${name} (${slug})...`)
 
@@ -106,6 +115,8 @@ async function processPresence(slug, name, forceNew, opts = {}) {
 
   const isNew = forceNew || !currentVersion
 
+  const authorGithub = opts.dir ? getMetadataGithub(opts.dir) : undefined
+
   if (isNew) {
     console.log("  New presence - setting addedAt + initial version")
     await callApi("PUT", `/presences/${slug}`, {
@@ -113,6 +124,7 @@ async function processPresence(slug, name, forceNew, opts = {}) {
       version: "1.0.0",
       changelog: "Initial release",
       author: opts.dir ? getGitAuthor(opts.dir) : "unknown",
+      authorGithub,
     })
 
     console.log("  Version set to 1.0.0")
@@ -127,6 +139,7 @@ async function processPresence(slug, name, forceNew, opts = {}) {
     version: nextVersion,
     changelog: cliChangelog,
     author,
+    authorGithub,
   })
 
   console.log(`  Version bumped to ${nextVersion}`)

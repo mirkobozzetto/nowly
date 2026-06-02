@@ -92,6 +92,7 @@ export interface VersionEntry {
   version: string
   changelog: string
   author: string
+  authorGithub?: string
   pr?: string
   timestamp: number
 }
