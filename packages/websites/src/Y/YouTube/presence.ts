@@ -29,23 +29,34 @@ const settings = Presence.Settings({
       "es-ES": "Cuando está activado, tu presencia mostrará el nombre y avatar del canal al ver una página de canal.",
     },
   },
+  showShorts: {
+    type: "boolean",
+    default: true,
+    label: {
+      "en-US": "Show Shorts activity",
+      "fr-FR": "Afficher l'activité Shorts",
+      "es-ES": "Mostrar actividad de Shorts",
+    },
+    description: {
+      "en-US": "When enabled, your presence will show the current Short being watched with title, channel, and thumbnail.",
+      "fr-FR": "Quand activé, votre présence affichera le Short en cours avec le titre, la chaîne et la miniature.",
+      "es-ES": "Cuando está activado, tu presencia mostrará el Short actual con el título, el canal y la miniatura.",
+    },
+  },
 })
 
 const presence = new Presence(settings)
 
 const Category = Presence.Assets({
-  Home: "/categories/home.png",
-  Search: "/categories/search.png",
-  Subscriptions: "/categories/subscriptions.png",
-  History: "/categories/history.png",
-  Playlists: "/categories/playlists.png",
-  You: "/categories/you.png",
   Storefront: "/categories/storefront.png",
   Gaming: "/categories/gaming.png",
+  Music: "/categories/music.png",
+  Live: "/categories/direct.png",
+  Fashion: "/categories/fashion.png",
   Podcasts: "/categories/podcasts.png",
+  Playables: "/categories/playables.png",
+  Courses: "/categories/courses.png",
   Shorts: "/categories/shorts.png",
-  Playlist: "/categories/playlist.png",
-  Channel: "/categories/channel.png",
 })
 
 const $ = <T extends Element = Element>(selector: string, parent?: Element): T | null =>
@@ -127,8 +138,74 @@ presence.on("UpdateData", async (ctx) => {
     return
   }
 
+  const shortsMatch = pathname.match(/^\/shorts\/([^/]+)$/)
+  if (shortsMatch && ctx.settings.showShorts && video) {
+    const shortsId = shortsMatch[1]
+    const title = findTitle()
+    const uploader = findUploader()
+    const isPlaying = !video.paused
+
+    await presence.setActivity({
+      details: "Watching a Short",
+      state: title,
+      largeImageKey: `https://img.youtube.com/vi/${shortsId}/maxresdefault.jpg`,
+      largeImageText: uploader,
+      smallImageKey: isPlaying ? "play" : "pause",
+      smallImageText: isPlaying ? "Playing" : "Paused",
+      ...createMediaTimestamps(video),
+      type: PresenceType.Watching,
+      buttons: [{ label: "Watch Short", url: href.split("?")[0] }],
+    })
+    return
+  }
+
+  const playablesMatch = pathname.match(/^\/playables\/([^/]+)$/)
+  if (playablesMatch) {
+    const gameName = text($(".ytMiniAppTopBarViewModelTitle"))
+    const gameIcon = $<HTMLMetaElement>("meta[property='og:image']")?.content
+      || document.querySelector<HTMLElement>(".miniAppSplashScreenViewModelBackgroundBlur")?.style.backgroundImage?.match(/url\("([^"]+)"\)/)?.[1]
+
+    await presence.setActivity({
+      details: gameName || "Playing a game",
+      state: findUploader(),
+      largeImageKey: gameIcon || Category.Playables,
+      largeImageText: gameName || "YouTube Playables",
+      startTimestamp: Math.floor(Date.now() / 1000),
+      type: PresenceType.Watching,
+      buttons: [{ label: "Play Game", url: href.split("?")[0] }],
+    })
+    return
+  }
+
   if (!ctx.settings.showBrowsing) {
     presence.clearActivity()
+    return
+  }
+
+  if (pathname === "/channel/UC-9-kyTW8ZkZNDHQJ6FgpwQ" || pathname === "/@youtubemusic") {
+    await presence.setActivity({
+      details: "Browsing YouTube Music",
+      largeImageKey: Category.Music,
+      type: PresenceType.Watching,
+    })
+    return
+  }
+
+  if (pathname === "/channel/UC4R8DWoMoI7CAwX8_LjQHig") {
+    await presence.setActivity({
+      details: "Browsing YouTube Live",
+      largeImageKey: Category.Live,
+      type: PresenceType.Watching,
+    })
+    return
+  }
+
+  if (pathname === "/channel/UCrpQ4p1Ql_hG8rKXIKM1MOQ") {
+    await presence.setActivity({
+      details: "Browsing YouTube Fashion",
+      largeImageKey: Category.Fashion,
+      type: PresenceType.Watching,
+    })
     return
   }
 
@@ -148,7 +225,7 @@ presence.on("UpdateData", async (ctx) => {
     } else {
       await presence.setActivity({
         details: "Viewing channel",
-        largeImageKey: Category.Channel,
+        largeImageKey: Assets.Logo,
         type: PresenceType.Watching,
       })
     }
@@ -158,7 +235,7 @@ presence.on("UpdateData", async (ctx) => {
   if (pathname === "/" || pathname === "/feed/trending") {
       await presence.setActivity({
         details: "Browsing home",
-        largeImageKey: Category.Home,
+        largeImageKey: Assets.Logo,
         type: PresenceType.Watching,
       })
       return
@@ -169,7 +246,7 @@ presence.on("UpdateData", async (ctx) => {
       await presence.setActivity({
         details: "Searching",
         state: query ? `"${query}"` : undefined,
-        largeImageKey: Category.Search,
+        largeImageKey: Assets.Logo,
         type: PresenceType.Watching,
       })
       return
@@ -178,7 +255,7 @@ presence.on("UpdateData", async (ctx) => {
     if (pathname.startsWith("/feed/subscriptions")) {
       await presence.setActivity({
         details: "Browsing subscriptions",
-        largeImageKey: Category.Subscriptions,
+        largeImageKey: Assets.Logo,
         type: PresenceType.Watching,
       })
       return
@@ -187,7 +264,7 @@ presence.on("UpdateData", async (ctx) => {
     if (pathname.startsWith("/feed/history")) {
       await presence.setActivity({
         details: "Viewing history",
-        largeImageKey: Category.History,
+        largeImageKey: Assets.Logo,
         type: PresenceType.Watching,
       })
       return
@@ -196,7 +273,7 @@ presence.on("UpdateData", async (ctx) => {
     if (pathname.startsWith("/feed/playlists")) {
       await presence.setActivity({
         details: "Browsing playlists",
-        largeImageKey: Category.Playlists,
+        largeImageKey: Assets.Logo,
         type: PresenceType.Watching,
       })
       return
@@ -205,7 +282,7 @@ presence.on("UpdateData", async (ctx) => {
     if (pathname.startsWith("/feed/you")) {
       await presence.setActivity({
         details: "Browsing your feed",
-        largeImageKey: Category.You,
+        largeImageKey: Assets.Logo,
         type: PresenceType.Watching,
       })
       return
@@ -238,6 +315,24 @@ presence.on("UpdateData", async (ctx) => {
       return
     }
 
+    if (pathname.startsWith("/playables")) {
+      await presence.setActivity({
+        details: "Playing games",
+        largeImageKey: Category.Playables,
+        type: PresenceType.Watching,
+      })
+      return
+    }
+
+    if (pathname.startsWith("/feed/courses_destination")) {
+      await presence.setActivity({
+        details: "Browsing courses",
+        largeImageKey: Category.Courses,
+        type: PresenceType.Watching,
+      })
+      return
+    }
+
     if (pathname.startsWith("/shorts")) {
       await presence.setActivity({
         details: "Watching shorts",
@@ -255,7 +350,7 @@ presence.on("UpdateData", async (ctx) => {
 
       await presence.setActivity({
         details: playlistName,
-        largeImageKey: Category.Playlist,
+        largeImageKey: Assets.Logo,
         type: PresenceType.Watching,
       })
       return
