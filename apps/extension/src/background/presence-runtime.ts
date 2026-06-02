@@ -48,6 +48,16 @@ export const createPresenceRuntime = (
       return defaults;
     }
 
+    static Assets(assets) {
+      if (typeof assets !== "object" || assets === null) return {};
+      const resolved = {};
+      for (const [key, value] of Object.entries(assets)) {
+        const cleanPath = String(value).replace(/^\//, "");
+        resolved[key] = `${NOWLY_ASSETS_BASE}/${cleanPath}`;
+      }
+      return resolved;
+    }
+
     on(eventName, listener) {
       const eventListeners = listeners.get(this) ?? new Map();
       const callbacks = eventListeners.get(eventName) ?? [];
