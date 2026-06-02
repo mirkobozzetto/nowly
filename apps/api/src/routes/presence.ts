@@ -5,7 +5,7 @@ import { join } from "path"
 import { PRESENCES_DIR } from "@/lib/paths"
 import { canonicalJson, sha256Base64Url, signedPayload, signPresenceRelease } from "@/lib/crypto"
 import { requireAuth } from "@/lib/api-auth"
-import { getPresenceStats, setVersion, setAdded, setUpdated } from "@/lib/redis"
+import { type VersionEntry, addVersion, getPresenceStats, setVersion, setAdded, setUpdated, getVersionHistory } from "@/lib/redis"
 
 const buildRelease = async (slug: string) => {
   const metadata = getPresence(slug)
@@ -56,14 +56,31 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
       .send(release)
   })
 
+  fastify.get<{ Params: { slug: string } }>("/:slug/versions", async (request, reply) => {
+    const slug = request.params.slug.toLowerCase()
+    const history = await getVersionHistory(slug)
+    return reply.send(history)
+  })
+
   fastify.put<{ Params: { slug: string } }>("/:slug", async (request, reply) => {
     await requireAuth(request, reply)
     if (reply.sent) return
 
     const slug = request.params.slug.toLowerCase()
-    const body = request.body as { version?: string; added?: string; updated?: string }
+    const body = request.body as { version?: string; added?: string; updated?: string; changelog?: string; author?: string; pr?: string }
 
-    if (body.version) await setVersion(slug, body.version)
+    if (body.version) {
+      await setVersion(slug, body.version)
+      if (body.changelog || body.author) {
+        await addVersion(slug, {
+          version: body.version,
+          changelog: body.changelog ?? "",
+          author: body.author ?? "unknown",
+          pr: body.pr,
+          timestamp: Date.now(),
+        })
+      }
+    }
     if (body.added) await setAdded(slug, body.added)
     if (body.updated) await setUpdated(slug, body.updated)
 

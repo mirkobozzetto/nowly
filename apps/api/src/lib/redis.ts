@@ -87,3 +87,30 @@ export const setAdded = async (slug: string, date?: string): Promise<void> => {
 export const setVersion = async (slug: string, version: string): Promise<void> => {
   await redis.set(key(slug, "version"), version)
 }
+
+export interface VersionEntry {
+  version: string
+  changelog: string
+  author: string
+  pr?: string
+  timestamp: number
+}
+
+export const addVersion = async (slug: string, entry: VersionEntry): Promise<void> => {
+  const ts = entry.timestamp
+  await Promise.all([
+    redis.zadd(key(slug, "versions"), { score: ts, member: entry.version }),
+    redis.hset(key(slug, "version", entry.version), entry as unknown as Record<string, unknown>),
+  ])
+}
+
+export const getVersionHistory = async (slug: string): Promise<VersionEntry[]> => {
+  const versions = await redis.zrange(key(slug, "versions"), 0, -1, { rev: true })
+  if (!versions.length) return []
+
+  const entries = await Promise.all(
+    versions.map((v) => redis.hgetall(key(slug, "version", String(v)))),
+  )
+
+  return entries.filter((e) => e !== null) as unknown as VersionEntry[]
+}

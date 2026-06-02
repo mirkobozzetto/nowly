@@ -7,6 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, "..", "..", "..")
 const SRC = join(__dirname, "..", "src")
 const API_BASE = process.env.API_URL ?? "https://api.nowly.me"
+let cliChangelog = ""
 
 let API_KEY = process.env.API_SECRET_KEY
 if (!API_KEY) {
@@ -72,6 +73,14 @@ async function callApi(method, path, body) {
   return { ok: true }
 }
 
+function getGitAuthor(dir) {
+  try {
+    return execSync('git log -1 --format="%an"', { encoding: "utf-8", cwd: dir }).trim()
+  } catch {
+    return "unknown"
+  }
+}
+
 async function processPresence(slug, name, forceNew, opts = {}) {
   console.log(`\nProcessing ${name} (${slug})...`)
 
@@ -101,7 +110,9 @@ async function processPresence(slug, name, forceNew, opts = {}) {
     console.log("  New presence - setting addedAt + initial version")
     await callApi("PUT", `/presences/${slug}`, {
       added: new Date().toISOString().split("T")[0],
-      version: "1.0.0"
+      version: "1.0.0",
+      changelog: "Initial release",
+      author: opts.dir ? getGitAuthor(opts.dir) : "unknown",
     })
 
     console.log("  Version set to 1.0.0")
@@ -109,10 +120,13 @@ async function processPresence(slug, name, forceNew, opts = {}) {
   }
 
   const nextVersion = bumpVersion(currentVersion)
+  const author = opts.dir ? getGitAuthor(opts.dir) : "unknown"
   console.log(`  Modified presence - bumping ${currentVersion} -> ${nextVersion}`)
   await callApi("PUT", `/presences/${slug}`, {
     updated: new Date().toISOString().split("T")[0],
-    version: nextVersion
+    version: nextVersion,
+    changelog: cliChangelog,
+    author,
   })
 
   console.log(`  Version bumped to ${nextVersion}`)
@@ -121,6 +135,8 @@ async function processPresence(slug, name, forceNew, opts = {}) {
 async function main() {
   const args = process.argv.slice(2)
   const forceNew = args.includes("--new")
+  const changelogArg = args.find((a) => a.startsWith("--changelog="))
+  cliChangelog = changelogArg ? changelogArg.replace(/^--changelog=/, "") : ""
 
   const presences = getPresences()
 
