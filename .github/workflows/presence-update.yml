@@ -29,9 +29,12 @@ jobs:
           HEAD="${{ github.event.pull_request.head.sha }}"
           PRESENCES="[]"
 
-          for file in $(git diff --name-only --diff-filter=AMR "$BASE"..."$HEAD" -- "packages/websites/src/*/*/*" 2>/dev/null); do
-            slug=$(echo "$file" | cut -d'/' -f5)
-            meta_path="packages/websites/src/$(echo $file | cut -d'/' -f4)/$slug/metadata.json"
+          FILES=$(git diff --name-only --diff-filter=AMR "$BASE"..."$HEAD" -- "packages/websites/src/*/*/*" 2>/dev/null)
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            slug=$(echo "$file" | cut -d'/' -f5- | cut -d'/' -f1)
+            letter=$(echo "$file" | cut -d'/' -f4)
+            meta_path="packages/websites/src/$letter/$slug/metadata.json"
 
             if [ -f "$meta_path" ] && echo "$file" | grep -q "metadata.json"; then
               name=$(jq -r '.name // ""' "$meta_path")
@@ -51,7 +54,7 @@ jobs:
                 --arg desc "$desc" \
                 '. + [{slug: $slug, type: $type, name: $name, author: $author, authorGithub: $authorGithub, description: $desc}]')
             fi
-          done
+          done <<< "$FILES"
 
           if [ "$PRESENCES" = "[]" ]; then
             echo "No presences to sync"
