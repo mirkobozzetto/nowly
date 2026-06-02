@@ -2,6 +2,7 @@ import { EXT_WEB_SOURCE, WEB_BASE_URL } from "../shared/constants";
 import type { WebMessage } from "../shared/types";
 
 const USER_SCRIPT_MESSAGE_SOURCE = "NOWLY_PRESENCE";
+const IS_UNPACKED = !chrome.runtime.getManifest().update_url;
 let MARKETPLACE_ORIGIN = new URL(WEB_BASE_URL).origin;
 const WEB_MESSAGE_TYPES = new Set([
   "INSTALL_PRESENCE",
@@ -28,7 +29,7 @@ const broadcastDetected = (): void => {
 };
 
 window.addEventListener("message", (event: MessageEvent<WebMessage>) => {
-  if (event.origin !== MARKETPLACE_ORIGIN) return;
+  if (!IS_UNPACKED && event.origin !== MARKETPLACE_ORIGIN) return;
 
   if (event.data?.source === EXT_WEB_SOURCE && event.data.type === "PING") {
     window.postMessage({ source: EXT_WEB_SOURCE, type: "EXT_DETECTED" }, "*");
@@ -36,7 +37,7 @@ window.addEventListener("message", (event: MessageEvent<WebMessage>) => {
 });
 
 window.addEventListener("message", (event: MessageEvent<WebMessage>) => {
-  if (event.origin !== MARKETPLACE_ORIGIN) return;
+  if (!IS_UNPACKED && event.origin !== MARKETPLACE_ORIGIN) return;
   if (event.data?.source !== EXT_WEB_SOURCE || event.data.type === "PING") return;
   if (!WEB_MESSAGE_TYPES.has(event.data.type)) return;
 
