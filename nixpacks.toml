@@ -1,0 +1,13 @@
+[phases.setup]
+nixPkgs = ["nodejs_20", "pnpm"]
+
+[phases.install]
+dependsOn = ["setup"]
+commands = ["pnpm install"]
+
+[phases.build]
+dependsOn = ["install"]
+commands = ["pnpm build:websites"]
+
+[start]
+cmd = "pnpm start:api"
