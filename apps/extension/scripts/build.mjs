@@ -9,7 +9,11 @@ const ROOT = join(__dirname, "..");
 const DIST = join(ROOT, "dist");
 
 const webBaseUrl = process.env.VITE_WEB_BASE_URL ?? "https://nowly.me";
-const define = { "import.meta.env.VITE_WEB_BASE_URL": JSON.stringify(webBaseUrl) };
+const apiBaseUrl = process.env.VITE_API_BASE_URL ?? "https://api.nowly.me";
+const define = {
+  "import.meta.env.VITE_WEB_BASE_URL": JSON.stringify(webBaseUrl),
+  "import.meta.env.VITE_API_BASE_URL": JSON.stringify(apiBaseUrl),
+};
 
 rmSync(DIST, { recursive: true, force: true });
 mkdirSync(DIST, { recursive: true });
