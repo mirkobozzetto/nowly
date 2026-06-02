@@ -51,8 +51,16 @@ const main = async () => {
   const cliGithub = args.find((a) => a.startsWith("--github="))?.replace(/^--github=/, "")
   const cliPr = args.find((a) => a.startsWith("--pr="))?.replace(/^--pr=/, "")
   const cliTitle = args.find((a) => a.startsWith("--title="))?.replace(/^--title=/, "")
+  const cliSlug = args.find((a) => a.startsWith("--slug="))?.replace(/^--slug=/, "")
 
-  const presences = getPresences()
+  let presences = getPresences()
+  if (cliSlug) {
+    presences = presences.filter((p) => p.slug === cliSlug)
+    if (!presences.length) {
+      console.error(`No presence found with slug: "${cliSlug}"`)
+      process.exit(1)
+    }
+  }
   console.log(`Found ${presences.length} presences\n`)
 
   const payload = []
