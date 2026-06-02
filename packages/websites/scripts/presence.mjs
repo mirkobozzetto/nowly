@@ -91,7 +91,7 @@ function getMetadataGithub(dir) {
   }
 }
 
-function getMetadataName(dir) {
+const getMetadataName = (dir) => {
   try {
     const meta = JSON.parse(readFileSync(join(dir, "metadata.json"), "utf-8"))
     return meta.name || undefined
@@ -100,7 +100,7 @@ function getMetadataName(dir) {
   }
 }
 
-function getMetadataDescription(dir) {
+const getMetadataDescription = (dir) => {
   try {
     const meta = JSON.parse(readFileSync(join(dir, "metadata.json"), "utf-8"))
     const desc = meta.description?.["en-US"] || meta.description?.["en"] || Object.values(meta.description ?? {})[0]

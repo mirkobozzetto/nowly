@@ -75,7 +75,9 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
       if (body.changelog || body.author) {
         await addVersion(slug, {
           version: body.version,
-          changelog: body.changelog ?? "",
+          changelog: body.changelog
+            ? JSON.stringify({ "en-US": body.changelog, "fr-FR": body.changelog, "es-ES": body.changelog })
+            : "",
           author: body.author ?? "unknown",
           authorGithub: body.authorGithub,
           pr: body.pr,
@@ -101,6 +103,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
         author?: string
         authorGithub?: string
         description?: string
+        descriptions?: Record<string, string>
       }[]
       pr?: string
       prTitle?: string
@@ -113,13 +116,22 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
       const currentVersion = stats.version
       const author = p.author || stats.version ? (await getVersionHistory(p.slug))[0]?.author || "unknown" : "unknown"
 
+      const clCtx: Parameters<typeof generateChangelog>[0] = {
+        type: p.type,
+        name: p.name,
+        prTitle: body.prTitle,
+      }
+      if (p.type === "new") {
+        clCtx.description = p.description
+        clCtx.descriptions = p.descriptions
+      }
+
+      const changelogs = await generateChangelog(clCtx)
+      const changelog = JSON.stringify(changelogs)
+      const displayChangelog = changelogs["en-US"] || ""
+
       if (p.type === "new" || !currentVersion) {
         const version = "1.0.0"
-        const changelog = await generateChangelog({
-          type: "new",
-          name: p.name,
-          description: p.description,
-        })
 
         await setVersion(p.slug, version)
         await setAdded(p.slug)
@@ -132,17 +144,11 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
           timestamp: Date.now(),
         })
 
-        results.push({ slug: p.slug, version, changelog })
+        results.push({ slug: p.slug, version, changelog: displayChangelog })
       } else {
         const parts = currentVersion.split(".").map(Number)
         parts[2] = (parts[2] || 0) + 1
         const nextVersion = parts.join(".")
-
-        const changelog = await generateChangelog({
-          type: "modified",
-          name: p.name,
-          prTitle: body.prTitle,
-        })
 
         await setVersion(p.slug, nextVersion)
         await setUpdated(p.slug)
@@ -155,7 +161,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
           timestamp: Date.now(),
         })
 
-        results.push({ slug: p.slug, version: nextVersion, changelog })
+        results.push({ slug: p.slug, version: nextVersion, changelog: displayChangelog })
       }
     }
 

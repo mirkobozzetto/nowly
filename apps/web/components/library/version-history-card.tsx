@@ -16,6 +16,15 @@ interface VersionEntry {
   timestamp: number
 }
 
+const pickChangelog = (changelog: string, locale: string): string => {
+  try {
+    const parsed = JSON.parse(changelog) as Record<string, string>
+    return parsed[locale] || parsed["en-US"] || changelog
+  } catch {
+    return changelog
+  }
+}
+
 type Props = {
   slug: string
   locale: string
@@ -58,7 +67,7 @@ export const VersionHistoryCard: FC<Props> = ({ slug, locale }): ReactElement =>
                 {dateFormatter.format(new Date(v.timestamp))}
               </span>
             </div>
-            <p className="text-xs text-foreground leading-relaxed">{v.changelog}</p>
+            <p className="text-xs text-foreground leading-relaxed">{pickChangelog(v.changelog, locale)}</p>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-[10px] text-dim-foreground">{v.author}</span>
               {v.pr && (
