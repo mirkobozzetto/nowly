@@ -32,7 +32,12 @@ interface EnrichedResponse extends PresenceMetadata {
 const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
   const { item: raw } = await params;
   const item = raw.toLowerCase();
-  const data = await presenceApi.get<EnrichedResponse>(`/${item}`);
+  let data: EnrichedResponse | null = null
+  try {
+    data = await presenceApi.get<EnrichedResponse>(`/${item}`);
+  } catch {
+    // API unreachable
+  }
 
   if (!data) {
     return { title: "Not Found" };
@@ -54,7 +59,13 @@ const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
 const PlatformDetailPage = async ({ params }: Props): Promise<ReactElement> => {
   const { item: raw } = await params;
   const item = raw.toLowerCase();
-  const data: EnrichedResponse | null = await fetch(`${API_URL}/presences/${item}`).then((r) => r.ok ? r.json() : null);
+  let data: EnrichedResponse | null = null
+  try {
+    const res = await fetch(`${API_URL}/presences/${item}`)
+    if (res.ok) data = await res.json() as EnrichedResponse
+  } catch {
+    // API unreachable
+  }
 
   if (!data) {
     notFound();
