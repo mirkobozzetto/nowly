@@ -2,9 +2,9 @@
 
 import { Dialog, DialogAction, DialogCancel, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogMedia, DialogTitle } from "@/components/l-ui/dialog";
 import { KofiModal } from "@/components/ui/kofi-modal";
-import { API_BASE_URL, PROJECT_PRESENCES_SOURCE_URL } from "@/lib/constants";
+import { API_BASE_URL } from "@/lib/constants";
 import { type Platform } from "@/lib/data/platforms";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { ChevronRight, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
@@ -13,11 +13,11 @@ import { toast } from "sonner";
 import { DevelopmentCard } from "./development-card";
 import { FeaturesCard } from "./features-card";
 import { HeaderCard } from "./header-card";
-import { InstallCard } from "./install-card";
+import { InstallVersionsCard } from "./install-versions-card";
 import { SettingsCard } from "./settings-card";
 import { StatsCard } from "./stats-card";
 import { SupportedUrlsCard } from "./supported-urls-card";
-import { VersionHistoryCard } from "./version-history-card";
+
 
 const EXT_SOURCE = "Nowly";
 let _msgId = 0;
@@ -28,6 +28,18 @@ function nextId(): string {
 
 function fireAndForget(url: string, opts?: RequestInit): void {
   fetch(url, opts).catch(() => { /* ignore */ });
+}
+
+function compareVersions(a: string, b: string): number {
+  const pa = a.split(".").map(Number);
+  const pb = b.split(".").map(Number);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const na = pa[i] || 0;
+    const nb = pb[i] || 0;
+    if (na > nb) return 1;
+    if (na < nb) return -1;
+  }
+  return 0;
 }
 
 type Props = {
@@ -45,6 +57,9 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
   const [totalInstalls, setTotalInstalls] = useState(platform.totalInstalls);
   const [showUninstallConfirm, setShowUninstallConfirm] = useState(false);
   const [savedRating, setSavedRating] = useState(0);
+  const [installingVersion, setInstallingVersion] = useState<string | null>(null);
+  const [pendingVersion, setPendingVersion] = useState<string | null>(null);
+  const [showDowngradeConfirm, setShowDowngradeConfirm] = useState(false);
 
   const needsUpdate = extDetected && isInstalled && installedVersion != null && installedVersion !== platform.version;
 
@@ -176,6 +191,61 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
     );
   }, [platform.slug]);
 
+  const installVersion = useCallback(async (version: string): Promise<void> => {
+    setInstallingVersion(version);
+    try {
+      const release = await fetch(`${API_BASE_URL}/presences/${platform.slug}/versions/${encodeURIComponent(version)}`, {
+          cache: "no-store",
+        }).then((r) => {
+          if (!r.ok) throw new Error("version not found");
+          return r.json();
+        });
+
+      window.postMessage(
+        {
+          source: EXT_SOURCE,
+          type: "INSTALL_PRESENCE",
+          messageId: nextId(),
+          payload: {
+            slug: platform.slug,
+            release,
+          },
+        },
+        "*",
+      );
+
+      setIsInstalled(true);
+      setInstalledVersion(release.version ?? null);
+      setInstallingVersion(null);
+      toast.success(t("versionChanged", { platform: platform.name, version }));
+    } catch {
+      toast.error(t("versionChangeError", { platform: platform.name, version }));
+      setInstallingVersion(null);
+    }
+  }, [extDetected, platform.slug]);
+
+  // const handleSelectVersion = useCallback((version: string): void => {
+  //   if (!extDetected) {
+  //     toast.info(t("extNotDetected"));
+  //     return;
+  //   }
+
+  //   if (installedVersion && compareVersions(version, installedVersion) < 0) {
+  //     setPendingVersion(version);
+  //     setShowDowngradeConfirm(true);
+  //   } else {
+  //     installVersion(version);
+  //   }
+  // }, [extDetected, installedVersion, platform.slug]);
+
+  const confirmDowngrade = useCallback((): void => {
+    if (pendingVersion) {
+      setShowDowngradeConfirm(false);
+      installVersion(pendingVersion);
+      setPendingVersion(null);
+    }
+  }, [pendingVersion]);
+
   return (
     <>
       <main className="min-h-screen pt-24 pb-16">
@@ -190,29 +260,40 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
 
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.85fr)] gap-4">
             <div className="space-y-4">
-              <HeaderCard platform={platform} isInstalled={isInstalled} isExtDetected={extDetected} locale={locale} />
+              <HeaderCard
+                platform={platform}
+                isInstalled={isInstalled}
+                isExtDetected={extDetected}
+                locale={locale}
+                needsUpdate={needsUpdate}
+                loading={loading}
+                onInstall={handleInstall}
+                onUninstall={handleUninstall}
+              />
+
               <SupportedUrlsCard urls={platform.supportedUrls} />
               <FeaturesCard platform={platform} locale={locale} />
-              <VersionHistoryCard slug={platform.slug} locale={locale} />
+
             </div>
 
             <div className="space-y-4">
-              <DevelopmentCard
-                author={platform.author}
-                contributors={platform.contributors}
-                sourceUrl={`${PROJECT_PRESENCES_SOURCE_URL}/${platform.name.charAt(0)}/${platform.name}/`}
-              />
+              <DevelopmentCard platform={platform} />
               <SettingsCard platform={platform} />
-              <StatsCard platform={{ ...platform, totalInstalls }} locale={locale} slug={platform.slug} canRate={extDetected && isInstalled} savedRating={savedRating} />
-              <InstallCard platform={platform} isInstalled={isInstalled} needsUpdate={needsUpdate} extDetected={extDetected} loading={loading} onInstall={handleInstall} onUninstall={handleUninstall} />
 
-              <Link
-                href={`/${locale}/library`}
-                className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                {t("back")}
-              </Link>
+              <StatsCard
+                platform={{
+                  ...platform,
+                  totalInstalls
+                }}
+                locale={locale}
+                slug={platform.slug}
+                canRate={extDetected && isInstalled}
+                savedRating={savedRating}
+              />
+
+              <InstallVersionsCard
+                platform={platform}
+              />
             </div>
           </div>
         </div>
@@ -222,11 +303,7 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
         <DialogContent variant="destructive">
           <DialogHeader>
             <DialogMedia>
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 6h18" />
-                <path d="M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2" />
-                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
-              </svg>
+              <Trash2 className="w-5 h-5" />
             </DialogMedia>
             <DialogTitle>{t("uninstallConfirmTitle")}</DialogTitle>
             <DialogDescription>
@@ -236,6 +313,28 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
           <DialogFooter>
             <DialogAction variant="destructive" onClick={confirmUninstall}>{t("uninstallConfirmAction")}</DialogAction>
             <DialogCancel>{t("uninstallConfirmCancel")}</DialogCancel>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDowngradeConfirm} onOpenChange={setShowDowngradeConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogMedia>
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                <path d="M12 9v4" />
+                <path d="M12 17h.01" />
+              </svg>
+            </DialogMedia>
+            <DialogTitle>{t("downgradeConfirmTitle")}</DialogTitle>
+            <DialogDescription>
+              {t("downgradeConfirmDescription", { platform: platform.name })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogAction onClick={confirmDowngrade}>{t("downgradeConfirmAction")}</DialogAction>
+            <DialogCancel>{t("downgradeConfirmCancel")}</DialogCancel>
           </DialogFooter>
         </DialogContent>
       </Dialog>
