@@ -52,7 +52,7 @@ export const createPresenceRuntime = (
       if (typeof assets !== "object" || assets === null) return {};
       const resolved = {};
       for (const [key, value] of Object.entries(assets)) {
-        const cleanPath = String(value).replace(/^\//, "");
+        const cleanPath = String(value).replace(/^\\//, "");
         resolved[key] = NOWLY_ASSETS_BASE + "/" + cleanPath;
       }
       return resolved;
