@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { getLocale } from "next-intl/server";
 import { Geist, Instrument_Sans } from "next/font/google";
 import type { PropsWithChildren, ReactElement } from "react";
@@ -48,6 +49,7 @@ const RootLayout = async ({ children }: PropsWithChildren): Promise<ReactElement
       <body className="font-sans antialiased">
         {children}
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
