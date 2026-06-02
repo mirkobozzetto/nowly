@@ -1,0 +1,12 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "nixpacks",
+    "buildCommand": "pnpm install && pnpm build:websites",
+    "startCommand": "pnpm start:api",
+    "watchPatterns": [
+      "/apps/api/**",
+      "/packages/**"
+    ]
+  }
+}
