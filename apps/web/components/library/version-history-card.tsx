@@ -16,7 +16,12 @@ interface VersionEntry {
   timestamp: number
 }
 
-const pickChangelog = (changelog: string, locale: string): string => {
+const pickChangelog = (changelog: unknown, locale: string): string => {
+  if (typeof changelog === "object" && changelog !== null) {
+    const map = changelog as Record<string, string>
+    return map[locale] || map["en-US"] || ""
+  }
+  if (typeof changelog !== "string") return ""
   try {
     const parsed = JSON.parse(changelog) as Record<string, string>
     return parsed[locale] || parsed["en-US"] || changelog
