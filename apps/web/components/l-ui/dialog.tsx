@@ -1,9 +1,8 @@
 "use client";
 
-import * as React from "react";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
-
 import { cn } from "@/lib/utils";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import * as React from "react";
 
 function Dialog({
   ...props
@@ -23,6 +22,11 @@ function DialogPortal({
   return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
 }
 
+type DialogContentProps = React.ComponentProps<typeof DialogPrimitive.Content> & {
+  variant?: "default" | "destructive"
+  size?: "default" | "sm"
+};
+
 function DialogOverlay({
   className,
   ...props
@@ -31,17 +35,14 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-black/80 backdrop-blur-lg duration-100 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+        "fixed inset-0 z-50 bg-background/70 backdrop-blur-sm",
+        "data-open:animate-in data-open:fade-in-0",
+        "data-closed:animate-out data-closed:fade-out-0",
         className
       )}
       {...props}
     />
   );
-}
-
-type DialogContentProps = React.ComponentProps<typeof DialogPrimitive.Content> & {
-  variant?: "default" | "destructive"
-  size?: "default" | "sm"
 }
 
 function DialogContent({
@@ -58,7 +59,12 @@ function DialogContent({
         data-variant={variant}
         data-size={size}
         className={cn(
-          "group/dialog-content fixed top-1/2 left-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-4 rounded-2xl bg-card border border-border-light shadow-[0_32px_72px_rgba(0,0,0,0.8)] duration-100 outline-none overflow-hidden data-[size=default]:max-w-[400px] data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "group/dialog-content fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)]",
+          "-translate-x-1/2 -translate-y-1/2 overflow-hidden outline-none",
+          "rounded-2xl border border-border/80 bg-card shadow-2xl",
+          "data-[size=default]:max-w-[420px] data-[size=sm]:max-w-[360px]",
+          "data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-open:slide-in-from-bottom-2",
+          "data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 data-closed:slide-out-to-bottom-2",
           className
         )}
         {...props}
@@ -75,7 +81,7 @@ function DialogHeader({
     <div
       data-slot="dialog-header"
       className={cn(
-        "bg-card-2 border-b border-border px-7 py-9 text-center grid place-items-center gap-1.5 has-data-[slot=dialog-media]:gap-4",
+        "flex flex-col items-center gap-3 px-6 pt-7 pb-4 text-center",
         className
       )}
       {...props}
@@ -91,7 +97,7 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "p-5 flex flex-col gap-2",
+        "flex flex-col gap-2 px-6 pb-6 pt-2",
         className
       )}
       {...props}
@@ -107,9 +113,9 @@ function DialogMedia({
     <div
       data-slot="dialog-media"
       className={cn(
-        "inline-flex size-10 items-center justify-center rounded-full",
-        "group-data-[variant=destructive]/dialog-content:bg-destructive/20 group-data-[variant=destructive]/dialog-content:text-destructive",
-        "group-data-[variant=default]/dialog-content:bg-foreground/10 group-data-[variant=default]/dialog-content:text-foreground/90",
+        "inline-flex size-12 items-center justify-center rounded-2xl border",
+        "group-data-[variant=destructive]/dialog-content:border-destructive/20 group-data-[variant=destructive]/dialog-content:bg-destructive/10 group-data-[variant=destructive]/dialog-content:text-destructive",
+        "group-data-[variant=default]/dialog-content:border-border group-data-[variant=default]/dialog-content:bg-muted/60 group-data-[variant=default]/dialog-content:text-foreground",
         className
       )}
       {...props}
@@ -125,7 +131,7 @@ function DialogTitle({
     <DialogPrimitive.Title
       data-slot="dialog-title"
       className={cn(
-        "text-lg font-bold tracking-tight text-foreground",
+        "text-base font-semibold tracking-tight text-foreground",
         className
       )}
       {...props}
@@ -141,7 +147,7 @@ function DialogDescription({
     <DialogPrimitive.Description
       data-slot="dialog-description"
       className={cn(
-        "text-sm text-muted-foreground leading-relaxed",
+        "max-w-[320px] text-sm leading-6 text-muted-foreground",
         className
       )}
       {...props}
@@ -154,16 +160,17 @@ function DialogAction({
   variant = "default",
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Close> & {
-  variant?: "default" | "destructive"
+  variant?: "default" | "destructive";
 }) {
   return (
     <DialogPrimitive.Close
       data-slot="dialog-action"
       data-variant={variant}
       className={cn(
-        "w-full flex items-center justify-center gap-2 px-5 py-3.5 rounded-lg font-semibold text-sm transition-all",
-        "data-[variant=destructive]:bg-destructive data-[variant=destructive]:text-destructive-foreground data-[variant=destructive]:hover:opacity-90",
-        "data-[variant=default]:bg-foreground data-[variant=default]:text-background data-[variant=default]:hover:bg-[#e4e4e7]",
+        "flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3",
+        "text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50",
+        "data-[variant=destructive]:bg-destructive data-[variant=destructive]:text-destructive-foreground data-[variant=destructive]:hover:bg-destructive/90",
+        "data-[variant=default]:bg-foreground data-[variant=default]:text-background data-[variant=default]:hover:bg-foreground/90",
         className
       )}
       {...props}
@@ -179,7 +186,8 @@ function DialogCancel({
     <DialogPrimitive.Close
       data-slot="dialog-cancel"
       className={cn(
-        "w-full px-2 py-2 bg-transparent text-dim-foreground text-sm text-center hover:text-muted-foreground hover:underline transition-colors cursor-pointer",
+        "flex w-full cursor-pointer items-center justify-center rounded-xl px-4 py-2.5",
+        "text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
         className
       )}
       {...props}
@@ -199,5 +207,6 @@ export {
   DialogOverlay,
   DialogPortal,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 };
+
