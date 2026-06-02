@@ -16,6 +16,7 @@ interface ChangelogContext {
   description?: string
   descriptions?: Record<string, string>
   prTitle?: string
+  changes?: string
 }
 
 const fallbackChangelogs = (ctx: ChangelogContext): z.infer<typeof ChangelogSchema> => {
@@ -29,7 +30,8 @@ const fallbackChangelogs = (ctx: ChangelogContext): z.infer<typeof ChangelogSche
   }
 
   const title = ctx.prTitle || `Update ${ctx.name} presence`
-  return { "en-US": title, "fr-FR": title, "es-ES": title }
+  const suffix = ctx.changes ? ` — ${ctx.changes}` : ""
+  return { "en-US": `${title}${suffix}`, "fr-FR": `${title}${suffix}`, "es-ES": `${title}${suffix}` }
 }
 
 export const generateChangelog = async (ctx: ChangelogContext): Promise<z.infer<typeof ChangelogSchema>> => {
@@ -59,6 +61,8 @@ Name (en): ${nameEn}
 Name (fr): ${nameFr}
 Name (es): ${nameEs}
 PR title: ${ctx.prTitle || ""}
+Changes:
+${ctx.changes || "No details"}
 
 Return a JSON object with keys "en-US", "fr-FR", "es-ES". Each value must be a concise single-line changelog (max 12 words).
 Example: {"en-US":"Fix video playback issues","fr-FR":"Correction des problèmes de lecture","es-ES":"Corrección de problemas de reproducción"}`

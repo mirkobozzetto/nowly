@@ -134,6 +134,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
       }[]
       pr?: string
       prTitle?: string
+      changes?: string
     }
 
     const results: { slug: string; version: string; changelog: string }[] = []
@@ -147,6 +148,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
         type: p.type,
         name: p.name,
         prTitle: body.prTitle,
+        changes: body.changes,
       }
       if (p.type === "new") {
         clCtx.description = p.description

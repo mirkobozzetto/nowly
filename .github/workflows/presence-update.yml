@@ -66,11 +66,13 @@ jobs:
             exit 0
           fi
 
+          CHANGES=$(git log --oneline "$BASE"..."$HEAD" 2>/dev/null | head -20)
           BODY=$(jq -n \
             --arg pr "#$PR_NUMBER" \
             --arg prTitle "$PR_TITLE" \
+            --arg changes "$CHANGES" \
             --argjson presences "$PRESENCES" \
-            '{pr: $pr, prTitle: $prTitle, presences: $presences}')
+            '{pr: $pr, prTitle: $prTitle, changes: $changes, presences: $presences}')
 
           echo "Syncing presences..."
           RESP=$(curl -s -X POST "$API_URL/presences/sync" \
