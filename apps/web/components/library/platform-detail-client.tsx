@@ -2,7 +2,7 @@
 
 import { Dialog, DialogAction, DialogCancel, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogMedia, DialogTitle } from "@/components/l-ui/dialog";
 import { KofiModal } from "@/components/ui/kofi-modal";
-import { PROJECT_PRESENCES_SOURCE_URL } from "@/lib/constants";
+import { API_BASE_URL, PROJECT_PRESENCES_SOURCE_URL } from "@/lib/constants";
 import { type Platform } from "@/lib/data/platforms";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -119,12 +119,12 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
 
     setLoading(true);
     try {
-      const release = await fetch(`/api/p/${platform.slug}/release?v=${encodeURIComponent(platform.version ?? "dev")}`, {
+      const release = await fetch(`${API_BASE_URL}/presences/${platform.slug}?v=${encodeURIComponent(platform.version ?? "dev")}`, {
           cache: "no-store",
         }).then((r) => r.json());
 
       if (!isInstalled) {
-        fireAndForget(`/api/p/${platform.slug}/installs`, { method: "POST" });
+        fireAndForget(`${API_BASE_URL}/presences/${platform.slug}/installs`, { method: "POST" });
         setTotalInstalls((n) => n + 1);
       }
 

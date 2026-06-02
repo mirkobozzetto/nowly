@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardTitle } from "@/components/l-ui/card";
+import { API_BASE_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { Platform } from "@/lib/data/platforms";
 import { Star } from "lucide-react";
@@ -33,7 +34,7 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate }): React
     setSubmitting(true);
     setUserRating(rating);
     try {
-      await fetch(`/api/p/${slug}/rating`, {
+      await fetch(`${API_BASE_URL}/presences/${slug}/rating`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rating }),
