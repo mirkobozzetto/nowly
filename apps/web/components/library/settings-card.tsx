@@ -1,6 +1,6 @@
 import { Card, CardTitle } from "@/components/l-ui/card";
 import type { Platform } from "@/lib/data/platforms";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 
 type Props = {
@@ -17,6 +17,7 @@ const inferType = (value: unknown): string => {
 };
 
 export const SettingsCard: FC<Props> = ({ platform }): ReactElement | null => {
+  const locale = useLocale();
   const t = useTranslations("MarketplaceDetail");
 
   if (!platform.settings || Object.keys(platform.settings).length === 0) return null;
@@ -33,8 +34,8 @@ export const SettingsCard: FC<Props> = ({ platform }): ReactElement | null => {
           const type = def?.type as string | undefined ?? inferType(value);
           const labelObj = def?.label as Record<string, string> | undefined;
           const description = def?.description as Record<string, string> | undefined;
-          const label = labelObj?.["fr-FR"] ?? labelObj?.["en-US"] ?? key;
-          const desc = description?.["fr-FR"] ?? description?.["en-US"];
+          const label = labelObj?.[locale] ?? labelObj?.["en-US"] ?? key;
+          const desc = description?.[locale] ?? description?.["en-US"];
 
           return (
             <div key={key} className="space-y-0.5">

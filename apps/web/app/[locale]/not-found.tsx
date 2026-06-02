@@ -1,13 +1,13 @@
-import Link from "next/link"
-import { useLocale, useTranslations } from "next-intl"
-import type { ReactElement } from "react"
+import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
+import type { ReactElement } from "react";
 
 const NotFound = (): ReactElement => {
-  const locale = useLocale()
-  const t = useTranslations("NotFound")
+  const locale = useLocale();
+  const t = useTranslations("NotFound");
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6">
+    <div className="fixed inset-0 flex items-center justify-center px-6">
       <div className="text-center max-w-sm">
         <div className="mb-8">
           <svg className="w-16 h-16 mx-auto text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -33,7 +33,7 @@ const NotFound = (): ReactElement => {
         </Link>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default NotFound
+export default NotFound;

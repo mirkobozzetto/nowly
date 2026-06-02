@@ -12,7 +12,7 @@ const Error = ({ reset }: Props): ReactElement => {
   const t = useTranslations("ErrorPage")
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center px-6">
+    <div className="fixed inset-0 flex items-center justify-center px-6">
       <div className="text-center max-w-sm">
         <div className="mb-8">
           <svg className="w-16 h-16 mx-auto text-destructive" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
