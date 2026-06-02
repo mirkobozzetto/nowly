@@ -1,6 +1,6 @@
-import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import type { Metadata, Viewport } from "next";
 import { getLocale } from "next-intl/server";
 import { Geist, Instrument_Sans } from "next/font/google";
 import type { PropsWithChildren, ReactElement } from "react";
@@ -20,7 +20,6 @@ const geist = Geist({
 
 const APP_NAME = "Nowly";
 const APP_DEFAULT_TITLE = "Nowly | Automatic Discord Rich Presence";
-const APP_DESCRIPTION = "Automatically display what you're watching in your Discord status. YouTube, Twitch, Disney+, Apple TV+, Prime Video and more.";
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,

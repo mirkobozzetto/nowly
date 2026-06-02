@@ -59,5 +59,9 @@
   "displayAlphabetical": "Alphabétique",
   "separateActive": "Séparer l'activité en cours",
   "separateActiveDescription": "Masque la présence active de la liste.",
-  "checkUpdates": "Vérifier les mises à jour"
+  "checkUpdates": "Vérifier les mises à jour",
+  "apiBaseUrl": "URL de base API",
+  "apiBaseUrlDescription": "Remplace l'URL par défaut pour les instances auto-hébergées.",
+  "save": "Enregistrer",
+  "reset": "Réinitialiser"
 }

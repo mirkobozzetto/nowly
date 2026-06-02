@@ -59,5 +59,9 @@
   "displayAlphabetical": "Alphabetical",
   "separateActive": "Separate current activity",
   "separateActiveDescription": "Hides the active presence from the list.",
-  "checkUpdates": "Check for Updates"
+  "checkUpdates": "Check for Updates",
+  "apiBaseUrl": "API Base URL",
+  "apiBaseUrlDescription": "Override the default API URL for self-hosted instances.",
+  "save": "Save",
+  "reset": "Reset"
 }

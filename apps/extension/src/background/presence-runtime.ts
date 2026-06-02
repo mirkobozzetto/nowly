@@ -1,6 +1,12 @@
 export const USER_SCRIPT_MESSAGE_SOURCE = "NOWLY_PRESENCE";
 
-export const createPresenceRuntime = (slug: string, name: string, bundle: string, settings: Record<string, unknown> = {}, webBaseUrl = "http://localhost:3000"): string => `
+export const createPresenceRuntime = (
+  slug: string,
+  name: string,
+  bundle: string,
+  settings: Record<string, unknown> = {},
+  apiBaseUrl = "https://api.nowly.me"
+): string => `
 (() => {
   "use strict";
 
@@ -8,7 +14,7 @@ export const createPresenceRuntime = (slug: string, name: string, bundle: string
   const NOWLY_NAME = ${JSON.stringify(name)};
   const NOWLY_SOURCE = ${JSON.stringify(USER_SCRIPT_MESSAGE_SOURCE)};
   const NOWLY_SETTINGS = ${JSON.stringify(settings)};
-  const NOWLY_ASSETS_BASE = ${JSON.stringify(`${webBaseUrl}/api/p/${slug}/assets`)};
+  const NOWLY_ASSETS_BASE = ${JSON.stringify(`${apiBaseUrl}/presences/${slug}/assets`)};
   const listeners = new Map();
   const instances = [];
   const storage = new Map();

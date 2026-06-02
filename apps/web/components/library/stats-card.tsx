@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardTitle } from "@/components/l-ui/card";
+import { API_BASE_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { Platform } from "@/lib/data/platforms";
 import { Star } from "lucide-react";
@@ -15,6 +16,17 @@ type Props = {
   slug: string
   canRate?: boolean
 };
+
+const StarDisplay = ({ filled, size = "sm" }: { filled: boolean; size?: "sm" | "md" }) => (
+  <Star
+    className={cn(
+      size === "sm" ? "w-3.5 h-3.5" : "w-5 h-5",
+      "transition-colors",
+      filled ? "text-accent" : "text-dim-foreground",
+    )}
+    fill={filled ? "currentColor" : "none"}
+  />
+);
 
 export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate }): ReactElement => {
   const t = useTranslations("MarketplaceDetail");
@@ -33,7 +45,7 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate }): React
     setSubmitting(true);
     setUserRating(rating);
     try {
-      await fetch(`/api/p/${slug}/rating`, {
+      await fetch(`${API_BASE_URL}/presences/${slug}/rating`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rating }),
@@ -45,6 +57,9 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate }): React
     }
   }, [slug, submitting]);
 
+  const fullStars = Math.floor(platform.rating);
+  const hasFraction = platform.rating - fullStars >= 0.5;
+
   return (
     <Card size="sm">
       <CardTitle className="text-foreground normal-case tracking-normal">{t("stats")}</CardTitle>
@@ -55,23 +70,48 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate }): React
               label={t("activeUsers")}
               value={platform.activeUsers.toLocaleString()}
             />
-            
+
             <StatRow
               label={t("totalInstalls")}
               value={platform.totalInstalls.toLocaleString()}
             />
-            
+
             <StatRow label={t("rating")}>
-              <span className="flex items-center gap-1 font-semibold">
-                <Star className="w-4 h-4" fill={platform.iconColor} color={platform.iconColor} />
-                {platform.rating}/5
+              <span className="flex items-center gap-1.5">
+                <span className="flex items-center gap-0.5">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <StarDisplay key={i} filled={i <= fullStars || (i === fullStars + 1 && hasFraction)} />
+                  ))}
+                </span>
+                <span className="font-semibold text-sm">{platform.rating}</span>
               </span>
             </StatRow>
 
+            {platform.ratingCount > 0 && (
+              <div className="space-y-1.5 pt-1">
+                {[5, 4, 3, 2, 1].map((stars) => {
+                  const count = platform.ratingDistribution[stars] ?? 0
+                  const pct = platform.ratingCount > 0 ? (count / platform.ratingCount) * 100 : 0
+                  return (
+                    <div key={stars} className="flex items-center gap-2">
+                      <span className="w-8 text-xs text-muted-foreground tabular-nums">{stars}</span>
+                      <div className="flex-1 h-2 bg-card-2 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-accent/60 rounded-full transition-all"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <span className="w-6 text-xs text-dim-foreground tabular-nums text-right">{count}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
             {canRate && (
-              <div className="pt-2 border-t border-border">
+              <div className="bg-card-2 border border-border rounded-lg p-3">
                 <p className="text-xs text-muted-foreground mb-2">{t("yourRating")}</p>
-                <div className="flex items-center gap-0.5">
+                <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((star) => {
                     const filled = star <= (hoveredStar || userRating);
                     return (
@@ -82,19 +122,23 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate }): React
                         onMouseEnter={() => setHoveredStar(star)}
                         onMouseLeave={() => setHoveredStar(0)}
                         onClick={() => submitRating(star)}
-                        className="p-0.5 transition-colors disabled:opacity-50"
+                        className={cn(
+                          "p-1 rounded-lg transition-all disabled:opacity-50",
+                          filled
+                            ? "text-accent scale-110"
+                            : "text-dim-foreground hover:text-muted-foreground",
+                        )}
                         aria-label={`${star} star${star > 1 ? "s" : ""}`}
                       >
-                        <Star
-                          className={cn("w-5 h-5 transition-colors", {
-                            "text-foreground": filled,
-                            "text-muted-foreground": !filled
-                          })}
-                          fill={filled ? platform.iconColor : "none"}
-                        />
+                        <StarDisplay filled={filled} size="md" />
                       </button>
                     );
                   })}
+                  {userRating > 0 && (
+                    <span className="ml-1 text-xs text-muted-foreground">
+                      {userRating}/5
+                    </span>
+                  )}
                 </div>
               </div>
             )}
@@ -105,7 +149,7 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate }): React
           label={t("addedAt")}
           value={dateFormatter.format(new Date(platform.addedAt))}
         />
-        
+
         <StatRow
           label={t("lastUpdated")}
           value={dateFormatter.format(new Date(platform.lastUpdated))}

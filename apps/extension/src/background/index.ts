@@ -1,9 +1,22 @@
-import { WEB_BASE_URL } from "../shared/constants";
+import { WEB_BASE_URL, API_BASE_URL } from "../shared/constants";
 import type { ExtensionMessage, ExtensionSettings, InstalledPresences, PresenceData, PresenceDebug, PresenceRelease, StoredPresence } from "../shared/types";
 import { connectNative, mapPresenceData, onNativeResponse, postNative, reconnectNative, refreshNativeStatus } from "./native";
 import { createPresenceRuntime, USER_SCRIPT_MESSAGE_SOURCE } from "./presence-runtime";
 import { verifyPresenceRelease } from "./release-security";
 import { getCurrentActivity, getDebug, getPresenceSettings, getPresences, getSettings, setCurrentActivity, setDebug, setPresences, setPresenceSettings, setSettings } from "./storage";
+
+let customApiUrl: string | undefined;
+
+const getEffectiveApiUrl = (): string => customApiUrl?.replace(/\/$/, "") || API_BASE_URL;
+const getEffectiveWebUrl = (): string => WEB_BASE_URL;
+
+const updateContentScriptsOrigin = async (): Promise<void> => {
+  const origin = new URL(getEffectiveWebUrl()).origin;
+  const tabs = await chrome.tabs.query({});
+  for (const tab of tabs) {
+    chrome.tabs.sendMessage(tab.id!, { type: "UPDATE_MARKETPLACE_ORIGIN", origin }).catch(() => {});
+  }
+};
 
 const respond = <T>(sendResponse: (response?: T) => void, value: T): void => sendResponse(value);
 
@@ -120,7 +133,7 @@ const unregisterPresenceScript = async (slug: string): Promise<void> => {
 const getPresenceRuntime = async (slug: string, name: string, bundle: string): Promise<string> => {
   const allSettings = await getPresenceSettings();
   const presenceSettings = allSettings[slug] ?? {};
-  return createPresenceRuntime(slug, name, bundle, presenceSettings, WEB_BASE_URL);
+  return createPresenceRuntime(slug, name, bundle, presenceSettings, getEffectiveApiUrl());
 };
 
 const registerPresenceScript = async (slug: string, presence: StoredPresence): Promise<{ ok: boolean; error?: string }> => {
@@ -279,6 +292,7 @@ const handleActivityUpdate = async (
   const presence = mapPresenceData(normalizedActivity);
 
   if (tabId) activeTabId = tabId;
+  addActiveSlug(slug);
 
   postNative({ type: "SET_ACTIVITY", presence });
 
@@ -296,6 +310,7 @@ const handleActivityUpdate = async (
 
 const handleClearActivity = async (): Promise<{ ok: boolean }> => {
   activeTabId = null;
+  activeSlugs.clear();
   postNative({ type: "CLEAR_ACTIVITY" });
 
   await Promise.all([
@@ -402,7 +417,7 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
         const slugs = Object.keys(presences);
         const results = await Promise.allSettled(
           slugs.map((slug) =>
-            fetch(`${WEB_BASE_URL}/api/p/${slug}/release`)
+            fetch(`${getEffectiveApiUrl()}/presences/${slug}`)
               .then((r) => r.json() as Promise<{ version: string }>)
               .then((data) => ({ slug, latestVersion: data.version }))
           )
@@ -425,7 +440,10 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
       return true;
 
     case "SET_SETTINGS":
-      setSettings(message.payload as Partial<ExtensionSettings>).then((settings) => respond(sendResponse, settings));
+      setSettings(message.payload as Partial<ExtensionSettings>).then((settings) => {
+        customApiUrl = settings.customApiBaseUrl;
+        respond(sendResponse, settings);
+      });
       return true;
 
     case "GET_PRESENCE_SETTINGS":
@@ -483,10 +501,24 @@ chrome.runtime.onMessage.addListener((message, sender) => {
   return false;
 });
 
+const activeSlugs = new Set<string>();
+
+const addActiveSlug = (slug: string) => activeSlugs.add(slug);
+const removeActiveSlug = (slug: string) => activeSlugs.delete(slug);
+
 chrome.alarms.create("native-heartbeat", { periodInMinutes: 1 });
+chrome.alarms.create("api-heartbeat", { periodInMinutes: 5 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === "native-heartbeat") postNative({ type: "PING" });
+  if (alarm.name === "api-heartbeat" && activeSlugs.size > 0) {
+    const slugs = [...activeSlugs];
+    fetch(`${getEffectiveApiUrl()}/presences/active`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ presences: slugs }),
+    }).catch(() => {});
+  }
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
@@ -501,10 +533,16 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   }
 });
 
+const initializeCustomApiUrl = async (): Promise<void> => {
+  const settings = await getSettings();
+  customApiUrl = settings.customApiBaseUrl;
+};
+
 chrome.runtime.onStartup.addListener(() => {
   enableSidePanelAction();
   void handleClearActivity();
   connectNative();
+  void initializeCustomApiUrl();
   getPresences().then((presences) => void syncPresenceScripts(presences));
 });
 
@@ -512,10 +550,12 @@ chrome.runtime.onInstalled.addListener(() => {
   enableSidePanelAction();
   void handleClearActivity();
   connectNative();
+  void initializeCustomApiUrl();
   getPresences().then((presences) => void syncPresenceScripts(presences));
 });
 
 enableSidePanelAction();
 void handleClearActivity();
 connectNative();
+void initializeCustomApiUrl();
 getPresences().then((presences) => void syncPresenceScripts(presences));

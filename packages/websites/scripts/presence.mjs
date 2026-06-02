@@ -1,12 +1,13 @@
-import { readFileSync, readdirSync, existsSync } from "fs"
-import { join, dirname, relative } from "path"
-import { fileURLToPath } from "url"
 import { execSync } from "child_process"
+import { existsSync, readFileSync, readdirSync } from "fs"
+import { dirname, join, relative } from "path"
+import { fileURLToPath } from "url"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, "..", "..", "..")
 const SRC = join(__dirname, "..", "src")
-const API_BASE = process.env.API_URL ?? "http://localhost:3000"
+const API_BASE = process.env.API_URL ?? "https://api.nowly.me"
+let cliChangelog = ""
 
 let API_KEY = process.env.API_SECRET_KEY
 if (!API_KEY) {
@@ -72,6 +73,14 @@ async function callApi(method, path, body) {
   return { ok: true }
 }
 
+function getGitAuthor(dir) {
+  try {
+    return execSync('git log -1 --format="%an"', { encoding: "utf-8", cwd: dir }).trim()
+  } catch {
+    return "unknown"
+  }
+}
+
 async function processPresence(slug, name, forceNew, opts = {}) {
   console.log(`\nProcessing ${name} (${slug})...`)
 
@@ -82,7 +91,7 @@ async function processPresence(slug, name, forceNew, opts = {}) {
     }
   }
 
-  const infoRes = await fetch(`${API_BASE}/api/p/${slug}`)
+  const infoRes = await fetch(`${API_BASE}/presences/${slug}`)
   if (!infoRes.ok) {
     console.warn(`  Presence not found on API, treating as new`)
   }
@@ -99,22 +108,35 @@ async function processPresence(slug, name, forceNew, opts = {}) {
 
   if (isNew) {
     console.log("  New presence - setting addedAt + initial version")
-    await callApi("PUT", `/api/p/${slug}/added`, { date: new Date().toISOString().split("T")[0] })
-    await callApi("PUT", `/api/p/${slug}/version`, { version: "1.0.0" })
+    await callApi("PUT", `/presences/${slug}`, {
+      added: new Date().toISOString().split("T")[0],
+      version: "1.0.0",
+      changelog: "Initial release",
+      author: opts.dir ? getGitAuthor(opts.dir) : "unknown",
+    })
+
     console.log("  Version set to 1.0.0")
     return
   }
 
   const nextVersion = bumpVersion(currentVersion)
+  const author = opts.dir ? getGitAuthor(opts.dir) : "unknown"
   console.log(`  Modified presence - bumping ${currentVersion} -> ${nextVersion}`)
-  await callApi("PUT", `/api/p/${slug}/updated`, { date: new Date().toISOString().split("T")[0] })
-  await callApi("PUT", `/api/p/${slug}/version`, { version: nextVersion })
+  await callApi("PUT", `/presences/${slug}`, {
+    updated: new Date().toISOString().split("T")[0],
+    version: nextVersion,
+    changelog: cliChangelog,
+    author,
+  })
+
   console.log(`  Version bumped to ${nextVersion}`)
 }
 
 async function main() {
   const args = process.argv.slice(2)
   const forceNew = args.includes("--new")
+  const changelogArg = args.find((a) => a.startsWith("--changelog="))
+  cliChangelog = changelogArg ? changelogArg.replace(/^--changelog=/, "") : ""
 
   const presences = getPresences()
 

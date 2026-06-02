@@ -8,6 +8,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const DIST = join(ROOT, "dist");
 
+const webBaseUrl = process.env.VITE_WEB_BASE_URL ?? "https://nowly.me";
+const apiBaseUrl = process.env.VITE_API_BASE_URL ?? "https://api.nowly.me";
+const define = {
+  "import.meta.env.VITE_WEB_BASE_URL": JSON.stringify(webBaseUrl),
+  "import.meta.env.VITE_API_BASE_URL": JSON.stringify(apiBaseUrl),
+};
+
 rmSync(DIST, { recursive: true, force: true });
 mkdirSync(DIST, { recursive: true });
 
@@ -16,6 +23,7 @@ const buildPage = async (name) => {
     root: join(ROOT, "src", name),
     base: "./",
     plugins: [react()],
+    define,
     build: {
       outDir: join(DIST, name),
       emptyOutDir: true,
@@ -30,6 +38,7 @@ const buildPage = async (name) => {
 const buildScript = async (name, entry) => {
   await build({
     root: ROOT,
+    define,
     build: {
       outDir: DIST,
       emptyOutDir: false,

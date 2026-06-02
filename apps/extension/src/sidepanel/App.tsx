@@ -66,7 +66,7 @@ const App: FC = (): ReactElement => {
           />
         )}
 
-        <DebugPanel debug={debug} nativeStatus={nativeStatus} />
+        <DebugPanel debug={debug} nativeStatus={nativeStatus} settings={settings} onSettingsChange={setSettings} />
       </div>
 
       {/*

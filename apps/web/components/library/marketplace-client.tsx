@@ -2,6 +2,7 @@
 
 import { PlatformCard } from "@/components/library/platform-card";
 import { categories, type Platform, type PlatformCategory } from "@/lib/data/platforms";
+import { API_BASE_URL } from "@/lib/constants";
 import { metadataToPlatform } from "@/lib/data/presence-adapter";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "@nowly/websites";
@@ -21,7 +22,7 @@ const MarketplaceClient: FC = (): ReactElement => {
   const [platforms, setPlatforms] = useState<Platform[]>([]);
 
   useEffect(() => {
-    fetch("/api/p")
+    fetch(`${API_BASE_URL}/presences`)
       .then((res) => res.json())
       .then((metadata: Metadata[]) => setPlatforms(metadata.map(metadataToPlatform)))
       .catch(() => {});
