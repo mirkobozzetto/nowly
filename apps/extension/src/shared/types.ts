@@ -108,7 +108,9 @@ export type WebMessageType =
   | "INSTALL_PRESENCE"
   | "UPDATE_PRESENCE"
   | "UNINSTALL_PRESENCE"
-  | "GET_INSTALLED";
+  | "GET_INSTALLED"
+  | "SAVE_USER_RATING"
+  | "GET_USER_RATINGS";
 
 export type PresenceDisplayMode = "category" | "alphabetical";
 

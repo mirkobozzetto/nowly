@@ -15,6 +15,7 @@ type Props = {
   locale: string
   slug: string
   canRate?: boolean
+  savedRating?: number
 };
 
 const StarDisplay = ({ filled, size = "sm" }: { filled: boolean; size?: "sm" | "md" }) => (
@@ -28,9 +29,13 @@ const StarDisplay = ({ filled, size = "sm" }: { filled: boolean; size?: "sm" | "
   />
 );
 
-export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate }): ReactElement => {
+const EXT_SOURCE = "Nowly";
+let _msgId = 0;
+const nextId = (): string => `r${_msgId++}_${Date.now()}`;
+
+export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRating }): ReactElement => {
   const t = useTranslations("MarketplaceDetail");
-  const [userRating, setUserRating] = useState(0);
+  const [userRating, setUserRating] = useState(savedRating ?? 0);
   const [hoveredStar, setHoveredStar] = useState(0);
   const [submitting, setSubmitting] = useState(false);
 
@@ -41,21 +46,27 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate }): React
   });
 
   const submitRating = useCallback(async (rating: number): Promise<void> => {
-    if (submitting) return;
+    if (submitting || userRating > 0) return;
     setSubmitting(true);
     setUserRating(rating);
     try {
-      await fetch(`${API_BASE_URL}/presences/${slug}/rating`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rating }),
-      });
+      await Promise.all([
+        fetch(`${API_BASE_URL}/presences/${slug}/rating`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rating }),
+        }),
+        window.postMessage(
+          { source: EXT_SOURCE, type: "SAVE_USER_RATING", payload: { slug, rating }, messageId: nextId() },
+          "*",
+        ),
+      ]);
     } catch {
       setUserRating(0);
     } finally {
       setSubmitting(false);
     }
-  }, [slug, submitting]);
+  }, [slug, submitting, userRating]);
 
   const fullStars = Math.floor(platform.rating);
   const hasFraction = platform.rating - fullStars >= 0.5;
@@ -113,12 +124,13 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate }): React
                 <p className="text-xs text-muted-foreground mb-2">{t("yourRating")}</p>
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((star) => {
-                    const filled = star <= (hoveredStar || userRating);
+                    const rated = userRating > 0;
+                    const filled = rated ? star <= userRating : star <= (hoveredStar || userRating);
                     return (
                       <button
                         key={star}
                         type="button"
-                        disabled={submitting}
+                        disabled={submitting || rated}
                         onMouseEnter={() => setHoveredStar(star)}
                         onMouseLeave={() => setHoveredStar(0)}
                         onClick={() => submitRating(star)}

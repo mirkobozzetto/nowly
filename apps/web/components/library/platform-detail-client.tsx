@@ -43,6 +43,7 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
   const [extDetected, setExtDetected] = useState(false);
   const [totalInstalls, setTotalInstalls] = useState(platform.totalInstalls);
   const [showUninstallConfirm, setShowUninstallConfirm] = useState(false);
+  const [savedRating, setSavedRating] = useState(0);
 
   const needsUpdate = extDetected && isInstalled && installedVersion != null && installedVersion !== platform.version;
 
@@ -64,6 +65,17 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
             { source: EXT_SOURCE, type: "GET_INSTALLED", messageId: nextId() },
             "*",
           );
+        }
+        window.postMessage(
+          { source: EXT_SOURCE, type: "GET_USER_RATINGS", messageId: nextId() },
+          "*",
+        );
+      }
+
+      if (msg.source === EXT_SOURCE && msg.type === "USER_RATINGS") {
+        const ratings = msg.payload as Record<string, number> | undefined;
+        if (ratings?.[platform.slug]) {
+          setSavedRating(ratings[platform.slug]);
         }
       }
 
@@ -189,7 +201,7 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
                 sourceUrl={`${PROJECT_PRESENCES_SOURCE_URL}/${platform.name.charAt(0)}/${platform.name}/`}
               />
               <SettingsCard platform={platform} />
-              <StatsCard platform={{ ...platform, totalInstalls }} locale={locale} slug={platform.slug} canRate={extDetected && isInstalled} />
+              <StatsCard platform={{ ...platform, totalInstalls }} locale={locale} slug={platform.slug} canRate={extDetected && isInstalled} savedRating={savedRating} />
               <InstallCard platform={platform} isInstalled={isInstalled} needsUpdate={needsUpdate} extDetected={extDetected} loading={loading} onInstall={handleInstall} onUninstall={handleUninstall} />
 
               <Link
