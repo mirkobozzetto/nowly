@@ -46,6 +46,7 @@ const checkExists = async (slug) => {
 
 const main = async () => {
   const args = process.argv.slice(2)
+  const forceNew = args.includes("--new")
   const cliAuthor = args.find((a) => a.startsWith("--author="))?.replace(/^--author=/, "")
   const cliGithub = args.find((a) => a.startsWith("--github="))?.replace(/^--github=/, "")
   const cliPr = args.find((a) => a.startsWith("--pr="))?.replace(/^--pr=/, "")
@@ -57,9 +58,9 @@ const main = async () => {
   const payload = []
 
   for (const p of presences) {
-    const exists = await checkExists(p.slug)
+    const exists = forceNew ? false : await checkExists(p.slug)
     const type = exists ? "modified" : "new"
-    console.log(`  ${type === "new" ? "➕" : "🔄"} ${p.name} (${p.slug})`)
+    console.log(`  ${type === "new" ? "➕" : "🔄"} ${p.name} (${p.slug})${forceNew ? " (forced new)" : ""}`)
     payload.push({
       slug: p.slug,
       type,
