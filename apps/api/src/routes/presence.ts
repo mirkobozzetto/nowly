@@ -5,10 +5,10 @@ import { join } from "path"
 import { PRESENCES_DIR } from "@/lib/paths"
 import { canonicalJson, sha256Base64Url, signedPayload, signPresenceRelease } from "@/lib/crypto"
 import { requireAuth } from "@/lib/api-auth"
-import { type VersionEntry, addVersion, getPresenceStats, setVersion, setAdded, setUpdated, getVersionHistory } from "@/lib/redis"
+import { type VersionEntry, addVersion, getPresenceStats, setVersion, setAdded, setUpdated, getVersionHistory, getVersionRelease } from "@/lib/redis"
 import { generateChangelog } from "@/lib/openai"
 
-const buildRelease = async (slug: string) => {
+const buildRelease = async (slug: string, version?: string) => {
   const metadata = getPresence(slug)
   if (!metadata) return null
 
@@ -16,17 +16,28 @@ const buildRelease = async (slug: string) => {
   if (!existsSync(bundlePath)) return null
 
   const stats = await getPresenceStats(slug)
-  const version = stats.version ?? metadata.version ?? "0.0.0"
-  const bundle = readFileSync(bundlePath, "utf-8")
-  const releaseMetadata = { ...metadata, slug, version }
+  const resolvedVersion = version ?? stats.version ?? metadata.version ?? "0.0.0"
+  let bundle: string
+
+  if (version) {
+    const stored = await getVersionRelease(slug, version)
+    if (stored?.bundle) {
+      bundle = stored.bundle
+    } else {
+      bundle = readFileSync(bundlePath, "utf-8")
+    }
+  } else {
+    bundle = readFileSync(bundlePath, "utf-8")
+  }
+  const releaseMetadata = { ...metadata, slug, version: resolvedVersion }
   const sha256 = sha256Base64Url(bundle)
   const metadataHash = sha256Base64Url(canonicalJson(releaseMetadata))
   const signedAt = new Date().toISOString()
-  const payload = signedPayload({ slug, version, sha256, metadataHash, signedAt })
+  const payload = signedPayload({ slug, version: resolvedVersion, sha256, metadataHash, signedAt })
 
   return {
     slug,
-    version,
+    version: resolvedVersion,
     metadata: releaseMetadata,
     bundle,
     sha256,
@@ -63,6 +74,20 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
     return reply.send(history)
   })
 
+  fastify.get<{ Params: { slug: string; version: string } }>("/:slug/versions/:version", async (request, reply) => {
+    const slug = request.params.slug.toLowerCase()
+    const version = request.params.version
+    const release = await buildRelease(slug, version)
+
+    if (!release) {
+      return reply.status(404).send({ error: "Version not found" })
+    }
+
+    return reply
+      .header("Cache-Control", "no-store")
+      .send(release)
+  })
+
   fastify.put<{ Params: { slug: string } }>("/:slug", async (request, reply) => {
     await requireAuth(request, reply)
     if (reply.sent) return
@@ -73,6 +98,8 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
     if (body.version) {
       await setVersion(slug, body.version)
       if (body.changelog || body.author) {
+        const bundlePath = join(PRESENCES_DIR, slug, "bundle.js")
+        const bundle = existsSync(bundlePath) ? readFileSync(bundlePath, "utf-8") : undefined
         await addVersion(slug, {
           version: body.version,
           changelog: body.changelog
@@ -82,7 +109,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
           authorGithub: body.authorGithub,
           pr: body.pr,
           timestamp: Date.now(),
-        })
+        }, bundle)
       }
     }
     if (body.added) await setAdded(slug, body.added)
@@ -130,6 +157,9 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
       const changelog = JSON.stringify(changelogs)
       const displayChangelog = changelogs["en-US"] || ""
 
+      const bundlePath = join(PRESENCES_DIR, p.slug, "bundle.js")
+      const bundle = existsSync(bundlePath) ? readFileSync(bundlePath, "utf-8") : undefined
+
       if (p.type === "new" || !currentVersion) {
         const version = "1.0.0"
 
@@ -142,7 +172,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
           authorGithub: p.authorGithub,
           pr: body.pr,
           timestamp: Date.now(),
-        })
+        }, bundle)
 
         results.push({ slug: p.slug, version, changelog: displayChangelog })
       } else {
@@ -159,7 +189,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
           authorGithub: p.authorGithub,
           pr: body.pr,
           timestamp: Date.now(),
-        })
+        }, bundle)
 
         results.push({ slug: p.slug, version: nextVersion, changelog: displayChangelog })
       }
