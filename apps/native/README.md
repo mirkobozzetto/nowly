@@ -58,10 +58,16 @@ The Extension ID is embedded in the native messaging manifest so Chrome allows t
 
 The installer is generated at `dist/NowlySetup.exe`.
 
-## Icons
+## Assets
 
-The installer icon (`installer.ico`) is generated from the extension icon. To regenerate:
+| File | Source | Format |
+|------|--------|--------|
+| `installer.ico` | Generated from `assets/icon.png` | ICO 48×48 |
+| `assets/banner.png` | Wizard banner (left panel) | PNG 202×386 |
+| `assets/icon.png` | Wizard small logo | PNG 55×55 |
+
+To regenerate `installer.ico` from the icon PNG:
 
 ```powershell
-ffmpeg -y -i ../extension/src/icons/icon48.png -vf "scale=48:48" installer.ico
+ffmpeg -y -i assets/icon.png -vf "scale=48:48" installer.ico
 ```
