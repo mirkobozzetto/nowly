@@ -33,6 +33,21 @@ const settings = Presence.Settings({
 
 const presence = new Presence(settings)
 
+const Category = Presence.Assets({
+  Home: "/categories/home.png",
+  Search: "/categories/search.png",
+  Subscriptions: "/categories/subscriptions.png",
+  History: "/categories/history.png",
+  Playlists: "/categories/playlists.png",
+  You: "/categories/you.png",
+  Storefront: "/categories/storefront.png",
+  Gaming: "/categories/gaming.png",
+  Podcasts: "/categories/podcasts.png",
+  Shorts: "/categories/shorts.png",
+  Playlist: "/categories/playlist.png",
+  Channel: "/categories/channel.png",
+})
+
 const $ = <T extends Element = Element>(selector: string, parent?: Element): T | null =>
   (parent ? parent.querySelector(selector) : document.querySelector(selector)) as T | null
 
@@ -133,7 +148,7 @@ presence.on("UpdateData", async (ctx) => {
     } else {
       await presence.setActivity({
         details: "Viewing channel",
-        largeImageKey: Assets.Logo,
+        largeImageKey: Category.Channel,
         type: PresenceType.Watching,
       })
     }
@@ -141,114 +156,114 @@ presence.on("UpdateData", async (ctx) => {
   }
 
   if (pathname === "/" || pathname === "/feed/trending") {
+      await presence.setActivity({
+        details: "Browsing home",
+        largeImageKey: Category.Home,
+        type: PresenceType.Watching,
+      })
+      return
+    }
+
+    if (pathname.startsWith("/results")) {
+      const query = new URLSearchParams(search).get("search_query")
+      await presence.setActivity({
+        details: "Searching",
+        state: query ? `"${query}"` : undefined,
+        largeImageKey: Category.Search,
+        type: PresenceType.Watching,
+      })
+      return
+    }
+
+    if (pathname.startsWith("/feed/subscriptions")) {
+      await presence.setActivity({
+        details: "Browsing subscriptions",
+        largeImageKey: Category.Subscriptions,
+        type: PresenceType.Watching,
+      })
+      return
+    }
+
+    if (pathname.startsWith("/feed/history")) {
+      await presence.setActivity({
+        details: "Viewing history",
+        largeImageKey: Category.History,
+        type: PresenceType.Watching,
+      })
+      return
+    }
+
+    if (pathname.startsWith("/feed/playlists")) {
+      await presence.setActivity({
+        details: "Browsing playlists",
+        largeImageKey: Category.Playlists,
+        type: PresenceType.Watching,
+      })
+      return
+    }
+
+    if (pathname.startsWith("/feed/you")) {
+      await presence.setActivity({
+        details: "Browsing your feed",
+        largeImageKey: Category.You,
+        type: PresenceType.Watching,
+      })
+      return
+    }
+
+    if (pathname.startsWith("/feed/storefront")) {
+      await presence.setActivity({
+        details: "Browsing movies & TV",
+        largeImageKey: Category.Storefront,
+        type: PresenceType.Watching,
+      })
+      return
+    }
+
+    if (pathname.startsWith("/gaming")) {
+      await presence.setActivity({
+        details: "Browsing gaming",
+        largeImageKey: Category.Gaming,
+        type: PresenceType.Watching,
+      })
+      return
+    }
+
+    if (pathname.startsWith("/podcasts")) {
+      await presence.setActivity({
+        details: "Browsing podcasts",
+        largeImageKey: Category.Podcasts,
+        type: PresenceType.Watching,
+      })
+      return
+    }
+
+    if (pathname.startsWith("/shorts")) {
+      await presence.setActivity({
+        details: "Watching shorts",
+        largeImageKey: Category.Shorts,
+        type: PresenceType.Watching,
+      })
+      return
+    }
+
+    if (pathname.startsWith("/playlist")) {
+      const list = new URLSearchParams(search).get("list")
+      let playlistName = "Viewing playlist"
+      if (list === "WL") playlistName = "Watch Later"
+      else if (list === "LL") playlistName = "Liked videos"
+
+      await presence.setActivity({
+        details: playlistName,
+        largeImageKey: Category.Playlist,
+        type: PresenceType.Watching,
+      })
+      return
+    }
+
     await presence.setActivity({
-      details: "Browsing home",
+      details: "Browsing",
       largeImageKey: Assets.Logo,
       type: PresenceType.Watching,
     })
-    return
-  }
-
-  if (pathname.startsWith("/results")) {
-    const query = new URLSearchParams(search).get("search_query")
-    await presence.setActivity({
-      details: "Searching",
-      state: query ? `"${query}"` : undefined,
-      largeImageKey: Assets.Logo,
-      type: PresenceType.Watching,
-    })
-    return
-  }
-
-  if (pathname.startsWith("/feed/subscriptions")) {
-    await presence.setActivity({
-      details: "Browsing subscriptions",
-      largeImageKey: Assets.Logo,
-      type: PresenceType.Watching,
-    })
-    return
-  }
-
-  if (pathname.startsWith("/feed/history")) {
-    await presence.setActivity({
-      details: "Viewing history",
-      largeImageKey: Assets.Logo,
-      type: PresenceType.Watching,
-    })
-    return
-  }
-
-  if (pathname.startsWith("/feed/playlists")) {
-    await presence.setActivity({
-      details: "Browsing playlists",
-      largeImageKey: Assets.Logo,
-      type: PresenceType.Watching,
-    })
-    return
-  }
-
-  if (pathname.startsWith("/feed/you")) {
-    await presence.setActivity({
-      details: "Browsing your feed",
-      largeImageKey: Assets.Logo,
-      type: PresenceType.Watching,
-    })
-    return
-  }
-
-  if (pathname.startsWith("/feed/storefront")) {
-    await presence.setActivity({
-      details: "Browsing movies & TV",
-      largeImageKey: Assets.Logo,
-      type: PresenceType.Watching,
-    })
-    return
-  }
-
-  if (pathname.startsWith("/gaming")) {
-    await presence.setActivity({
-      details: "Browsing gaming",
-      largeImageKey: Assets.Logo,
-      type: PresenceType.Watching,
-    })
-    return
-  }
-
-  if (pathname.startsWith("/podcasts")) {
-    await presence.setActivity({
-      details: "Browsing podcasts",
-      largeImageKey: Assets.Logo,
-      type: PresenceType.Watching,
-    })
-    return
-  }
-
-  if (pathname.startsWith("/shorts")) {
-    await presence.setActivity({
-      details: "Watching shorts",
-      largeImageKey: Assets.Logo,
-      type: PresenceType.Watching,
-    })
-    return
-  }
-
-  if (pathname.startsWith("/playlist")) {
-    const list = new URLSearchParams(search).get("list")
-    let playlistName = "Viewing playlist"
-    if (list === "WL") playlistName = "Watch Later"
-    else if (list === "LL") playlistName = "Liked videos"
-
-    await presence.setActivity({
-      details: playlistName,
-      largeImageKey: Assets.Logo,
-      type: PresenceType.Watching,
-    })
-    return
-  }
-
-  await presence.setActivity({
-    details: "Browsing",
-    largeImageKey: Assets.Logo,
-    type: PresenceType.Watching,
-  })
 })
