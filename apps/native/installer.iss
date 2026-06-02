@@ -42,8 +42,6 @@ Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 
 [Files]
 Source: "dist\nowly-host.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "dist\nowly-installer.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "dist\nowly-uninstaller.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "installer.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 [Registry]
@@ -55,6 +53,7 @@ Root: HKCU; Subkey: "Software\BraveSoftware\Brave-Browser\NativeMessagingHosts\{
 Filename: "powershell.exe"; Parameters: "-Command ""Add-MpPreference -ExclusionPath '{app}' -ErrorAction SilentlyContinue"""; Flags: runhidden; Description: "Add Defender exclusion"
 
 [UninstallRun]
+Filename: "taskkill.exe"; Parameters: "/f /im nowly-host.exe"; Flags: runhidden
 Filename: "powershell.exe"; Parameters: "-Command ""Remove-MpPreference -ExclusionPath '{app}' -ErrorAction SilentlyContinue"""; Flags: runhidden
 
 [Code]

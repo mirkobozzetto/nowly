@@ -30,12 +30,10 @@ Chromium Native Messaging host for Discord Rich Presence integration.
 - [Go 1.21+](https://go.dev/dl/)
 - [Inno Setup 6+](https://jrsoftware.org/isdl.php) (for the installer)
 
-### 1. Build the binaries
+### 1. Build the binary
 
 ```powershell
 go build -o dist/nowly-host.exe ./cmd/host
-go build -o dist/nowly-installer.exe ./cmd/installer
-go build -o dist/nowly-uninstaller.exe ./cmd/uninstaller
 ```
 
 ### 2. Generate the installer
