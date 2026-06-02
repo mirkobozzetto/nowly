@@ -1,42 +1,42 @@
 "use client";
 
 import { Card, CardTitle } from "@/components/l-ui/card";
-import type { Contributor } from "@/lib/data/platforms";
-import { ExternalLink } from "lucide-react";
+import { buildPresenceUrl } from "@/lib/constants";
+import type { Platform } from "@/lib/data/platforms";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import type { FC, ReactElement } from "react";
+import { GitHubIcon } from "../icons";
 import { AuthorItem } from "./author-item";
 
 type Props = {
-  author: Contributor
-  contributors: Contributor[]
-  sourceUrl?: string
+  platform: Platform;
 };
 
-export const DevelopmentCard: FC<Props> = ({ author, contributors, sourceUrl }): ReactElement => {
+export const DevelopmentCard: FC<Props> = ({ platform }): ReactElement => {
   const t = useTranslations("MarketplaceDetail");
 
   return (
     <Card size="sm">
       <div className="flex items-center justify-between mb-4">
         <CardTitle className="flex items-center gap-1.5 text-foreground normal-case tracking-normal">{t("development")}</CardTitle>
-        {sourceUrl && (
-          <a
-            href={sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-dim-foreground hover:text-foreground transition-colors"
-          >
-            <ExternalLink className="w-3 h-3" />
-            {t("source")}
-          </a>
-        )}
+        
+        <Link
+          href={buildPresenceUrl(platform)}
+          target="_blank"
+          className="bg-background text-shadow-background hover:bg-foreground/5 inline-flex items-center justify-center gap-2 px-2.5 py-1.5 rounded-lg text-sm transition-all"
+        >
+          <GitHubIcon className="w-4 h-4" />
+          Source
+        </Link>
       </div>
+
       <AuthorItem
-        contributor={author}
-        label={contributors.length > 0 ? t("authorLabel") : undefined}
+        contributor={platform.author}
+        label={platform.contributors.length > 0 ? t("authorLabel") : undefined}
       />
-      {contributors.length > 0 && contributors.map((contributor, index) => (
+
+      {platform.contributors.length > 0 && platform.contributors.map((contributor, index) => (
         <AuthorItem key={index} contributor={contributor} label={t("contributorLabel")} />
       ))}
     </Card>
