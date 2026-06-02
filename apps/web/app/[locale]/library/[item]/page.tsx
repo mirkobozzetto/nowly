@@ -22,6 +22,8 @@ interface EnrichedResponse extends PresenceMetadata {
   totalInstalls?: number
   activeUsers?: number
   rating?: number
+  ratingCount?: number
+  ratingDistribution?: Record<number, number>
   version?: string
   addedAt?: string
   lastUpdated?: string
@@ -67,6 +69,8 @@ const PlatformDetailPage = async ({ params }: Props): Promise<ReactElement> => {
         totalInstalls: data.totalInstalls ?? 0,
         activeUsers: data.activeUsers ?? 0,
         rating: data.rating ?? 0,
+        ratingCount: data.ratingCount ?? 0,
+        ratingDistribution: data.ratingDistribution ?? {},
         version: data.version ?? platform.version,
         addedAt: data.addedAt ?? platform.addedAt,
         lastUpdated: data.lastUpdated ?? platform.lastUpdated,

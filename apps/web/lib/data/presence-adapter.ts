@@ -28,6 +28,8 @@ export function metadataToPlatform(m: Metadata): Platform {
     activeUsers: 0,
     totalInstalls: 0,
     rating: 0,
+    ratingCount: 0,
+    ratingDistribution: {},
     addedAt: "2024-01-01",
     lastUpdated: new Date().toISOString().split("T")[0],
     supportedUrls: m.url,
