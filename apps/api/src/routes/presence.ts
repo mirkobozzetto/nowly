@@ -114,7 +114,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
     for (const p of body.presences) {
       const stats = await getPresenceStats(p.slug)
       const currentVersion = stats.version
-      const author = p.author || stats.version ? (await getVersionHistory(p.slug))[0]?.author || "unknown" : "unknown"
+      const author = p.author || (stats.version ? (await getVersionHistory(p.slug))[0]?.author || "unknown" : "unknown")
 
       const clCtx: Parameters<typeof generateChangelog>[0] = {
         type: p.type,

@@ -216,5 +216,16 @@
     "settingsAvailableInExtension": "Configure these settings from the Nowly extension.",
     "versionHistory": "Version History",
     "showAllVersions": "Show all {count} versions"
+  },
+
+  "NotFound": {
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "backToHome": "Back to Home"
+  },
+
+  "ErrorPage": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Please try again or come back later.",
+    "retry": "Try again"
   }
 }

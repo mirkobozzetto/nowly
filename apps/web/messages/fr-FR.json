@@ -214,5 +214,16 @@
     "settingsAvailableInExtension": "Configurez ces paramètres depuis l'extension Nowly.",
     "versionHistory": "Historique des versions",
     "showAllVersions": "Afficher les {count} versions"
+  },
+
+  "NotFound": {
+    "description": "La page que vous recherchez n'existe pas ou a été déplacée.",
+    "backToHome": "Retour à l'accueil"
+  },
+
+  "ErrorPage": {
+    "title": "Une erreur est survenue",
+    "description": "Une erreur inattendue s'est produite. Réessaie ou reviens plus tard.",
+    "retry": "Réessayer"
   }
 }
