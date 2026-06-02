@@ -178,7 +178,7 @@
     "features": "Features",
     "authorLabel": "Author",
     "contributorLabel": "Contributor",
-    "development": "Development",
+    "development": "Contribution",
     "stats": "Statistics",
     "activeUsers": "Active Users",
     "totalInstalls": "Total Installs",
@@ -214,8 +214,17 @@
     "comingSoonDescription": "Support for {platform} is currently under development.",
     "settings": "Settings",
     "settingsAvailableInExtension": "Configure these settings from the Nowly extension.",
+    "installation": "Installation",
     "versionHistory": "Version History",
-    "showAllVersions": "Show all {count} versions"
+    "showAllVersions": "Show all {count} versions",
+    "currentVersion": "Current version",
+    "useVersion": "Use this version",
+    "versionChanged": "{platform} switched to v{version}",
+    "versionChangeError": "Failed to switch {platform} to v{version}",
+    "downgradeConfirmTitle": "Downgrade Version",
+    "downgradeConfirmDescription": "Using an older version is generally not recommended. If you're experiencing issues with the current version, reverting to a previous one may help resolve them.",
+    "downgradeConfirmAction": "Use this version",
+    "downgradeConfirmCancel": "Cancel"
   },
 
   "NotFound": {

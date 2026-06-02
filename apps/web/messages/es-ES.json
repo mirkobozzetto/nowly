@@ -176,7 +176,7 @@
     "features": "Características",
     "authorLabel": "Autor",
     "contributorLabel": "Colaborador",
-    "development": "Desarrollo",
+    "development": "Colaboradores",
     "stats": "Estadísticas",
     "activeUsers": "Usuarios activos",
     "totalInstalls": "Instalaciones totales",
@@ -212,8 +212,17 @@
     "comingSoonDescription": "La compatibilidad con {platform} está actualmente en desarrollo.",
     "settings": "Ajustes",
     "settingsAvailableInExtension": "Configura estos ajustes desde la extensión de Nowly.",
+    "installation": "Instalación",
     "versionHistory": "Historial de versiones",
-    "showAllVersions": "Mostrar las {count} versiones"
+    "showAllVersions": "Mostrar las {count} versiones",
+    "currentVersion": "Versión actual",
+    "useVersion": "Usar esta versión",
+    "versionChanged": "{platform} cambiada a v{version}",
+    "versionChangeError": "Error al cambiar {platform} a v{version}",
+    "downgradeConfirmTitle": "Revertir la versión",
+    "downgradeConfirmDescription": "Usar una versión anterior no se recomienda generalmente. Si tienes problemas con la versión actual, volver a una anterior puede ayudar a resolverlos.",
+    "downgradeConfirmAction": "Usar esta versión",
+    "downgradeConfirmCancel": "Cancelar"
   },
 
   "NotFound": {

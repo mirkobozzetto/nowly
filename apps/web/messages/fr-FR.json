@@ -176,7 +176,7 @@
     "features": "Fonctionnalités",
     "authorLabel": "Auteur",
     "contributorLabel": "Contributeur",
-    "development": "Développement",
+    "development": "Contributeurs",
     "stats": "Statistiques",
     "activeUsers": "Utilisateurs actifs",
     "totalInstalls": "Installations totales",
@@ -212,8 +212,17 @@
     "comingSoonDescription": "La prise en charge de {platform} est actuellement en cours de développement.",
     "settings": "Paramètres",
     "settingsAvailableInExtension": "Configurez ces paramètres depuis l'extension Nowly.",
+    "installation": "Installation",
     "versionHistory": "Historique des versions",
-    "showAllVersions": "Afficher les {count} versions"
+    "showAllVersions": "Afficher les {count} versions",
+    "currentVersion": "Version actuelle",
+    "useVersion": "Utiliser cette version",
+    "versionChanged": "{platform} basculée vers la v{version}",
+    "versionChangeError": "Échec du changement de version pour {platform} v{version}",
+    "downgradeConfirmTitle": "Rétrograder la version",
+    "downgradeConfirmDescription": "Utiliser une ancienne version n'est généralement pas recommandé. Si vous rencontrez des problèmes avec la version actuelle, revenir à une version antérieure peut parfois les résoudre.",
+    "downgradeConfirmAction": "Utiliser cette version",
+    "downgradeConfirmCancel": "Annuler"
   },
 
   "NotFound": {
