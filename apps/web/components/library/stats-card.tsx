@@ -4,10 +4,10 @@ import { Card, CardTitle } from "@/components/l-ui/card";
 import { API_BASE_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { Platform } from "@/lib/data/platforms";
-import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 import { useCallback, useState } from "react";
+import { StarDisplay } from "./star-display";
 import { StatRow } from "./stat-row";
 
 type Props = {
@@ -17,17 +17,6 @@ type Props = {
   canRate?: boolean
   savedRating?: number
 };
-
-const StarDisplay = ({ filled, size = "sm" }: { filled: boolean; size?: "sm" | "md" }) => (
-  <Star
-    className={cn(
-      size === "sm" ? "w-3.5 h-3.5" : "w-5 h-5",
-      "transition-colors",
-      filled ? "text-accent" : "text-dim-foreground",
-    )}
-    fill={filled ? "currentColor" : "none"}
-  />
-);
 
 const EXT_SOURCE = "Nowly";
 let _msgId = 0;
@@ -91,9 +80,14 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRat
               <span className="flex items-center gap-1.5">
                 <span className="flex items-center gap-0.5">
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <StarDisplay key={i} filled={i <= fullStars || (i === fullStars + 1 && hasFraction)} />
+                    <StarDisplay
+                      key={i}
+                      filled={i <= fullStars || (i === fullStars + 1 && hasFraction)}
+                      color={platform.iconColor}
+                    />
                   ))}
                 </span>
+
                 <span className="font-semibold text-sm">{platform.rating}</span>
               </span>
             </StatRow>
@@ -101,20 +95,20 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRat
             {platform.ratingCount > 0 && (
               <div className="space-y-1.5 pt-1">
                 {[5, 4, 3, 2, 1].map((stars) => {
-                  const count = platform.ratingDistribution[stars] ?? 0
-                  const pct = platform.ratingCount > 0 ? (count / platform.ratingCount) * 100 : 0
+                  const count = platform.ratingDistribution[stars] ?? 0;
+                  const pct = platform.ratingCount > 0 ? (count / platform.ratingCount) * 100 : 0;
                   return (
                     <div key={stars} className="flex items-center gap-2">
                       <span className="w-8 text-xs text-muted-foreground tabular-nums">{stars}</span>
                       <div className="flex-1 h-2 bg-card-2 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-accent/60 rounded-full transition-all"
-                          style={{ width: `${pct}%` }}
+                          className="h-full rounded-full transition-all"
+                          style={{ width: `${pct}%`, backgroundColor: `${platform.iconColor}99` }}
                         />
                       </div>
                       <span className="w-6 text-xs text-dim-foreground tabular-nums text-right">{count}</span>
                     </div>
-                  )
+                  );
                 })}
               </div>
             )}
@@ -137,12 +131,12 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRat
                         className={cn(
                           "p-1 rounded-lg transition-all disabled:opacity-50",
                           filled
-                            ? "text-accent scale-110"
+                            ? "scale-110"
                             : "text-dim-foreground hover:text-muted-foreground",
                         )}
                         aria-label={`${star} star${star > 1 ? "s" : ""}`}
                       >
-                        <StarDisplay filled={filled} size="md" />
+                        <StarDisplay filled={filled} size="md" color={platform.iconColor} />
                       </button>
                     );
                   })}
