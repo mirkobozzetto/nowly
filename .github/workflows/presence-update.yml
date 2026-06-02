@@ -4,8 +4,7 @@ on:
   pull_request:
     types: [closed]
     paths:
-      - "packages/websites/src/**/metadata.json"
-      - "packages/websites/src/**/presence.ts"
+      - "packages/websites/src/*/*/**"
 
 jobs:
   update:
@@ -29,13 +28,15 @@ jobs:
           HEAD="${{ github.event.pull_request.head.sha }}"
           PRESENCES="[]"
 
-          FILES=$(git diff --name-only --diff-filter=AMR "$BASE"..."$HEAD" -- "packages/websites/src/*/*/*" 2>/dev/null)
+          FILES=$(git diff --name-only --diff-filter=AMR "$BASE"..."$HEAD" -- "packages/websites/src/*/*/**" 2>/dev/null)
           SEEN=""
           while IFS= read -r file; do
             [ -z "$file" ] && continue
-            dir=$(echo "$file" | rev | cut -d'/' -f2- | rev)
+            letter=$(echo "$file" | cut -d'/' -f4)
+            name=$(echo "$file" | cut -d'/' -f5)
+            dir="packages/websites/src/$letter/$name"
             meta_path="$dir/metadata.json"
-            slug=$(echo "$dir" | cut -d'/' -f5- | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+            slug=$(echo "$name" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
             echo "$SEEN" | grep -q "^$slug$" && continue
             SEEN="$SEEN$slug\n"
 
