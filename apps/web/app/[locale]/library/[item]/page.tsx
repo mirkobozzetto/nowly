@@ -5,9 +5,10 @@ import type { ReactElement } from "react";
 import { PlatformDetailClient } from "@/components/library/platform-detail-client";
 import { metadataToPlatform } from "@/lib/data/presence-adapter";
 import { presenceApi } from "@/lib/presence-api";
+import { PRESENCE_API_URL } from "@/lib/env";
 import type { Metadata as PresenceMetadata } from "@nowly/websites";
 
-const API_URL = process.env.PRESENCE_API_URL || "http://localhost:3001";
+const API_URL = PRESENCE_API_URL;
 
 export const dynamic = "force-dynamic";
 

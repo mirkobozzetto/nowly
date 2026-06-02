@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import { PRESENCE_API_URL } from "@/lib/env";
 
-const API_URL = process.env.PRESENCE_API_URL || "http://localhost:3001";
+const API_URL = PRESENCE_API_URL;
 
 export const GET = async (
   _request: Request,

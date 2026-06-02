@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
+import { API_SECRET_KEY, PRESENCE_API_URL } from "@/lib/env";
 
-const API_URL = process.env.PRESENCE_API_URL || "http://localhost:3001";
-const API_SECRET_KEY = process.env.API_SECRET_KEY;
+const API_URL = PRESENCE_API_URL;
 
 export const PUT = async (
   request: Request,

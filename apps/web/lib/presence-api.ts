@@ -1,4 +1,6 @@
-const API_URL = process.env.PRESENCE_API_URL || "http://localhost:3001"
+import { PRESENCE_API_URL } from "./env"
+
+const API_URL = PRESENCE_API_URL
 
 async function get<T = unknown>(path: string): Promise<T | null> {
   const res = await fetch(`${API_URL}/presences${path}`)
