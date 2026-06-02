@@ -2,6 +2,15 @@ import type { FastifyInstance } from "fastify"
 import { incrementInstalls, setActiveUsers, submitRating } from "@/lib/redis"
 
 export const statsRoutes = async (fastify: FastifyInstance) => {
+  fastify.post("/active", async (request, _reply) => {
+    const body = request.body as { presences?: string[] }
+    const slugs = body?.presences ?? []
+    for (const slug of slugs) {
+      await setActiveUsers(slug, 1)
+    }
+    return { ok: true, count: slugs.length }
+  })
+
   fastify.post<{ Params: { slug: string } }>("/:slug/installs", async (request, _reply) => {
     const slug = request.params.slug.toLowerCase()
     const total = await incrementInstalls(slug)
