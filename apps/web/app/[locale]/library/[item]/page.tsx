@@ -18,13 +18,15 @@ type Props = {
   }>
 };
 
-interface EnrichedResponse extends PresenceMetadata {
+interface PresenceRelease {
+  slug: string
+  version: string
+  metadata: PresenceMetadata
   totalInstalls?: number
   activeUsers?: number
   rating?: number
   ratingCount?: number
   ratingDistribution?: Record<number, number>
-  version?: string
   addedAt?: string
   lastUpdated?: string
 }
@@ -32,9 +34,9 @@ interface EnrichedResponse extends PresenceMetadata {
 const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
   const { item: raw } = await params;
   const item = raw.toLowerCase();
-  let data: EnrichedResponse | null = null
+  let data: PresenceRelease | null = null
   try {
-    data = await presenceApi.get<EnrichedResponse>(`/${item}`);
+    data = await presenceApi.get<PresenceRelease>(`/${item}`);
   } catch {
     // API unreachable
   }
@@ -43,7 +45,7 @@ const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
     return { title: "Not Found" };
   }
 
-  const name = data.name ?? item;
+  const name = data.metadata?.name ?? item;
   const title = `${name} Presence — Nowly`;
   const description = `Install the ${name} presence for Nowly and automatically display what you're watching on ${name} in your Discord status.`;
 
@@ -59,10 +61,10 @@ const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
 const PlatformDetailPage = async ({ params }: Props): Promise<ReactElement> => {
   const { item: raw } = await params;
   const item = raw.toLowerCase();
-  let data: EnrichedResponse | null = null
+  let data: PresenceRelease | null = null
   try {
     const res = await fetch(`${API_URL}/presences/${item}`)
-    if (res.ok) data = await res.json() as EnrichedResponse
+    if (res.ok) data = await res.json() as PresenceRelease
   } catch {
     // API unreachable
   }
@@ -71,7 +73,7 @@ const PlatformDetailPage = async ({ params }: Props): Promise<ReactElement> => {
     notFound();
   }
 
-  const platform = metadataToPlatform(data);
+  const platform = metadataToPlatform(data.metadata);
 
   return (
     <PlatformDetailClient
