@@ -12,6 +12,7 @@ apps/mvp-chromium-extension/
 old-native/
 
 # Local environment variables
+.env
 .env.local
 
 # Extension signing key (keep secret!)

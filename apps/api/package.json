@@ -9,11 +9,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@fastify/cors": "^11.0.1",
     "@nowly/presence": "workspace:*",
     "@nowly/websites": "workspace:*",
     "@upstash/redis": "^1.38.0",
+    "dotenv": "^17.4.2",
     "fastify": "^5.3.2",
-    "@fastify/cors": "^11.0.1",
     "tsx": "^4.19.3"
   },
   "devDependencies": {
