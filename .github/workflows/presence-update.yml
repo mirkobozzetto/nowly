@@ -29,7 +29,7 @@ jobs:
           HEAD="${{ github.event.pull_request.head.sha }}"
           PRESENCES="[]"
 
-          for file in $(git diff --name-only --diff-filter=AMR "$BASE"..."$HEAD" -- "packages/websites/src/*/" 2>/dev/null); do
+          for file in $(git diff --name-only --diff-filter=AMR "$BASE"..."$HEAD" -- "packages/websites/src/*/*/*" 2>/dev/null); do
             slug=$(echo "$file" | cut -d'/' -f5)
             meta_path="packages/websites/src/$(echo $file | cut -d'/' -f4)/$slug/metadata.json"
 
