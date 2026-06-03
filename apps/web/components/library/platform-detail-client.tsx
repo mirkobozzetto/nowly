@@ -184,7 +184,6 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
   }, [platform.slug]);
 
   const installVersion = useCallback(async (version: string): Promise<void> => {
-    setInstallingVersion(version);
     try {
       const release = await fetch(`${API_BASE_URL}/presences/${platform.slug}/versions/${encodeURIComponent(version)}`, {
           cache: "no-store",
@@ -208,11 +207,9 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
 
       setIsInstalled(true);
       setInstalledVersion(release.version ?? null);
-      setInstallingVersion(null);
       toast.success(t("versionChanged", { platform: platform.name, version }));
     } catch {
       toast.error(t("versionChangeError", { platform: platform.name, version }));
-      setInstallingVersion(null);
     }
   }, [extDetected, platform.slug]);
 
