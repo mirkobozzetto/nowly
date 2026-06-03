@@ -2,12 +2,13 @@
 
 import { Card, CardTitle } from "@/components/l-ui/card";
 import { API_BASE_URL } from "@/lib/constants";
-import { cn } from "@/lib/utils";
 import type { Platform } from "@/lib/data/platforms";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 import { useCallback, useState } from "react";
+import { RatingDistribution } from "./rating-distribution";
 import { StarDisplay } from "./star-display";
+import { StarRatingInput } from "./star-rating-input";
 import { StatRow } from "./stat-row";
 
 type Props = {
@@ -94,61 +95,23 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRat
             </StatRow>
 
             {platform.ratingCount > 0 && (
-              <div className="space-y-1.5 pt-1">
-                {[5, 4, 3, 2, 1].map((stars) => {
-                  const count = platform.ratingDistribution[stars] ?? 0;
-                  const pct = platform.ratingCount > 0 ? (count / platform.ratingCount) * 100 : 0;
-                  return (
-                    <div key={stars} className="flex items-center gap-2">
-                      <span className="w-8 text-xs text-muted-foreground tabular-nums">{stars}</span>
-                      <div className="flex-1 h-2 bg-card-2 rounded-full overflow-hidden">
-                        <div
-                          className="h-full rounded-full transition-all"
-                          style={{ width: `${pct}%`, backgroundColor: `${platform.iconColor}99` }}
-                        />
-                      </div>
-                      <span className="w-6 text-xs text-dim-foreground tabular-nums text-right">{count}</span>
-                    </div>
-                  );
-                })}
-              </div>
+              <RatingDistribution
+                distribution={platform.ratingDistribution}
+                totalCount={platform.ratingCount}
+                iconColor={platform.iconColor}
+              />
             )}
 
-            {canRate && (
-              <div className="bg-card-2 border border-border rounded-lg p-3">
-                <p className="text-xs text-muted-foreground mb-2">{t("yourRating")}</p>
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((star) => {
-                    const rated = userRating > 0;
-                    const filled = rated ? star <= userRating : star <= (hoveredStar || userRating);
-                    return (
-                      <button
-                        key={star}
-                        type="button"
-                        disabled={submitting || rated}
-                        onMouseEnter={() => setHoveredStar(star)}
-                        onMouseLeave={() => setHoveredStar(0)}
-                        onClick={() => submitRating(star)}
-                        className={cn(
-                          "p-1 rounded-lg transition-all disabled:opacity-50",
-                          filled
-                            ? "scale-110"
-                            : "text-dim-foreground hover:text-muted-foreground",
-                        )}
-                        aria-label={`${star} star${star > 1 ? "s" : ""}`}
-                      >
-                        <StarDisplay filled={filled} size="md" color={platform.iconColor} />
-                      </button>
-                    );
-                  })}
-                  {userRating > 0 && (
-                    <span className="ml-1 text-xs text-muted-foreground">
-                      {userRating}/5
-                    </span>
-                  )}
-                </div>
-              </div>
-            )}
+            <StarRatingInput
+              iconColor={platform.iconColor}
+              canRate={!!canRate}
+              userRating={userRating}
+              hoveredStar={hoveredStar}
+              submitting={submitting}
+              onRate={submitRating}
+              onHover={setHoveredStar}
+              onLeave={() => setHoveredStar(0)}
+            />
           </>
         )}
 
