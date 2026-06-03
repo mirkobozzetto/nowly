@@ -1,7 +1,7 @@
-import { API_BASE_URL } from "./constants";
+import { API_BASE_URL, CDN_BASE_URL } from "./constants";
 
 export const assetUrl = (slug: string, type: "icon" | "logo" | "thumbnail"): string =>
-  `${API_BASE_URL}/presences/${slug}/assets/${type}`;
+  `${CDN_BASE_URL}/presences/${slug}/assets/${type}`;
 
 export const fetchPresenceMetadata = async (slug: string): Promise<unknown> => {
   const response = await fetch(`${API_BASE_URL}/presences/${slug}`);
