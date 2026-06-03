@@ -59,6 +59,15 @@ const Category = Presence.Assets({
   Shorts: "/categories/shorts.png",
 })
 
+const resolve = async <T extends Element>(selector: string, retries = 8, delay = 300): Promise<T | null> => {
+  for (let i = 0; i < retries; i++) {
+    const el = document.querySelector<T>(selector)
+    if (el) return el
+    await new Promise((r) => setTimeout(r, delay))
+  }
+  return document.querySelector<T>(selector)
+}
+
 const $ = <T extends Element = Element>(selector: string, parent?: Element): T | null =>
   (parent ? parent.querySelector(selector) : document.querySelector(selector)) as T | null
 
@@ -89,13 +98,19 @@ const findVideo = (): HTMLVideoElement | null => {
 }
 
 const findTitle = (): string =>
-  $("h1 yt-formatted-string")?.textContent?.trim()
+  $("yt-shorts-video-title-view-model .ytAttributedStringHost")?.textContent?.trim()
+  || $("h1 yt-formatted-string")?.textContent?.trim()
   || $("h1")?.textContent?.trim()
   || document.title.replace(" - YouTube", "")
   || "YouTube"
 
 const findUploader = (): string =>
-  $("#owner yt-formatted-string a")?.textContent?.trim()
+  $("yt-reel-channel-bar-view-model .ytAttributedStringHost a")?.textContent?.trim()
+  || $(".ytReelChannelBarViewModelChannelName a")?.textContent?.trim()
+  || $("ytd-reel-player-overlay-renderer ytd-channel-name a")?.textContent?.trim()
+  || $("ytd-reel-video-renderer #channel-name a")?.textContent?.trim()
+  || $("ytd-channel-name a")?.textContent?.trim()
+  || $("#owner yt-formatted-string a")?.textContent?.trim()
   || $(".ytd-channel-name a")?.textContent?.trim()
   || $("#owner-container a")?.textContent?.trim()
   || "YouTube"
@@ -138,22 +153,27 @@ presence.on("UpdateData", async (ctx) => {
     return
   }
 
-  const shortsMatch = pathname.match(/^\/shorts\/([^/]+)$/)
-  if (shortsMatch && ctx.settings.showShorts && video) {
+  const shortsMatch = ctx.settings.showShorts && pathname.match(/^\/shorts\/([^/]+)$/)
+  if (shortsMatch) {
     const shortsId = shortsMatch[1]
-    const title = findTitle()
-    const uploader = findUploader()
-    const isPlaying = !video.paused
+
+    const channelEl = await resolve("yt-reel-channel-bar-view-model .ytAttributedStringHost a")
+    const titleEl = await resolve("yt-shorts-video-title-view-model .ytAttributedStringHost")
+    const vid = video || await resolve("video")
+
+    const title = titleEl?.textContent?.trim() || findTitle()
+    const uploader = channelEl?.textContent?.trim() || findUploader()
+    const isPlaying = vid ? !vid.paused : true
 
     await presence.setActivity({
-      name: "YouTube Shorts",
+      appName: "YouTube Shorts",
       details: title,
       state: uploader,
       largeImageKey: `https://img.youtube.com/vi/${shortsId}/maxresdefault.jpg`,
       largeImageText: uploader,
       smallImageKey: isPlaying ? "play" : "pause",
       smallImageText: isPlaying ? "Playing" : "Paused",
-      ...createMediaTimestamps(video),
+      ...(vid && !vid.paused ? createMediaTimestamps(vid) : {}),
       type: PresenceType.Watching,
       buttons: [{ label: "Watch Short", url: href.split("?")[0] }],
     })
