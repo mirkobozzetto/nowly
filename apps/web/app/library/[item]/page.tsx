@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactElement } from "react";
 
-import { PlatformDetailClient } from "@/components/library/platform-detail-client";
+import { PlatformDetailClient } from "@/components/library/platform-detail/platform-detail-client";
 import { metadataToPlatform } from "@/lib/data/presence-adapter";
 import { presenceApi } from "@/lib/presence-api";
 import { PRESENCE_API_URL } from "@/lib/env";
