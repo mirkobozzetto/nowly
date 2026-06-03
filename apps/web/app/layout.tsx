@@ -45,6 +45,9 @@ const RootLayout = async ({ children }: PropsWithChildren): Promise<ReactElement
 
   return (
     <html lang={locale} className={`${instrumentSans.variable} ${geist.variable} bg-background`}>
+      <head>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6330177306711077" crossOrigin="anonymous" />
+      </head>
       <body className="font-sans antialiased">
         {children}
         <Analytics />
