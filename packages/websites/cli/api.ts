@@ -58,10 +58,12 @@ export interface SyncPayload {
   author: string
   authorGithub?: string
   version: string
-  description: string
-  descriptions?: Record<string, string>
+  description: Record<string, string>
+  color?: string
+  url?: string[]
   changelog?: string
   bundle?: string
+  metadata?: Record<string, any>
 }
 
 export interface SyncResult {

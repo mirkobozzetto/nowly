@@ -134,15 +134,7 @@ export const addVersion = async (slug: string, entry: VersionEntry): Promise<voi
 
 const metaKey = (slug: string) => `presence:${slug}:meta`
 
-export interface PresenceMeta {
-  slug: string
-  name: string
-  author: string
-  category: string
-  description: Record<string, string>
-  color?: string
-  url?: string[]
-}
+export type PresenceMeta = Record<string, any>
 
 export const setPresenceMeta = async (slug: string, meta: PresenceMeta): Promise<void> => {
   await redis.set(metaKey(slug), JSON.stringify(meta))
@@ -152,7 +144,11 @@ export const getPresenceMeta = async (slug: string): Promise<PresenceMeta | null
   const raw = await redis.get<any>(metaKey(slug))
   if (!raw) return null
   if (typeof raw === "string") {
-    try { return JSON.parse(raw) as PresenceMeta } catch { return null }
+    try {
+      return JSON.parse(raw) as PresenceMeta
+    } catch {
+      return null
+    }
   }
   return raw as PresenceMeta
 }

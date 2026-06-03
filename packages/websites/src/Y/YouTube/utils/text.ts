@@ -15,7 +15,11 @@ export const parseJSONScript = (text: string, marker: string): unknown => {
     if (text[i] === "{") depth++
     if (text[i] === "}") depth--
     if (depth === 0) {
-      try { return JSON.parse(text.slice(jsonStart, i + 1)) } catch { return null }
+      try {
+        return JSON.parse(text.slice(jsonStart, i + 1))
+      } catch {
+        return null
+      }
     }
   }
   return null

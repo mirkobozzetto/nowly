@@ -9,15 +9,23 @@ import { type VersionEntry, addVersion, getPresenceStats, setVersion, setAdded, 
 import { generateChangelog } from "@/lib/openai"
 
 const buildRelease = async (slug: string, version?: string) => {
-  const metadata = getPresence(slug)
+  const metadata = getPresence(slug) || await getPresenceMeta(slug)
   if (!metadata) return null
 
   const bundlePath = join(PRESENCES_DIR, slug, "bundle.js")
-  if (!existsSync(bundlePath)) return null
+  let bundle: string | null = null
+  if (existsSync(bundlePath)) {
+    bundle = readFileSync(bundlePath, "utf-8")
+  } else {
+    try {
+      const res = await fetch(`https://cdn.nowly.me/presences/${slug}/bundle.js`)
+      if (res.ok) bundle = await res.text()
+    } catch {}
+  }
+  if (!bundle) return null
 
   const stats = await getPresenceStats(slug)
   const resolvedVersion = version ?? stats.version ?? metadata.version ?? "0.0.0"
-  const bundle = readFileSync(bundlePath, "utf-8")
   const releaseMetadata = { ...metadata, slug, version: resolvedVersion }
   const sha256 = sha256Base64Url(bundle)
   const metadataHash = sha256Base64Url(canonicalJson(releaseMetadata))
@@ -121,6 +129,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
         color?: string
         url?: string[]
         bundle?: string
+        metadata?: Record<string, any>
       }[]
       pr?: string
       prTitle?: string
@@ -186,15 +195,19 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
         results.push({ slug: p.slug, version: nextVersion, changelog: displayChangelog })
       }
 
-      await setPresenceMeta(p.slug, {
-        slug: p.slug,
-        name: p.name,
-        author,
-        category: p.category || "",
-        description: p.description || {},
-        color: p.color,
-        url: p.url,
-      })
+      if (p.metadata) {
+        await setPresenceMeta(p.slug, p.metadata as any)
+      } else {
+        await setPresenceMeta(p.slug, {
+          slug: p.slug,
+          name: p.name,
+          author,
+          category: p.category || "",
+          description: p.description || {},
+          color: p.color,
+          url: p.url,
+        })
+      }
     }
 
     return { ok: true, results }

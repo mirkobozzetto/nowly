@@ -130,6 +130,22 @@ export const registerPush = (program: Command) => {
           url: p.url,
           changelog,
           bundle,
+          metadata: {
+            slug: p.slug,
+            name: p.name,
+            version,
+            author: p.author,
+            contributors: p.contributors,
+            description: p.description,
+            longDescription: p.longDescription,
+            url: p.url,
+            color: p.color,
+            category: p.category,
+            tags: p.tags,
+            assets: p.assets,
+            features: p.features,
+            settings: p.settings,
+          },
         })
 
         oldVersions[p.slug] = oldVersion
