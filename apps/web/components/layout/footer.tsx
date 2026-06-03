@@ -1,56 +1,15 @@
 "use client";
 
-import { Button, buttonVariants } from "@/components/l-ui/button";
-import { LocaleFlag } from "@/components/locale-flag";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { buttonVariants } from "@/components/l-ui/button";
 import { PROJECT_REPOSITORY_URL } from "@/lib/constants";
-import { cn } from "@/lib/utils";
-import { Heart } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
-import { useState } from "react";
+import { FooterLinks } from "./footer-links";
+import { LocaleSelector } from "./locale-selector";
+import { SupportButton } from "./support-button";
 
 export const Footer: FC = (): ReactElement => {
-  const [thanked, setThanked] = useState(false);
-  const [countdown, setCountdown] = useState<number | null>(null);
-  const locale = useLocale();
-  const router = useRouter();
   const t = useTranslations("Footer");
-
-  const handleSupport = (): void => {
-    if (thanked) return;
-
-    setThanked(true);
-    setCountdown(3);
-
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev === null || prev <= 1) {
-          clearInterval(timer);
-          window.open("https://ko-fi.com/qkimi_", "_blank", "noopener,noreferrer");
-          setTimeout(() => {
-            setThanked(false);
-            setCountdown(null);
-          }, 500);
-          return null;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
-
-  const handleLocaleChange = (value: string): void => {
-    document.cookie = `locale=${value};path=/;max-age=31536000;SameSite=Lax`;
-    router.refresh();
-  };
 
   return (
     <footer className="py-8 border-t border-border text-dim-foreground text-sm">
@@ -89,23 +48,7 @@ export const Footer: FC = (): ReactElement => {
             </div>
 
             <div className="flex items-center gap-3">
-              <Button
-                onClick={handleSupport}
-                size="sm"
-                variant="secondary"
-                className={cn(
-                  "text-muted-foreground",
-                  thanked
-                    ? "border-red-500/50 text-foreground bg-red-500/10 pointer-events-none"
-                    : "hover:border-red-500/40 hover:text-foreground hover:bg-red-500/5"
-                )}
-              >
-                <Heart className={cn("w-3.5 h-3.5 text-red-400 transition-transform", thanked && "scale-125")} fill="currentColor" />
-                <span className="transition-all">{thanked ? t("thanks") : t("support")}</span>
-                {countdown !== null && (
-                  <span className="text-xs text-dim-foreground">({t("redirect", { countdown })})</span>
-                )}
-              </Button>
+              <SupportButton />
 
               <a
                 href={PROJECT_REPOSITORY_URL}
@@ -125,37 +68,9 @@ export const Footer: FC = (): ReactElement => {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 mt-2">
-            <Link href="/faq" className="hover:text-foreground transition-colors">
-              {t("faq")}
-            </Link>
-            <span className="opacity-30">·</span>
-            <Link href="/changelog" className="hover:text-foreground transition-colors">
-              {t("changelog")}
-            </Link>
-            <span className="opacity-30">·</span>
-            <Link href="/privacy" className="hover:text-foreground transition-colors">
-              {t("privacy")}
-            </Link>
-            <span className="opacity-30">·</span>
-            <Link href="/tos" className="hover:text-foreground transition-colors">
-              {t("tos")}
-            </Link>
-          </div>
+          <FooterLinks />
 
-          <div className="flex justify-start">
-            <Select value={locale} onValueChange={handleLocaleChange}>
-              <SelectTrigger className="">
-                <LocaleFlag locale={locale} />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="fr-FR">{t("french")}</SelectItem>
-                <SelectItem value="en-US">{t("english")}</SelectItem>
-                <SelectItem value="es-ES">{t("spanish")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <LocaleSelector />
         </div>
       </div>
     </footer>
