@@ -11,7 +11,9 @@
   "scripts": {
     "build": "tsx --tsconfig cli/tsconfig.json cli/index.ts build",
     "cli": "tsx --tsconfig cli/tsconfig.json cli/index.ts",
-    "prepublishOnly": "pnpm build"
+    "prepublishOnly": "pnpm build",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@nowly/presence": "workspace:*",
@@ -26,6 +28,7 @@
     "enquirer": "^2.4.1",
     "esbuild": "^0.24.0",
     "ora": "^8.2.0",
-    "tsx": "^4.19.4"
+    "tsx": "^4.19.4",
+    "vitest": "^3.0.0"
   }
 }
