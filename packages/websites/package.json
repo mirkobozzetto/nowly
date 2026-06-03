@@ -9,7 +9,8 @@
     "./types": "./src/types.ts"
   },
   "scripts": {
-    "build": "node scripts/build.mjs",
+    "build": "tsx cli/index.ts build",
+    "cli": "tsx cli/index.ts",
     "prepublishOnly": "pnpm build"
   },
   "dependencies": {
@@ -18,6 +19,11 @@
   },
   "devDependencies": {
     "@types/node": "^22.19.19",
-    "esbuild": "^0.24.0"
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "enquirer": "^2.4.1",
+    "esbuild": "^0.24.0",
+    "ora": "^8.2.0",
+    "tsx": "^4.19.4"
   }
 }

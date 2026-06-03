@@ -9,9 +9,8 @@
     "build:websites": "pnpm --filter @nowly/websites build",
     "start:api": "pnpm --filter @nowly/api start",
     "typecheck:api": "pnpm --filter @nowly/api typecheck",
-    "presence:register": "node packages/websites/scripts/presence.mjs --new",
-    "presence:update": "node packages/websites/scripts/presence.mjs",
-    "presence:sync-all": "node packages/websites/scripts/presence.mjs",
-    "presence:sync-api": "node packages/websites/scripts/sync-api.mjs"
+    "presence": "pnpm --filter @nowly/websites cli",
+    "presence:build": "pnpm --filter @nowly/websites cli build",
+    "presence:push": "pnpm --filter @nowly/websites cli push"
   }
 }
