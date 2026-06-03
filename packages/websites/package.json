@@ -9,8 +9,8 @@
     "./types": "./src/types.ts"
   },
   "scripts": {
-    "build": "tsx cli/index.ts build",
-    "cli": "tsx cli/index.ts",
+    "build": "tsx --tsconfig cli/tsconfig.json cli/index.ts build",
+    "cli": "tsx --tsconfig cli/tsconfig.json cli/index.ts",
     "prepublishOnly": "pnpm build"
   },
   "dependencies": {
