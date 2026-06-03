@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
-import type { FC, ReactElement } from "react";
 import { CtaSection } from "@/components/home/cta-section";
 import { HeroSection } from "@/components/home/hero-section";
 import { PlatformsSection } from "@/components/home/platforms-section";
 import { StepsSection } from "@/components/home/steps-section";
+import type { Metadata } from "next";
+import type { FC, ReactElement } from "react";
 
 const generateMetadata = (): Metadata => {
   return {
@@ -20,7 +20,7 @@ const generateMetadata = (): Metadata => {
   };
 };
 
-const HomePage: FC = (): ReactElement => {
+const Page: FC = (): ReactElement => {
   return (
     <main>
       <HeroSection />
@@ -32,4 +32,5 @@ const HomePage: FC = (): ReactElement => {
 };
 
 export { generateMetadata };
-export default HomePage;
+
+export default Page;

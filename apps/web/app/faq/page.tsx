@@ -17,7 +17,7 @@ const generateMetadata = (): Metadata => {
   };
 };
 
-const FaqPage: FC<Props> = async ({ params }: Props): Promise<ReactElement> => {
+const Page: FC<Props> = async ({ params }: Props): Promise<ReactElement> => {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "FaqPage" });
 
@@ -48,4 +48,4 @@ const FaqPage: FC<Props> = async ({ params }: Props): Promise<ReactElement> => {
 };
 
 export { generateMetadata };
-export default FaqPage;
+export default Page;

@@ -6,8 +6,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import type { PropsWithChildren, ReactElement } from "react";
-import "./globals.css";
 import { geist, instrumentSans } from "./fonts";
+import "./globals.css";
 import { metadata, viewport } from "./metadata";
 
 export { metadata, viewport };

@@ -8,18 +8,18 @@ type Props = {
 
 const generateMetadata = (): Metadata => {
   return {
-    title: "Privacy Policy — Nowly",
-    description: "Privacy Policy for Nowly. Learn how your data is processed locally and what information is collected.",
+    title: "Terms of Service — Nowly",
+    description: "Terms of Service for Nowly. Please read before using the browser extension, native application and website.",
     openGraph: {
-      title: "Privacy Policy — Nowly",
-      description: "Privacy Policy for Nowly. Learn how your data is processed locally and what information is collected.",
+      title: "Terms of Service — Nowly",
+      description: "Terms of Service for Nowly. Please read before using the browser extension, native application and website.",
     },
   };
 };
 
-const PrivacyPage: FC<Props> = async ({ params }: Props): Promise<ReactElement> => {
+const Page: FC<Props> = async ({ params }: Props): Promise<ReactElement> => {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "PrivacyPage" });
+  const t = await getTranslations({ locale, namespace: "TosPage" });
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-24">
@@ -29,12 +29,8 @@ const PrivacyPage: FC<Props> = async ({ params }: Props): Promise<ReactElement> 
 
       <div className="space-y-12 text-muted-foreground">
         <p className="text-sm text-dim-foreground">{t("lastUpdated")}</p>
-        <div
-          className="leading-relaxed space-y-2 [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:no-underline"
-          dangerouslySetInnerHTML={{ __html: t.raw("intro") as string }}
-        />
 
-        {Array.from({ length: 11 }, (_, i) => {
+        {Array.from({ length: 9 }, (_, i) => {
           const num = String(i + 1).padStart(2, "0");
           return (
             <div key={i}>
@@ -55,4 +51,4 @@ const PrivacyPage: FC<Props> = async ({ params }: Props): Promise<ReactElement> 
 };
 
 export { generateMetadata };
-export default PrivacyPage;
+export default Page;

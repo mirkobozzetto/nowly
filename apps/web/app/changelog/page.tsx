@@ -12,7 +12,7 @@ const generateMetadata = (): Metadata => {
   };
 };
 
-const ChangelogPage: FC = (): ReactElement => {
+const Page: FC = (): ReactElement => {
   return (
     <main className="max-w-3xl mx-auto px-6 py-24">
       <h1 className="text-3xl font-bold tracking-tight mb-8">Changelog</h1>
@@ -53,4 +53,4 @@ const ChangelogPage: FC = (): ReactElement => {
 };
 
 export { generateMetadata };
-export default ChangelogPage;
+export default Page;

@@ -1,11 +1,10 @@
+import { PlatformDetailClient } from "@/components/library/platform-detail/platform-detail-client";
+import { metadataToPlatform } from "@/lib/data/presence-adapter";
+import { PRESENCE_API_URL } from "@/lib/env";
+import { presenceApi } from "@/lib/presence-api";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactElement } from "react";
-
-import { PlatformDetailClient } from "@/components/library/platform-detail/platform-detail-client";
-import { metadataToPlatform } from "@/lib/data/presence-adapter";
-import { presenceApi } from "@/lib/presence-api";
-import { PRESENCE_API_URL } from "@/lib/env";
 import { fetchPresence, type PresenceRelease } from "./fetch-presence";
 
 const API_URL = PRESENCE_API_URL;
@@ -40,7 +39,7 @@ const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
   };
 };
 
-const PlatformDetailPage = async ({ params }: Props): Promise<ReactElement> => {
+const Page = async ({ params }: Props): Promise<ReactElement> => {
   const { item: raw } = await params;
   const item = raw.toLowerCase();
   const data = await fetchPresence(API_URL, item);
@@ -69,4 +68,4 @@ const PlatformDetailPage = async ({ params }: Props): Promise<ReactElement> => {
 };
 
 export { generateMetadata };
-export default PlatformDetailPage;
+export default Page;

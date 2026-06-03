@@ -10,15 +10,15 @@ export const FooterLinks: FC = () => {
       <Link href="/faq" className="hover:text-foreground transition-colors">
         {t("faq")}
       </Link>
-      <span className="opacity-30">·</span>
+
       <Link href="/changelog" className="hover:text-foreground transition-colors">
         {t("changelog")}
       </Link>
-      <span className="opacity-30">·</span>
+
       <Link href="/privacy" className="hover:text-foreground transition-colors">
         {t("privacy")}
       </Link>
-      <span className="opacity-30">·</span>
+
       <Link href="/tos" className="hover:text-foreground transition-colors">
         {t("tos")}
       </Link>

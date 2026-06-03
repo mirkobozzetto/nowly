@@ -17,9 +17,9 @@ const generateMetadata = (): Metadata => {
   };
 };
 
-const MarketplacePage: FC = (): ReactElement => {
+const Page: FC = (): ReactElement => {
   return <MarketplaceClient />;
 };
 
 export { generateMetadata };
-export default MarketplacePage;
+export default Page;
