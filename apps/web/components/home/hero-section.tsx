@@ -1,6 +1,6 @@
 "use client";
 
-import { KofiModal } from "@/components/ui/kofi-modal";
+import { KofiModal } from "@/components/l-ui/kofi-modal";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";

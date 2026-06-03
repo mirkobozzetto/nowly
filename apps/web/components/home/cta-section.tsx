@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/l-ui/button";
-import { KofiModal } from "@/components/ui/kofi-modal";
+import { KofiModal } from "@/components/l-ui/kofi-modal";
 import { CheckCircle, Download, Shield } from "lucide-react";
 import { useTranslations } from "next-intl";
 
