@@ -117,16 +117,14 @@ export interface VersionEntry {
   timestamp: number
 }
 
-export const addVersion = async (slug: string, entry: VersionEntry, bundle?: string): Promise<void> => {
+export const addVersion = async (slug: string, entry: VersionEntry): Promise<void> => {
   const ts = entry.timestamp
   const clean = Object.fromEntries(
     Object.entries(entry).filter(([, v]) => v != null),
   ) as unknown as Record<string, unknown>
-  const hash: Record<string, unknown> = { ...clean }
-  if (bundle) hash.bundle = bundle
   await Promise.all([
     redis.zadd(key(slug, "versions"), { score: ts, member: entry.version }),
-    redis.hset(key(slug, "version", entry.version), hash),
+    redis.hset(key(slug, "version", entry.version), clean),
   ])
 }
 
@@ -140,14 +138,7 @@ export const getVersionHistory = async (slug: string): Promise<VersionEntry[]> =
 
   return entries
     .filter((e) => e !== null)
-    .map((e) => {
-      const { bundle, ...rest } = e as Record<string, unknown>
-      return rest as unknown as VersionEntry
-    })
+    .map((e) => e as unknown as VersionEntry)
 }
 
-export const getVersionRelease = async (slug: string, version: string): Promise<{ bundle?: string } | null> => {
-  const entry = await redis.hgetall(key(slug, "version", version))
-  if (!entry) return null
-  return entry as { bundle?: string }
-}
+

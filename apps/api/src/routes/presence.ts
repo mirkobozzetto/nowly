@@ -5,7 +5,7 @@ import { join } from "path"
 import { PRESENCES_DIR } from "@/lib/paths"
 import { canonicalJson, sha256Base64Url, signedPayload, signPresenceRelease } from "@/lib/crypto"
 import { requireAuth } from "@/lib/api-auth"
-import { type VersionEntry, addVersion, getPresenceStats, setVersion, setAdded, setUpdated, getVersionHistory, getVersionRelease } from "@/lib/redis"
+import { type VersionEntry, addVersion, getPresenceStats, setVersion, setAdded, setUpdated, getVersionHistory } from "@/lib/redis"
 import { generateChangelog } from "@/lib/openai"
 
 const buildRelease = async (slug: string, version?: string) => {
@@ -17,18 +17,7 @@ const buildRelease = async (slug: string, version?: string) => {
 
   const stats = await getPresenceStats(slug)
   const resolvedVersion = version ?? stats.version ?? metadata.version ?? "0.0.0"
-  let bundle: string
-
-  if (version) {
-    const stored = await getVersionRelease(slug, version)
-    if (stored?.bundle) {
-      bundle = stored.bundle
-    } else {
-      bundle = readFileSync(bundlePath, "utf-8")
-    }
-  } else {
-    bundle = readFileSync(bundlePath, "utf-8")
-  }
+  const bundle = readFileSync(bundlePath, "utf-8")
   const releaseMetadata = { ...metadata, slug, version: resolvedVersion }
   const sha256 = sha256Base64Url(bundle)
   const metadataHash = sha256Base64Url(canonicalJson(releaseMetadata))
@@ -98,8 +87,6 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
     if (body.version) {
       await setVersion(slug, body.version)
       if (body.changelog || body.author) {
-        const bundlePath = join(PRESENCES_DIR, slug, "bundle.js")
-        const bundle = existsSync(bundlePath) ? readFileSync(bundlePath, "utf-8") : undefined
         await addVersion(slug, {
           version: body.version,
           changelog: body.changelog
@@ -109,7 +96,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
           authorGithub: body.authorGithub,
           pr: body.pr,
           timestamp: Date.now(),
-        }, bundle)
+        })
       }
     }
     if (body.added) await setAdded(slug, body.added)
@@ -163,11 +150,6 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
       const changelog = JSON.stringify(changelogs)
       const displayChangelog = changelogs["en-US"] || ""
 
-      const bundle = p.bundle
-        || (existsSync(join(PRESENCES_DIR, p.slug, "bundle.js"))
-          ? readFileSync(join(PRESENCES_DIR, p.slug, "bundle.js"), "utf-8")
-          : undefined)
-
       if (p.type === "new" || !currentVersion) {
         const version = "1.0.0"
 
@@ -180,7 +162,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
           authorGithub: p.authorGithub,
           pr: body.pr,
           timestamp: Date.now(),
-        }, bundle)
+        })
 
         results.push({ slug: p.slug, version, changelog: displayChangelog })
       } else {
@@ -197,7 +179,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
           authorGithub: p.authorGithub,
           pr: body.pr,
           timestamp: Date.now(),
-        }, bundle)
+        })
 
         results.push({ slug: p.slug, version: nextVersion, changelog: displayChangelog })
       }
