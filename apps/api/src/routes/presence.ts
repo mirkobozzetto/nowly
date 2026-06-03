@@ -5,7 +5,7 @@ import { join } from "path"
 import { PRESENCES_DIR } from "@/lib/paths"
 import { canonicalJson, sha256Base64Url, signedPayload, signPresenceRelease } from "@/lib/crypto"
 import { requireAuth } from "@/lib/api-auth"
-import { type VersionEntry, addVersion, getPresenceStats, setVersion, setAdded, setUpdated, getVersionHistory } from "@/lib/redis"
+import { type VersionEntry, addVersion, getPresenceStats, setVersion, setAdded, setUpdated, getVersionHistory, setPresenceMeta, type PresenceMeta } from "@/lib/redis"
 import { generateChangelog } from "@/lib/openai"
 
 const buildRelease = async (slug: string, version?: string) => {
@@ -114,10 +114,12 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
         slug: string
         type: "new" | "modified"
         name: string
+        category?: string
         author?: string
         authorGithub?: string
-        description?: string
-        descriptions?: Record<string, string>
+        description?: Record<string, string>
+        color?: string
+        url?: string[]
         bundle?: string
       }[]
       pr?: string
@@ -183,6 +185,16 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
 
         results.push({ slug: p.slug, version: nextVersion, changelog: displayChangelog })
       }
+
+      await setPresenceMeta(p.slug, {
+        slug: p.slug,
+        name: p.name,
+        author,
+        category: p.category || "",
+        description: p.description || {},
+        color: p.color,
+        url: p.url,
+      })
     }
 
     return { ok: true, results }

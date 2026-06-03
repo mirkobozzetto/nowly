@@ -108,6 +108,10 @@ export const setVersion = async (slug: string, version: string): Promise<void> =
   await redis.set(key(slug, "version"), version)
 }
 
+export const getVersion = async (slug: string): Promise<string | null> => {
+  return redis.get(key(slug, "version"))
+}
+
 export interface VersionEntry {
   version: string
   changelog: string
@@ -126,6 +130,42 @@ export const addVersion = async (slug: string, entry: VersionEntry): Promise<voi
     redis.zadd(key(slug, "versions"), { score: ts, member: entry.version }),
     redis.hset(key(slug, "version", entry.version), clean),
   ])
+}
+
+const metaKey = (slug: string) => `presence:${slug}:meta`
+
+export interface PresenceMeta {
+  slug: string
+  name: string
+  author: string
+  category: string
+  description: Record<string, string>
+  color?: string
+  url?: string[]
+}
+
+export const setPresenceMeta = async (slug: string, meta: PresenceMeta): Promise<void> => {
+  await redis.set(metaKey(slug), JSON.stringify(meta))
+}
+
+export const getPresenceMeta = async (slug: string): Promise<PresenceMeta | null> => {
+  const raw = await redis.get<string>(metaKey(slug))
+  if (!raw) return null
+  return JSON.parse(raw) as PresenceMeta
+}
+
+export const getAllPresenceSlugs = async (): Promise<string[]> => {
+  let cursor = 0
+  const slugs: string[] = []
+  do {
+    const [next, keys] = await redis.scan(cursor, { match: "presence:*:version" })
+    cursor = parseInt(next)
+    for (const k of keys) {
+      const parts = k.split(":")
+      slugs.push(parts[1])
+    }
+  } while (cursor !== 0)
+  return [...new Set(slugs)]
 }
 
 export const getVersionHistory = async (slug: string): Promise<VersionEntry[]> => {
