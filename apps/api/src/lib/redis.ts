@@ -149,9 +149,12 @@ export const setPresenceMeta = async (slug: string, meta: PresenceMeta): Promise
 }
 
 export const getPresenceMeta = async (slug: string): Promise<PresenceMeta | null> => {
-  const raw = await redis.get<string>(metaKey(slug))
+  const raw = await redis.get<any>(metaKey(slug))
   if (!raw) return null
-  return JSON.parse(raw) as PresenceMeta
+  if (typeof raw === "string") {
+    try { return JSON.parse(raw) as PresenceMeta } catch { return null }
+  }
+  return raw as PresenceMeta
 }
 
 export const getAllPresenceSlugs = async (): Promise<string[]> => {
