@@ -68,6 +68,7 @@ export type PresenceButton = {
 };
 
 export type PresenceData = {
+  appName?: string;
   name?: string;
   details?: string;
   state?: string;

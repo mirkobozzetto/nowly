@@ -39,6 +39,7 @@ export type PresencePayload = {
 
 export type PresenceData = {
   name?: string;
+  appName?: string;
   details?: string;
   state?: string;
   startTimestamp?: number;

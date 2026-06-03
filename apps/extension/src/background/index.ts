@@ -288,7 +288,8 @@ const handleActivityUpdate = async (
     return { ok: false };
   }
 
-  const normalizedActivity = normalizeActivity(activity, stored.release.metadata.name);
+  const appName = activity.appName ?? stored.release.metadata.name;
+  const normalizedActivity = normalizeActivity(activity, appName);
   const presence = mapPresenceData(normalizedActivity);
 
   if (tabId) activeTabId = tabId;
