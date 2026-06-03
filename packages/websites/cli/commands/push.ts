@@ -17,7 +17,8 @@ export const registerPush = (program: Command) => {
     .option("--patch", "Auto bump patch version")
     .option("--minor", "Auto bump minor version")
     .option("--changelog <text>", "Changelog message")
-    .action(async (slug?: string, options?: { all?: boolean; version?: string; patch?: boolean; minor?: boolean; changelog?: string }) => {
+    .option("--ai", "Let API generate trilingual changelog via AI")
+    .action(async (slug?: string, options?: { all?: boolean; version?: string; patch?: boolean; minor?: boolean; changelog?: string; ai?: boolean }) => {
       const opts = options || {} as any
       logger.newline()
 
@@ -75,23 +76,23 @@ export const registerPush = (program: Command) => {
 
         if (isNew) {
           version = "1.0.0"
-          changelog = opts.changelog || `✨ Initial release of ${p.name}`
-          spinner.succeed(`New presence — version ${version}`)
+          changelog = opts.ai ? "" : (opts.changelog || `✨ Initial release of ${p.name}`)
+          spinner.succeed(`New presence — version ${version}${opts.ai ? " (AI changelog)" : ""}`)
         } else {
           const current = remote.version!
           logger.info(`Current version: ${current}`)
 
           if (opts.version) {
             version = opts.version
-            changelog = opts.changelog || `🔖 ${version}`
+            changelog = opts.changelog || (opts.ai ? "" : `🔖 ${version}`)
             spinner.succeed(`Version set: ${version}`)
           } else if (opts.patch) {
             version = bumpVersion(current, "patch")
-            changelog = opts.changelog || `🐛 Patch bump to ${version}`
+            changelog = opts.changelog || (opts.ai ? "" : `🐛 Patch bump to ${version}`)
             spinner.succeed(`Auto patch: ${current} → ${version}`)
           } else if (opts.minor) {
             version = bumpVersion(current, "minor")
-            changelog = opts.changelog || `✨ Minor bump to ${version}`
+            changelog = opts.changelog || (opts.ai ? "" : `✨ Minor bump to ${version}`)
             spinner.succeed(`Auto minor: ${current} → ${version}`)
           } else {
             spinner.stop()
@@ -105,13 +106,13 @@ export const registerPush = (program: Command) => {
 
             if (strategy === "keep") {
               version = current
-              changelog = opts.changelog || `📦 ${version}`
+              changelog = opts.changelog || (opts.ai ? "" : `📦 ${version}`)
             } else if (strategy === "manual") {
               version = await input("Version:", { initial: current })
-              changelog = opts.changelog || `🔖 ${version}`
+              changelog = opts.changelog || (opts.ai ? "" : `🔖 ${version}`)
             } else {
               version = bumpVersion(current, strategy)
-              changelog = opts.changelog || `📦 ${version}`
+              changelog = opts.changelog || (opts.ai ? "" : `📦 ${version}`)
             }
           }
         }
