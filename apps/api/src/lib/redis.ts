@@ -79,7 +79,7 @@ export const submitRating = async (
 const raterKey = (slug: string) => `presence:${slug}:raters`
 
 export const hasRated = async (slug: string, ip: string): Promise<boolean> => {
-  return redis.sismember(raterKey(slug), ip)
+  return (await redis.sismember(raterKey(slug), ip)) === 1
 }
 
 export const markRated = async (slug: string, ip: string): Promise<void> => {
@@ -89,7 +89,7 @@ export const markRated = async (slug: string, ip: string): Promise<void> => {
 const deviceKey = (slug: string) => `presence:${slug}:device-raters`
 
 export const hasDeviceRated = async (slug: string, deviceId: string): Promise<boolean> => {
-  return redis.sismember(deviceKey(slug), deviceId)
+  return (await redis.sismember(deviceKey(slug), deviceId)) === 1
 }
 
 export const markDeviceRated = async (slug: string, deviceId: string): Promise<void> => {

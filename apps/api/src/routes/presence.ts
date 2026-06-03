@@ -153,8 +153,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
         changes: body.changes,
       }
       if (p.type === "new") {
-        clCtx.description = p.description
-        clCtx.descriptions = p.descriptions
+        clCtx.descriptions = p.description
       }
 
       const changelogs = await generateChangelog(clCtx)
