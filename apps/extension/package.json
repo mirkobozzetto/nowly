@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/build.mjs",
+    "build": "tsx scripts/build.ts",
     "dev": "vite build --watch",
     "lint": "tsc --noEmit"
   },
@@ -23,6 +23,7 @@
     "autoprefixer": "^10.4.20",
     "postcss": "^8.5",
     "tailwindcss": "^4.2.0",
+    "tsx": "^4.19.4",
     "typescript": "5.7.3"
   }
 }
