@@ -1,0 +1,24 @@
+import type { Metadata as PresenceMetadata } from "@nowly/websites";
+
+export interface PresenceRelease {
+  slug: string
+  version: string
+  metadata: PresenceMetadata
+  totalInstalls?: number
+  activeUsers?: number
+  rating?: number
+  ratingCount?: number
+  ratingDistribution?: Record<number, number>
+  addedAt?: string
+  lastUpdated?: string
+}
+
+export const fetchPresence = async (apiUrl: string, slug: string): Promise<PresenceRelease | null> => {
+  try {
+    const res = await fetch(`${apiUrl}/presences/${slug}`);
+    if (res.ok) return await res.json() as PresenceRelease;
+  } catch {
+    // API unreachable
+  }
+  return null;
+};

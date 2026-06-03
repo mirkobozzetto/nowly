@@ -6,7 +6,7 @@ import { PlatformDetailClient } from "@/components/library/platform-detail/platf
 import { metadataToPlatform } from "@/lib/data/presence-adapter";
 import { presenceApi } from "@/lib/presence-api";
 import { PRESENCE_API_URL } from "@/lib/env";
-import type { Metadata as PresenceMetadata } from "@nowly/websites";
+import { fetchPresence, type PresenceRelease } from "./fetch-presence";
 
 const API_URL = PRESENCE_API_URL;
 
@@ -18,28 +18,10 @@ type Props = {
   }>
 };
 
-interface PresenceRelease {
-  slug: string
-  version: string
-  metadata: PresenceMetadata
-  totalInstalls?: number
-  activeUsers?: number
-  rating?: number
-  ratingCount?: number
-  ratingDistribution?: Record<number, number>
-  addedAt?: string
-  lastUpdated?: string
-}
-
 const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
   const { item: raw } = await params;
   const item = raw.toLowerCase();
-  let data: PresenceRelease | null = null;
-  try {
-    data = await presenceApi.get<PresenceRelease>(`/${item}`);
-  } catch {
-    // API unreachable
-  }
+  const data = await presenceApi.get<PresenceRelease>(`/${item}`).catch(() => null);
 
   if (!data) {
     return { title: "Not Found" };
@@ -61,13 +43,7 @@ const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
 const PlatformDetailPage = async ({ params }: Props): Promise<ReactElement> => {
   const { item: raw } = await params;
   const item = raw.toLowerCase();
-  let data: PresenceRelease | null = null;
-  try {
-    const res = await fetch(`${API_URL}/presences/${item}`);
-    if (res.ok) data = await res.json() as PresenceRelease;
-  } catch {
-    // API unreachable
-  }
+  const data = await fetchPresence(API_URL, item);
 
   if (!data) {
     notFound();
