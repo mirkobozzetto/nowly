@@ -1,16 +1,16 @@
 "use client";
 
 import { PageLayout } from "@/components/layout/page-layout";
-import { PlatformCard } from "@/components/library/platform-card";
-import { categories, type Platform, type PlatformCategory } from "@/lib/data/platforms";
+import { type Platform, type PlatformCategory } from "@/lib/data/platforms";
 import { API_BASE_URL } from "@/lib/constants";
 import { metadataToPlatform } from "@/lib/data/presence-adapter";
-import { cn } from "@/lib/utils";
 import type { Metadata } from "@nowly/websites";
-import { Search } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 import { useEffect, useMemo, useState } from "react";
+import { MarketplaceFilters } from "./marketplace-filters";
+import { MarketplaceGrid } from "./marketplace-grid";
+import { MarketplaceSearch } from "./marketplace-search";
 
 type SortOption = "name-asc" | "name-desc" | "popular" | "recent";
 
@@ -37,7 +37,7 @@ const MarketplaceClient: FC = (): ReactElement => {
       result = result.filter(
         (p) =>
           p.name.toLowerCase().includes(query) ||
-          p.description.toLowerCase().includes(query)
+          p.description.toLowerCase().includes(query),
       );
     }
 
@@ -67,13 +67,13 @@ const MarketplaceClient: FC = (): ReactElement => {
     setSelectedCategories((prev) =>
       prev.includes(category)
         ? prev.filter((c) => c !== category)
-        : [...prev, category]
+        : [...prev, category],
     );
   };
 
   return (
     <PageLayout>
-        <div className="max-w-300 mx-auto px-6">
+      <div className="max-w-300 mx-auto px-6">
         <div className="text-center max-w-150 mx-auto mb-12">
           <span className="text-accent font-bold uppercase tracking-widest text-xs mb-4 block">
             {t("badge")}
@@ -86,77 +86,34 @@ const MarketplaceClient: FC = (): ReactElement => {
           </p>
         </div>
 
-        <div className="relative mb-6">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-dim-foreground" />
-          <input
-            type="text"
-            placeholder={t("searchPlaceholder")}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-lg text-foreground placeholder:text-dim-foreground focus:outline-none focus:border-accent transition-colors"
-          />
-        </div>
+        <MarketplaceSearch
+          value={searchQuery}
+          placeholder={t("searchPlaceholder")}
+          onChange={setSearchQuery}
+        />
 
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <button
-                key={category.value}
-                onClick={() => toggleCategory(category.value)}
-                className={cn(
-                  "px-3 py-1.5 rounded-lg text-sm font-medium transition-all", {
-                    "bg-accent text-background": selectedCategories.includes(category.value),
-                    "bg-card border border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground": !selectedCategories.includes(category.value)
-                  }
-                )}
-              >
-                {t(`categories.${category.value}`)}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-dim-foreground">{t("sortLabel")}</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="bg-card border border-border rounded-lg px-3 py-1.5 text-sm text-foreground focus:outline-none focus:border-accent cursor-pointer"
-            >
-              <option value="popular">{t("sortPopular")}</option>
-              <option value="recent">{t("sortRecent")}</option>
-              <option value="name-asc">{t("sortNameAsc")}</option>
-              <option value="name-desc">{t("sortNameDesc")}</option>
-            </select>
-          </div>
-        </div>
+        <MarketplaceFilters
+          selectedCategories={selectedCategories}
+          sortBy={sortBy}
+          onToggleCategory={toggleCategory}
+          onSortChange={setSortBy}
+        />
 
         <p className="text-sm text-dim-foreground mb-6">
           {t("results", { count: filteredPlatforms.length })}
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredPlatforms.map((platform) => (
-            <PlatformCard key={platform.id} platform={platform} locale={locale} />
-          ))}
-        </div>
-
-        {filteredPlatforms.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-muted-foreground mb-2">{t("empty")}</p>
-            <button
-              onClick={() => {
-                setSearchQuery("");
-                setSelectedCategories([]);
-              }}
-              className="text-accent hover:underline text-sm"
-            >
-              {t("reset")}
-            </button>
-          </div>
-        )}
-        </div>
-      </PageLayout>
-    );
+        <MarketplaceGrid
+          platforms={filteredPlatforms}
+          locale={locale}
+          onReset={() => {
+            setSearchQuery("");
+            setSelectedCategories([]);
+          }}
+        />
+      </div>
+    </PageLayout>
+  );
 };
 
 export { MarketplaceClient };
