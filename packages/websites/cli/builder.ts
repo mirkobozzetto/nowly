@@ -1,7 +1,7 @@
+import { DIST, PRESENCE_SDK, type PresenceMeta } from "@/discover"
 import esbuild from "esbuild"
 import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs"
 import { join } from "path"
-import { DIST, PRESENCE_SDK, type PresenceMeta } from "@/discover"
 
 const nowlyPresencePlugin = {
   name: "nowly-presence",

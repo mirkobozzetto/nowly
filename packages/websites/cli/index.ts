@@ -1,7 +1,4 @@
 #!/usr/bin/env node
-import chalk from "chalk"
-import { Command } from "commander"
-import "dotenv/config"
 import { registerBuild } from "@/commands/build"
 import { registerInit } from "@/commands/init"
 import { registerList } from "@/commands/list"
@@ -10,6 +7,9 @@ import { registerR2Sync } from "@/commands/r2-sync"
 import { registerValidate } from "@/commands/validate"
 import { logger } from "@/logger"
 import { confirm, select } from "@/prompts"
+import chalk from "chalk"
+import { Command } from "commander"
+import "dotenv/config"
 
 const program = new Command()
   .name("presence")
