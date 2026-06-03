@@ -1,11 +1,11 @@
-import { PRESENCE_API_URL } from "./env"
+import { PRESENCE_API_URL } from "./env";
 
-const API_URL = PRESENCE_API_URL
+const API_URL = PRESENCE_API_URL;
 
 async function get<T = unknown>(path: string): Promise<T | null> {
-  const res = await fetch(`${API_URL}/presences${path}`)
-  if (!res.ok) return null
-  return res.json() as Promise<T>
+  const res = await fetch(`${API_URL}/presences${path}`);
+  if (!res.ok) return null;
+  return res.json() as Promise<T>;
 }
 
 async function post<T = unknown>(path: string, body?: unknown): Promise<T | null> {
@@ -13,9 +13,9 @@ async function post<T = unknown>(path: string, body?: unknown): Promise<T | null
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: body ? JSON.stringify(body) : undefined,
-  })
-  if (!res.ok) return null
-  return res.json() as Promise<T>
+  });
+  if (!res.ok) return null;
+  return res.json() as Promise<T>;
 }
 
 async function put<T = unknown>(path: string, body?: unknown): Promise<T | null> {
@@ -23,9 +23,9 @@ async function put<T = unknown>(path: string, body?: unknown): Promise<T | null>
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: body ? JSON.stringify(body) : undefined,
-  })
-  if (!res.ok) return null
-  return res.json() as Promise<T>
+  });
+  if (!res.ok) return null;
+  return res.json() as Promise<T>;
 }
 
-export const presenceApi = { get, post, put }
+export const presenceApi = { get, post, put };

@@ -34,7 +34,7 @@ interface PresenceRelease {
 const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
   const { item: raw } = await params;
   const item = raw.toLowerCase();
-  let data: PresenceRelease | null = null
+  let data: PresenceRelease | null = null;
   try {
     data = await presenceApi.get<PresenceRelease>(`/${item}`);
   } catch {
@@ -61,10 +61,10 @@ const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
 const PlatformDetailPage = async ({ params }: Props): Promise<ReactElement> => {
   const { item: raw } = await params;
   const item = raw.toLowerCase();
-  let data: PresenceRelease | null = null
+  let data: PresenceRelease | null = null;
   try {
-    const res = await fetch(`${API_URL}/presences/${item}`)
-    if (res.ok) data = await res.json() as PresenceRelease
+    const res = await fetch(`${API_URL}/presences/${item}`);
+    if (res.ok) data = await res.json() as PresenceRelease;
   } catch {
     // API unreachable
   }

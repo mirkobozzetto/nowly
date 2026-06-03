@@ -31,18 +31,6 @@ function fireAndForget(url: string, opts?: RequestInit): void {
   fetch(url, opts).catch(() => { /* ignore */ });
 }
 
-function compareVersions(a: string, b: string): number {
-  const pa = a.split(".").map(Number);
-  const pb = b.split(".").map(Number);
-  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
-    const na = pa[i] || 0;
-    const nb = pb[i] || 0;
-    if (na > nb) return 1;
-    if (na < nb) return -1;
-  }
-  return 0;
-}
-
 type Props = {
   platform: Platform
 };
@@ -59,7 +47,6 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
   const [showUninstallConfirm, setShowUninstallConfirm] = useState(false);
   const [savedRating, setSavedRating] = useState(0);
   const [deviceId, setDeviceId] = useState<string | null>(null);
-  const [installingVersion, setInstallingVersion] = useState<string | null>(null);
   const [pendingVersion, setPendingVersion] = useState<string | null>(null);
   const [showDowngradeConfirm, setShowDowngradeConfirm] = useState(false);
 
