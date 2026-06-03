@@ -1,8 +1,10 @@
 #!/usr/bin/env node
-import chalk from "chalk"
-import { Command } from "commander"
 import dotenv from "dotenv"
 import { resolve } from "path"
+dotenv.config({ path: resolve(import.meta.dirname, "../../../.env") })
+
+import chalk from "chalk"
+import { Command } from "commander"
 import { registerBuild } from "./commands/build.js"
 import { registerInit } from "./commands/init.js"
 import { registerList } from "./commands/list.js"
@@ -11,7 +13,6 @@ import { registerR2Sync } from "./commands/r2-sync.js"
 import { registerValidate } from "./commands/validate.js"
 import { logger } from "./logger.js"
 import { confirm, select } from "./prompts.js"
-dotenv.config({ path: resolve(import.meta.dirname, "../../../.env") })
 
 const program = new Command()
   .name("presence")
