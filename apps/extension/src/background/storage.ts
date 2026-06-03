@@ -1,4 +1,4 @@
-import type { CurrentActivity, DiscordProfileSnapshot, ExtensionSettings, InstalledPresences, PresenceDebug, PresenceDisplayMode, PresenceSettings } from "../shared/types";
+import type { CurrentActivity, DiscordProfileSnapshot, ExtensionSettings, InstalledPresences, PresenceDebug, PresenceDisplayMode, PresenceSettings } from "@/shared/types";
 
 const PRESENCES_KEY = "presences";
 const ACTIVITY_KEY = "currentActivity";

@@ -1,10 +1,10 @@
 import { BadgeCheck, ChevronRight, ExternalLink, Lock, PlugZap, ShoppingBag } from "lucide-react";
 import type { FC, ReactElement } from "react";
-import { NativeStatusButton } from "../../popup/components/NativeStatusButton";
-import { WEB_BASE_URL } from "../../shared/constants";
-import type { DiscordProfileSnapshot, UserScriptsStatus } from "../../shared/types";
-import { resolveLocale, t, type LocalePreference } from "../../shared/i18n";
-import type { NativeStatus } from "../../popup/lib/messages";
+import { NativeStatusButton } from "@/popup/components/NativeStatusButton";
+import { WEB_BASE_URL } from "@/shared/constants";
+import type { DiscordProfileSnapshot, UserScriptsStatus } from "@/shared/types";
+import { resolveLocale, t, type LocalePreference } from "@/shared/i18n";
+import type { NativeStatus } from "@/popup/lib/messages";
 
 type Props = {
   localePreference: LocalePreference;

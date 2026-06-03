@@ -1,5 +1,5 @@
-import { NATIVE_HOST } from "../shared/constants";
-import type { NativeMessage, NativeResponse, PresenceData, PresencePayload } from "../shared/types";
+import { NATIVE_HOST } from "@/shared/constants";
+import type { NativeMessage, NativeResponse, PresenceData, PresencePayload } from "@/shared/types";
 import { setNativeProfile, setNativeSeenConnectedOnce } from "./storage";
 
 let nativePort: chrome.runtime.Port | null = null;

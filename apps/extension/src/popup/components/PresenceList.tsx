@@ -1,5 +1,5 @@
 import type { FC, ReactElement } from "react";
-import type { InstalledPresences, PresenceDisplayMode, PresenceMetadata } from "../../shared/types";
+import type { InstalledPresences, PresenceDisplayMode, PresenceMetadata } from "@/shared/types";
 import { EmptyState } from "./EmptyState";
 import { PresenceListItem } from "./PresenceListItem";
 

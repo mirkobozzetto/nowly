@@ -1,8 +1,8 @@
 import { CopyObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { existsSync, readdirSync, readFileSync } from "fs"
 import { join, relative } from "path"
-import { DIST } from "./discover.js"
-import { spinner } from "./logger.js"
+import { DIST } from "@/discover"
+import { spinner } from "@/logger"
 
 const R2_ACCOUNT_ID = process.env.R2_ACCOUNT_ID
 const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID

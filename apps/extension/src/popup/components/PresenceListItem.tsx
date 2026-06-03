@@ -1,9 +1,9 @@
 import { BellRing, Settings } from "lucide-react";
 import type { FC, MouseEvent, ReactElement } from "react";
 import { useEffect, useRef, useState } from "react";
-import { assetUrl } from "../../shared/api";
-import { t } from "../../shared/i18n";
-import type { StoredPresence } from "../../shared/types";
+import { assetUrl } from "@/shared/api";
+import { t } from "@/shared/i18n";
+import type { StoredPresence } from "@/shared/types";
 import { PresenceActions } from "./PresenceActions";
 import { PresenceSettingsPanel } from "./PresenceSettingsPanel";
 

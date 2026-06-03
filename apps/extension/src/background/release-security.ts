@@ -1,4 +1,4 @@
-import type { PresenceRelease } from "../shared/types";
+import type { PresenceRelease } from "@/shared/types";
 
 const PRESENCE_SIGNING_PUBLIC_KEY = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEDhuTFou1XhQRUFR6I-DTR6K2mUJkMUjgJxVMBw9EshH49oo1atlfPDHiQKj2WnuqdTS05H0D-TvVjmjz9wFvFg";
 

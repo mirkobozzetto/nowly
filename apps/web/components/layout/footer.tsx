@@ -16,7 +16,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { FC, ReactElement } from "react";
 import { useState } from "react";
-import { LocaleFlag } from "../locale-flag";
+import { LocaleFlag } from "@/components/locale-flag";
 
 export const Footer: FC = (): ReactElement => {
   const [thanked, setThanked] = useState(false);

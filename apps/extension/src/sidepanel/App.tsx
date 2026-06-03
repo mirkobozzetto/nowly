@@ -1,10 +1,10 @@
 import type { FC, ReactElement } from "react";
 import { useState } from "react";
-import { Header } from "../popup/components/Header";
-import { WEB_BASE_URL } from "../shared/constants";
-import { useExtensionState } from "../popup/hooks/useExtensionState";
-import { useLocalePreference } from "../popup/hooks/useLocalePreference";
-import { resolveLocale } from "../shared/i18n";
+import { Header } from "@/popup/components/Header";
+import { WEB_BASE_URL } from "@/shared/constants";
+import { useExtensionState } from "@/popup/hooks/useExtensionState";
+import { useLocalePreference } from "@/popup/hooks/useLocalePreference";
+import { resolveLocale } from "@/shared/i18n";
 import { ActivityView } from "./components/ActivityView";
 import { DebugPanel } from "./components/DebugPanel";
 // import { OnboardingOverlay } from "./components/OnboardingOverlay";

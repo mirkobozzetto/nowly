@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "fs"
-import { join, dirname } from "path"
+import { dirname, join } from "path"
 import { fileURLToPath } from "url"
-import { DIST } from "./discover.js"
+import { DIST } from "@/discover"
 
 const __filename = fileURLToPath(import.meta.url)
 const ROOT = join(dirname(__filename), "..", "..", "..")

@@ -1,8 +1,8 @@
 import type { Command } from "commander"
 import { existsSync } from "fs"
 import { join } from "path"
-import { getPresenceBySlug, getPresences } from "../discover.js"
-import { logger } from "../logger.js"
+import { getPresenceBySlug, getPresences } from "@/discover"
+import { logger } from "@/logger"
 
 export const registerValidate = (program: Command) => {
   program

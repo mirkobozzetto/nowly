@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Download, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
-import { Spinner } from "../ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
 
 type Props = {
   platform: Platform

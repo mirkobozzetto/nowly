@@ -6,8 +6,8 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
 import { useState } from "react";
-import { buttonVariants } from "../l-ui/button";
-import HighlightedText from "../ui/highlighted-text";
+import { buttonVariants } from "@/components/l-ui/button";
+import HighlightedText from "@/components/ui/highlighted-text";
 import { CompanionWindow } from "./companion-window";
 
 export const HeroSection: FC = (): ReactElement => {

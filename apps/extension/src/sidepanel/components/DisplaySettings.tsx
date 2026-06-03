@@ -1,7 +1,7 @@
 import { LayoutGrid, List } from "lucide-react";
 import type { FC, ReactElement } from "react";
-import { t } from "../../shared/i18n";
-import type { ExtensionSettings, PresenceDisplayMode } from "../../shared/types";
+import { t } from "@/shared/i18n";
+import type { ExtensionSettings, PresenceDisplayMode } from "@/shared/types";
 
 type Props = {
   settings: ExtensionSettings;

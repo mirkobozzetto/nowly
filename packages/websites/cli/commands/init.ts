@@ -1,10 +1,10 @@
 import type { Command } from "commander"
 import { existsSync, mkdirSync, writeFileSync } from "fs"
 import { join } from "path"
-import { SRC, getLetterFromName, getSlugFromName } from "../discover.js"
-import { logger, spinner } from "../logger.js"
-import { confirm, input, select } from "../prompts.js"
-import { metadataJson, presenceTs } from "../templates/presence.js"
+import { SRC, getLetterFromName, getSlugFromName } from "@/discover"
+import { logger, spinner } from "@/logger"
+import { confirm, input, select } from "@/prompts"
+import { metadataJson, presenceTs } from "@/templates/presence"
 
 export const registerInit = (program: Command) => {
   program

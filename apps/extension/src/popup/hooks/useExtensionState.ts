@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { CurrentActivity, ExtensionSettings, InstalledPresences, PresenceDebug } from "../../shared/types";
-import { sendMessage, type NativeStatus } from "../lib/messages";
+import type { CurrentActivity, ExtensionSettings, InstalledPresences, PresenceDebug } from "@/shared/types";
+import { sendMessage, type NativeStatus } from "@/popup/lib/messages";
 
 type ExtensionState = {
   activity: CurrentActivity | null;

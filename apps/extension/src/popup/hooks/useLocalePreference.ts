@@ -4,7 +4,7 @@ import {
   loadLocalePreference,
   setLocalePreference as saveLocalePreference,
   type LocalePreference,
-} from "../../shared/i18n";
+} from "@/shared/i18n";
 
 type LocalePreferenceState = {
   localePreference: LocalePreference;

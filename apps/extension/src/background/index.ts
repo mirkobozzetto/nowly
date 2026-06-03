@@ -1,5 +1,5 @@
-import { WEB_BASE_URL, API_BASE_URL } from "../shared/constants";
-import type { ExtensionMessage, ExtensionSettings, InstalledPresences, PresenceData, PresenceDebug, PresenceRelease, StoredPresence } from "../shared/types";
+import { WEB_BASE_URL, API_BASE_URL } from "@/shared/constants";
+import type { ExtensionMessage, ExtensionSettings, InstalledPresences, PresenceData, PresenceDebug, PresenceRelease, StoredPresence } from "@/shared/types";
 import { connectNative, mapPresenceData, onNativeResponse, postNative, reconnectNative, refreshNativeStatus } from "./native";
 import { createPresenceRuntime, USER_SCRIPT_MESSAGE_SOURCE } from "./presence-runtime";
 import { verifyPresenceRelease } from "./release-security";

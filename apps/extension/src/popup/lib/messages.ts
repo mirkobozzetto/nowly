@@ -1,4 +1,4 @@
-import type { ExtensionMessageType } from "../../shared/types";
+import type { ExtensionMessageType } from "@/shared/types";
 
 export type NativeStatus = {
   connected: boolean;

@@ -1,7 +1,7 @@
 import type { FC, ReactElement } from "react";
-import { CurrentActivityCard } from "../../popup/components/CurrentActivityCard";
-import { PresenceList } from "../../popup/components/PresenceList";
-import type { CurrentActivity, ExtensionSettings, InstalledPresences } from "../../shared/types";
+import { CurrentActivityCard } from "@/popup/components/CurrentActivityCard";
+import { PresenceList } from "@/popup/components/PresenceList";
+import type { CurrentActivity, ExtensionSettings, InstalledPresences } from "@/shared/types";
 
 type Props = {
   activity: CurrentActivity | null;

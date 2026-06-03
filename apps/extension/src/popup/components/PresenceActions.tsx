@@ -1,6 +1,6 @@
 import { Power, Trash2, X } from "lucide-react";
 import type { FC, ReactElement } from "react";
-import { t } from "../../shared/i18n";
+import { t } from "@/shared/i18n";
 
 type Props = {
   enabled: boolean;

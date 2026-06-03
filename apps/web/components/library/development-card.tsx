@@ -6,7 +6,7 @@ import type { Platform } from "@/lib/data/platforms";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
-import { GitHubIcon } from "../icons";
+import { GitHubIcon } from "@/components/icons";
 import { AuthorItem } from "./author-item";
 
 type Props = {

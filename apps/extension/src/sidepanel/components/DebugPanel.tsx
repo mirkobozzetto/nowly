@@ -1,11 +1,11 @@
 import { ChevronDown, ExternalLink, Terminal } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from "../../shared/constants";
-import { formatRelativeTime } from "../../popup/lib/format";
-import type { NativeStatus } from "../../popup/lib/messages";
-import { t } from "../../shared/i18n";
-import type { ExtensionSettings, PresenceDebug } from "../../shared/types";
+import { API_BASE_URL } from "@/shared/constants";
+import { formatRelativeTime } from "@/popup/lib/format";
+import type { NativeStatus } from "@/popup/lib/messages";
+import { t } from "@/shared/i18n";
+import type { ExtensionSettings, PresenceDebug } from "@/shared/types";
 
 type Props = {
   debug: PresenceDebug | null;

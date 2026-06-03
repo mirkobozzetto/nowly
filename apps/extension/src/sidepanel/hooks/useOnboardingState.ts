@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import type { DiscordProfileSnapshot } from "../../shared/types";
-import { sendMessage, type NativeStatus } from "../../popup/lib/messages";
+import type { DiscordProfileSnapshot } from "@/shared/types";
+import { sendMessage, type NativeStatus } from "@/popup/lib/messages";
 
 const ONBOARDING_KEY = "onboarding";
 

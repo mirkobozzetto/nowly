@@ -1,11 +1,11 @@
-import type { Command } from "commander"
 import chalk from "chalk"
-import { buildPresence } from "../builder.js"
-import { getPresenceBySlug, getPresences } from "../discover.js"
-import { bumpVersion, fetchPresenceInfo, pushPresences } from "../api.js"
-import { logger, spinner } from "../logger.js"
-import { input, multiselect, select } from "../prompts.js"
-import { uploadToR2 } from "../r2.js"
+import type { Command } from "commander"
+import { bumpVersion, fetchPresenceInfo, pushPresences } from "@/api"
+import { buildPresence } from "@/builder"
+import { getPresenceBySlug, getPresences } from "@/discover"
+import { logger, spinner } from "@/logger"
+import { input, multiselect, select } from "@/prompts"
+import { uploadToR2 } from "@/r2"
 
 export const registerPush = (program: Command) => {
   program

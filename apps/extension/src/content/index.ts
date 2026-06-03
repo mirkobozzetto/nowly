@@ -1,5 +1,5 @@
-import { EXT_WEB_SOURCE, WEB_BASE_URL } from "../shared/constants";
-import type { WebMessage } from "../shared/types";
+import { EXT_WEB_SOURCE, WEB_BASE_URL } from "@/shared/constants";
+import type { WebMessage } from "@/shared/types";
 
 const USER_SCRIPT_MESSAGE_SOURCE = "NOWLY_PRESENCE";
 const IS_UNPACKED = !chrome.runtime.getManifest().update_url;

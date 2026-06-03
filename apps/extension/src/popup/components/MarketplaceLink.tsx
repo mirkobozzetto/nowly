@@ -1,7 +1,7 @@
 import { ExternalLink } from "lucide-react";
 import type { FC, ReactElement } from "react";
-import { WEB_BASE_URL } from "../../shared/constants";
-import { t } from "../../shared/i18n";
+import { WEB_BASE_URL } from "@/shared/constants";
+import { t } from "@/shared/i18n";
 
 export const MarketplaceLink: FC = (): ReactElement => (
   <a

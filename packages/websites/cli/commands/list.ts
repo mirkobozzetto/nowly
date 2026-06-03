@@ -1,8 +1,8 @@
 import type { Command } from "commander"
 import chalk from "chalk"
-import { getPresences } from "../discover.js"
-import { fetchPresenceInfo } from "../api.js"
-import { logger } from "../logger.js"
+import { getPresences } from "@/discover"
+import { fetchPresenceInfo } from "@/api"
+import { logger } from "@/logger"
 
 export const registerList = (program: Command) => {
   program

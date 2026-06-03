@@ -1,4 +1,4 @@
-import type { CurrentActivity } from "../../shared/types";
+import type { CurrentActivity } from "@/shared/types";
 
 export const formatRelativeTime = (timestamp?: number): string | null => {
   if (!timestamp) return null;

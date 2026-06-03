@@ -4,10 +4,10 @@ import { CurrentActivityCard } from "./components/CurrentActivityCard";
 import { DebugNotice } from "./components/DebugNotice";
 import { Header } from "./components/Header";
 import { PresenceList } from "./components/PresenceList";
-import { WEB_BASE_URL } from "../shared/constants";
+import { WEB_BASE_URL } from "@/shared/constants";
 import { useExtensionState } from "./hooks/useExtensionState";
 import { useLocalePreference } from "./hooks/useLocalePreference";
-import { resolveLocale } from "../shared/i18n";
+import { resolveLocale } from "@/shared/i18n";
 
 const App: FC = (): ReactElement => {
   const { activity, connectNative, debug, entries, nativeStatus, presences, removePresence, togglePresence, updates, settings } =

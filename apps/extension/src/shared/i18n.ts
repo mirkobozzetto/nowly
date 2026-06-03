@@ -1,6 +1,6 @@
-import en from "../../messages/en.json";
-import fr from "../../messages/fr.json";
-import es from "../../messages/es.json";
+import en from "@messages/en.json";
+import fr from "@messages/fr.json";
+import es from "@messages/es.json";
 import type { Locale } from "./types";
 
 const messages = { en, fr, es };

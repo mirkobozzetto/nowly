@@ -1,11 +1,11 @@
 import { ChevronDown, ExternalLink, RefreshCw, ShieldCheck } from "lucide-react";
 import type { FC, ReactElement } from "react";
-import { LocaleFlag } from "../../popup/components/LocaleFlag";
-import { NativeStatusButton } from "../../popup/components/NativeStatusButton";
-import type { NativeStatus } from "../../popup/lib/messages";
-import { WEB_BASE_URL } from "../../shared/constants";
-import { resolveLocale, t, type LocalePreference } from "../../shared/i18n";
-import type { ExtensionSettings } from "../../shared/types";
+import { LocaleFlag } from "@/popup/components/LocaleFlag";
+import { NativeStatusButton } from "@/popup/components/NativeStatusButton";
+import type { NativeStatus } from "@/popup/lib/messages";
+import { WEB_BASE_URL } from "@/shared/constants";
+import { resolveLocale, t, type LocalePreference } from "@/shared/i18n";
+import type { ExtensionSettings } from "@/shared/types";
 import { DisplaySettings } from "./DisplaySettings";
 
 type Props = {

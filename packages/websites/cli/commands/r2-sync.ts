@@ -1,6 +1,6 @@
 import type { Command } from "commander"
-import { logger } from "../logger.js"
-import { uploadToR2, uploadAllToR2 } from "../r2.js"
+import { logger } from "@/logger"
+import { uploadAllToR2, uploadToR2 } from "@/r2"
 
 export const registerR2Sync = (program: Command) => {
   program

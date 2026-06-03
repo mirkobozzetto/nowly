@@ -1,6 +1,6 @@
 import { Activity, Settings } from "lucide-react";
 import type { FC, ReactElement } from "react";
-import { t } from "../../shared/i18n";
+import { t } from "@/shared/i18n";
 
 export type SidepanelView = "activity" | "settings";
 
