@@ -1,28 +1,25 @@
+import { Toaster } from "@/components/l-ui/sonner";
+import { Footer } from "@/components/layout/footer";
+import { Navbar } from "@/components/layout/navbar";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
-import { getLocale } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import { Geist, Instrument_Sans } from "next/font/google";
 import type { PropsWithChildren, ReactElement } from "react";
 import "./globals.css";
 
-const instrumentSans = Instrument_Sans({
-  subsets: ["latin"],
-  variable: "--font-heading",
-  weight: ["400", "500", "600", "700"]
-});
-
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["400", "500", "600", "700"]
-});
+const instrumentSans = Instrument_Sans({ subsets: ["latin"], variable: "--font-heading", weight: ["400", "500", "600", "700"] });
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans", weight: ["400", "500", "600", "700"] });
 
 const APP_NAME = "Nowly";
 const APP_DEFAULT_TITLE = "Nowly | Automatic Discord Rich Presence";
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,
+  title: APP_DEFAULT_TITLE,
+  description: "Automatically display what you're watching in your Discord status. YouTube, Twitch, Disney+, Apple TV+, Prime Video and more.",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -32,6 +29,26 @@ export const metadata: Metadata = {
     telephone: false,
   },
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/apple-icon.png",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "Nowly",
+    title: APP_DEFAULT_TITLE,
+    description:
+      "Automatically display what you're watching in your Discord status. YouTube, Twitch, Disney+, Apple TV+, Prime Video and more.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: APP_DEFAULT_TITLE,
+    description:
+      "Automatically display what you're watching in your Discord status. YouTube, Twitch, Disney+, Apple TV+, Prime Video and more.",
+  },
 };
 
 export const viewport: Viewport = {
@@ -40,16 +57,30 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-const RootLayout = async ({ children }: PropsWithChildren): Promise<ReactElement> => {
-  const locale = await getLocale();
+const Layout = async ({ children }: PropsWithChildren): Promise<ReactElement> => {
+  const [messages, locale] = await Promise.all([getMessages(), getLocale()]);
 
   return (
     <html lang={locale} className={`${instrumentSans.variable} ${geist.variable} bg-background`}>
       <head>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6330177306711077" crossOrigin="anonymous" />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6330177306711077"
+          crossOrigin="anonymous"
+        />
       </head>
+
       <body className="font-sans antialiased">
-        {children}
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <div className="flex min-h-screen flex-col">
+            <Navbar />
+            <main className="flex flex-1 flex-col">{children}</main>
+            <Footer />
+          </div>
+
+          <Toaster />
+        </NextIntlClientProvider>
+
         <Analytics />
         <SpeedInsights />
       </body>
@@ -57,4 +88,4 @@ const RootLayout = async ({ children }: PropsWithChildren): Promise<ReactElement
   );
 };
 
-export default RootLayout;
+export default Layout;

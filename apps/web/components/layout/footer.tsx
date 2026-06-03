@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, buttonVariants } from "@/components/l-ui/button";
+import { LocaleFlag } from "@/components/locale-flag";
 import {
   Select,
   SelectContent,
@@ -13,16 +14,14 @@ import { cn } from "@/lib/utils";
 import { Heart } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import type { FC, ReactElement } from "react";
 import { useState } from "react";
-import { LocaleFlag } from "@/components/locale-flag";
 
 export const Footer: FC = (): ReactElement => {
   const [thanked, setThanked] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const locale = useLocale();
-  const pathname = usePathname();
   const router = useRouter();
   const t = useTranslations("Footer");
 
@@ -49,8 +48,8 @@ export const Footer: FC = (): ReactElement => {
   };
 
   const handleLocaleChange = (value: string): void => {
-    const nextPath = pathname.replace(/^\/(fr-FR|en-US|es-ES)(?=\/|$)/, `/${value}`);
-    router.push(`${nextPath}${window.location.search}`);
+    document.cookie = `locale=${value};path=/;max-age=31536000;SameSite=Lax`;
+    router.refresh();
   };
 
   return (
@@ -127,19 +126,19 @@ export const Footer: FC = (): ReactElement => {
           </div>
 
           <div className="flex flex-wrap items-center gap-3 mt-2">
-            <Link href={`/${locale}/faq`} className="hover:text-foreground transition-colors">
+            <Link href="/faq" className="hover:text-foreground transition-colors">
               {t("faq")}
             </Link>
             <span className="opacity-30">·</span>
-            <Link href={`/${locale}/changelog`} className="hover:text-foreground transition-colors">
+            <Link href="/changelog" className="hover:text-foreground transition-colors">
               {t("changelog")}
             </Link>
             <span className="opacity-30">·</span>
-            <Link href={`/${locale}/privacy`} className="hover:text-foreground transition-colors">
+            <Link href="/privacy" className="hover:text-foreground transition-colors">
               {t("privacy")}
             </Link>
             <span className="opacity-30">·</span>
-            <Link href={`/${locale}/tos`} className="hover:text-foreground transition-colors">
+            <Link href="/tos" className="hover:text-foreground transition-colors">
               {t("tos")}
             </Link>
           </div>

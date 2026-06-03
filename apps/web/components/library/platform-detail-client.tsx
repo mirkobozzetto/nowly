@@ -243,7 +243,7 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
       <PageLayout>
         <div className="max-w-300 mx-auto px-6">
           <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
-            <Link href={`/${locale}/library`} className="hover:text-foreground transition-colors">
+            <Link href="/library" className="hover:text-foreground transition-colors">
               {t("breadcrumbHome")}
             </Link>
             <ChevronRight className="w-4 h-4" />

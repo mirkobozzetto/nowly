@@ -5,7 +5,7 @@ import { buttonVariants as _buttonVariants } from "@/components/ui/button";
 import { useBrowser } from "@/hooks/use-browser";
 import { cn } from "@/lib/utils";
 import { Download } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
 // import { useEffect, useState } from "react";
@@ -13,7 +13,6 @@ import type { FC, ReactElement } from "react";
 export const Navbar: FC = (): ReactElement => {
   // const [scrolled, setScrolled] = useState(false);
   const browser = useBrowser();
-  const locale = useLocale();
   const t = useTranslations("Navbar");
 
   // useEffect(() => {
@@ -34,13 +33,12 @@ export const Navbar: FC = (): ReactElement => {
     >
       <div className="max-w-300 mx-auto px-6">
         <div className="flex items-center justify-between">
-          <Link href={`/${locale}`}>
+          <Link href="/">
             <img src="/app_title_white.png" alt="Nowly" className="h-8 w-auto" />
           </Link>
           
           <div className="flex items-center gap-3">
-            <Link
-               href={`/${locale}/library`}
+            <Link href="/library"
               className={_buttonVariants({ variant: "link" })}
             >
               {t("marketplace")}

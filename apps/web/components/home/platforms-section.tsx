@@ -8,10 +8,9 @@ import type { Metadata } from "@nowly/websites";
 import type { FC, ReactElement } from "react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 export const PlatformsSection: FC = (): ReactElement => {
-  const locale = useLocale();
   const t = useTranslations("PlatformsSection");
   const [platforms, setPlatforms] = useState<Platform[]>([]);
 
@@ -50,7 +49,7 @@ export const PlatformsSection: FC = (): ReactElement => {
                 {available.map((platform) => (
                   <Link
                     key={platform.slug}
-                     href={`/${locale}/library/${platform.slug}`}
+                     href={`/library/${platform.slug}`}
                     className="bg-card border border-border rounded-lg p-5 text-center transition-all hover:border-muted-foreground hover:bg-card-hover hover:-translate-y-0.5 cursor-pointer"
                   >
                     <div className="w-9 h-9 mx-auto mb-3 flex items-center justify-center">

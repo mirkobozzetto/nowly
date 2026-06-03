@@ -1,11 +1,10 @@
 "use client";
 
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { ReactElement } from "react";
 
 const NotFound = (): ReactElement => {
-  const locale = useLocale();
   const t = useTranslations("NotFound");
 
   return (
@@ -24,7 +23,7 @@ const NotFound = (): ReactElement => {
           {t("description")}
         </p>
         <Link
-          href={`/${locale}`}
+          href="/"
           className="inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 rounded-lg font-semibold text-sm shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_4px_25px_rgba(255,255,255,0.2)] active:scale-[0.98] transition-all"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

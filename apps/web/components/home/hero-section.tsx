@@ -2,7 +2,7 @@
 
 import { KofiModal } from "@/components/ui/kofi-modal";
 import { ArrowRight } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
 import { useState } from "react";
@@ -12,7 +12,6 @@ import { CompanionWindow } from "./companion-window";
 
 export const HeroSection: FC = (): ReactElement => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const locale = useLocale();
   const t = useTranslations("HeroSection");
 
   return (
@@ -39,7 +38,7 @@ export const HeroSection: FC = (): ReactElement => {
               
               <div className="flex flex-wrap gap-3 mt-6">
                 <Link
-                   href={`/${locale}/library`}
+                   href="/library"
                    className={buttonVariants({ variant: "primary", size: "md" })}
                 >
                   {t("cta")}

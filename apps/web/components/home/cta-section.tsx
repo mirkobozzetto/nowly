@@ -4,7 +4,7 @@ import { Button } from "@/components/l-ui/button";
 import { KofiModal } from "@/components/ui/kofi-modal";
 import { CheckCircle, Download, Shield } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
+
 import type { FC, ReactElement } from "react";
 import { useState } from "react";
 
@@ -36,11 +36,10 @@ export const CtaSection: FC = (): ReactElement => {
               </Button>
 
               <Button disabled variant="secondary">
-                <Image
+                <img
                   src="https://thesvg.org/icons/firefox/default.svg"
                   alt="Firefox"
-                  width={16}
-                  height={16}
+                  className="w-4 h-4"
                 />
 
                 Firefox
@@ -53,11 +52,10 @@ export const CtaSection: FC = (): ReactElement => {
 
             <div className="flex justify-center gap-6 flex-wrap mt-8">
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                <Image
+                <img
                   src="https://thesvg.org/icons/chromium/default.svg"
                   alt="Chromium"
-                  width={16}
-                  height={16}
+                  className="w-4 h-4"
                 />
                 {t("platforms")}
               </div>
@@ -65,6 +63,7 @@ export const CtaSection: FC = (): ReactElement => {
                 <Shield className="w-4 h-4" />
                 {t("openSource")}
               </div>
+
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
                 <CheckCircle className="w-4 h-4" />
                 {t("free")}
