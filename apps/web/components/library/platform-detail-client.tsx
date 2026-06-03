@@ -1,6 +1,7 @@
 "use client";
 
 import { Dialog, DialogAction, DialogCancel, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogMedia, DialogTitle } from "@/components/l-ui/dialog";
+import { PageLayout } from "@/components/layout/page-layout";
 import { KofiModal } from "@/components/ui/kofi-modal";
 import { API_BASE_URL } from "@/lib/constants";
 import { type Platform } from "@/lib/data/platforms";
@@ -252,7 +253,7 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
 
   return (
     <>
-      <main className="min-h-screen pt-24 pb-16">
+      <PageLayout>
         <div className="max-w-300 mx-auto px-6">
           <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
             <Link href={`/${locale}/library`} className="hover:text-foreground transition-colors">
@@ -302,7 +303,7 @@ export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {
             </div>
           </div>
         </div>
-      </main>
+      </PageLayout>
 
       <Dialog open={showUninstallConfirm} onOpenChange={setShowUninstallConfirm}>
         <DialogContent variant="destructive">

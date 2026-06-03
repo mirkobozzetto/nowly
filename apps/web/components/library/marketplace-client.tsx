@@ -1,5 +1,6 @@
 "use client";
 
+import { PageLayout } from "@/components/layout/page-layout";
 import { PlatformCard } from "@/components/library/platform-card";
 import { categories, type Platform, type PlatformCategory } from "@/lib/data/platforms";
 import { API_BASE_URL } from "@/lib/constants";
@@ -71,8 +72,8 @@ const MarketplaceClient: FC = (): ReactElement => {
   };
 
   return (
-    <main className="min-h-screen pt-24 pb-16">
-      <div className="max-w-300 mx-auto px-6">
+    <PageLayout>
+        <div className="max-w-300 mx-auto px-6">
         <div className="text-center max-w-150 mx-auto mb-12">
           <span className="text-accent font-bold uppercase tracking-widest text-xs mb-4 block">
             {t("badge")}
@@ -153,9 +154,9 @@ const MarketplaceClient: FC = (): ReactElement => {
             </button>
           </div>
         )}
-      </div>
-    </main>
-  );
+        </div>
+      </PageLayout>
+    );
 };
 
 export { MarketplaceClient };
