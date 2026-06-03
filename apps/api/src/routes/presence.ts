@@ -5,7 +5,7 @@ import { join } from "path"
 import { PRESENCES_DIR } from "@/lib/paths"
 import { canonicalJson, sha256Base64Url, signedPayload, signPresenceRelease } from "@/lib/crypto"
 import { requireAuth } from "@/lib/api-auth"
-import { type VersionEntry, addVersion, getPresenceStats, setVersion, setAdded, setUpdated, getVersionHistory, setPresenceMeta, type PresenceMeta } from "@/lib/redis"
+import { type VersionEntry, addVersion, getPresenceStats, setVersion, setAdded, setUpdated, getVersionHistory, setPresenceMeta, getPresenceMeta, type PresenceMeta } from "@/lib/redis"
 import { generateChangelog } from "@/lib/openai"
 
 const buildRelease = async (slug: string, version?: string) => {
