@@ -158,9 +158,9 @@ const registerPresenceScript = async (slug: string, presence: StoredPresence): P
       id: userScriptId(slug),
       matches,
       js: [{ code }],
-      runAt: "document_idle",
+      runAt: slug === "youtube" ? "document_start" : "document_idle",
       allFrames: false,
-      world: "USER_SCRIPT",
+      world: slug === "youtube" ? "MAIN" : "USER_SCRIPT",
     };
 
     try {
