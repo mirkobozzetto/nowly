@@ -62,9 +62,11 @@ const LocaleLayout = async ({ children, params }: Props): Promise<ReactElement> 
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <Navbar />
-      {children}
-      <Footer />
+      <div className="flex min-h-screen flex-col">
+        <Navbar />
+        <main className="flex flex-1 flex-col">{children}</main>
+        <Footer />
+      </div>
       <Toaster />
     </NextIntlClientProvider>
   );

@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { useTranslations } from "next-intl"
-import type { ReactElement } from "react"
+import { useTranslations } from "next-intl";
+import type { FC, ReactElement } from "react";
 
 type Props = {
   error: Error & { digest?: string }
   reset: () => void
-}
+};
 
-const Error = ({ reset }: Props): ReactElement => {
-  const t = useTranslations("ErrorPage")
+const Error: FC<Props> = ({ reset }): ReactElement => {
+  const t = useTranslations("ErrorPage");
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center px-6">
+    <div className="flex flex-1 items-center justify-center px-6">
       <div className="text-center max-w-sm">
         <div className="mb-8">
           <svg className="w-16 h-16 mx-auto text-destructive" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -37,7 +37,7 @@ const Error = ({ reset }: Props): ReactElement => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Error
+export default Error;
