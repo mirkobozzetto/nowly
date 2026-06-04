@@ -1,10 +1,9 @@
 "use client";
 
-import * as React from "react";
-import { AlertDialog as AlertDialogPrimitive } from "radix-ui";
-
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { AlertDialog as AlertDialogPrimitive } from "radix-ui";
+import * as React from "react";
 
 function AlertDialog({
   ...props
@@ -195,5 +194,6 @@ export {
   AlertDialogOverlay,
   AlertDialogPortal,
   AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialogTrigger
 };
+

@@ -1,7 +1,6 @@
 "use client";
 
-import { buttonVariants } from "@/components/l-ui/button";
-import { buttonVariants as _buttonVariants } from "@/components/ui/button";
+import { buttonVariants as _buttonVariants, buttonVariants } from "@/components/ui/button";
 import { useBrowser } from "@/hooks/use-browser";
 import { cn } from "@/lib/utils";
 import { Download } from "lucide-react";

@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/l-ui/button";
 import { KofiModal } from "@/components/l-ui/kofi-modal";
+import { Button } from "@/components/ui/button";
 import { CheckCircle, Download, Shield } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -30,12 +30,12 @@ export const CtaSection: FC = (): ReactElement => {
             </p>
             
             <div className="flex gap-4 justify-center flex-wrap">
-              <Button onClick={handleDownload} variant="primary">
+              <Button onClick={handleDownload} variant="primary" size="lg">
                 <Download className="w-6 h-6" />
                 {t("downloadFor", { browser: "Chrome" })}
               </Button>
 
-              <Button disabled variant="secondary">
+              <Button disabled variant="secondary" size="lg">
                 <img
                   src="https://thesvg.org/icons/firefox/default.svg"
                   alt="Firefox"
@@ -59,6 +59,7 @@ export const CtaSection: FC = (): ReactElement => {
                 />
                 {t("platforms")}
               </div>
+
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
                 <Shield className="w-4 h-4" />
                 {t("openSource")}

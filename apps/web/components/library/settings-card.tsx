@@ -1,4 +1,4 @@
-import { Card, CardTitle } from "@/components/l-ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 import type { Presence } from "@/lib/data/presences";
 import { useLocale, useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";

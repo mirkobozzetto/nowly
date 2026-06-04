@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardTitle } from "@/components/l-ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 import { API_BASE_URL } from "@/lib/constants";
 import type { Presence } from "@/lib/data/presences";
 import { useTranslations } from "next-intl";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog, DialogAction, DialogCancel, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogMedia, DialogTitle } from "@/components/l-ui/dialog";
+import { Dialog, DialogAction, DialogCancel, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogMedia, DialogTitle } from "@/components/ui/dialog";
 import { PROJECT_EXTENSION_DOWNLOAD_URL } from "@/lib/constants";
 import { Coffee, Heart } from "lucide-react";
 

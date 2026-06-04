@@ -1,4 +1,4 @@
-import { CardDescription, CardTitle } from "@/components/l-ui/card";
+import { CardDescription, CardTitle } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import type { FC } from "react";
 

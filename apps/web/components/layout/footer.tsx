@@ -1,8 +1,10 @@
 "use client";
 
 import { GitHubIcon } from "@/components/icons";
-import { buttonVariants } from "@/components/l-ui/button";
+import { Avatar, AvatarGroup } from "@/components/ui/avatar";
+import { buttonVariants } from "@/components/ui/button";
 import { PROJECT_REPOSITORY_URL } from "@/lib/constants";
+import { AvatarImage } from "@radix-ui/react-avatar";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
@@ -19,19 +21,21 @@ export const Footer: FC = (): ReactElement => {
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between flex-wrap gap-5">
             <div className="flex items-center gap-3">
-              <div className="flex -space-x-4">
-                <img
-                  src="https://avatars.githubusercontent.com/u/51194216?v=4"
-                  alt={t("authorAlt")}
-                  className="w-10 h-10 rounded-full border-2 border-background object-cover shrink-0 relative z-2"
-                />
+              <AvatarGroup className="-space-x-4">
+                <Avatar size="lg" className="z-6">
+                  <AvatarImage
+                    src="https://avatars.githubusercontent.com/u/51194216?v=4"
+                    alt={t("authorAlt")}
+                  />
+                </Avatar>
 
-                <img
-                  src="https://avatars.githubusercontent.com/steellgold?v=4"
-                  alt="steellgold"
-                  className="w-10 h-10 rounded-full border-2 border-background object-cover shrink-0 relative z-1"
-                />
-              </div>
+                <Avatar size="lg" className="z-4">
+                  <AvatarImage
+                    src="https://avatars.githubusercontent.com/steellgold?v=4"
+                    alt="steellgold"
+                  />
+                </Avatar>
+              </AvatarGroup>
 
               <div className="text-left">
                 <p className="text-muted-foreground">{t("copyright")}</p>

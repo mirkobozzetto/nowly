@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog, DialogAction, DialogCancel, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogMedia, DialogTitle } from "@/components/l-ui/dialog";
+import { Dialog, DialogAction, DialogCancel, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogMedia, DialogTitle } from "@/components/ui/dialog";
 import type { Presence } from "@/lib/data/presences";
 import { Trash2, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";

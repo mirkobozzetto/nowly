@@ -1,11 +1,11 @@
 "use client";
 
-import * as React from "react";
-import { Dialog as SheetPrimitive } from "radix-ui";
-
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { XIcon } from "lucide-react";
+import { Dialog as SheetPrimitive } from "radix-ui";
+import * as React from "react";
+
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
@@ -37,7 +37,9 @@ function SheetOverlay({
     <SheetPrimitive.Overlay
       data-slot="sheet-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+        "fixed inset-0 z-50 bg-background/70 backdrop-blur-sm",
+        "data-open:animate-in data-open:fade-in-0",
+        "data-closed:animate-out data-closed:fade-out-0",
         className
       )}
       {...props}
@@ -52,31 +54,58 @@ function SheetContent({
   showCloseButton = true,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
-  side?: "top" | "right" | "bottom" | "left"
-  showCloseButton?: boolean
+  side?: "top" | "right" | "bottom" | "left";
+  showCloseButton?: boolean;
 }) {
   return (
     <SheetPortal>
       <SheetOverlay />
+
       <SheetPrimitive.Content
         data-slot="sheet-content"
         data-side={side}
         className={cn(
-          "fixed z-50 flex flex-col gap-4 bg-popover bg-clip-padding text-sm text-popover-foreground shadow-lg transition duration-200 ease-in-out data-[side=bottom]:inset-x-0 data-[side=bottom]:bottom-0 data-[side=bottom]:h-auto data-[side=bottom]:border-t data-[side=left]:inset-y-0 data-[side=left]:left-0 data-[side=left]:h-full data-[side=left]:w-3/4 data-[side=left]:border-r data-[side=right]:inset-y-0 data-[side=right]:right-0 data-[side=right]:h-full data-[side=right]:w-3/4 data-[side=right]:border-l data-[side=top]:inset-x-0 data-[side=top]:top-0 data-[side=top]:h-auto data-[side=top]:border-b data-[side=left]:sm:max-w-sm data-[side=right]:sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-[side=bottom]:data-open:slide-in-from-bottom-10 data-[side=left]:data-open:slide-in-from-left-10 data-[side=right]:data-open:slide-in-from-right-10 data-[side=top]:data-open:slide-in-from-top-10 data-closed:animate-out data-closed:fade-out-0 data-[side=bottom]:data-closed:slide-out-to-bottom-10 data-[side=left]:data-closed:slide-out-to-left-10 data-[side=right]:data-closed:slide-out-to-right-10 data-[side=top]:data-closed:slide-out-to-top-10",
+          "fixed z-50 flex flex-col gap-4 overflow-hidden border-border bg-card text-card-foreground",
+          "shadow-2xl outline-none transition ease-in-out",
+          "data-open:animate-in data-open:fade-in-0",
+          "data-closed:animate-out data-closed:fade-out-0",
+
+          "data-[side=right]:inset-y-3 data-[side=right]:right-3",
+          "data-[side=right]:w-[calc(100%-1.5rem)] data-[side=right]:max-w-md",
+          "data-[side=right]:rounded-2xl data-[side=right]:border",
+          "data-[side=right]:data-open:slide-in-from-right-8",
+          "data-[side=right]:data-closed:slide-out-to-right-8",
+
+          "data-[side=left]:inset-y-3 data-[side=left]:left-3",
+          "data-[side=left]:w-[calc(100%-1.5rem)] data-[side=left]:max-w-md",
+          "data-[side=left]:rounded-2xl data-[side=left]:border",
+          "data-[side=left]:data-open:slide-in-from-left-8",
+          "data-[side=left]:data-closed:slide-out-to-left-8",
+
+          "data-[side=top]:inset-x-3 data-[side=top]:top-3",
+          "data-[side=top]:rounded-2xl data-[side=top]:border",
+          "data-[side=top]:data-open:slide-in-from-top-8",
+          "data-[side=top]:data-closed:slide-out-to-top-8",
+
+          "data-[side=bottom]:inset-x-3 data-[side=bottom]:bottom-3",
+          "data-[side=bottom]:rounded-2xl data-[side=bottom]:border",
+          "data-[side=bottom]:data-open:slide-in-from-bottom-8",
+          "data-[side=bottom]:data-closed:slide-out-to-bottom-8",
+
           className
         )}
         {...props}
       >
         {children}
+
         {showCloseButton && (
           <SheetPrimitive.Close data-slot="sheet-close" asChild>
             <Button
               variant="ghost"
-              className="absolute top-3 right-3"
               size="icon-sm"
+              className="absolute right-4 top-4 text-muted-foreground"
             >
-              <XIcon
-              />
+              <XIcon />
               <span className="sr-only">Close</span>
             </Button>
           </SheetPrimitive.Close>
@@ -90,7 +119,7 @@ function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="sheet-header"
-      className={cn("flex flex-col gap-0.5 p-4", className)}
+      className={cn("flex flex-col gap-2 px-6 pb-2 pt-6", className)}
       {...props}
     />
   );
@@ -100,7 +129,7 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="sheet-footer"
-      className={cn("mt-auto flex flex-col gap-2 p-4", className)}
+      className={cn("mt-auto flex flex-col gap-2 px-6 pb-6 pt-2", className)}
       {...props}
     />
   );
@@ -114,7 +143,7 @@ function SheetTitle({
     <SheetPrimitive.Title
       data-slot="sheet-title"
       className={cn(
-        "font-heading text-base font-medium text-foreground",
+        "font-heading text-lg font-semibold tracking-tight text-foreground",
         className
       )}
       {...props}
@@ -129,7 +158,7 @@ function SheetDescription({
   return (
     <SheetPrimitive.Description
       data-slot="sheet-description"
-      className={cn("text-sm text-muted-foreground", className)}
+      className={cn("text-sm leading-6 text-muted-foreground", className)}
       {...props}
     />
   );
@@ -137,11 +166,10 @@ function SheetDescription({
 
 export {
   Sheet,
-  SheetTrigger,
   SheetClose,
   SheetContent,
-  SheetHeader,
-  SheetFooter,
-  SheetTitle,
   SheetDescription,
+  SheetFooter,
+  SheetHeader, SheetOverlay, SheetPortal, SheetTitle,
+  SheetTrigger
 };

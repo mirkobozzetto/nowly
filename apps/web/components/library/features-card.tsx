@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardTitle } from "@/components/l-ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 import { getLocalizedFeatures } from "@/lib/data/localized";
 import type { Presence } from "@/lib/data/presences";
 import { CheckCircle } from "lucide-react";

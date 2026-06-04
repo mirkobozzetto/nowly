@@ -1,10 +1,9 @@
 "use client";
 
 import { PageLayout } from "@/components/layout/page-layout";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import type { Presence } from "@/lib/data/presences";
-import { ChevronRight } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import Link from "next/link";
 import type { FC, ReactElement } from "react";
 import { DevelopmentCard } from "../development-card";
 import { FeaturesCard } from "../features-card";
@@ -15,16 +14,16 @@ import { StatsCard } from "../stats-card";
 import { SupportedUrlsCard } from "../supported-urls-card";
 
 type Props = {
-  presence: Presence
-  isInstalled: boolean
-  extDetected: boolean
-  needsUpdate: boolean
-  loading: boolean
-  totalInstalls: number
-  savedRating: number
-  deviceId: string | null
-  onInstall: () => void
-  onUninstall: () => void
+  presence: Presence;
+  isInstalled: boolean;
+  extDetected: boolean;
+  needsUpdate: boolean;
+  loading: boolean;
+  totalInstalls: number;
+  savedRating: number;
+  deviceId: string | null;
+  onInstall: () => void;
+  onUninstall: () => void;
 };
 
 export const PresenceDetailContent: FC<Props> = ({
@@ -45,15 +44,21 @@ export const PresenceDetailContent: FC<Props> = ({
   return (
     <PageLayout>
       <div className="mx-auto max-w-300 px-6">
-        <nav className="mb-8 flex items-center gap-2 text-sm text-muted-foreground">
-          <Link href="/library" className="transition-colors hover:text-foreground">
-            {t("breadcrumbHome")}
-          </Link>
+        <Breadcrumb className="mb-8">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/library">
+                {t("breadcrumbHome")}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
 
-          <ChevronRight className="h-4 w-4" />
+            <BreadcrumbSeparator />
 
-          <span className="text-foreground">{presence.name}</span>
-        </nav>
+            <BreadcrumbItem>
+              <BreadcrumbPage>{presence.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.85fr)]">
           <div className="space-y-4">

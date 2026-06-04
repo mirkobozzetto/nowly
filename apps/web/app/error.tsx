@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/l-ui/button";
+import { Button } from "@/components/ui/button";
 import { CircleAlert, RefreshCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";

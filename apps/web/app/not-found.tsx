@@ -1,6 +1,6 @@
 "use client";
 
-import { buttonVariants } from "@/components/l-ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Frown, Home } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";

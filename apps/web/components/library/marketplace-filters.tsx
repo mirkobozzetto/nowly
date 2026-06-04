@@ -2,9 +2,17 @@
 
 import { CATEGORIES } from "@/lib/data/categories";
 import type { PresenceCategory } from "@/lib/data/presences";
-import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import type { FC } from "react";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Toggle } from "../ui/toggle";
 
 type SortOption = "name-asc" | "name-desc" | "popular" | "recent";
 
@@ -27,33 +35,25 @@ export const MarketplaceFilters: FC<Props> = ({
     <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
       <div className="flex flex-wrap gap-2">
         {CATEGORIES.map((category) => (
-          <button
-            key={category}
-            onClick={() => onToggleCategory(category)}
-            className={cn(
-              "px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
-              selectedCategories.includes(category)
-                ? "bg-accent text-background"
-                : "bg-card border border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground",
-            )}
-          >
+          <Toggle key={category} onClick={() => onToggleCategory(category)}>
             {t(`categories.${category}`)}
-          </button>
+          </Toggle>
         ))}
       </div>
 
       <div className="flex items-center gap-2">
         <span className="text-sm text-dim-foreground">{t("sortLabel")}</span>
-        <select
-          value={sortBy}
-          onChange={(e) => onSortChange(e.target.value as SortOption)}
-          className="bg-card border border-border rounded-lg px-3 py-1.5 text-sm text-foreground focus:outline-none focus:border-accent cursor-pointer"
-        >
-          <option value="popular">{t("sortPopular")}</option>
-          <option value="recent">{t("sortRecent")}</option>
-          <option value="name-asc">{t("sortNameAsc")}</option>
-          <option value="name-desc">{t("sortNameDesc")}</option>
-        </select>
+        <Select value={sortBy} onValueChange={(value) => onSortChange(value as SortOption)}>
+          <SelectTrigger size="sm" className="w-fit">
+            <SelectValue placeholder={t("sortLabel")} />
+          </SelectTrigger>
+          <SelectContent align="end">
+            <SelectItem value="popular">{t("sortPopular")}</SelectItem>
+            <SelectItem value="recent">{t("sortRecent")}</SelectItem>
+            <SelectItem value="name-asc">{t("sortNameAsc")}</SelectItem>
+            <SelectItem value="name-desc">{t("sortNameDesc")}</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );

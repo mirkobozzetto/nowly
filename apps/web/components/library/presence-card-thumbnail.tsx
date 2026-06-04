@@ -3,6 +3,7 @@
 import { ASSET_URL } from "@/lib/assets";
 import type { FC } from "react";
 import { useState } from "react";
+import { Badge } from "../ui/badge";
 
 type Props = {
   slug: string
@@ -24,9 +25,9 @@ export const PresenceCardThumbnail: FC<Props> = ({ slug, categoryLabel }) => {
         onError={() => setHasError(true)}
       />
       {categoryLabel && (
-        <span className="absolute top-2 right-2 z-10 px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-widest bg-card-2 text-muted-foreground">
+        <Badge className="absolute top-2 right-2" variant="secondary">
           {categoryLabel}
-        </span>
+        </Badge>
       )}
 
       <div

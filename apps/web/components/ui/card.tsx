@@ -1,103 +1,98 @@
-import * as React from "react";
+import type { FC, ReactElement, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
-function Card({
-  className,
-  size = "default",
-  ...props
-}: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
-  return (
-    <div
-      data-slot="card"
-      data-size={size}
-      className={cn(
-        "group/card flex flex-col gap-4 overflow-hidden rounded-xl bg-card py-4 text-sm text-card-foreground ring-1 ring-foreground/10 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
-        className
-      )}
-      {...props}
-    />
-  );
-}
-
-function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-header"
-      className={cn(
-        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-4 group-data-[size=sm]/card:px-3 has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-4 group-data-[size=sm]/card:[.border-b]:pb-3",
-        className
-      )}
-      {...props}
-    />
-  );
-}
-
-function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-title"
-      className={cn(
-        "font-heading text-base leading-snug font-medium group-data-[size=sm]/card:text-sm",
-        className
-      )}
-      {...props}
-    />
-  );
-}
-
-function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-description"
-      className={cn("text-sm text-muted-foreground", className)}
-      {...props}
-    />
-  );
-}
-
-function CardAction({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-action"
-      className={cn(
-        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
-        className
-      )}
-      {...props}
-    />
-  );
-}
-
-function CardContent({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-content"
-      className={cn("px-4 group-data-[size=sm]/card:px-3", className)}
-      {...props}
-    />
-  );
-}
-
-function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-footer"
-      className={cn(
-        "flex items-center rounded-b-xl border-t bg-muted/50 p-4 group-data-[size=sm]/card:p-3",
-        className
-      )}
-      {...props}
-    />
-  );
-}
-
-export {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardAction,
-  CardDescription,
-  CardContent,
+type CardProps = {
+  children: ReactNode;
+  className?: string;
+  contentClassName?: string;
+  size?: "default" | "sm";
+  variant?: "default" | "muted";
+  bannerUrl?: string;
 };
+
+
+type CardTitleProps = {
+  children: ReactNode;
+  className?: string;
+  as?: "h2" | "h3";
+};
+
+export const Card: FC<CardProps> = ({
+  children,
+  className,
+  contentClassName,
+  size = "default",
+  variant = "default",
+  bannerUrl,
+}): ReactElement => (
+  <div
+    data-variant={variant}
+    className={cn(
+      "relative overflow-hidden rounded-2xl border shadow-sm transition-colors",
+      "data-[variant=default]:border-border/80 data-[variant=default]:bg-card",
+      "data-[variant=muted]:border-border/60 data-[variant=muted]:bg-muted/30",
+      className,
+    )}
+  >
+    {bannerUrl && (
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-44 overflow-hidden">
+        <img
+          src={bannerUrl}
+          alt=""
+          aria-hidden="true"
+          className="size-full object-cover opacity-45"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-card/75 to-card" />
+      </div>
+    )}
+
+    <div
+      className={cn(
+        "relative z-10",
+        size === "default" && (bannerUrl ? "px-6 pb-6 pt-28" : "p-6"),
+        size === "sm" && (bannerUrl ? "px-5 pb-5 pt-24" : "p-5"),
+        contentClassName,
+      )}
+    >
+      {children}
+    </div>
+  </div>
+);
+
+export const CardTitle: FC<CardTitleProps> = ({
+  children,
+  className,
+  as = "h2",
+}): ReactElement => {
+  const Component = as;
+
+  return (
+    <Component
+      className={cn(
+        as === "h3"
+          ? "mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+          : "mb-3 text-lg font-semibold tracking-tight text-foreground",
+        className,
+      )}
+    >
+      {children}
+    </Component>
+  );
+};
+
+export const CardDescription: FC<{
+  children: ReactNode;
+  className?: string;
+}> = ({ children, className }): ReactElement => (
+  <p className={cn("text-sm leading-6 text-muted-foreground", className)}>
+    {children}
+  </p>
+);
+
+export const CardContent: FC<{
+  children: ReactNode;
+  className?: string;
+}> = ({ children, className }): ReactElement => (
+  <div className={cn("space-y-4", className)}>{children}</div>
+);

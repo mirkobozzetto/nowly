@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "@/components/l-ui/card";
+import { Card } from "@/components/ui/card";
 import { ASSET_URL } from "@/lib/assets";
 import { getLocalizedLongDescription } from "@/lib/data/localized";
 import type { Presence } from "@/lib/data/presences";
