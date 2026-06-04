@@ -1,7 +1,7 @@
-import { LayoutGrid, List } from "lucide-react";
-import type { FC, ReactElement } from "react";
 import { t } from "@/shared/i18n";
 import type { ExtensionSettings, PresenceDisplayMode } from "@/shared/types";
+import { LayoutGrid, List } from "lucide-react";
+import type { FC, ReactElement } from "react";
 
 type Props = {
   settings: ExtensionSettings;
@@ -57,7 +57,7 @@ export const DisplaySettings: FC<Props> = ({ settings, onSettingsChange }): Reac
       >
         <span
           className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${
-            settings.separateActivePresence ? "translate-x-[18px]" : "translate-x-[3px]"
+            settings.separateActivePresence ? "translate-x-4.5" : "translate-x-0.75"
           }`}
         />
       </button>

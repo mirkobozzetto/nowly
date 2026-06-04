@@ -1,6 +1,6 @@
 import react from "@vitejs/plugin-react"
 import { copyFileSync, cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs"
-import { dirname, join } from "path"
+import { dirname, join, resolve } from "path"
 import { fileURLToPath } from "url"
 import { build } from "vite"
 
@@ -27,6 +27,12 @@ const buildPage = async (name: string) => {
     base: "./",
     plugins: [react()],
     define,
+    resolve: {
+      alias: {
+        "@": resolve(ROOT, "src"),
+        "@messages": resolve(ROOT, "messages"),
+      },
+    },
     build: {
       outDir: join(DIST, name),
       emptyOutDir: true,
@@ -42,6 +48,12 @@ const buildScript = async (name: string, entry: string) => {
   await build({
     root: ROOT,
     define,
+    resolve: {
+      alias: {
+        "@": resolve(ROOT, "src"),
+        "@messages": resolve(ROOT, "messages"),
+      },
+    },
     build: {
       outDir: DIST,
       emptyOutDir: false,
