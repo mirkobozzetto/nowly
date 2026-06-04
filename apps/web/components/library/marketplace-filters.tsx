@@ -23,12 +23,7 @@ type Props = {
   onSortChange: (sort: SortOption) => void
 };
 
-export const MarketplaceFilters: FC<Props> = ({
-  selectedCategories,
-  sortBy,
-  onToggleCategory,
-  onSortChange,
-}) => {
+export const MarketplaceFilters: FC<Props> = ({ sortBy, onToggleCategory, onSortChange }) => {
   const t = useTranslations("MarketplacePage");
 
   return (

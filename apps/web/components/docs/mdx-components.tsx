@@ -3,7 +3,7 @@ import { Callout } from "./callout";
 import { CodeBlock } from "./code-block";
 import { HeadingAnchor } from "./heading-anchor";
 
-type MDXComponents = Record<string, ComponentType<any>>;
+type MDXComponents = Record<string, ComponentType<Record<string, unknown>>>;
 
 type CodeProps = {
   className?: string;

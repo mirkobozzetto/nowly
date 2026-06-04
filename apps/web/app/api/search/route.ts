@@ -1,4 +1,4 @@
-import { getDocsNav, getDocContent } from "@/lib/docs/content";
+import { getDocContent, getDocsNav } from "@/lib/docs/content";
 import { NextRequest, NextResponse } from "next/server";
 
 type SearchResult = {
@@ -18,7 +18,7 @@ function stripMdx(content: string): string {
     .replace(/>\s*/g, "")
     .replace(/\*\*/g, "")
     .replace(/`{1,3}/g, "")
-    .replace(/\[([^\]]+)\]\([^\)]+\)/g, "$1")
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1")
     .replace(/^#{1,6}\s+/gm, "")
     .trim();
 }
@@ -89,4 +89,4 @@ export const GET = async (request: NextRequest) => {
 
   results.sort((a, b) => b.matches - a.matches);
   return NextResponse.json(results);
-}
+};
