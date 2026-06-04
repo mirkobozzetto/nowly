@@ -164,6 +164,17 @@
     "empty": "No se ha encontrado ninguna plataforma",
     "reset": "Restablecer filtros"
   },
+  "Docs": {
+    "documentation": "Documentación",
+    "onThisPage": "En esta página",
+    "toc": "TDC",
+    "openTableOfContents": "Abrir tabla de contenidos",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "menu": "Menú",
+    "collapse": "Contraer",
+    "expand": "Expandir"
+  },
   "Common": {
     "statusAvailable": "Disponible",
     "statusSoon": "Próximamente",

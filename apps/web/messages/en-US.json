@@ -166,6 +166,17 @@
     "empty": "No platforms found",
     "reset": "Reset Filters"
   },
+  "Docs": {
+    "documentation": "Documentation",
+    "onThisPage": "On this page",
+    "toc": "TOC",
+    "openTableOfContents": "Open table of contents",
+    "previous": "Previous",
+    "next": "Next",
+    "menu": "Menu",
+    "collapse": "Collapse",
+    "expand": "Expand"
+  },
   "Common": {
     "statusAvailable": "Available",
     "statusSoon": "Coming Soon",

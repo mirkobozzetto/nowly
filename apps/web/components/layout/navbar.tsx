@@ -10,24 +10,14 @@ import type { FC, ReactElement } from "react";
 // import { useEffect, useState } from "react";
 
 export const Navbar: FC = (): ReactElement => {
-  // const [scrolled, setScrolled] = useState(false);
   const browser = useBrowser();
   const t = useTranslations("Navbar");
-
-  // useEffect(() => {
-  //   const handleScroll = (): void => {
-  //     setScrolled(window.scrollY > 20);
-  //   };
-  //   window.addEventListener("scroll", handleScroll);
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, []);
 
   return (
     <nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300",
         "bg-background/35 backdrop-blur-xl"
-        // scrolled && "bg-background/90 backdrop-blur-xl"
       )}
     >
       <div className="max-w-300 mx-auto px-6">

@@ -164,6 +164,17 @@
     "empty": "Aucune plateforme trouvée",
     "reset": "Réinitialiser les filtres"
   },
+  "Docs": {
+    "documentation": "Documentation",
+    "onThisPage": "Sur cette page",
+    "toc": "TOC",
+    "openTableOfContents": "Ouvrir la table des matières",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "menu": "Menu",
+    "collapse": "Réduire",
+    "expand": "Développer"
+  },
   "Common": {
     "statusAvailable": "Disponible",
     "statusSoon": "Bientôt",

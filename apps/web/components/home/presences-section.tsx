@@ -4,7 +4,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { usePresences } from "@/hooks/use-presences";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
-import { PresenceComingSoonItem } from "./presence-coming-soon-item";
 import { PresenceLinkItem } from "./presence-link-item";
 
 const PresencesSectionSkeleton: FC = () => (
@@ -23,7 +22,6 @@ export const PresencesSection: FC = (): ReactElement => {
   const { data: presences, isLoading } = usePresences();
 
   const available = presences?.filter((p) => p.status === "available") ?? [];
-  const soon = presences?.filter((p) => p.status === "soon") ?? [];
 
   return (
     <section className="py-24 border-b border-border">
@@ -51,19 +49,6 @@ export const PresencesSection: FC = (): ReactElement => {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {available.map((presence) => (
                   <PresenceLinkItem key={presence.slug} presence={presence} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {!isLoading && soon.length > 0 && (
-            <div>
-              <h3 className="text-sm font-bold text-dim-foreground uppercase tracking-widest mb-5 border-l-[3px] border-border pl-3">
-                {t("comingSoonHeading")}
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {soon.map((presence) => (
-                  <PresenceComingSoonItem key={presence.slug} presence={presence} />
                 ))}
               </div>
             </div>
