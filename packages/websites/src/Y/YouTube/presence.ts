@@ -9,13 +9,13 @@ const settings = Presence.Settings({
     default: false,
     label: {
       "en-US": "Show browsing activity",
-      "fr-FR": "Afficher l'activit├® de navigation",
-      "es-ES": "Mostrar actividad de navegaci├│n",
+      "fr-FR": "Afficher l'activité de navigation",
+      "es-ES": "Mostrar actividad de navegación",
     },
     description: {
       "en-US": "When enabled, your presence will also show when browsing YouTube (home, search, subscriptions, etc.), not just when watching a video.",
-      "fr-FR": "Quand activ├®, votre pr├®sence s'affichera aussi lorsque vous naviguez sur YouTube (accueil, recherche, abonnements, etc.), pas seulement quand vous regardez une vid├®o.",
-      "es-ES": "Cuando est├í activado, tu presencia tambi├®n se mostrar├í al navegar por YouTube (inicio, b├║squeda, suscripciones, etc.), no solo al ver un v├¡deo.",
+      "fr-FR": "Quand activé, votre présence s'affichera aussi lorsque vous naviguez sur YouTube (accueil, recherche, abonnements, etc.), pas seulement quand vous regardez une vidéo.",
+      "es-ES": "Cuando está activado, tu presencia también se mostrará al navegar por YouTube (inicio, búsqueda, suscripciones, etc.), no solo al ver un vídeo.",
     },
   },
   showChannels: {
@@ -23,13 +23,13 @@ const settings = Presence.Settings({
     default: false,
     label: {
       "en-US": "Show channel details",
-      "fr-FR": "Afficher les d├®tails de la cha├«ne",
+      "fr-FR": "Afficher les détails de la chaîne",
       "es-ES": "Mostrar detalles del canal",
     },
     description: {
       "en-US": "When enabled, your presence will show the channel name and avatar when viewing a channel page.",
-      "fr-FR": "Quand activ├®, votre pr├®sence affichera le nom et l'avatar de la cha├«ne lorsque vous consultez une page cha├«ne.",
-      "es-ES": "Cuando est├í activado, tu presencia mostrar├í el nombre y avatar del canal al ver una p├ígina de canal.",
+      "fr-FR": "Quand activé, votre présence affichera le nom et l'avatar de la chaîne lorsque vous consultez une page chaîne.",
+      "es-ES": "Cuando está activado, tu presencia mostrará el nombre y avatar del canal al ver una página de canal.",
     },
   },
 })
