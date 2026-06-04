@@ -9,8 +9,10 @@ import { type VersionEntry, addVersion, getPresenceStats, setVersion, setAdded, 
 import { generateChangelog } from "@/lib/openai"
 
 const buildRelease = async (slug: string, version?: string) => {
-  const metadata = getPresence(slug) || await getPresenceMeta(slug)
-  if (!metadata) return null
+  const localMeta = getPresence(slug)
+  const redisMeta = await getPresenceMeta(slug)
+  const metadata = { ...(localMeta ?? {}), ...(redisMeta ?? {}) } as Record<string, unknown>
+  if (!Object.keys(metadata).length) return null
 
   const bundlePath = join(PRESENCES_DIR, slug, "bundle.js")
   let bundle: string | null = null
