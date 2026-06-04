@@ -130,3 +130,9 @@
 .animate-progress {
   animation: progress 2s ease-out forwards;
 }
+
+@keyframes skeleton-shimmer {
+  to {
+    transform: translateX(200%);
+  }
+}
