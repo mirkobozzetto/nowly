@@ -1,28 +1,29 @@
 "use client";
 
-import { API_BASE_URL } from "@/lib/constants";
-import { metadataToPlatform } from "@/lib/data/presence-adapter";
-import type { Platform } from "@/lib/data/platforms";
-import type { Metadata } from "@nowly/websites";
+import { Skeleton } from "@/components/ui/skeleton";
+import { usePresences } from "@/hooks/use-presences";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
-import { useEffect, useState } from "react";
 import { PlatformComingSoonItem } from "./platform-coming-soon-item";
 import { PlatformLinkItem } from "./platform-link-item";
 
+const PlatformsSectionSkeleton: FC = () => (
+  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+    {Array.from({ length: 6 }, (_, i) => (
+      <div key={i} className="flex flex-col items-center gap-2 p-4">
+        <Skeleton className="w-12 h-12 rounded-full" />
+        <Skeleton className="h-4 w-20" />
+      </div>
+    ))}
+  </div>
+);
+
 export const PlatformsSection: FC = (): ReactElement => {
   const t = useTranslations("PlatformsSection");
-  const [platforms, setPlatforms] = useState<Platform[]>([]);
+  const { data: platforms, isLoading } = usePresences();
 
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/presences`)
-      .then((res) => res.json())
-      .then((metadata: Metadata[]) => setPlatforms(metadata.map(metadataToPlatform)))
-      .catch(() => {});
-  }, []);
-
-  const available = platforms.filter((p) => p.status === "available");
-  const soon = platforms.filter((p) => p.status === "soon");
+  const available = platforms?.filter((p) => p.status === "available") ?? [];
+  const soon = platforms?.filter((p) => p.status === "soon") ?? [];
 
   return (
     <section className="py-24 border-b border-border">
@@ -40,7 +41,9 @@ export const PlatformsSection: FC = (): ReactElement => {
         </div>
 
         <div className="flex flex-col gap-12">
-          {available.length > 0 && (
+          {isLoading && <PlatformsSectionSkeleton />}
+
+          {!isLoading && available.length > 0 && (
             <div>
               <h3 className="text-sm font-bold text-dim-foreground uppercase tracking-[0.1em] mb-5 border-l-[3px] border-border pl-3">
                 {t("availableHeading")}
@@ -53,7 +56,7 @@ export const PlatformsSection: FC = (): ReactElement => {
             </div>
           )}
 
-          {soon.length > 0 && (
+          {!isLoading && soon.length > 0 && (
             <div>
               <h3 className="text-sm font-bold text-dim-foreground uppercase tracking-[0.1em] mb-5 border-l-[3px] border-border pl-3">
                 {t("comingSoonHeading")}

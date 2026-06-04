@@ -1,16 +1,16 @@
 "use client";
 
+import { GitHubIcon } from "@/components/icons";
 import { Card, CardTitle } from "@/components/l-ui/card";
 import { buildPresenceUrl } from "@/lib/constants";
-import type { Platform } from "@/lib/data/platforms";
+import type { Presence } from "@/lib/data/presences";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
-import { GitHubIcon } from "@/components/icons";
 import { AuthorItem } from "./author-item";
 
 type Props = {
-  platform: Platform;
+  platform: Presence;
 };
 
 export const DevelopmentCard: FC<Props> = ({ platform }): ReactElement => {

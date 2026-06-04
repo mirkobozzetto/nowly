@@ -1,10 +1,10 @@
+import { type Presence } from "@/lib/data/presences";
 import { cn } from "@/lib/utils";
-import { type Platform } from "@/lib/data/platforms";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 
 type StatusBadgeProps = {
-  status: Platform["status"]
+  status: Presence["status"]
 };
 
 export const StatusBadge: FC<StatusBadgeProps> = ({ status }): ReactElement => {

@@ -1,9 +1,9 @@
-import type { Platform } from "@/lib/data/platforms";
+import type { Presence } from "@/lib/data/presences";
 import { Download, Star, Users } from "lucide-react";
 import type { FC } from "react";
 
 type Props = {
-  platform: Platform
+  platform: Presence
 };
 
 export const PlatformCardStats: FC<Props> = ({ platform }) => {

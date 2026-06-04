@@ -1,5 +1,7 @@
-export type PlatformCategory = "streaming" | "music" | "tv" | "anime" | "other";
-export type PlatformStatus = "available" | "soon" | "beta";
+import type { PresenceCategory } from "./categories";
+
+export type PresenceStatus = "available" | "soon" | "beta";
+export type { PresenceCategory };
 
 export interface Contributor {
   name: string
@@ -7,7 +9,7 @@ export interface Contributor {
   avatar?: string
 }
 
-export interface Platform {
+export interface Presence {
   id: string
   slug: string
   name: string
@@ -15,8 +17,8 @@ export interface Platform {
   longDescription: string
   icon: string
   iconColor: string
-  category: PlatformCategory
-  status: PlatformStatus
+  category: PresenceCategory
+  status: PresenceStatus
   version: string | null
   activeUsers: number
   totalInstalls: number
@@ -36,11 +38,3 @@ export interface Platform {
     features?: Record<string, string[]>
   }
 }
-
-export const categories: { value: PlatformCategory; label: string }[] = [
-  { value: "streaming", label: "Streaming" },
-  { value: "music", label: "Music" },
-  { value: "tv", label: "TV & Films" },
-  { value: "anime", label: "Anime" },
-  { value: "other", label: "Other" },
-];

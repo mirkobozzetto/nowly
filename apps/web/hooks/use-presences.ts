@@ -1,12 +1,14 @@
 "use client";
 
 import { API_BASE_URL } from "@/lib/constants";
+import type { Presence } from "@/lib/data/presences";
 import { metadataToPlatform } from "@/lib/data/presence-adapter";
-import type { Platform } from "@/lib/data/platforms";
-import { useQuery } from "@tanstack/react-query";
 import type { Metadata } from "@nowly/websites";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
-const fetchPresences = async (): Promise<Platform[]> => {
+const PRESENCES_KEY = ["presences"] as const;
+
+const fetchPresences = async (): Promise<Presence[]> => {
   const res = await fetch(`${API_BASE_URL}/presences`);
 
   if (!res.ok) throw new Error("Failed to fetch presences");
@@ -17,10 +19,12 @@ const fetchPresences = async (): Promise<Platform[]> => {
 };
 
 const usePresences = () => {
-  return useQuery<Platform[]>({
-    queryKey: ["presences"],
+  return useQuery<Presence[]>({
+    queryKey: PRESENCES_KEY,
     queryFn: fetchPresences,
+    staleTime: 5 * 60 * 1000,
+    placeholderData: keepPreviousData,
   });
 };
 
-export { usePresences };
+export { fetchPresences, PRESENCES_KEY, usePresences };

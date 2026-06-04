@@ -2,20 +2,15 @@
 
 import { ASSET_URL } from "@/lib/assets";
 import { getLocalizedDescription } from "@/lib/data/localized";
-import { categories, type Platform } from "@/lib/data/platforms";
-import { useTranslations } from "next-intl";
+import type { Presence } from "@/lib/data/presences";
 import type { FC } from "react";
 
 type Props = {
-  platform: Platform
+  platform: Presence
   locale: string
 };
 
 export const PlatformCardBody: FC<Props> = ({ platform, locale }) => {
-  const t = useTranslations("MarketplacePage");
-
-  const categoryLabel = categories.find((c) => c.value === platform.category)?.value ?? platform.category;
-
   return (
     <div className="flex items-start gap-4">
       <div
@@ -37,12 +32,7 @@ export const PlatformCardBody: FC<Props> = ({ platform, locale }) => {
       </div>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <h3 className="font-semibold text-foreground truncate">{platform.name}</h3>
-          <span className="ml-auto text-[10px] font-bold uppercase tracking-widest text-dim-foreground whitespace-nowrap">
-            {t(`categories.${categoryLabel}`)}
-          </span>
-        </div>
+        <h3 className="font-semibold text-foreground truncate mb-1">{platform.name}</h3>
 
         <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
           {getLocalizedDescription(platform, locale)}

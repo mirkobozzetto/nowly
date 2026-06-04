@@ -2,7 +2,7 @@
 
 import { Card, CardTitle } from "@/components/l-ui/card";
 import { API_BASE_URL } from "@/lib/constants";
-import type { Platform } from "@/lib/data/platforms";
+import type { Presence } from "@/lib/data/presences";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 import { useCallback, useState } from "react";
@@ -12,7 +12,7 @@ import { StarRatingInput } from "./star-rating-input";
 import { StatRow } from "./stat-row";
 
 type Props = {
-  platform: Platform
+  platform: Presence
   locale: string
   slug: string
   canRate?: boolean

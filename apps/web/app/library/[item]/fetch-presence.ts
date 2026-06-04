@@ -15,7 +15,10 @@ export interface PresenceRelease {
 
 export const fetchPresence = async (apiUrl: string, slug: string): Promise<PresenceRelease | null> => {
   try {
-    const res = await fetch(`${apiUrl}/presences/${slug}`);
+    const res = await fetch(`${apiUrl}/presences/${slug}`, {
+      next: { revalidate: 60 },
+    });
+
     if (res.ok) return await res.json() as PresenceRelease;
   } catch {
     // API unreachable

@@ -1,13 +1,13 @@
 "use client";
 
-import type { Platform } from "@/lib/data/platforms";
+import type { Presence } from "@/lib/data/presences";
 import type { FC, ReactElement } from "react";
 import { PlatformDetailContent } from "./platform-detail-content";
 import { PlatformDetailDialogs } from "./platform-detail-dialogs";
 import { usePlatformPresence } from "./use-platform-presence";
 
 type Props = {
-  platform: Platform
+  platform: Presence
 };
 
 export const PlatformDetailClient: FC<Props> = ({ platform }): ReactElement => {

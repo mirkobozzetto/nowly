@@ -1,10 +1,10 @@
 import { Card, CardTitle } from "@/components/l-ui/card";
-import type { Platform } from "@/lib/data/platforms";
+import type { Presence } from "@/lib/data/presences";
 import { useLocale, useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 
 type Props = {
-  platform: Platform;
+  platform: Presence;
 };
 
 type RawSetting = Record<string, unknown>;

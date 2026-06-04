@@ -1,4 +1,4 @@
-import { Platform } from "./data/platforms";
+import { Presence } from "./data/presences";
 
 export const API_BASE_URL = (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_BASE_URL) || "https://api.nowly.me";
 
@@ -8,7 +8,7 @@ export const PROJECT_PRESENCES_SOURCE_URL = `${PROJECT_REPOSITORY_URL}/tree/stab
 export const PROJECT_EXTENSION_DOWNLOAD_URL = `https://chromewebstore.google.com/detail/ipgpkagmbaieiijamcaoemdiljeojlnk/`;
 export const PROJECT_EXTENSION_FILENAME = "Nowly-Extension.zip";
 
-export const buildPresenceUrl = (platform: Platform): string => {
+export const buildPresenceUrl = (platform: Presence): string => {
   const firstChar = platform.slug.charAt(0);
   const prefix = /^[0-9]$/.test(firstChar) ? "#" : firstChar.toUpperCase();
   return `${PROJECT_PRESENCES_SOURCE_URL}/${prefix}/${platform.name}`;

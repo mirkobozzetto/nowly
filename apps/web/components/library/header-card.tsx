@@ -3,7 +3,7 @@
 import { Card } from "@/components/l-ui/card";
 import { ASSET_URL } from "@/lib/assets";
 import { getLocalizedLongDescription } from "@/lib/data/localized";
-import type { Platform } from "@/lib/data/platforms";
+import type { Presence } from "@/lib/data/presences";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 import { PlatformHeaderAbout } from "./platform-header-about";
@@ -11,7 +11,7 @@ import { PlatformHeaderActions } from "./platform-header-actions";
 import { PlatformHeaderInfo } from "./platform-header-info";
 
 type Props = {
-  platform: Platform
+  platform: Presence
   isInstalled: boolean
   isExtDetected: boolean
   locale: string

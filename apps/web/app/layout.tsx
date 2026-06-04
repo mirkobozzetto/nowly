@@ -1,6 +1,7 @@
 import { Toaster } from "@/components/l-ui/sonner";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
+import { Providers } from "@/providers/providers";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { NextIntlClientProvider } from "next-intl";
@@ -27,13 +28,15 @@ const Layout = async ({ children }: PropsWithChildren): Promise<ReactElement> =>
 
       <body className="font-sans antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <div className="flex min-h-screen flex-col">
-            <Navbar />
-            <main className="flex flex-1 flex-col">{children}</main>
-            <Footer />
-          </div>
+          <Providers>
+            <div className="flex min-h-screen flex-col">
+              <Navbar />
+              <main className="flex flex-1 flex-col">{children}</main>
+              <Footer />
+            </div>
 
-          <Toaster />
+            <Toaster />
+          </Providers>
         </NextIntlClientProvider>
 
         <Analytics />

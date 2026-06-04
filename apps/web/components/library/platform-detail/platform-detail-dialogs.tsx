@@ -11,13 +11,13 @@ import {
   DialogMedia,
   DialogTitle,
 } from "@/components/l-ui/dialog";
-import type { Platform } from "@/lib/data/platforms";
-import { TriangleAlert, Trash2 } from "lucide-react";
+import type { Presence } from "@/lib/data/presences";
+import { Trash2, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 
 type Props = {
-  platform: Platform
+  platform: Presence
   showUninstallConfirm: boolean
   setShowUninstallConfirm: (open: boolean) => void
   showDowngradeConfirm: boolean

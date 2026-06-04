@@ -9,8 +9,6 @@ import { fetchPresence, type PresenceRelease } from "./fetch-presence";
 
 const API_URL = PRESENCE_API_URL;
 
-export const dynamic = "force-dynamic";
-
 type Props = {
   params: Promise<{
     item: string
@@ -27,7 +25,7 @@ const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
   }
 
   const name = data.metadata?.name ?? item;
-  const title = `${name} Presence — Nowly`;
+  const title = `${name} — Nowly`;
   const description = `Install the ${name} presence for Nowly and automatically display what you're watching on ${name} in your Discord status.`;
 
   return {
@@ -68,4 +66,5 @@ const Page = async ({ params }: Props): Promise<ReactElement> => {
 };
 
 export { generateMetadata };
+
 export default Page;

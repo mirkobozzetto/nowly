@@ -2,11 +2,11 @@
 
 import { ASSET_URL } from "@/lib/assets";
 import { getLocalizedDescription } from "@/lib/data/localized";
-import type { Platform } from "@/lib/data/platforms";
+import type { Presence } from "@/lib/data/presences";
 import type { FC } from "react";
 
 type Props = {
-  platform: Platform
+  platform: Presence
   locale: string
   categoryLabel: string
 };

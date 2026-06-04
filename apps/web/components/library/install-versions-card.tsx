@@ -1,12 +1,12 @@
 "use client";
 
 import { Card, CardTitle } from "@/components/l-ui/card";
-import type { Platform } from "@/lib/data/platforms";
+import type { Presence } from "@/lib/data/presences";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 
 type Props = {
-  platform: Platform
+  platform: Presence
 };
 
 export const InstallVersionsCard: FC<Props> = ({
@@ -19,6 +19,7 @@ export const InstallVersionsCard: FC<Props> = ({
   return (
     <Card size="sm" className="bg-linear-to-b from-card to-surface">
       <CardTitle className="text-foreground normal-case tracking-normal">{t("installation")}</CardTitle>
+      
       <p className="text-sm text-muted-foreground leading-relaxed">{t("comingSoonDescription", { platform: platform.name })}</p>
     </Card>
   );

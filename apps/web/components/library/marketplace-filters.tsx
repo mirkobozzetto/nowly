@@ -1,6 +1,7 @@
 "use client";
 
-import { type PlatformCategory, categories } from "@/lib/data/platforms";
+import { CATEGORIES } from "@/lib/data/categories";
+import type { PresenceCategory } from "@/lib/data/presences";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import type { FC } from "react";
@@ -8,9 +9,9 @@ import type { FC } from "react";
 type SortOption = "name-asc" | "name-desc" | "popular" | "recent";
 
 type Props = {
-  selectedCategories: PlatformCategory[]
+  selectedCategories: PresenceCategory[]
   sortBy: SortOption
-  onToggleCategory: (category: PlatformCategory) => void
+  onToggleCategory: (category: PresenceCategory) => void
   onSortChange: (sort: SortOption) => void
 };
 
@@ -25,18 +26,18 @@ export const MarketplaceFilters: FC<Props> = ({
   return (
     <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
       <div className="flex flex-wrap gap-2">
-        {categories.map((category) => (
+        {CATEGORIES.map((category) => (
           <button
-            key={category.value}
-            onClick={() => onToggleCategory(category.value)}
+            key={category}
+            onClick={() => onToggleCategory(category)}
             className={cn(
               "px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
-              selectedCategories.includes(category.value)
+              selectedCategories.includes(category)
                 ? "bg-accent text-background"
                 : "bg-card border border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground",
             )}
           >
-            {t(`categories.${category.value}`)}
+            {t(`categories.${category}`)}
           </button>
         ))}
       </div>

@@ -2,13 +2,13 @@
 
 import { Card, CardTitle } from "@/components/l-ui/card";
 import { getLocalizedFeatures } from "@/lib/data/localized";
-import type { Platform } from "@/lib/data/platforms";
+import type { Presence } from "@/lib/data/presences";
 import { CheckCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 
 type Props = {
-  platform: Platform
+  platform: Presence
   locale: string
 };
 

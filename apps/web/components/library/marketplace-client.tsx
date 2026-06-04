@@ -1,35 +1,31 @@
 "use client";
 
 import { PageLayout } from "@/components/layout/page-layout";
-import { type Platform, type PlatformCategory } from "@/lib/data/platforms";
-import { API_BASE_URL } from "@/lib/constants";
-import { metadataToPlatform } from "@/lib/data/presence-adapter";
-import type { Metadata } from "@nowly/websites";
+import { MarketplaceGridSkeleton } from "@/components/library/marketplace-grid-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
+import { usePresences } from "@/hooks/use-presences";
+import { type PresenceCategory } from "@/lib/data/presences";
+import { AlertCircle, RefreshCcw } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { MarketplaceFilters } from "./marketplace-filters";
 import { MarketplaceGrid } from "./marketplace-grid";
 import { MarketplaceSearch } from "./marketplace-search";
 
 type SortOption = "name-asc" | "name-desc" | "popular" | "recent";
 
-const MarketplaceClient: FC = (): ReactElement => {
+export const MarketplaceClient: FC = (): ReactElement => {
   const locale = useLocale();
   const t = useTranslations("MarketplacePage");
+  const { data: platforms, isLoading, isError, refetch } = usePresences();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState<PlatformCategory[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<PresenceCategory[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>("popular");
-  const [platforms, setPlatforms] = useState<Platform[]>([]);
-
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/presences`)
-      .then((res) => res.json())
-      .then((metadata: Metadata[]) => setPlatforms(metadata.map(metadataToPlatform)))
-      .catch(() => {});
-  }, []);
 
   const filteredPlatforms = useMemo(() => {
+    if (!platforms) return [];
+
     let result = [...platforms];
 
     if (searchQuery) {
@@ -63,7 +59,7 @@ const MarketplaceClient: FC = (): ReactElement => {
     return result;
   }, [searchQuery, selectedCategories, sortBy, platforms]);
 
-  const toggleCategory = (category: PlatformCategory): void => {
+  const toggleCategory = (category: PresenceCategory): void => {
     setSelectedCategories((prev) =>
       prev.includes(category)
         ? prev.filter((c) => c !== category)
@@ -99,21 +95,41 @@ const MarketplaceClient: FC = (): ReactElement => {
           onSortChange={setSortBy}
         />
 
-        <p className="text-sm text-dim-foreground mb-6">
-          {t("results", { count: filteredPlatforms.length })}
-        </p>
+        <div className="text-sm text-dim-foreground mb-6">
+          {isLoading ? (
+            <Skeleton className="h-4 w-24 inline-block" />
+          ) : (
+            t("results", { count: filteredPlatforms.length })
+          )}
+        </div>
 
-        <MarketplaceGrid
-          platforms={filteredPlatforms}
-          locale={locale}
-          onReset={() => {
-            setSearchQuery("");
-            setSelectedCategories([]);
-          }}
-        />
+        {isLoading && <MarketplaceGridSkeleton />}
+
+        {isError && (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <AlertCircle className="w-10 h-10 text-destructive mb-4" />
+            <p className="text-muted-foreground mb-4">Failed to load platforms</p>
+            <button
+              onClick={() => refetch()}
+              className="inline-flex items-center gap-2 text-sm text-accent hover:underline"
+            >
+              <RefreshCcw className="w-4 h-4" />
+              Try again
+            </button>
+          </div>
+        )}
+
+        {!isLoading && !isError && (
+          <MarketplaceGrid
+            platforms={filteredPlatforms}
+            locale={locale}
+            onReset={() => {
+              setSearchQuery("");
+              setSelectedCategories([]);
+            }}
+          />
+        )}
       </div>
     </PageLayout>
   );
 };
-
-export { MarketplaceClient };

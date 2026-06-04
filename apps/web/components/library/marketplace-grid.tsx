@@ -1,12 +1,12 @@
 "use client";
 
 import { PlatformCard } from "@/components/library/platform-card";
-import type { Platform } from "@/lib/data/platforms";
+import type { Presence } from "@/lib/data/presences";
 import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
 type Props = {
-  platforms: Platform[]
+  platforms: Presence[]
   locale: string
   onReset: () => void
 };

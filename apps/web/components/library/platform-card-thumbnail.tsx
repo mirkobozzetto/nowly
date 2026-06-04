@@ -6,9 +6,10 @@ import { useState } from "react";
 
 type Props = {
   slug: string
+  categoryLabel?: string
 };
 
-export const PlatformCardThumbnail: FC<Props> = ({ slug }) => {
+export const PlatformCardThumbnail: FC<Props> = ({ slug, categoryLabel }) => {
   const [hasError, setHasError] = useState(false);
 
   if (hasError) return null;
@@ -22,6 +23,12 @@ export const PlatformCardThumbnail: FC<Props> = ({ slug }) => {
         loading="lazy"
         onError={() => setHasError(true)}
       />
+      {categoryLabel && (
+        <span className="absolute top-2 right-2 z-10 px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-widest bg-card-2 text-muted-foreground">
+          {categoryLabel}
+        </span>
+      )}
+
       <div
         className="absolute inset-0"
         style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 25%)" }}

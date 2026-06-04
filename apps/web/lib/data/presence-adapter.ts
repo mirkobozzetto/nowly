@@ -1,17 +1,23 @@
 import type { Metadata } from "@nowly/websites/types";
-import type { Platform, PlatformCategory, Contributor } from "./platforms";
+import type { Contributor, Presence, PresenceCategory } from "./presences";
 
-function toContributor(c: { name: string; github?: string }): Contributor {
+type ContributorInput = {
+  name: string;
+  github?: string;
+  avatar?: string;
+};
+
+const toContributor = (c: ContributorInput): Contributor => {
   return {
     name: c.name,
     github: c.github,
     avatar: c.github ? `https://github.com/${c.github}.png` : undefined,
   };
-}
+};
 
 const FALLBACK_LOCALE = "en-US";
 
-export function metadataToPlatform(m: Metadata): Platform {
+export const metadataToPlatform = (m: Metadata): Presence => {
   const slug = m.slug ?? m.name.toLowerCase().replace(/\s+/g, "-");
   const desc = m.description?.[FALLBACK_LOCALE] ?? "";
   return {
@@ -22,7 +28,7 @@ export function metadataToPlatform(m: Metadata): Platform {
     longDescription: m.longDescription?.[FALLBACK_LOCALE] ?? desc,
     icon: slug,
     iconColor: m.color,
-    category: m.category as PlatformCategory,
+    category: m.category as PresenceCategory,
     status: "available",
     version: m.version ?? null,
     activeUsers: 0,
@@ -43,4 +49,4 @@ export function metadataToPlatform(m: Metadata): Platform {
       features: m.features,
     },
   };
-}
+};

@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { Contributor } from "@/lib/data/platforms";
+import type { Contributor } from "@/lib/data/presences";
 import type { FC, ReactElement } from "react";
 
 type Props = {

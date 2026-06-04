@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "@/lib/constants";
-import type { Platform } from "@/lib/data/platforms";
+import type { Presence } from "@/lib/data/presences";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -26,7 +26,7 @@ type UsePlatformPresenceReturn = {
   setShowDowngradeConfirm: (open: boolean) => void
 };
 
-export const usePlatformPresence = (platform: Platform): UsePlatformPresenceReturn => {
+export const usePlatformPresence = (platform: Presence): UsePlatformPresenceReturn => {
   const t = useTranslations("MarketplaceDetail");
 
   const [isInstalled, setIsInstalled] = useState(false);

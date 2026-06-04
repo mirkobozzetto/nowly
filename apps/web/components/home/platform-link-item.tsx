@@ -1,10 +1,10 @@
 import { ASSET_URL } from "@/lib/assets";
-import type { Platform } from "@/lib/data/platforms";
+import type { Presence } from "@/lib/data/presences";
 import Link from "next/link";
 import type { FC } from "react";
 
 type Props = {
-  platform: Platform
+  platform: Presence
 };
 
 export const PlatformLinkItem: FC<Props> = ({ platform }) => (

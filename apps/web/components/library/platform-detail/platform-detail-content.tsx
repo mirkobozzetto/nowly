@@ -1,7 +1,7 @@
 "use client";
 
 import { PageLayout } from "@/components/layout/page-layout";
-import type { Platform } from "@/lib/data/platforms";
+import type { Presence } from "@/lib/data/presences";
 import { ChevronRight } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
@@ -15,7 +15,7 @@ import { StatsCard } from "../stats-card";
 import { SupportedUrlsCard } from "../supported-urls-card";
 
 type Props = {
-  platform: Platform
+  platform: Presence
   isInstalled: boolean
   extDetected: boolean
   needsUpdate: boolean
