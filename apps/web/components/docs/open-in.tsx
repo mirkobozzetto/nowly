@@ -23,7 +23,7 @@ export const OpenIn: FC<OpenInProps> = ({ slug, locale }) => {
   const services = [
     { name: "GitHub", url: githubUrl, icon: <GitHubIcon className="size-4" /> },
     { name: "ChatGPT", url: `https://chatgpt.com/?q=${encodeURIComponent(buildSearchUrl(markdownUrl))}`, icon: <OpenAIIcon className="size-4" /> },
-    { name: "Claude", url: `https://claude.ai/new?q=${encodeURIComponent(buildSearchUrl(markdownUrl))}`, icon: <ClaudeIcon className="size-4" /> },
+    { name: "Claude", url: `https://claude.ai/new?q=${encodeURIComponent(buildSearchUrl(markdownUrl))}`, icon: <ClaudeIcon /> },
   ];
 
   const openInService = (url: string) => window.open(url, "_blank", "noopener,noreferrer");
