@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { EXT_SOURCE, fireAndForget, nextId } from "./utils";
 
-type UsePlatformPresenceReturn = {
+type UsePresenceStatusReturn = {
   isInstalled: boolean
   installedVersion: string | null
   loading: boolean
@@ -26,14 +26,14 @@ type UsePlatformPresenceReturn = {
   setShowDowngradeConfirm: (open: boolean) => void
 };
 
-export const usePlatformPresence = (platform: Presence): UsePlatformPresenceReturn => {
+export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn => {
   const t = useTranslations("MarketplaceDetail");
 
   const [isInstalled, setIsInstalled] = useState(false);
   const [installedVersion, setInstalledVersion] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [extDetected, setExtDetected] = useState(false);
-  const [totalInstalls, setTotalInstalls] = useState(platform.totalInstalls);
+  const [totalInstalls, setTotalInstalls] = useState(presence.totalInstalls);
   const [savedRating, setSavedRating] = useState(0);
   const [deviceId, setDeviceId] = useState<string | null>(null);
 
@@ -42,8 +42,8 @@ export const usePlatformPresence = (platform: Presence): UsePlatformPresenceRetu
   const [showDowngradeConfirm, setShowDowngradeConfirm] = useState(false);
 
   const needsUpdate = useMemo(() => {
-    return extDetected && isInstalled && installedVersion !== null && installedVersion !== platform.version;
-  }, [extDetected, installedVersion, isInstalled, platform.version]);
+    return extDetected && isInstalled && installedVersion !== null && installedVersion !== presence.version;
+  }, [extDetected, installedVersion, isInstalled, presence.version]);
 
   useEffect(() => {
     let gotInstalledResponse = false;
@@ -81,8 +81,8 @@ export const usePlatformPresence = (platform: Presence): UsePlatformPresenceRetu
       if (msg.source === EXT_SOURCE && msg.type === "USER_RATINGS") {
         const payload = msg.payload as { ratings?: Record<string, number>; deviceId?: string } | undefined;
 
-        if (payload?.ratings?.[platform.slug]) {
-          setSavedRating(payload.ratings[platform.slug]);
+        if (payload?.ratings?.[presence.slug]) {
+          setSavedRating(payload.ratings[presence.slug]);
         }
 
         if (payload?.deviceId) {
@@ -91,7 +91,7 @@ export const usePlatformPresence = (platform: Presence): UsePlatformPresenceRetu
       }
 
       if (msg.source === EXT_SOURCE && msg.type === "INSTALLED_PRESENCES") {
-        const installed = msg.payload?.[platform.slug];
+        const installed = msg.payload?.[presence.slug];
 
         gotInstalledResponse = true;
         stopPing();
@@ -105,12 +105,12 @@ export const usePlatformPresence = (platform: Presence): UsePlatformPresenceRetu
       if (msg.source === EXT_SOURCE && msg.type === "INSTALL_PRESENCE_RESULT") {
         if (msg.payload?.ok) {
           setIsInstalled(true);
-          toast.success(t("installSuccess", { platform: platform.name }));
+          toast.success(t("installSuccess", { platform: presence.name }));
         } else {
           setIsInstalled(false);
           setInstalledVersion(null);
           setLoading(false);
-          toast.error(t("installError", { platform: platform.name }));
+          toast.error(t("installError", { platform: presence.name }));
         }
       }
 
@@ -118,7 +118,7 @@ export const usePlatformPresence = (platform: Presence): UsePlatformPresenceRetu
         if (msg.payload?.ok) {
           setIsInstalled(false);
           setInstalledVersion(null);
-          toast.success(t("uninstallSuccess", { platform: platform.name }));
+          toast.success(t("uninstallSuccess", { platform: presence.name }));
         }
       }
     };
@@ -129,7 +129,7 @@ export const usePlatformPresence = (platform: Presence): UsePlatformPresenceRetu
       window.removeEventListener("message", handler);
       stopPing();
     };
-  }, [platform.name, platform.slug, t]);
+  }, [presence.name, presence.slug, t]);
 
   const handleInstall = useCallback(async (): Promise<void> => {
     if (!extDetected) {
@@ -142,12 +142,12 @@ export const usePlatformPresence = (platform: Presence): UsePlatformPresenceRetu
 
     try {
       const release = await fetch(
-        `${API_BASE_URL}/presences/${platform.slug}?v=${encodeURIComponent(platform.version ?? "dev")}`,
+        `${API_BASE_URL}/presences/${presence.slug}?v=${encodeURIComponent(presence.version ?? "dev")}`,
         { cache: "no-store" },
       ).then((response) => response.json());
 
       if (!isInstalled) {
-        fireAndForget(`${API_BASE_URL}/presences/${platform.slug}/installs`, { method: "POST" });
+        fireAndForget(`${API_BASE_URL}/presences/${presence.slug}/installs`, { method: "POST" });
         setTotalInstalls((current) => current + 1);
       }
 
@@ -157,7 +157,7 @@ export const usePlatformPresence = (platform: Presence): UsePlatformPresenceRetu
           type: needsUpdate ? "UPDATE_PRESENCE" : "INSTALL_PRESENCE",
           messageId: nextId(),
           payload: {
-            slug: platform.slug,
+            slug: presence.slug,
             release,
           },
         },
@@ -167,11 +167,11 @@ export const usePlatformPresence = (platform: Presence): UsePlatformPresenceRetu
       setIsInstalled(true);
       setInstalledVersion(release.version ?? null);
     } catch {
-      toast.error(t("installError", { platform: platform.name }));
+      toast.error(t("installError", { platform: presence.name }));
     } finally {
       setLoading(false);
     }
-  }, [extDetected, isInstalled, needsUpdate, platform.name, platform.slug, platform.version, t]);
+  }, [extDetected, isInstalled, needsUpdate, presence.name, presence.slug, presence.version, t]);
 
   const handleUninstallRequest = useCallback((): void => {
     setShowUninstallConfirm(true);
@@ -187,16 +187,16 @@ export const usePlatformPresence = (platform: Presence): UsePlatformPresenceRetu
         source: EXT_SOURCE,
         type: "UNINSTALL_PRESENCE",
         messageId: nextId(),
-        payload: { slug: platform.slug },
+        payload: { slug: presence.slug },
       },
       "*",
     );
-  }, [platform.slug]);
+  }, [presence.slug]);
 
   const installVersion = useCallback(async (version: string): Promise<void> => {
     try {
       const release = await fetch(
-        `${API_BASE_URL}/presences/${platform.slug}/versions/${encodeURIComponent(version)}`,
+        `${API_BASE_URL}/presences/${presence.slug}/versions/${encodeURIComponent(version)}`,
         { cache: "no-store" },
       ).then((response) => {
         if (!response.ok) {
@@ -212,7 +212,7 @@ export const usePlatformPresence = (platform: Presence): UsePlatformPresenceRetu
           type: "INSTALL_PRESENCE",
           messageId: nextId(),
           payload: {
-            slug: platform.slug,
+            slug: presence.slug,
             release,
           },
         },
@@ -221,11 +221,11 @@ export const usePlatformPresence = (platform: Presence): UsePlatformPresenceRetu
 
       setIsInstalled(true);
       setInstalledVersion(release.version ?? null);
-      toast.success(t("versionChanged", { platform: platform.name, version }));
+      toast.success(t("versionChanged", { platform: presence.name, version }));
     } catch {
-      toast.error(t("versionChangeError", { platform: platform.name, version }));
+      toast.error(t("versionChangeError", { platform: presence.name, version }));
     }
-  }, [platform.name, platform.slug, t]);
+  }, [presence.name, presence.slug, t]);
 
   const confirmDowngrade = useCallback((): void => {
     if (!pendingVersion) {

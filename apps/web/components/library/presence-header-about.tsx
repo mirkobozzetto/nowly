@@ -6,7 +6,7 @@ type Props = {
   description: string
 };
 
-export const PlatformHeaderAbout: FC<Props> = ({ description }) => {
+export const PresenceHeaderAbout: FC<Props> = ({ description }) => {
   const t = useTranslations("MarketplaceDetail");
 
   return (

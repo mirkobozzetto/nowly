@@ -1,6 +1,6 @@
 import { CtaSection } from "@/components/home/cta-section";
 import { HeroSection } from "@/components/home/hero-section";
-import { PlatformsSection } from "@/components/home/platforms-section";
+import { PresencesSection } from "@/components/home/presences-section";
 import { StepsSection } from "@/components/home/steps-section";
 import type { Metadata } from "next";
 import type { FC, ReactElement } from "react";
@@ -24,7 +24,7 @@ const Page: FC = (): ReactElement => {
   return (
     <main>
       <HeroSection />
-      <PlatformsSection />
+      <PresencesSection />
       <StepsSection />
       <CtaSection />
     </main>

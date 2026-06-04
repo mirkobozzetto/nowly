@@ -18,15 +18,15 @@ type SortOption = "name-asc" | "name-desc" | "popular" | "recent";
 export const MarketplaceClient: FC = (): ReactElement => {
   const locale = useLocale();
   const t = useTranslations("MarketplacePage");
-  const { data: platforms, isLoading, isError, refetch } = usePresences();
+  const { data: presences, isLoading, isError, refetch } = usePresences();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<PresenceCategory[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>("popular");
 
-  const filteredPlatforms = useMemo(() => {
-    if (!platforms) return [];
+  const filteredPresences = useMemo(() => {
+    if (!presences) return [];
 
-    let result = [...platforms];
+    let result = [...presences];
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
@@ -57,7 +57,7 @@ export const MarketplaceClient: FC = (): ReactElement => {
     }
 
     return result;
-  }, [searchQuery, selectedCategories, sortBy, platforms]);
+  }, [searchQuery, selectedCategories, sortBy, presences]);
 
   const toggleCategory = (category: PresenceCategory): void => {
     setSelectedCategories((prev) =>
@@ -99,7 +99,7 @@ export const MarketplaceClient: FC = (): ReactElement => {
           {isLoading ? (
             <Skeleton className="h-4 w-24 inline-block" />
           ) : (
-            t("results", { count: filteredPlatforms.length })
+            t("results", { count: filteredPresences.length })
           )}
         </div>
 
@@ -121,7 +121,7 @@ export const MarketplaceClient: FC = (): ReactElement => {
 
         {!isLoading && !isError && (
           <MarketplaceGrid
-            platforms={filteredPlatforms}
+            platforms={filteredPresences}
             locale={locale}
             onReset={() => {
               setSearchQuery("");

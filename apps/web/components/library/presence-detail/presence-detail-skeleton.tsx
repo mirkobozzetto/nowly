@@ -2,7 +2,7 @@ import { PageLayout } from "@/components/layout/page-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { FC } from "react";
 
-export const PlatformDetailSkeleton: FC = () => {
+export const PresenceDetailSkeleton: FC = () => {
   return (
     <PageLayout>
       <div className="mx-auto max-w-300 px-6">

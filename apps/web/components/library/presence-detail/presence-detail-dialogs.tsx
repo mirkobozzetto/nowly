@@ -1,23 +1,13 @@
 "use client";
 
-import {
-  Dialog,
-  DialogAction,
-  DialogCancel,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogMedia,
-  DialogTitle,
-} from "@/components/l-ui/dialog";
+import { Dialog, DialogAction, DialogCancel, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogMedia, DialogTitle } from "@/components/l-ui/dialog";
 import type { Presence } from "@/lib/data/presences";
 import { Trash2, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 
 type Props = {
-  platform: Presence
+  presence: Presence
   showUninstallConfirm: boolean
   setShowUninstallConfirm: (open: boolean) => void
   showDowngradeConfirm: boolean
@@ -26,8 +16,8 @@ type Props = {
   onConfirmDowngrade: () => void
 };
 
-export const PlatformDetailDialogs: FC<Props> = ({
-  platform,
+export const PresenceDetailDialogs: FC<Props> = ({
+  presence,
   showUninstallConfirm,
   setShowUninstallConfirm,
   showDowngradeConfirm,
@@ -49,7 +39,7 @@ export const PlatformDetailDialogs: FC<Props> = ({
             <DialogTitle>{t("uninstallConfirmTitle")}</DialogTitle>
 
             <DialogDescription>
-              {t("uninstallConfirmDescription", { platform: platform.name })}
+              {t("uninstallConfirmDescription", { platform: presence.name })}
             </DialogDescription>
           </DialogHeader>
 
@@ -73,7 +63,7 @@ export const PlatformDetailDialogs: FC<Props> = ({
             <DialogTitle>{t("downgradeConfirmTitle")}</DialogTitle>
 
             <DialogDescription>
-              {t("downgradeConfirmDescription", { platform: platform.name })}
+              {t("downgradeConfirmDescription", { platform: presence.name })}
             </DialogDescription>
           </DialogHeader>
 

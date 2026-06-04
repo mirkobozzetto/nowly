@@ -9,7 +9,7 @@ type Props = {
   categoryLabel?: string
 };
 
-export const PlatformCardThumbnail: FC<Props> = ({ slug, categoryLabel }) => {
+export const PresenceCardThumbnail: FC<Props> = ({ slug, categoryLabel }) => {
   const [hasError, setHasError] = useState(false);
 
   if (hasError) return null;

@@ -8,47 +8,47 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
 import { useCallback } from "react";
-import { PlatformCardBody } from "./platform-card-body";
-import { PlatformCardStats } from "./platform-card-stats";
-import { PlatformCardThumbnail } from "./platform-card-thumbnail";
+import { PresenceCardBody } from "./presence-card-body";
+import { PresenceCardStats } from "./presence-card-stats";
+import { PresenceCardThumbnail } from "./presence-card-thumbnail";
 
 type Props = {
-  platform: Presence
+  presence: Presence
   locale: string
 };
 
-export const PlatformCard: FC<Props> = ({ platform, locale }): ReactElement => {
+export const PresenceCard: FC<Props> = ({ presence, locale }): ReactElement => {
   const t = useTranslations("MarketplacePage");
   const queryClient = useQueryClient();
-  const categoryLabel = t(`categories.${platform.category}`);
+  const categoryLabel = t(`categories.${presence.category}`);
 
   const handleMouseEnter = useCallback(() => {
-    if (platform.status === "soon") return;
+    if (presence.status === "soon") return;
 
     queryClient.prefetchQuery({
-      queryKey: presenceKey(platform.slug),
-      queryFn: () => fetchPresence(platform.slug),
+      queryKey: presenceKey(presence.slug),
+      queryFn: () => fetchPresence(presence.slug),
       staleTime: 5 * 60 * 1000,
     });
-  }, [platform.slug, platform.status, queryClient]);
+  }, [presence.slug, presence.status, queryClient]);
 
   return (
     <Link
-      href={`/library/${platform.slug}`}
+      href={`/library/${presence.slug}`}
       onMouseEnter={handleMouseEnter}
       className={cn(
         "group bg-card border rounded-lg transition-colors hover:bg-card-hover overflow-hidden",
-        platform.status === "soon"
+        presence.status === "soon"
           ? "border-dashed border-border opacity-70 hover:opacity-100"
           : "border-border hover:border-muted-foreground",
       )}
     >
-      <PlatformCardThumbnail slug={platform.slug} categoryLabel={categoryLabel} />
+      <PresenceCardThumbnail slug={presence.slug} categoryLabel={categoryLabel} />
 
       <div className="p-5">
-        <PlatformCardBody platform={platform} locale={locale} />
+        <PresenceCardBody presence={presence} locale={locale} />
 
-        <PlatformCardStats platform={platform} />
+        <PresenceCardStats presence={presence} />
       </div>
     </Link>
   );

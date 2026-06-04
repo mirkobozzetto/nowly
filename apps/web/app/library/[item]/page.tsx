@@ -1,4 +1,4 @@
-import { PlatformDetailClient } from "@/components/library/platform-detail/platform-detail-client";
+import { PresenceDetailClient } from "@/components/library/presence-detail/presence-detail-client";
 import { metadataToPlatform } from "@/lib/data/presence-adapter";
 import { PRESENCE_API_URL } from "@/lib/env";
 import { presenceApi } from "@/lib/presence-api";
@@ -46,20 +46,20 @@ const Page = async ({ params }: Props): Promise<ReactElement> => {
     notFound();
   }
 
-  const platform = metadataToPlatform(data.metadata);
+  const presence = metadataToPlatform(data.metadata);
 
   return (
-    <PlatformDetailClient
-      platform={{
-        ...platform,
+    <PresenceDetailClient
+      presence={{
+        ...presence,
         totalInstalls: data.totalInstalls ?? 0,
         activeUsers: data.activeUsers ?? 0,
         rating: data.rating ?? 0,
         ratingCount: data.ratingCount ?? 0,
         ratingDistribution: data.ratingDistribution ?? {},
-        version: data.version ?? platform.version,
-        addedAt: data.addedAt ?? platform.addedAt,
-        lastUpdated: data.lastUpdated ?? platform.lastUpdated,
+        version: data.version ?? presence.version,
+        addedAt: data.addedAt ?? presence.addedAt,
+        lastUpdated: data.lastUpdated ?? presence.lastUpdated,
       }}
     />
   );

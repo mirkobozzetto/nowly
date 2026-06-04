@@ -1,8 +1,8 @@
-import { PlatformDetailSkeleton } from "@/components/library/platform-detail/platform-detail-skeleton";
+import { PresenceDetailSkeleton } from "@/components/library/presence-detail/presence-detail-skeleton";
 import type { FC } from "react";
 
 const Loading: FC = () => {
-  return <PlatformDetailSkeleton />;
+  return <PresenceDetailSkeleton />;
 };
 
 export default Loading;

@@ -15,7 +15,7 @@ import { StatsCard } from "../stats-card";
 import { SupportedUrlsCard } from "../supported-urls-card";
 
 type Props = {
-  platform: Presence
+  presence: Presence
   isInstalled: boolean
   extDetected: boolean
   needsUpdate: boolean
@@ -27,8 +27,8 @@ type Props = {
   onUninstall: () => void
 };
 
-export const PlatformDetailContent: FC<Props> = ({
-  platform,
+export const PresenceDetailContent: FC<Props> = ({
+  presence,
   isInstalled,
   extDetected,
   needsUpdate,
@@ -52,13 +52,13 @@ export const PlatformDetailContent: FC<Props> = ({
 
           <ChevronRight className="h-4 w-4" />
 
-          <span className="text-foreground">{platform.name}</span>
+          <span className="text-foreground">{presence.name}</span>
         </nav>
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.85fr)]">
           <div className="space-y-4">
             <HeaderCard
-              platform={platform}
+              presence={presence}
               isInstalled={isInstalled}
               isExtDetected={extDetected}
               locale={locale}
@@ -68,24 +68,24 @@ export const PlatformDetailContent: FC<Props> = ({
               onUninstall={onUninstall}
             />
 
-            <SupportedUrlsCard urls={platform.supportedUrls} />
-            <FeaturesCard platform={platform} locale={locale} />
+            <SupportedUrlsCard urls={presence.supportedUrls} />
+            <FeaturesCard platform={presence} locale={locale} />
           </div>
 
           <div className="space-y-4">
-            <DevelopmentCard platform={platform} />
-            <SettingsCard platform={platform} />
+            <DevelopmentCard platform={presence} />
+            <SettingsCard platform={presence} />
 
             <StatsCard
-              platform={{ ...platform, totalInstalls }}
+              platform={{ ...presence, totalInstalls }}
               locale={locale}
-              slug={platform.slug}
+              slug={presence.slug}
               canRate={extDetected && isInstalled}
               savedRating={savedRating}
               deviceId={deviceId}
             />
 
-            <InstallVersionsCard platform={platform} />
+            <InstallVersionsCard platform={presence} />
           </div>
         </div>
       </div>

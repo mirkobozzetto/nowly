@@ -1,6 +1,6 @@
 "use client";
 
-import { PlatformCard } from "@/components/library/platform-card";
+import { PresenceCard } from "@/components/library/presence-card";
 import type { Presence } from "@/lib/data/presences";
 import { useTranslations } from "next-intl";
 import type { FC } from "react";
@@ -27,8 +27,8 @@ export const MarketplaceGrid: FC<Props> = ({ platforms, locale, onReset }) => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {platforms.map((platform) => (
-        <PlatformCard key={platform.id} platform={platform} locale={locale} />
+      {platforms.map((presence) => (
+        <PresenceCard key={presence.id} presence={presence} locale={locale} />
       ))}
     </div>
   );

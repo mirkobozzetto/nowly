@@ -15,7 +15,7 @@ type Props = {
   onUninstall: () => void
 };
 
-export const PlatformHeaderActions: FC<Props> = ({
+export const PresenceHeaderActions: FC<Props> = ({
   isInstalled,
   isExtDetected,
   needsUpdate,

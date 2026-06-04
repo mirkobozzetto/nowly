@@ -6,10 +6,10 @@ import { useTranslations } from "next-intl";
 import type { FC } from "react";
 
 type Props = {
-  platform: Presence
+  presence: Presence
 };
 
-export const PlatformComingSoonItem: FC<Props> = ({ platform }) => {
+export const PresenceComingSoonItem: FC<Props> = ({ presence }) => {
   const t = useTranslations("PlatformsSection");
 
   return (
@@ -19,13 +19,13 @@ export const PlatformComingSoonItem: FC<Props> = ({ platform }) => {
       </span>
       <div className="w-9 h-9 mx-auto mb-3 flex items-center justify-center">
         <img
-          src={ASSET_URL(platform.slug, "icon")}
-          alt={platform.name}
+          src={ASSET_URL(presence.slug, "icon")}
+          alt={presence.name}
           className="w-full h-full object-contain"
           loading="lazy"
         />
       </div>
-      <span className="font-semibold text-sm text-foreground">{platform.name}</span>
+      <span className="font-semibold text-sm text-foreground">{presence.name}</span>
     </div>
   );
 };

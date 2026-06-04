@@ -6,12 +6,12 @@ import { getLocalizedLongDescription } from "@/lib/data/localized";
 import type { Presence } from "@/lib/data/presences";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
-import { PlatformHeaderAbout } from "./platform-header-about";
-import { PlatformHeaderActions } from "./platform-header-actions";
-import { PlatformHeaderInfo } from "./platform-header-info";
+import { PresenceHeaderAbout } from "./presence-header-about";
+import { PresenceHeaderActions } from "./presence-header-actions";
+import { PresenceHeaderInfo } from "./presence-header-info";
 
 type Props = {
-  platform: Presence
+  presence: Presence
   isInstalled: boolean
   isExtDetected: boolean
   locale: string
@@ -21,19 +21,19 @@ type Props = {
   onUninstall: () => void
 };
 
-export const HeaderCard: FC<Props> = ({ platform, isInstalled, isExtDetected, locale, needsUpdate, loading, onInstall, onUninstall }): ReactElement => {
+export const HeaderCard: FC<Props> = ({ presence, isInstalled, isExtDetected, locale, needsUpdate, loading, onInstall, onUninstall }): ReactElement => {
   const tCategories = useTranslations("MarketplacePage");
-  const categoryLabel = tCategories(`categories.${platform.category}`);
+  const categoryLabel = tCategories(`categories.${presence.category}`);
 
   return (
-    <Card bannerUrl={ASSET_URL(platform.slug, "thumbnail")}>
-      <PlatformHeaderInfo
-        platform={platform}
+    <Card bannerUrl={ASSET_URL(presence.slug, "thumbnail")}>
+      <PresenceHeaderInfo
+        presence={presence}
         locale={locale}
         categoryLabel={categoryLabel}
       />
 
-      <PlatformHeaderActions
+      <PresenceHeaderActions
         isInstalled={isInstalled}
         isExtDetected={isExtDetected}
         needsUpdate={needsUpdate}
@@ -42,8 +42,8 @@ export const HeaderCard: FC<Props> = ({ platform, isInstalled, isExtDetected, lo
         onUninstall={onUninstall}
       />
 
-      <PlatformHeaderAbout
-        description={getLocalizedLongDescription(platform, locale)}
+      <PresenceHeaderAbout
+        description={getLocalizedLongDescription(presence, locale)}
       />
     </Card>
   );
