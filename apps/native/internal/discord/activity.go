@@ -1,10 +1,6 @@
 package discord
 
-import (
-	"strings"
-
-	"nowly.client/native/internal/contract"
-)
+import "nowly.client/native/internal/contract"
 
 type Activity struct {
 	Name       string      `json:"name,omitempty"`
@@ -33,16 +29,6 @@ type Button struct {
 	URL   string `json:"url"`
 }
 
-func discordImageKey(value string) string {
-	if strings.HasPrefix(value, "mp:external/") {
-		return value
-	}
-	if strings.HasPrefix(value, "https://") || strings.HasPrefix(value, "http://") {
-		return "mp:external/" + value
-	}
-	return value
-}
-
 func ActivityFromPresence(p contract.PresencePayload) Activity {
 	activity := Activity{
 		Name:    p.Name,
@@ -65,13 +51,13 @@ func ActivityFromPresence(p contract.PresencePayload) Activity {
 	if p.LargeImage != "" || p.LargeText != "" || p.SmallImage != "" || p.SmallText != "" {
 		assets := &Assets{}
 		if p.LargeImage != "" {
-			assets.LargeImage = discordImageKey(p.LargeImage)
+			assets.LargeImage = p.LargeImage
 		}
 		if p.LargeText != "" {
 			assets.LargeText = p.LargeText
 		}
 		if p.SmallImage != "" {
-			assets.SmallImage = discordImageKey(p.SmallImage)
+			assets.SmallImage = p.SmallImage
 		}
 		if p.SmallText != "" {
 			assets.SmallText = p.SmallText

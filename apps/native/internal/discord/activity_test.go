@@ -55,25 +55,4 @@ func TestActivityFromPresenceSkipsEmptyButtons(t *testing.T) {
 	}
 }
 
-func TestDiscordImageKeyPreservesAssetKey(t *testing.T) {
-	result := discordImageKey("youtube")
-	if result != "youtube" {
-		t.Fatalf("expected 'youtube', got %q", result)
-	}
-}
 
-func TestDiscordImageKeyPrefixesExternalUrl(t *testing.T) {
-	result := discordImageKey("https://cdn.nowly.me/presences/youtube/assets/logo.png")
-	expected := "mp:external/https://cdn.nowly.me/presences/youtube/assets/logo.png"
-	if result != expected {
-		t.Fatalf("expected %q, got %q", expected, result)
-	}
-}
-
-func TestDiscordImageKeySkipsAlreadyPrefixed(t *testing.T) {
-	result := discordImageKey("mp:external/https://cdn.nowly.me/presences/youtube/assets/logo.png")
-	expected := "mp:external/https://cdn.nowly.me/presences/youtube/assets/logo.png"
-	if result != expected {
-		t.Fatalf("expected %q, got %q", expected, result)
-	}
-}
