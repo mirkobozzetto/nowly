@@ -1,6 +1,10 @@
 package discord
 
-import "nowly.client/native/internal/contract"
+import (
+	"strings"
+
+	"nowly.client/native/internal/contract"
+)
 
 type Activity struct {
 	Name       string      `json:"name,omitempty"`
@@ -9,6 +13,7 @@ type Activity struct {
 	State      string      `json:"state,omitempty"`
 	Timestamps *Timestamps `json:"timestamps,omitempty"`
 	Assets     *Assets     `json:"assets,omitempty"`
+	Buttons    []Button    `json:"buttons,omitempty"`
 }
 
 type Timestamps struct {
@@ -21,6 +26,21 @@ type Assets struct {
 	LargeText  string `json:"large_text,omitempty"`
 	SmallImage string `json:"small_image,omitempty"`
 	SmallText  string `json:"small_text,omitempty"`
+}
+
+type Button struct {
+	Label string `json:"label"`
+	URL   string `json:"url"`
+}
+
+func discordImageKey(value string) string {
+	if strings.HasPrefix(value, "mp:external/") {
+		return value
+	}
+	if strings.HasPrefix(value, "https://") || strings.HasPrefix(value, "http://") {
+		return "mp:external/" + value
+	}
+	return value
 }
 
 func ActivityFromPresence(p contract.PresencePayload) Activity {
@@ -45,18 +65,28 @@ func ActivityFromPresence(p contract.PresencePayload) Activity {
 	if p.LargeImage != "" || p.LargeText != "" || p.SmallImage != "" || p.SmallText != "" {
 		assets := &Assets{}
 		if p.LargeImage != "" {
-			assets.LargeImage = p.LargeImage
+			assets.LargeImage = discordImageKey(p.LargeImage)
 		}
 		if p.LargeText != "" {
 			assets.LargeText = p.LargeText
 		}
 		if p.SmallImage != "" {
-			assets.SmallImage = p.SmallImage
+			assets.SmallImage = discordImageKey(p.SmallImage)
 		}
 		if p.SmallText != "" {
 			assets.SmallText = p.SmallText
 		}
 		activity.Assets = assets
+	}
+
+	if len(p.Buttons) > 0 {
+		buttons := make([]Button, 0, len(p.Buttons))
+		for _, b := range p.Buttons {
+			if b.Label != "" && b.URL != "" {
+				buttons = append(buttons, Button{Label: b.Label, URL: b.URL})
+			}
+		}
+		activity.Buttons = buttons
 	}
 
 	return activity

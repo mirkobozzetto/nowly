@@ -76,7 +76,12 @@ const uploadFiles = async (slug: string, prefix: string): Promise<string[]> => {
   const uploaded: string[] = []
   const client = getClient()
 
+  const skipFiles = new Set(["settings.json"])
+
   for (const filePath of files) {
+    const fileName = filePath.split(/[\\/]/).pop() ?? ""
+    if (skipFiles.has(fileName)) continue
+
     const relativePath = relative(presenceDir, filePath).replace(/\\/g, "/")
     const key = join(prefix, relativePath).replace(/\\/g, "/")
     const contentType = getContentType(filePath)

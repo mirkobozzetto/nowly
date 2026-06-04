@@ -31,17 +31,23 @@ type NativeMessage struct {
 	Presence *PresencePayload `json:"presence,omitempty"`
 }
 
+type PresenceButton struct {
+	Label string `json:"label"`
+	URL   string `json:"url"`
+}
+
 type PresencePayload struct {
-	Name       string `json:"name,omitempty"`
-	Details    string `json:"details,omitempty"`
-	State      string `json:"state,omitempty"`
-	StartTime  int64  `json:"startTime,omitempty"`
-	EndTime    int64  `json:"endTime,omitempty"`
-	LargeImage string `json:"largeImage,omitempty"`
-	LargeText  string `json:"largeText,omitempty"`
-	SmallImage string `json:"smallImage,omitempty"`
-	SmallText  string `json:"smallText,omitempty"`
-	Type       int    `json:"type,omitempty"`
+	Name       string            `json:"name,omitempty"`
+	Details    string            `json:"details,omitempty"`
+	State      string            `json:"state,omitempty"`
+	StartTime  int64             `json:"startTime,omitempty"`
+	EndTime    int64             `json:"endTime,omitempty"`
+	LargeImage string            `json:"largeImage,omitempty"`
+	LargeText  string            `json:"largeText,omitempty"`
+	SmallImage string            `json:"smallImage,omitempty"`
+	SmallText  string            `json:"smallText,omitempty"`
+	Type       int               `json:"type,omitempty"`
+	Buttons    []PresenceButton  `json:"buttons,omitempty"`
 }
 
 type NativeResponse struct {

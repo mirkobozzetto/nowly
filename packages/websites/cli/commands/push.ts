@@ -1,8 +1,10 @@
 import chalk from "chalk"
 import type { Command } from "commander"
+import { existsSync, readFileSync } from "fs"
+import { join } from "path"
 import { bumpVersion, fetchPresenceInfo, pushPresences } from "@/api"
 import { buildPresence } from "@/builder"
-import { getPresenceBySlug, getPresences } from "@/discover"
+import { DIST, getPresenceBySlug, getPresences } from "@/discover"
 import { logger, spinner } from "@/logger"
 import { input, multiselect, select } from "@/prompts"
 import { uploadToR2 } from "@/r2"
@@ -117,6 +119,11 @@ export const registerPush = (program: Command) => {
           }
         }
 
+        const settingsPath = join(DIST, "presences", p.slug, "settings.json")
+        const settings = existsSync(settingsPath)
+          ? JSON.parse(readFileSync(settingsPath, "utf-8"))
+          : undefined
+
         payload.push({
           slug: p.slug,
           type: isNew ? "new" : "modified",
@@ -134,6 +141,7 @@ export const registerPush = (program: Command) => {
             slug: p.slug,
             ...p.metadata,
             version,
+            settings,
           },
         })
 

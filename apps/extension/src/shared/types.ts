@@ -35,6 +35,7 @@ export type PresencePayload = {
   smallImage?: string;
   smallText?: string;
   type?: number;
+  buttons?: { label: string; url: string }[];
 };
 
 export type PresenceData = {

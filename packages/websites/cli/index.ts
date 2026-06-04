@@ -42,19 +42,19 @@ async function runInteractive(): Promise<void> {
 
   switch (action) {
     case "init":
-      await program.parseAsync(["node", "presence", "init"], { from: "user" })
+      await program.parseAsync(["init"], { from: "user" })
       break
     case "build":
-      await program.parseAsync(["node", "presence", "build"], { from: "user" })
+      await program.parseAsync(["build"], { from: "user" })
       break
     case "push":
-      await program.parseAsync(["node", "presence", "push"], { from: "user" })
+      await program.parseAsync(["push"], { from: "user" })
       break
     case "list":
-      await program.parseAsync(["node", "presence", "list"], { from: "user" })
+      await program.parseAsync(["list"], { from: "user" })
       break
     case "validate":
-      await program.parseAsync(["node", "presence", "validate"], { from: "user" })
+      await program.parseAsync(["validate"], { from: "user" })
       break
     case "exit":
       logger.info("Goodbye! 👋")

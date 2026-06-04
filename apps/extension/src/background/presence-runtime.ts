@@ -99,9 +99,9 @@ export const createPresenceRuntime = (
 
   globalThis.Presence = Presence;
   const Assets = globalThis.Assets = {
-    Logo: NOWLY_ASSETS_BASE + "/logo",
-    Icon: NOWLY_ASSETS_BASE + "/icon",
-    Thumbnail: NOWLY_ASSETS_BASE + "/thumbnail",
+    Logo: NOWLY_ASSETS_BASE + "/logo.png",
+    Icon: NOWLY_ASSETS_BASE + "/icon.png",
+    Thumbnail: NOWLY_ASSETS_BASE + "/thumbnail.jpg",
   };
 
   const ctx = {

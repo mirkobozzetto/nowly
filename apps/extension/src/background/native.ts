@@ -20,6 +20,7 @@ export const mapPresenceData = (data: PresenceData): PresencePayload => ({
   smallImage: data.smallImageKey,
   smallText: data.smallImageText,
   type: data.type,
+  buttons: data.buttons?.slice(0, 2),
 });
 
 export const getNativeStatus = () => ({ connected, status, discordConnected });
