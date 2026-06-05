@@ -7,8 +7,6 @@ import { notFound } from "next/navigation";
 import type { ReactElement } from "react";
 import { fetchPresence, type PresenceRelease } from "./fetch-presence";
 
-const API_URL = PRESENCE_API_URL;
-
 type Props = {
   params: Promise<{
     item: string
@@ -40,7 +38,7 @@ const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
 const Page = async ({ params }: Props): Promise<ReactElement> => {
   const { item: raw } = await params;
   const item = raw.toLowerCase();
-  const data = await fetchPresence(API_URL, item);
+  const data = await fetchPresence(PRESENCE_API_URL, item);
 
   if (!data) {
     notFound();

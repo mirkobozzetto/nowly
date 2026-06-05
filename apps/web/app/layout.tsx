@@ -17,7 +17,10 @@ const Layout = async ({ children }: PropsWithChildren): Promise<ReactElement> =>
   const [messages, locale] = await Promise.all([getMessages(), getLocale()]);
 
   return (
-    <html lang={locale} className={`${instrumentSans.variable} ${geist.variable} bg-background`}>
+    <html
+      lang={locale}
+      className={`${instrumentSans.variable} ${geist.variable} bg-background scroll-smooth`}
+    >
       <head>
         <script
           async
