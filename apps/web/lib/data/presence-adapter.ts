@@ -7,6 +7,14 @@ type ContributorInput = {
   avatar?: string;
 };
 
+type MetadataWithStats = Metadata & {
+  totalInstalls?: number
+  activeUsers?: number
+  rating?: number
+  ratingCount?: number
+  ratingDistribution?: Record<number, number>
+};
+
 const toContributor = (c: ContributorInput): Contributor => {
   return {
     name: c.name,
@@ -17,7 +25,7 @@ const toContributor = (c: ContributorInput): Contributor => {
 
 const FALLBACK_LOCALE = "en-US";
 
-export const metadataToPlatform = (m: Metadata): Presence => {
+export const metadataToPlatform = (m: MetadataWithStats): Presence => {
   const slug = m.slug ?? m.name.toLowerCase().replace(/\s+/g, "-");
   const desc = m.description?.[FALLBACK_LOCALE] ?? "";
   return {
@@ -31,11 +39,11 @@ export const metadataToPlatform = (m: Metadata): Presence => {
     category: m.category as PresenceCategory,
     status: "available",
     version: m.version ?? null,
-    activeUsers: 0,
-    totalInstalls: 0,
-    rating: 0,
-    ratingCount: 0,
-    ratingDistribution: {},
+    activeUsers: m.activeUsers ?? 0,
+    totalInstalls: m.totalInstalls ?? 0,
+    rating: m.rating ?? 0,
+    ratingCount: m.ratingCount ?? 0,
+    ratingDistribution: m.ratingDistribution ?? {},
     addedAt: "2024-01-01",
     lastUpdated: new Date().toISOString().split("T")[0],
     supportedUrls: m.url,
