@@ -1,16 +1,19 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { Download, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
-import type { FC } from "react";
 import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
+import { Download, Trash2, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+import type { FC } from "react";
 
 type Props = {
   isInstalled: boolean
   isExtDetected: boolean
   needsUpdate: boolean
   loading: boolean
+  slug: string
+  commentCount: number
   onInstall: () => void
   onUninstall: () => void
 };
@@ -20,6 +23,8 @@ export const PresenceHeaderActions: FC<Props> = ({
   isExtDetected,
   needsUpdate,
   loading,
+  slug,
+  commentCount,
   onInstall,
   onUninstall,
 }) => {
@@ -54,6 +59,14 @@ export const PresenceHeaderActions: FC<Props> = ({
           {t("uninstallAction")}
         </button>
       )}
+
+      <Link
+        href={`/library/${slug}/comments`}
+        className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-lg font-semibold text-sm transition-all border border-border bg-transparent text-muted-foreground hover:border-border-light hover:bg-card-2 hover:text-foreground ml-auto"
+      >
+        <Users className="w-4 h-4" />
+        {t("community")} ({commentCount})
+      </Link>
     </div>
   );
 };

@@ -21,7 +21,6 @@ type Props = {
   loading: boolean;
   totalInstalls: number;
   savedRating: number;
-  deviceId: string | null;
   onInstall: () => void;
   onUninstall: () => void;
 };
@@ -34,7 +33,6 @@ export const PresenceDetailContent: FC<Props> = ({
   loading,
   totalInstalls,
   savedRating,
-  deviceId,
   onInstall,
   onUninstall,
 }): ReactElement => {
@@ -73,13 +71,19 @@ export const PresenceDetailContent: FC<Props> = ({
               onUninstall={onUninstall}
             />
 
-            <SupportedUrlsCard urls={presence.supportedUrls} />
             <FeaturesCard platform={presence} locale={locale} />
+
+            {presence.settings && Object.keys(presence.settings).length > 0 && (
+              <SupportedUrlsCard urls={presence.supportedUrls} />
+            )}
           </div>
 
           <div className="space-y-4">
             <DevelopmentCard platform={presence} />
-            <SettingsCard platform={presence} />
+
+            {presence.settings && Object.keys(presence.settings).length > 0
+              ? <SettingsCard platform={presence} />
+              : <SupportedUrlsCard urls={presence.supportedUrls} />}
 
             <StatsCard
               platform={{ ...presence, totalInstalls }}
@@ -87,7 +91,6 @@ export const PresenceDetailContent: FC<Props> = ({
               slug={presence.slug}
               canRate={extDetected && isInstalled}
               savedRating={savedRating}
-              deviceId={deviceId}
             />
 
             <InstallVersionsCard platform={presence} />

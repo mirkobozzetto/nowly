@@ -1,14 +1,18 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { API_BASE_URL } from "@/lib/constants";
 import type { Presence } from "@/lib/data/presences";
+import { useUser } from "@/lib/use-user";
+import { presenceKey } from "@/hooks/use-presence";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
-import { useCallback, useState } from "react";
-import { RatingDistribution } from "./rating-distribution";
+import { useState } from "react";
+import { toast } from "sonner";
+import { ConnectDialog, RatingDialog } from "./rating-dialog";
 import { StarDisplay } from "./star-display";
-import { StarRatingInput } from "./star-rating-input";
 import { StatRow } from "./stat-row";
 
 type Props = {
@@ -17,18 +21,29 @@ type Props = {
   slug: string
   canRate?: boolean
   savedRating?: number
-  deviceId?: string | null
 };
 
-const EXT_SOURCE = "Nowly";
-let _msgId = 0;
-const nextId = (): string => `r${_msgId++}_${Date.now()}`;
-
-export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRating, deviceId }): ReactElement => {
+export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRating }): ReactElement => {
   const t = useTranslations("MarketplaceDetail");
-  const [userRating, setUserRating] = useState(savedRating ?? 0);
-  const [hoveredStar, setHoveredStar] = useState(0);
-  const [submitting, setSubmitting] = useState(false);
+  const { isAuthenticated, token, login } = useUser();
+  const queryClient = useQueryClient();
+  const [localRating, setLocalRating] = useState(savedRating ?? 0);
+  const [deleting, setDeleting] = useState(false);
+
+  const myRatingKey = ["my-rating", slug] as const;
+
+  const { data: myRating } = useQuery<{ rated: boolean; rating: number; hasComment: boolean } | null>({
+    queryKey: myRatingKey,
+    queryFn: async () => {
+      if (!token) return null;
+      const res = await fetch(`${API_BASE_URL}/presences/${slug}/my-rating`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return null;
+      return res.json();
+    },
+    enabled: isAuthenticated && !!token,
+  });
 
   const dateFormatter = new Intl.DateTimeFormat(locale, {
     day: "numeric",
@@ -36,31 +51,42 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRat
     year: "numeric",
   });
 
-  const submitRating = useCallback(async (rating: number): Promise<void> => {
-    if (submitting || userRating > 0) return;
-    setSubmitting(true);
-    setUserRating(rating);
-    try {
-      await Promise.all([
-        fetch(`${API_BASE_URL}/presences/${slug}/rating`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ rating, deviceId }),
-        }),
-        window.postMessage(
-          { source: EXT_SOURCE, type: "SAVE_USER_RATING", payload: { slug, rating }, messageId: nextId() },
-          "*",
-        ),
-      ]);
-    } catch {
-      setUserRating(0);
-    } finally {
-      setSubmitting(false);
-    }
-  }, [slug, submitting, userRating]);
-
   const fullStars = Math.floor(platform.rating);
   const hasFraction = platform.rating - fullStars >= 0.5;
+
+  const handleDelete = async () => {
+    if (!token) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/presences/${slug}/comments`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        setLocalRating(0);
+        queryClient.invalidateQueries({ queryKey: presenceKey(slug) });
+        queryClient.invalidateQueries({ queryKey: myRatingKey });
+        toast.success(t("commentDeleted"));
+      } else {
+        toast.error(t("rateError"));
+      }
+    } catch {
+      toast.error(t("rateError"));
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const isRated = localRating > 0 || myRating?.rated;
+  const hasComment = myRating?.hasComment;
+
+  const actionLabel = !isRated
+    ? t("rateAction")
+    : isRated && !hasComment
+      ? t("rateComment")
+      : t("rateModify");
+
+  const actionRating = isRated ? (myRating?.rating ?? localRating) : 0;
 
   return (
     <Card size="sm">
@@ -91,27 +117,44 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRat
                 </span>
 
                 <span className="font-semibold text-sm">{platform.rating}</span>
+
+                {canRate && (
+                  <span className="flex items-center gap-1">
+                    {isAuthenticated ? (
+                      <RatingDialog
+                        slug={slug}
+                        iconColor={platform.iconColor}
+                        canRate={true}
+                        savedRating={actionRating}
+                        onRate={(r) => {
+                          setLocalRating(r);
+                          queryClient.invalidateQueries({ queryKey: myRatingKey });
+                        }}
+                        trigger={
+                          <Button variant="outline" size="xs">
+                            {actionLabel}
+                          </Button>
+                        }
+                      />
+                    ) : (
+                      <ConnectDialog
+                        onLogin={login}
+                        trigger={
+                          <Button variant="outline" size="xs">
+                            {t("rateAction")}
+                          </Button>
+                        }
+                      />
+                    )}
+                    {isAuthenticated && isRated && hasComment && (
+                      <Button variant="destructive" size="xs" disabled={deleting} onClick={handleDelete}>
+                        {deleting ? t("rateSubmitting") : t("commentDelete")}
+                      </Button>
+                    )}
+                  </span>
+                )}
               </span>
             </StatRow>
-
-            {platform.ratingCount > 0 && (
-              <RatingDistribution
-                distribution={platform.ratingDistribution}
-                totalCount={platform.ratingCount}
-                iconColor={platform.iconColor}
-              />
-            )}
-
-            <StarRatingInput
-              iconColor={platform.iconColor}
-              canRate={!!canRate}
-              userRating={userRating}
-              hoveredStar={hoveredStar}
-              submitting={submitting}
-              onRate={submitRating}
-              onHover={setHoveredStar}
-              onLeave={() => setHoveredStar(0)}
-            />
           </>
         )}
 

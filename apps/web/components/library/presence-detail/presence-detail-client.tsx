@@ -23,7 +23,6 @@ export const PresenceDetailClient: FC<Props> = ({ presence }): ReactElement => {
         loading={status.loading}
         totalInstalls={status.totalInstalls}
         savedRating={status.savedRating}
-        deviceId={status.deviceId}
         onInstall={status.handleInstall}
         onUninstall={status.handleUninstallRequest}
       />
