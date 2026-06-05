@@ -1,4 +1,5 @@
 import { Redis } from "@upstash/redis"
+import "dotenv/config"
 
 export const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL!,
@@ -16,11 +17,9 @@ export interface PresenceStats {
   lastUpdated: string | null
 }
 
-const key = (slug: string, ...parts: string[]): string =>
-  ["presence", slug, ...parts].join(":")
+const key = (slug: string, ...parts: string[]): string => ["presence", slug, ...parts].join(":")
 
-const ratingKey = (slug: string, stars: number): string =>
-  key(slug, "ratings", String(stars))
+const ratingKey = (slug: string, stars: number): string => key(slug, "ratings", String(stars))
 
 const STARS = [5, 4, 3, 2, 1] as const
 
@@ -76,24 +75,53 @@ export const submitRating = async (
   return { avg: stats.rating, count: stats.ratingCount, distribution: stats.ratingDistribution }
 }
 
-const raterKey = (slug: string) => `presence:${slug}:raters`
+const discordRaterKey = (slug: string) => `presence:${slug}:discord-raters`
+const discordRatingKey = (slug: string, discordId: string) => `presence:${slug}:discord-user:${discordId}`
 
-export const hasRated = async (slug: string, ip: string): Promise<boolean> => {
-  return (await redis.sismember(raterKey(slug), ip)) === 1
+export const hasDiscordRated = async (slug: string, discordId: string): Promise<boolean> => {
+  return (await redis.sismember(discordRaterKey(slug), discordId)) === 1
 }
 
-export const markRated = async (slug: string, ip: string): Promise<void> => {
-  await redis.sadd(raterKey(slug), ip)
+export const markDiscordRated = async (slug: string, discordId: string): Promise<void> => {
+  await redis.sadd(discordRaterKey(slug), discordId)
 }
 
-const deviceKey = (slug: string) => `presence:${slug}:device-raters`
-
-export const hasDeviceRated = async (slug: string, deviceId: string): Promise<boolean> => {
-  return (await redis.sismember(deviceKey(slug), deviceId)) === 1
+export const getUserRating = async (slug: string, discordId: string): Promise<{
+  rating: number;
+  hasComment: boolean;
+  commentId?: string
+} | null> => {
+  const raw = await redis.hgetall(discordRatingKey(slug, discordId))
+  if (!raw || !raw.rating) return null
+  
+  return {
+    rating: Number(raw.rating),
+    hasComment: raw.hasComment === "true",
+    commentId: String(raw.commentId ?? "") || undefined
+  }
 }
 
-export const markDeviceRated = async (slug: string, deviceId: string): Promise<void> => {
-  await redis.sadd(deviceKey(slug), deviceId)
+export const setUserRating = async (
+  slug: string,
+  discordId: string,
+  rating: number,
+  hasComment: boolean,
+  commentId?: string
+): Promise<void> => {
+  const fields: Record<string, string> = {
+    rating: String(rating),
+    hasComment: String(hasComment)
+  }
+  
+  if (commentId) fields.commentId = commentId
+  await redis.hset(discordRatingKey(slug, discordId), fields)
+}
+
+export const removeUserRating = async (slug: string, discordId: string): Promise<void> => {
+  await Promise.all([
+    redis.srem(discordRaterKey(slug), discordId),
+    redis.del(discordRatingKey(slug, discordId)),
+  ])
 }
 
 export const setUpdated = async (slug: string, date?: string): Promise<void> => {
@@ -126,8 +154,13 @@ export const addVersion = async (slug: string, entry: VersionEntry): Promise<voi
   const clean = Object.fromEntries(
     Object.entries(entry).filter(([, v]) => v != null),
   ) as unknown as Record<string, unknown>
+
   await Promise.all([
-    redis.zadd(key(slug, "versions"), { score: ts, member: entry.version }),
+    redis.zadd(key(slug, "versions"), {
+      score: ts,
+      member: entry.version
+    }),
+
     redis.hset(key(slug, "version", entry.version), clean),
   ])
 }
@@ -143,6 +176,7 @@ export const setPresenceMeta = async (slug: string, meta: PresenceMeta): Promise
 export const getPresenceMeta = async (slug: string): Promise<PresenceMeta | null> => {
   const raw = await redis.get<any>(metaKey(slug))
   if (!raw) return null
+
   if (typeof raw === "string") {
     try {
       return JSON.parse(raw) as PresenceMeta
@@ -156,6 +190,7 @@ export const getPresenceMeta = async (slug: string): Promise<PresenceMeta | null
 export const getAllPresenceSlugs = async (): Promise<string[]> => {
   let cursor = 0
   const slugs: string[] = []
+
   do {
     const [next, keys] = await redis.scan(cursor, { match: "presence:*:version" })
     cursor = parseInt(next)
@@ -165,6 +200,59 @@ export const getAllPresenceSlugs = async (): Promise<string[]> => {
     }
   } while (cursor !== 0)
   return [...new Set(slugs)]
+}
+
+export interface CommentEntry {
+  id: string
+  rating: number
+  comment?: string
+  authorId?: string
+  authorName?: string
+  authorAvatar?: string
+  anonymous?: boolean
+  createdAt: string
+  isOwn?: boolean
+}
+
+export const submitComment = async (
+  slug: string,
+  entry: Omit<CommentEntry, "id" | "createdAt">,
+): Promise<CommentEntry> => {
+  const id = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+  const createdAt = new Date().toISOString()
+  const clean = Object.fromEntries(
+    Object.entries({
+      ...entry,
+      id,
+      createdAt
+    }).filter(([, v]) => v != null),
+  ) as unknown as Record<string, unknown>
+
+  await redis.zadd(key(slug, "comments"), { score: Date.now(), member: id })
+  await redis.hset(key(slug, "comment", id), clean)
+  return clean as unknown as CommentEntry
+}
+
+export const getComments = async (slug: string): Promise<CommentEntry[]> => {
+  const ids = await redis.zrange(key(slug, "comments"), 0, -1, { rev: true })
+  if (!ids.length) return []
+
+  const entries = await Promise.all(
+    ids.map((id) => redis.hgetall(key(slug, "comment", String(id)))),
+  )
+
+  return entries
+    .filter((e): e is Record<string, string> => e !== null)
+    .map((e) => ({
+      id: e.id,
+      rating: Number(e.rating),
+      comment: e.comment,
+      authorId: e.authorId,
+      authorName: e.authorName,
+      authorAvatar: e.authorAvatar,
+      anonymous: String(e.anonymous) === "true",
+      createdAt: e.createdAt,
+    }))
 }
 
 export const getVersionHistory = async (slug: string): Promise<VersionEntry[]> => {

@@ -1,12 +1,12 @@
-import type { FastifyInstance } from "fastify"
-import { getPresence } from "@nowly/websites"
-import { readFileSync, existsSync } from "fs"
-import { join } from "path"
-import { PRESENCES_DIR } from "@/lib/paths"
-import { canonicalJson, sha256Base64Url, signedPayload, signPresenceRelease } from "@/lib/crypto"
 import { requireAuth } from "@/lib/api-auth"
-import { type VersionEntry, addVersion, getPresenceStats, setVersion, setAdded, setUpdated, getVersionHistory, setPresenceMeta, getPresenceMeta, type PresenceMeta } from "@/lib/redis"
+import { canonicalJson, sha256Base64Url, signedPayload, signPresenceRelease } from "@/lib/crypto"
 import { generateChangelog } from "@/lib/openai"
+import { PRESENCES_DIR } from "@/lib/paths"
+import { addVersion, getPresenceMeta, getPresenceStats, getVersionHistory, setAdded, setPresenceMeta, setUpdated, setVersion } from "@/lib/redis"
+import { getPresence } from "@nowly/websites"
+import type { FastifyInstance } from "fastify"
+import { existsSync, readFileSync } from "fs"
+import { join } from "path"
 
 const buildRelease = async (slug: string, version?: string) => {
   const localMeta = getPresence(slug)
@@ -15,7 +15,9 @@ const buildRelease = async (slug: string, version?: string) => {
   if (!Object.keys(metadata).length) return null
 
   const bundlePath = join(PRESENCES_DIR, slug, "bundle.js")
+
   let bundle: string | null = null
+
   if (existsSync(bundlePath)) {
     bundle = readFileSync(bundlePath, "utf-8")
   } else {
@@ -24,15 +26,42 @@ const buildRelease = async (slug: string, version?: string) => {
       if (res.ok) bundle = await res.text()
     } catch {}
   }
+
   if (!bundle) return null
+
+  if (!metadata.settings) {
+    try {
+      const res = await fetch(`https://cdn.nowly.me/presences/${slug}/settings.json`)
+      if (res.ok) {
+        const raw = await res.text()
+        const parsed = JSON.parse(raw)
+        if (parsed && typeof parsed === "object") {
+          metadata.settings = parsed
+          await setPresenceMeta(slug, metadata as Record<string, unknown>)
+        }
+      }
+    } catch {}
+  }
 
   const stats = await getPresenceStats(slug)
   const resolvedVersion = version ?? stats.version ?? metadata.version ?? "0.0.0"
-  const releaseMetadata = { ...metadata, slug, version: resolvedVersion }
+
+  const releaseMetadata = {
+    ...metadata,
+    slug,
+    version: resolvedVersion
+  }
+  
   const sha256 = sha256Base64Url(bundle)
   const metadataHash = sha256Base64Url(canonicalJson(releaseMetadata))
   const signedAt = new Date().toISOString()
-  const payload = signedPayload({ slug, version: resolvedVersion, sha256, metadataHash, signedAt })
+  const payload = signedPayload({
+    slug,
+    version: String(resolvedVersion),
+    sha256,
+    metadataHash,
+    signedAt
+  })
 
   return {
     slug,
@@ -92,7 +121,15 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
     if (reply.sent) return
 
     const slug = request.params.slug.toLowerCase()
-    const body = request.body as { version?: string; added?: string; updated?: string; changelog?: string; author?: string; authorGithub?: string; pr?: string }
+    const body = request.body as {
+      version?: string;
+      added?: string;
+      updated?: string;
+      changelog?: string;
+      author?: string;
+      authorGithub?: string;
+      pr?: string
+    }
 
     if (body.version) {
       await setVersion(slug, body.version)
@@ -100,7 +137,11 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
         await addVersion(slug, {
           version: body.version,
           changelog: body.changelog
-            ? JSON.stringify({ "en-US": body.changelog, "fr-FR": body.changelog, "es-ES": body.changelog })
+            ? JSON.stringify({
+              "en-US": body.changelog,
+              "fr-FR": body.changelog,
+              "es-ES": body.changelog
+            })
             : "",
           author: body.author ?? "unknown",
           authorGithub: body.authorGithub,
@@ -109,6 +150,7 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
         })
       }
     }
+
     if (body.added) await setAdded(slug, body.added)
     if (body.updated) await setUpdated(slug, body.updated)
 

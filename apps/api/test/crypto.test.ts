@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest"
 import { canonicalJson, sha256Base64Url, signedPayload } from "@/lib/crypto"
+import { describe, expect, it } from "vitest"
 
 describe("canonicalJson", () => {
   it("serializes null and primitives", () => {

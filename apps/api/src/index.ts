@@ -1,19 +1,27 @@
+import { assetsRoutes } from "@/routes/assets"
+import { authRoutes } from "@/routes/auth"
+import { presenceRoutes } from "@/routes/presence"
+import { registryRoutes } from "@/routes/registry"
+import { statsRoutes } from "@/routes/stats"
+import cors from "@fastify/cors"
 import "dotenv/config"
 import Fastify from "fastify"
-import cors from "@fastify/cors"
-import { registryRoutes } from "@/routes/registry"
-import { presenceRoutes } from "@/routes/presence"
-import { assetsRoutes } from "@/routes/assets"
-import { statsRoutes } from "@/routes/stats"
 
 const server = Fastify({ logger: true })
 
-await server.register(cors, { origin: true })
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000"
+
+await server.register(cors, {
+  origin: [FRONTEND_URL],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "x-user-token"],
+})
 
 await server.register(registryRoutes, { prefix: "/presences" })
 await server.register(presenceRoutes, { prefix: "/presences" })
 await server.register(assetsRoutes, { prefix: "/presences" })
 await server.register(statsRoutes, { prefix: "/presences" })
+await server.register(authRoutes, { prefix: "/auth" })
 
 const port = Number(process.env.PORT) || 3001
 
