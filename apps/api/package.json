@@ -17,10 +17,12 @@
     "@upstash/redis": "^1.38.0",
     "dotenv": "^17.4.2",
     "fastify": "^5.3.2",
+    "jsonwebtoken": "^9.0.3",
     "tsx": "^4.19.3",
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22",
     "typescript": "5.7.3",
     "vitest": "^3.0.0"
