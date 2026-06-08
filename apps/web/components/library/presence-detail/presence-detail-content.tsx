@@ -9,6 +9,7 @@ import { DevelopmentCard } from "../development-card";
 import { FeaturesCard } from "../features-card";
 import { HeaderCard } from "../header-card";
 import { InstallVersionsCard } from "../install-versions-card";
+import { PresenceVersionUpdatesCard } from "../presence-version-updates-card";
 import { SettingsCard } from "../settings-card";
 import { StatsCard } from "../stats-card";
 import { SupportedUrlsCard } from "../supported-urls-card";
@@ -94,6 +95,10 @@ export const PresenceDetailContent: FC<Props> = ({
             />
 
             <InstallVersionsCard platform={presence} />
+
+            {presence.status !== "soon" ? (
+              <PresenceVersionUpdatesCard presence={presence} locale={locale} />
+            ) : null}
           </div>
         </div>
       </div>

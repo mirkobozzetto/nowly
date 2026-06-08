@@ -73,6 +73,12 @@
     "support": "Support on Ko-fi",
     "skip": "No thanks, download directly"
   },
+  "Ads": {
+    "label": "Advertisement",
+    "placeholder": "Reserved ad placement. Add the AdSense data-ad-slot to enable ads.",
+    "cardTitle": "Sponsor",
+    "cardDescription": "A subtle placement that supports Nowly without interrupting browsing."
+  },
   "FaqPage": {
     "title": "FAQ",
     "q1": "What is Nowly?",
@@ -263,6 +269,13 @@
     "rateLoginDesc2": "Your identity helps prevent abuse. Want to stay private? Check \"Post anonymously\" — we'll hash your ID so no one can trace the comment back to you.",
     "rateLoginButton": "Sign in with Discord",
     "rateReviewDesc": "Share your experience and help others choose better presences."
+  },
+
+  "VersionUpdatesCard": {
+    "versionTitle": "Version {version}",
+    "currentBadge": "Current",
+    "installAction": "Install",
+    "versionPlaceholder": "Version"
   },
 
   "NotFound": {

@@ -35,11 +35,11 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRat
   const { data: myRating } = useQuery<{ rated: boolean; rating: number; hasComment: boolean } | null>({
     queryKey: myRatingKey,
     queryFn: async () => {
-      if (!token) return null;
+      if (!token) throw new Error("No token");
       const res = await fetch(`${API_BASE_URL}/presences/${slug}/my-rating`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) return null;
+      if (!res.ok) throw new Error("Failed to fetch my-rating");
       return res.json();
     },
     enabled: isAuthenticated && !!token,

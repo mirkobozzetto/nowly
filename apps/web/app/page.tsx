@@ -1,3 +1,4 @@
+import { AdSection } from "@/components/home/ad-section";
 import { CtaSection } from "@/components/home/cta-section";
 import { HeroSection } from "@/components/home/hero-section";
 import { PresencesSection } from "@/components/home/presences-section";
@@ -25,6 +26,7 @@ const Page: FC = (): ReactElement => {
     <main>
       <HeroSection />
       <PresencesSection />
+      <AdSection />
       <StepsSection />
       <CtaSection />
     </main>

@@ -73,6 +73,12 @@
     "support": "Apoyar en Ko-fi",
     "skip": "No, gracias. Descargar directamente"
   },
+  "Ads": {
+    "label": "Publicidad",
+    "placeholder": "Espacio publicitario reservado. Añade el data-ad-slot de AdSense para activar los anuncios.",
+    "cardTitle": "Patrocinador",
+    "cardDescription": "Un espacio discreto para apoyar Nowly sin interrumpir la navegación."
+  },
   "FaqPage": {
     "title": "FAQ",
     "q1": "¿Qué es Nowly?",
@@ -261,6 +267,13 @@
     "rateLoginDesc2": "Tu identidad ayuda a prevenir abusos. ¿Quieres mantenerte privado? Marca « Publicar anónimamente » — cifraremos tu ID para que nadie pueda rastrear el comentario.",
     "rateLoginButton": "Iniciar sesión con Discord",
     "rateReviewDesc": "Comparte tu experiencia y ayuda a otros a elegir mejores presencias."
+  },
+
+  "VersionUpdatesCard": {
+    "versionTitle": "Versión {version}",
+    "currentBadge": "Actual",
+    "installAction": "Instalar",
+    "versionPlaceholder": "Versión"
   },
 
   "NotFound": {
