@@ -1,13 +1,13 @@
-import { PRESENCE_API_URL } from "./env";
+import { clientEnv } from "@nowly/env/client";
 
 async function get<T = unknown>(path: string): Promise<T | null> {
-  const res = await fetch(`${PRESENCE_API_URL}/presences${path}`);
+  const res = await fetch(`${clientEnv.PRESENCE_API_URL}/presences${path}`);
   if (!res.ok) return null;
   return res.json() as Promise<T>;
 }
 
 async function post<T = unknown>(path: string, body?: unknown): Promise<T | null> {
-  const res = await fetch(`${PRESENCE_API_URL}/presences${path}`, {
+  const res = await fetch(`${clientEnv.PRESENCE_API_URL}/presences${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: body ? JSON.stringify(body) : undefined,
@@ -17,7 +17,7 @@ async function post<T = unknown>(path: string, body?: unknown): Promise<T | null
 }
 
 async function put<T = unknown>(path: string, body?: unknown): Promise<T | null> {
-  const res = await fetch(`${PRESENCE_API_URL}/presences${path}`, {
+  const res = await fetch(`${clientEnv.PRESENCE_API_URL}/presences${path}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: body ? JSON.stringify(body) : undefined,

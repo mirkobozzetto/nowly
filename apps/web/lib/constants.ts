@@ -1,6 +1,7 @@
+import { clientEnv } from "@nowly/env/client";
 import { Presence } from "./data/presences";
 
-export const API_BASE_URL = (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_API_BASE_URL) || "https://api.nowly.me";
+export const API_BASE_URL = clientEnv.NEXT_PUBLIC_API_BASE_URL;
 
 export const PROJECT_NAME = "Nowly";
 export const PROJECT_REPOSITORY_URL = "https://github.com/q-kimi/nowly";
@@ -11,6 +12,11 @@ export const PROJECT_EXTENSION_FILENAME = "Nowly-Extension.zip";
 export const ADSENSE_CLIENT_ID = "ca-pub-6330177306711077";
 export const LANDING_AD_SLOT = "4584618586";
 export const LIBRARY_AD_SLOT = "8815663161";
+
+export const HOST_VERSION = "1.0.1";
+export const HOST_VERSION_URL = "https://nowly.me/host/version";
+
+export const CDN_INSTALLER_BASE_URL = "https://cdn.nowly.me/installer";
 
 export const buildPresenceUrl = (platform: Presence): string => {
   const firstChar = platform.slug.charAt(0);

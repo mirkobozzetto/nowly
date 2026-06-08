@@ -1,6 +1,6 @@
 import { CommentsClient } from "@/components/library/comments-client";
 import { metadataToPlatform } from "@/lib/data/presence-adapter";
-import { PRESENCE_API_URL } from "@/lib/env";
+import { clientEnv } from "@nowly/env/client";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactElement } from "react";
@@ -15,7 +15,7 @@ type Props = {
 const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
   const { item: raw } = await params;
   const item = raw.toLowerCase();
-  const data = await fetchPresence(PRESENCE_API_URL, item);
+  const data = await fetchPresence(clientEnv.PRESENCE_API_URL, item);
 
   if (!data) {
     return { title: "Not Found" };
@@ -33,7 +33,7 @@ const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
 const Page = async ({ params }: Props): Promise<ReactElement> => {
   const { item: raw } = await params;
   const item = raw.toLowerCase();
-  const data = await fetchPresence(PRESENCE_API_URL, item);
+  const data = await fetchPresence(clientEnv.PRESENCE_API_URL, item);
 
   if (!data) {
     notFound();

@@ -4,6 +4,7 @@ import { ClaudeIcon, GitHubIcon, OpenAIIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { PROJECT_REPOSITORY_URL } from "@/lib/constants";
+import { clientEnv } from "@nowly/env/client";
 import { ChevronDown, ExternalLink } from "lucide-react";
 import type { FC } from "react";
 
@@ -18,7 +19,7 @@ const buildSearchUrl = (url: string) => {
 
 export const OpenIn: FC<OpenInProps> = ({ slug, locale }) => {
   const githubUrl = `${PROJECT_REPOSITORY_URL}/blob/stable/apps/web/content/docs/${slug}/${locale}.mdx`;
-  const markdownUrl = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/docs/${slug}.mdx`;
+  const markdownUrl = `${clientEnv.NEXT_PUBLIC_BASE_URL}/docs/${slug}.mdx`;
 
   const services = [
     { name: "GitHub", url: githubUrl, icon: <GitHubIcon className="size-4" /> },

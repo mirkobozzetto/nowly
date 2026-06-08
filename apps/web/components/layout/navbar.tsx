@@ -34,7 +34,7 @@ export const Navbar: FC = (): ReactElement => {
             </Link>
 
             <Link
-              href="#download"
+              href="/#download"
               className={buttonVariants({ size: "md", variant: "accent" })}
             >
               <Download size={16} />

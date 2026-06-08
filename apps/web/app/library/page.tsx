@@ -22,4 +22,5 @@ const Page: FC = (): ReactElement => {
 };
 
 export { generateMetadata };
+
 export default Page;
