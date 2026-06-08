@@ -1,4 +1,4 @@
-import { canonicalJson, sha256Base64Url, signedPayload } from "@/lib/crypto"
+import { canonicalJson, sha256Base64Url, signedPayload, signPresenceRelease } from "@/lib/crypto"
 import { describe, expect, it } from "vitest"
 
 describe("canonicalJson", () => {
@@ -89,5 +89,11 @@ describe("signedPayload", () => {
     }
     const payload = signedPayload(input)
     expect(payload).toMatch(/^{"metadataHash":/)
+  })
+})
+
+describe("signPresenceRelease", () => {
+  it("throws when PRESENCE_SIGNING_PRIVATE_KEY is missing", () => {
+    expect(() => signPresenceRelease("{}")).toThrow("PRESENCE_SIGNING_PRIVATE_KEY is missing")
   })
 })
