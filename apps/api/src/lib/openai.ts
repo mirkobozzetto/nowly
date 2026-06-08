@@ -1,6 +1,6 @@
+import { serverEnv } from "@nowly/env/server"
 import { z } from "zod"
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY
 const LOCALES = ["en-US", "fr-FR", "es-ES"] as const
 
 const ChangelogSchema = z.object({
@@ -44,6 +44,7 @@ const fallbackChangelogs = (ctx: ChangelogContext): z.infer<typeof ChangelogSche
 }
 
 export const translateChangelog = async (text: string): Promise<z.infer<typeof ChangelogSchema>> => {
+  const OPENAI_API_KEY = serverEnv.OPENAI_API_KEY
   if (!OPENAI_API_KEY) return sameChangelogInAllLocales(text)
 
   const prompt = `Translate this changelog into French and Spanish while preserving the original English meaning.
@@ -80,6 +81,7 @@ Changelog: ${text}`
 }
 
 export const generateChangelog = async (ctx: ChangelogContext): Promise<z.infer<typeof ChangelogSchema>> => {
+  const OPENAI_API_KEY = serverEnv.OPENAI_API_KEY
   if (!OPENAI_API_KEY) return fallbackChangelogs(ctx)
 
   const nameEn = ctx.names?.["en-US"] || ctx.name

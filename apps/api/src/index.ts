@@ -4,15 +4,13 @@ import { presenceRoutes } from "@/routes/presence"
 import { registryRoutes } from "@/routes/registry"
 import { statsRoutes } from "@/routes/stats"
 import cors from "@fastify/cors"
-import "dotenv/config"
+import { serverEnv } from "@nowly/env/server"
 import Fastify from "fastify"
 
 const server = Fastify({ logger: true })
 
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000"
-
 await server.register(cors, {
-  origin: [FRONTEND_URL],
+  origin: [serverEnv.FRONTEND_URL],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "x-user-token"],
 })
@@ -23,7 +21,7 @@ await server.register(assetsRoutes, { prefix: "/presences" })
 await server.register(statsRoutes, { prefix: "/presences" })
 await server.register(authRoutes, { prefix: "/auth" })
 
-const port = Number(process.env.PORT) || 3001
+const port = serverEnv.PORT
 
 try {
   await server.listen({ port, host: "0.0.0.0" })

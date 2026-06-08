@@ -1,4 +1,5 @@
 import { createHash, createPrivateKey, sign } from "crypto"
+import { serverEnv } from "@nowly/env/server"
 
 export const canonicalJson = (value: unknown): string => {
   if (value === null || typeof value !== "object") return JSON.stringify(value)
@@ -24,7 +25,12 @@ export const signedPayload = (input: {
 }): string => canonicalJson(input)
 
 export const signPresenceRelease = (payload: string): string => {
-  const privateKey = process.env.PRESENCE_SIGNING_PRIVATE_KEY
+  let privateKey: string
+  try {
+    privateKey = serverEnv.PRESENCE_SIGNING_PRIVATE_KEY
+  } catch {
+    throw new Error("PRESENCE_SIGNING_PRIVATE_KEY is missing")
+  }
 
   if (!privateKey) {
     throw new Error("PRESENCE_SIGNING_PRIVATE_KEY is missing")

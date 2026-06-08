@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@fastify/cors": "^11.0.1",
+    "@nowly/env": "workspace:*",
     "@nowly/presence": "workspace:*",
     "@nowly/websites": "workspace:*",
     "@upstash/redis": "^1.38.0",

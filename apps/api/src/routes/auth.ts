@@ -1,4 +1,5 @@
 import { isValidRedirect, signToken, verifyToken, type DiscordUser } from "@/lib/auth"
+import { serverEnv } from "@nowly/env/server"
 import "dotenv/config"
 import type { FastifyInstance } from "fastify"
 
@@ -10,9 +11,9 @@ const discordAuth = async (request: any, reply: any) => {
   }
 
   const url = new URL("https://discord.com/api/oauth2/authorize")
-  url.searchParams.set("client_id", process.env.DISCORD_CLIENT_ID!)
+  url.searchParams.set("client_id", serverEnv.DISCORD_CLIENT_ID)
   url.searchParams.set("response_type", "code")
-  url.searchParams.set("redirect_uri", process.env.DISCORD_REDIRECT_URI!)
+  url.searchParams.set("redirect_uri", serverEnv.DISCORD_REDIRECT_URI)
   url.searchParams.set("scope", "identify")
   url.searchParams.set("state", redirect)
   url.searchParams.set("prompt", "none")
@@ -33,11 +34,11 @@ const discordCallback = async (request: any, reply: any) => {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
-      client_id: process.env.DISCORD_CLIENT_ID!,
-      client_secret: process.env.DISCORD_CLIENT_SECRET!,
+      client_id: serverEnv.DISCORD_CLIENT_ID,
+      client_secret: serverEnv.DISCORD_CLIENT_SECRET,
       code,
       grant_type: "authorization_code",
-      redirect_uri: process.env.DISCORD_REDIRECT_URI!,
+      redirect_uri: serverEnv.DISCORD_REDIRECT_URI,
     }),
   })
 
