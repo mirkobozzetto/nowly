@@ -10,17 +10,17 @@ export const MarketplaceAdCard: FC = (): ReactElement => {
   const t = useTranslations("Ads");
 
   return (
-    <div className="h-full max-h-68 bg-card border border-border rounded-lg overflow-hidden">
-      <div className="relative h-28 max-h-28 overflow-hidden bg-card-2">
+    <div className="bg-card border border-border rounded-lg overflow-hidden">
+      <div className="relative h-28 overflow-hidden bg-card-2">
         <AdSenseSlot
           slot={LIBRARY_AD_SLOT}
-          className="h-28 max-h-28 rounded-none border-0 bg-transparent"
-          minHeight="0px"
+          className="h-full rounded-none border-0 bg-transparent"
+          minHeight="112px"
           showLabel={false}
         />
       </div>
 
-      <div className="p-5 h-40">
+      <div className="p-5">
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0 overflow-hidden bg-accent/10 text-accent">
             <Megaphone className="w-6 h-6" />
