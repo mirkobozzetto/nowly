@@ -1,4 +1,5 @@
 import react from "@vitejs/plugin-react"
+import "dotenv/config"
 import { copyFileSync, cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs"
 import { dirname, join, resolve } from "path"
 import { fileURLToPath } from "url"
@@ -21,9 +22,9 @@ const define = {
 rmSync(DIST, { recursive: true, force: true })
 mkdirSync(DIST, { recursive: true })
 
-const buildPage = async (name: string) => {
+const buildPage = async (name: string, source = name) => {
   await build({
-    root: join(ROOT, "src", name),
+    root: join(ROOT, "src", source),
     base: "./",
     plugins: [react()],
     define,
@@ -36,9 +37,7 @@ const buildPage = async (name: string) => {
     build: {
       outDir: join(DIST, name),
       emptyOutDir: true,
-      rollupOptions: {
-        input: join(ROOT, "src", name, "index.html"),
-      },
+      rollupOptions: { input: join(ROOT, "src", source, "index.html") },
     },
     configFile: false,
   })
@@ -76,7 +75,6 @@ const copyManifest = () => {
   manifest.background.service_worker = "background.js"
   delete manifest.background.type
   manifest.content_scripts[0].js = ["content.js"]
-  manifest.action.default_popup = "popup/index.html"
   delete manifest.action.default_popup
   manifest.side_panel.default_path = "sidepanel/index.html"
   manifest.icons = {
@@ -100,8 +98,7 @@ const copyStatic = () => {
   cpSync(join(ROOT, "_locales"), join(DIST, "_locales"), { recursive: true })
 }
 
-await buildPage("popup")
-await buildPage("sidepanel")
+await buildPage("sidepanel", "app")
 await buildScript("background", join(ROOT, "src", "background", "index.ts"))
 await buildScript("content", join(ROOT, "src", "content", "index.ts"))
 copyManifest()

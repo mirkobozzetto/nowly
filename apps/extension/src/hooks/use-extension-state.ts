@@ -1,14 +1,24 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { CurrentActivity, ExtensionSettings, InstalledPresences, PresenceDebug } from "@/shared/types";
-import { sendMessage, type NativeStatus } from "@/popup/lib/messages";
+import { WEB_BASE_URL } from "@/shared/constants";
+import { sendMessage, type NativeStatus } from "@/lib/messages";
+
+type HostVersionInfo = {
+  currentVersion: string;
+  latestVersion: string;
+  updateAvailable: boolean;
+};
 
 type ExtensionState = {
   activity: CurrentActivity | null;
   checkUpdates: () => void;
+  checkHostUpdate: () => void;
+  hostVersionInfo: HostVersionInfo | null;
   connectNative: () => void;
   debug: PresenceDebug | null;
   entries: Array<[string, InstalledPresences[string]]>;
   isCheckingUpdates: boolean;
+  isCheckingHostVersion: boolean;
   nativeStatus: NativeStatus;
   presences: InstalledPresences;
   removePresence: (slug: string) => void;
@@ -36,9 +46,28 @@ export const useExtensionState = (): ExtensionState => {
   const [debug, setDebug] = useState<PresenceDebug | null>(null);
   const [updates, setUpdates] = useState<Record<string, string>>({});
   const [isCheckingUpdates, setIsCheckingUpdates] = useState(false);
+  const [isCheckingHostVersion, setIsCheckingHostVersion] = useState(false);
+  const [hostVersionInfo, setHostVersionInfo] = useState<HostVersionInfo | null>(null);
   const [settings, setSettingsState] = useState<ExtensionSettings>(FALLBACK_SETTINGS);
 
   const entries = useMemo(() => Object.entries(presences), [presences]);
+
+  const fetchHostVersion = useCallback(async (): Promise<void> => {
+    try {
+      const url = `${WEB_BASE_URL.replace(/\/$/, "")}/host/version`;
+      const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+      const data = await res.json() as { version: string };
+      setHostVersionInfo({ currentVersion: "1.0.0", latestVersion: data.version, updateAvailable: data.version !== "1.0.0" });
+    } catch {
+      // Host unreachable — keep previous state
+    }
+  }, []);
+
+  const checkHostUpdate = useCallback((): void => {
+    if (isCheckingHostVersion) return;
+    setIsCheckingHostVersion(true);
+    void fetchHostVersion().finally(() => setIsCheckingHostVersion(false));
+  }, [fetchHostVersion, isCheckingHostVersion]);
 
   const refresh = useCallback((): void => {
     void Promise.all([
@@ -54,6 +83,7 @@ export const useExtensionState = (): ExtensionState => {
       setDebug(nextDebug ?? null);
       setSettingsState(nextSettings ?? FALLBACK_SETTINGS);
     });
+    void fetchHostVersion();
   }, []);
 
   useEffect(() => {
@@ -132,6 +162,9 @@ export const useExtensionState = (): ExtensionState => {
   return {
     activity,
     checkUpdates,
+    checkHostUpdate,
+    hostVersionInfo,
+    isCheckingHostVersion,
     connectNative,
     debug,
     entries,

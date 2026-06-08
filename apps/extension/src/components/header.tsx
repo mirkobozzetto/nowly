@@ -1,6 +1,6 @@
 import type { FC, ReactElement } from "react";
-import type { NativeStatus } from "@/popup/lib/messages";
-import { NativeStatusButton } from "./NativeStatusButton";
+import type { NativeStatus } from "@/lib/messages";
+import { NativeStatusButton } from "./native-status-button";
 
 type Props = {
   nativeStatus: NativeStatus;

@@ -1,7 +1,7 @@
 import type { FC, ReactElement } from "react";
 import type { InstalledPresences, PresenceDisplayMode, PresenceMetadata } from "@/shared/types";
-import { EmptyState } from "./EmptyState";
-import { PresenceListItem } from "./PresenceListItem";
+import { EmptyState } from "./empty-state";
+import { PresenceListItem } from "./presence-list-item";
 
 type Props = {
   activeSlug: string | null;

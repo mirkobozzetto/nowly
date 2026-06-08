@@ -3,7 +3,7 @@ import type { FC, ReactElement } from "react";
 import { assetUrl } from "@/shared/api";
 import { t } from "@/shared/i18n";
 import type { CurrentActivity, InstalledPresences } from "@/shared/types";
-import { formatRelativeTime, getActivitySubtitle, getActivityTitle } from "@/popup/lib/format";
+import { formatRelativeTime, getActivitySubtitle, getActivityTitle } from "@/lib/format";
 
 type Props = {
   activity: CurrentActivity | null;

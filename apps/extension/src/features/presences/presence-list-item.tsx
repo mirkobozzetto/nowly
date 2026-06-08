@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { assetUrl } from "@/shared/api";
 import { t } from "@/shared/i18n";
 import type { StoredPresence } from "@/shared/types";
-import { PresenceActions } from "./PresenceActions";
-import { PresenceSettingsPanel } from "./PresenceSettingsPanel";
+import { PresenceActions } from "./presence-actions";
+import { PresenceSettingsPanel } from "./presence-settings-panel";
 
 type Props = {
   onOpenMarketplace: (slug: string) => void;

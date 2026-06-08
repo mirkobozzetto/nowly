@@ -1,27 +1,23 @@
 import type { FC, ReactElement } from "react";
 import { useState } from "react";
-import { Header } from "@/popup/components/Header";
+import { Header } from "@/components/header";
 import { WEB_BASE_URL } from "@/shared/constants";
-import { useExtensionState } from "@/popup/hooks/useExtensionState";
-import { useLocalePreference } from "@/popup/hooks/useLocalePreference";
+import { useExtensionState } from "@/hooks/use-extension-state";
+import { useLocalePreference } from "@/hooks/use-locale-preference";
+import { useOnboardingState } from "@/hooks/use-onboarding-state";
 import { resolveLocale } from "@/shared/i18n";
-import { ActivityView } from "./components/ActivityView";
-import { DebugPanel } from "./components/DebugPanel";
-// import { OnboardingOverlay } from "./components/OnboardingOverlay";
-import { SettingsView } from "./components/SettingsView";
-import { SidepanelNav, type SidepanelView } from "./components/SidepanelNav";
-// import { useOnboardingState } from "./hooks/useOnboardingState";
+import { ActivityView } from "@/features/presences/activity-view";
+import { DebugPanel } from "@/features/settings/debug-panel";
+import { OnboardingOverlay } from "@/features/onboarding/onboarding-overlay";
+import { SettingsView } from "@/features/settings/settings-view";
+import { SidepanelNav, type SidepanelView } from "@/components/sidepanel-nav";
 
 const App: FC = (): ReactElement => {
-  const { activity, checkUpdates, connectNative, debug, entries, isCheckingUpdates, nativeStatus, presences, removePresence, togglePresence, updates, settings, setSettings } =
+  const { activity, checkUpdates, checkHostUpdate, connectNative, debug, entries, hostVersionInfo, isCheckingHostVersion, isCheckingUpdates, nativeStatus, presences, removePresence, togglePresence, updates, settings, setSettings } =
     useExtensionState();
   const { localePreference, setLocalePreference } = useLocalePreference();
+  const { onboarding, setOnboarding, nativeStatus: onboardingNativeStatus, userScripts, refresh } = useOnboardingState();
   const [activeView, setActiveView] = useState<SidepanelView>("activity");
-  // const [onboardingDismissed, setOnboardingDismissed] = useState(false);
-  //
-  // const { onboarding, setOnboarding, nativeStatus: onboardingNativeStatus, userScripts, refresh } = useOnboardingState();
-  //
-  // const showOnboarding = (!onboarding.onboardingCompleted || !onboarding.nativeSeenConnectedOnce) && !onboardingDismissed;
 
   const marketplaceLocale = (): string => {
     const locale = resolveLocale(localePreference);
@@ -56,7 +52,10 @@ const App: FC = (): ReactElement => {
         {activeView === "settings" && (
           <SettingsView
             checkUpdates={checkUpdates}
+            checkHostUpdate={checkHostUpdate}
+            hostVersionInfo={hostVersionInfo}
             isCheckingUpdates={isCheckingUpdates}
+            isCheckingHostVersion={isCheckingHostVersion}
             localePreference={localePreference}
             nativeStatus={nativeStatus}
             onConnect={connectNative}
@@ -69,27 +68,19 @@ const App: FC = (): ReactElement => {
         <DebugPanel debug={debug} nativeStatus={nativeStatus} settings={settings} onSettingsChange={setSettings} />
       </div>
 
-      {/*
-      {showOnboarding && (
-        <OnboardingOverlay
-          localePreference={localePreference}
-          nativeStatus={onboardingNativeStatus}
-          userScripts={userScripts}
-          onboardingCompleted={onboarding.onboardingCompleted}
-          nativeSeenConnectedOnce={onboarding.nativeSeenConnectedOnce}
-          cachedProfile={onboarding.nativeProfile}
-          onConnectNative={() => {
-            connectNative();
-            refresh();
-          }}
-          onComplete={() => {
-            setOnboarding({ onboardingCompleted: true });
-            setOnboardingDismissed(true);
-          }}
-          onSkip={() => setOnboardingDismissed(true)}
-        />
-      )}
-      */}
+      <OnboardingOverlay
+        nativeStatus={onboardingNativeStatus}
+        userScripts={userScripts}
+        onboardingCompleted={onboarding.onboardingCompleted}
+        localePreference={localePreference}
+        onLocaleChange={setLocalePreference}
+        onConnectNative={() => {
+          connectNative();
+          refresh();
+        }}
+        onComplete={() => setOnboarding({ onboardingCompleted: true })}
+        onSkipTour={() => setOnboarding({ onboardingCompleted: true })}
+      />
     </main>
   );
 };

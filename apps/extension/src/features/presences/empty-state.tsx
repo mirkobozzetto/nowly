@@ -1,7 +1,7 @@
 import { PackageOpen } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { t } from "@/shared/i18n";
-import { MarketplaceLink } from "./MarketplaceLink";
+import { MarketplaceLink } from "./marketplace-link";
 
 export const EmptyState: FC = (): ReactElement => (
   <section className="rounded-lg border border-dashed border-border bg-card p-6 text-center">

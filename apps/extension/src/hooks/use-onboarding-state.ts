@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { DiscordProfileSnapshot } from "@/shared/types";
-import { sendMessage, type NativeStatus } from "@/popup/lib/messages";
+import { sendMessage, type NativeStatus } from "@/lib/messages";
 
 const ONBOARDING_KEY = "onboarding";
 
@@ -60,6 +60,7 @@ export const useOnboardingState = (): {
 
   useEffect(() => {
     refresh();
+    const interval = window.setInterval(refresh, 1500);
 
     const onChanged = (changes: Record<string, chrome.storage.StorageChange>, areaName: string): void => {
       if (areaName !== "local") return;
@@ -70,7 +71,10 @@ export const useOnboardingState = (): {
     };
 
     chrome.storage.onChanged.addListener(onChanged);
-    return () => chrome.storage.onChanged.removeListener(onChanged);
+    return () => {
+      window.clearInterval(interval);
+      chrome.storage.onChanged.removeListener(onChanged);
+    };
   }, []);
 
   const setOnboarding = (partial: Partial<OnboardingState>): void => {

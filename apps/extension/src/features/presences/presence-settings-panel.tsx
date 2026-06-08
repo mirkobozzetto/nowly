@@ -2,7 +2,7 @@ import { ChevronDown } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getLocale, t } from "@/shared/i18n";
-import { sendMessage } from "@/popup/lib/messages";
+import { sendMessage } from "@/lib/messages";
 
 type SettingDefinition = Record<string, unknown> & { default?: unknown; type?: string };
 
