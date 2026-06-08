@@ -1,9 +1,6 @@
 import crypto from "crypto"
-import jwt from "jsonwebtoken"
 import "dotenv/config"
-
-const JWT_SECRET = process.env.JWT_SECRET || "fallback-dev-secret-change-in-production"
-const ANONYMOUS_HASH_SECRET = process.env.ANONYMOUS_HASH_SECRET || "fallback-anonymous-hash"
+import jwt from "jsonwebtoken"
 
 export interface DiscordUser {
   discordId: string
@@ -14,12 +11,12 @@ export interface DiscordUser {
 }
 
 export const signToken = (user: DiscordUser): string => {
-  return jwt.sign(user, JWT_SECRET, { expiresIn: "30d" })
+  return jwt.sign(user, process.env.JWT_SECRET!, { expiresIn: "30d" })
 }
 
 export const verifyToken = (token: string): DiscordUser | null => {
   try {
-    return jwt.verify(token, JWT_SECRET) as DiscordUser
+    return jwt.verify(token, process.env.JWT_SECRET!) as DiscordUser
   } catch {
     return null
   }
@@ -28,7 +25,7 @@ export const verifyToken = (token: string): DiscordUser | null => {
 const FRONTEND_URL = process.env.FRONTEND_URL
 
 export const hashDiscordId = (discordId: string): string => {
-  return crypto.createHmac("sha256", ANONYMOUS_HASH_SECRET).update(discordId).digest("hex")
+  return crypto.createHmac("sha256", process.env.ANONYMOUS_HASH_SECRET!).update(discordId).digest("hex")
 }
 
 export const isValidRedirect = (redirect: string, origin?: string): boolean => {

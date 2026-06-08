@@ -25,6 +25,7 @@ export const signedPayload = (input: {
 
 export const signPresenceRelease = (payload: string): string => {
   const privateKey = process.env.PRESENCE_SIGNING_PRIVATE_KEY
+
   if (!privateKey) {
     throw new Error("PRESENCE_SIGNING_PRIVATE_KEY is missing")
   }
