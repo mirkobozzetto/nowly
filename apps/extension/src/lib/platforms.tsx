@@ -13,7 +13,7 @@ export const platforms: Platform[] = [
   {
     name: "Windows",
     icon: <WindowsIcon />,
-    downloadLink: `${CDN_BASE}/nowlysetup.exe`,
+    downloadLink: `${CDN_BASE}/nowly-setup.exe`,
   },
   {
     name: "macOS",

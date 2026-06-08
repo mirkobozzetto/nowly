@@ -41,7 +41,7 @@ export const HostContent: FC = (): ReactElement => {
       icon: WindowsIcon,
       label: "Windows",
       downloads: [
-        { label: t("winDownloadInstaller"), url: `${CDN_INSTALLER_BASE_URL}/nowlysetup.exe` },
+        { label: t("winDownloadInstaller"), url: `${CDN_INSTALLER_BASE_URL}/nowly-setup.exe` },
         { label: t("winDownloadPortable"), url: `${CDN_INSTALLER_BASE_URL}/nowly-windows.zip` },
       ],
     },
