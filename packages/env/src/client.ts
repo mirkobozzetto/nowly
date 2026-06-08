@@ -1,12 +1,9 @@
 import { createEnv } from "@t3-oss/env-core"
 import { z } from "zod"
 
-const required = z.string().trim().min(1)
-
 export const clientEnv = createEnv({
   server: {
     PRESENCE_API_URL: z.string().trim().url().default("https://api.nowly.me"),
-    API_SECRET_KEY: required.optional(),
   },
   clientPrefix: "NEXT_PUBLIC_",
   client: {
