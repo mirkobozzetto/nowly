@@ -1,13 +1,22 @@
 package contract
 
+import "runtime"
+
 const (
-	HostName           = "nowly.client"
-	InstallFolderName  = "NowlyClient"
-	ExtensionID        = "abbegmindbabanjcabnmcjmamaoffbam"
-	DiscordClientID    = "1510223984392671302"
-	HostExecutableName = "nowly-host.exe"
-	UninstallerName    = "nowly-uninstaller.exe"
+	HostName          = "nowly.client"
+	InstallFolderName = "NowlyClient"
+	ExtensionID       = "abbegmindbabanjcabnmcjmamaoffbam"
+	DiscordClientID   = "1510223984392671302"
+
+	HostVersion = "1.0.0"
 )
+
+func HostExecutableName() string {
+	if runtime.GOOS == "windows" {
+		return "nowly-host.exe"
+	}
+	return "nowly-host"
+}
 
 type MessageType string
 
@@ -51,12 +60,12 @@ type PresencePayload struct {
 }
 
 type NativeResponse struct {
-	Type      ResponseType `json:"type"`
-	Connected bool         `json:"connected,omitempty"`
-	Discord    bool         `json:"discordConnected,omitempty"`
-	Status    string       `json:"status,omitempty"`
+	Type      ResponseType    `json:"type"`
+	Connected bool            `json:"connected,omitempty"`
+	Discord    bool            `json:"discordConnected,omitempty"`
+	Status    string          `json:"status,omitempty"`
 	Profile   *DiscordProfile `json:"profile,omitempty"`
-	Error     string       `json:"error,omitempty"`
+	Error     string          `json:"error,omitempty"`
 }
 
 type DiscordProfile struct {

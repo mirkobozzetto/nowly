@@ -16,7 +16,11 @@ type Logger struct {
 }
 
 func New() (*Logger, error) {
-	dir := filepath.Join(os.Getenv("LOCALAPPDATA"), contract.InstallFolderName)
+	cacheDir, err := os.UserCacheDir()
+	if err != nil {
+		return nil, err
+	}
+	dir := filepath.Join(cacheDir, contract.InstallFolderName)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return nil, err
 	}

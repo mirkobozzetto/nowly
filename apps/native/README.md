@@ -9,7 +9,8 @@ Chromium Native Messaging host for Discord Rich Presence integration.
 | Host name | `nowly.client` |
 | Extension ID (dev) | `abbegmindbabanjcabnmcjmamaoffbam` |
 | Extension ID (prod) | *(set when published to Chrome Web Store)* |
-| Install folder | `%LOCALAPPDATA%\NowlyClient` |
+| Binary | `nowly-host` (Unix) / `nowly-host.exe` (Windows) |
+| Log dir | `~/.cache/NowlyClient/` (Unix) / `%LOCALAPPDATA%\NowlyClient\` (Windows) |
 
 ### Supported messages
 
@@ -28,33 +29,118 @@ Chromium Native Messaging host for Discord Rich Presence integration.
 ### Prerequisites
 
 - [Go 1.21+](https://go.dev/dl/)
-- [Inno Setup 6+](https://jrsoftware.org/isdl.php) (for the installer)
+- [Inno Setup 6+](https://jrsoftware.org/isdl.php) *(Windows installer only)*
 
-### 1. Build the binary
+### Build all platforms
+
+```bash
+make build
+```
+
+### Platform-specific builds
+
+#### Windows
 
 ```powershell
 go build -o dist/nowly-host.exe ./cmd/host
 ```
 
-### 2. Generate the installer
+#### Linux
 
-#### Development (default extension ID)
+```bash
+make build/linux
+# or manually:
+GOOS=linux GOARCH=amd64 go build -o dist/nowly-host-linux ./cmd/host
+```
+
+#### macOS (Intel)
+
+```bash
+make build/darwin
+# or manually:
+GOOS=darwin GOARCH=amd64 go build -o dist/nowly-host-darwin ./cmd/host
+```
+
+#### macOS (Apple Silicon)
+
+```bash
+make build/darwin-arm
+# or manually:
+GOOS=darwin GOARCH=arm64 go build -o dist/nowly-host-darwin-arm64 ./cmd/host
+```
+
+### Output
+
+| Platform | Binary |
+|----------|--------|
+| Windows  | `dist/nowly-host.exe` |
+| Linux    | `dist/nowly-host-linux` |
+| macOS Intel | `dist/nowly-host-darwin` |
+| macOS ARM | `dist/nowly-host-darwin-arm64` |
+
+### CDN Artifacts
+
+| Platform | Min. version | File | Size | Contents |
+|----------|-------------|------|------|----------|
+| Windows  | Windows 10 x64 | `NowlySetup.exe` | ~3.7 MB | Inno Setup installer (double-click to install) |
+| Windows  | Windows 10 x64 | `nowly-windows.zip` | ~3.3 MB | Same `.exe` in a zip |
+| Linux    | Linux 2.6.32+ / glibc 2.17+ | `nowly-linux.tar.gz` | ~1.9 MB | `nowly-host-linux` binary + install/uninstall scripts |
+| macOS    | macOS 11 Big Sur+ | `nowly-macos.tar.gz` | ~3.7 MB | Intel + ARM binaries + install/uninstall scripts |
+
+## Install
+
+### Windows — Inno Setup installer
 
 ```powershell
 iscc installer.iss
 ```
 
-#### Production (Chrome Web Store ID)
+The installer registers the host with Chrome, Edge, and Brave via registry keys.
+
+Override the extension ID for production:
 
 ```powershell
 iscc installer.iss /DEXTENSION_ID=your-store-id-here
 ```
 
-The Extension ID is embedded in the native messaging manifest so Chrome allows the extension to communicate with the host. The dev ID is the default; use `/D` to override for the published version.
+### Linux
 
-### 3. Output
+```bash
+# 1. Build
+make build/linux
 
-The installer is generated at `dist/NowlySetup.exe`.
+# 2. Install (copies binary + generates manifests for Chrome, Chromium, Brave, Edge, Vivaldi, Opera)
+./scripts/install-linux.sh
+
+# 3. Uninstall
+./scripts/uninstall-linux.sh
+```
+
+### macOS
+
+```bash
+# 1. Build (Intel)
+make build/darwin
+# or (Apple Silicon)
+make build/darwin-arm
+
+# 2. Install (copies binary + generates manifests for Chrome, Chromium, Brave, Edge)
+./scripts/install-macos.sh
+
+# 3. Uninstall
+./scripts/uninstall-macos.sh
+```
+
+The install scripts place the binary in `~/.local/share/NowlyClient/` (Linux) or `~/Library/Application Support/NowlyClient/` (macOS) and write the native messaging manifest to each browser's config directory.
+
+Override the extension ID:
+
+```bash
+EXTENSION_ID=your-store-id-here ./scripts/install-linux.sh
+EXTENSION_ID=your-store-id-here ./scripts/install-macos.sh
+```
+
+**Note:** The native messaging manifest points to the binary's absolute path. If you move the binary after installation, re-run the install script or update the manifest.
 
 ## Assets
 

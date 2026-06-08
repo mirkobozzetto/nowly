@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"sync"
 )
 
 const MaxMessageSize = 1024 * 1024
@@ -13,6 +14,7 @@ const MaxMessageSize = 1024 * 1024
 var ErrInvalidMessageLength = errors.New("invalid native message length")
 
 type Protocol struct {
+	mu sync.Mutex
 	in  io.Reader
 	out io.Writer
 }
@@ -48,6 +50,9 @@ func (p *Protocol) Write(v any) error {
 	if err != nil {
 		return fmt.Errorf("encode native response: %w", err)
 	}
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
 	var header [4]byte
 	binary.LittleEndian.PutUint32(header[:], uint32(len(payload)))

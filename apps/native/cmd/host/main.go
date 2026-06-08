@@ -14,7 +14,7 @@ import (
 func main() {
 	logger, _ := logging.New()
 	defer logger.Close()
-	logger.Printf("nowly host starting pid=%d", os.Getpid())
+	logger.Printf("nowly host starting pid=%d version=%s", os.Getpid(), contract.HostVersion)
 
 	protocol := nativeprotocol.NewProtocol(os.Stdin, os.Stdout)
 	client := discord.NewClient(contract.DiscordClientID)
@@ -85,3 +85,5 @@ func main() {
 		}
 	}
 }
+
+
