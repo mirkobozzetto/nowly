@@ -2,14 +2,15 @@ import { existsSync, readFileSync } from "fs"
 import { dirname, join } from "path"
 import { fileURLToPath } from "url"
 import { DIST } from "@/discover"
+import { cliEnv } from "@nowly/env/cli"
 
 const __filename = fileURLToPath(import.meta.url)
 const ROOT = join(dirname(__filename), "..", "..", "..")
 
-const API_BASE = process.env.API_URL ?? "https://api.nowly.me"
+const API_BASE = cliEnv.API_URL
 
 function resolveKey(): string | undefined {
-  const envKey = process.env.API_SECRET_KEY
+  const envKey = cliEnv.API_SECRET_KEY
   if (envKey) return envKey
 
   try {

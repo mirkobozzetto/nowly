@@ -1,11 +1,12 @@
 import { DIST } from "@/discover"
 import { spinner } from "@/logger"
 import { CopyObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
+import { cliEnv } from "@nowly/env/cli"
 import { existsSync, readdirSync, readFileSync } from "fs"
 import { join, relative } from "path"
 
-const R2_BUCKET = process.env.R2_BUCKET ?? "nowly"
-const R2_PUBLIC_URL = "https://cdn.nowly.me"
+const R2_BUCKET = cliEnv.R2_BUCKET
+const R2_PUBLIC_URL = cliEnv.R2_PUBLIC_URL
 
 const MIME_TYPES: Record<string, string> = {
   ".js": "application/javascript; charset=utf-8",
@@ -37,9 +38,9 @@ let s3Client: S3Client | null = null
 
 const getClient = (): S3Client => {
   if (!s3Client) {
-    const accessKeyId = process.env.R2_ACCESS_KEY_ID
-    const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY
-    const accountId = process.env.R2_ACCOUNT_ID
+    const accessKeyId = cliEnv.R2_ACCESS_KEY_ID
+    const secretAccessKey = cliEnv.R2_SECRET_ACCESS_KEY
+    const accountId = cliEnv.R2_ACCOUNT_ID
 
     if (!accessKeyId || !secretAccessKey) {
       throw new Error("R2 credentials not configured. Set R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY in .env")

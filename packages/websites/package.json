@@ -16,6 +16,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@nowly/env": "workspace:*",
     "@nowly/presence": "workspace:*",
     "typescript": "5.7.3"
   },
