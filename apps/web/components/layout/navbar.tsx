@@ -26,9 +26,9 @@ export const Navbar: FC = (): ReactElement => {
             <img src="/app_title_white.png" alt="Nowly" className="h-8 w-auto" />
           </Link>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link href="/library"
-              className={_buttonVariants({ variant: "link" })}
+              className={_buttonVariants({ size: "md", variant: "link" })}
             >
               {t("marketplace")}
             </Link>

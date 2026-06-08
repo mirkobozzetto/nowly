@@ -3,6 +3,7 @@
 import { Dialog, DialogAction, DialogCancel, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogMedia, DialogTitle } from "@/components/ui/dialog";
 import { PROJECT_EXTENSION_DOWNLOAD_URL } from "@/lib/constants";
 import { Coffee, Heart } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface KofiModalProps {
   isOpen: boolean
@@ -10,6 +11,8 @@ interface KofiModalProps {
 }
 
 export function KofiModal({ isOpen, onClose }: KofiModalProps) {
+  const t = useTranslations("KofiModal");
+
   const triggerDownload = () => {
     const a = document.createElement("a");
     a.href = PROJECT_EXTENSION_DOWNLOAD_URL;
@@ -33,20 +36,19 @@ export function KofiModal({ isOpen, onClose }: KofiModalProps) {
           <DialogMedia>
             <Coffee className="w-4 h-4" />
           </DialogMedia>
-          <DialogTitle>Le projet est gratuit</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>
-            Developpe seul, sur mon temps libre.<br />
-            Un cafe aide a faire avancer les choses.
+            {t("description")}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <DialogAction onClick={handleSupport}>
             <Heart className="w-4 h-4 fill-current" />
-            Soutenir sur Ko-fi
+            {t("support")}
           </DialogAction>
 
           <DialogCancel onClick={handleSkip}>
-            Non merci, telecharger directement
+            {t("skip")}
           </DialogCancel>
         </DialogFooter>
       </DialogContent>
