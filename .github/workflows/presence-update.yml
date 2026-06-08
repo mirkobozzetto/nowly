@@ -31,10 +31,17 @@ jobs:
           API_SECRET_KEY: ${{ secrets.API_SECRET_KEY }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
           BASE="${{ github.event.pull_request.base.sha }}"
           HEAD="${{ github.event.pull_request.head.sha }}"
           PRESENCES="[]"
+          RELEASE_AUTHOR=$(jq -n --arg name "$PR_AUTHOR" --arg github "$PR_AUTHOR" '{name: $name, github: $github}')
+          RELEASE_CONTRIBUTORS=$(git log --format='%an	%ae' "$BASE"..."$HEAD" 2>/dev/null \
+            | awk '!seen[$0]++' \
+            | jq -R 'split("	") as $p | {name: $p[0]} + (try ($p[1] | capture("^[0-9]+\\+(?<login>[^@]+)@users\\.noreply\\.github\\.com$") | {github: .login}) catch {})' \
+            | jq -s --arg prAuthor "$PR_AUTHOR" '[.[] | select((.github // "") != $prAuthor and .name != $prAuthor)]')
+          COMMIT_SHA=$(git rev-parse "$HEAD")
 
           FILES=$(git diff --name-only --diff-filter=AMR "$BASE"..."$HEAD" -- "packages/websites/src/*/*/**" 2>/dev/null)
           SEEN=""
@@ -64,6 +71,8 @@ jobs:
               else
                 bundle="null"
               fi
+              changedFiles=$(printf '%s\n' "$FILES" | grep "^$dir/" | jq -R . | jq -s .)
+              diffSummary=$(git diff --unified=3 "$BASE"..."$HEAD" -- "$dir" 2>/dev/null | head -c 12000 | jq -Rs .)
 
               PRESENCES=$(echo "$PRESENCES" | jq \
                 --arg slug "$slug" \
@@ -72,8 +81,28 @@ jobs:
                 --arg author "$author" \
                 --arg authorGithub "$authorGithub" \
                 --arg desc "$desc" \
+                --arg source "pr" \
+                --arg commitSha "$COMMIT_SHA" \
                 --argjson bundle "$bundle" \
-                '. + [{slug: $slug, type: $type, name: $name, author: $author, authorGithub: $authorGithub, description: $desc, bundle: $bundle}]')
+                --argjson releaseAuthor "$RELEASE_AUTHOR" \
+                --argjson releaseContributors "$RELEASE_CONTRIBUTORS" \
+                --argjson changedFiles "$changedFiles" \
+                --argjson diffSummary "$diffSummary" \
+                '. + [{
+                  slug: $slug,
+                  type: $type,
+                  name: $name,
+                  author: $author,
+                  authorGithub: $authorGithub,
+                  releaseAuthor: $releaseAuthor,
+                  releaseContributors: $releaseContributors,
+                  description: {"en-US": $desc},
+                  bundle: $bundle,
+                  source: $source,
+                  commitSha: $commitSha,
+                  changedFiles: $changedFiles,
+                  diffSummary: $diffSummary
+                }]')
             fi
           done <<< "$FILES"
 

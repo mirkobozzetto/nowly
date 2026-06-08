@@ -1,12 +1,28 @@
 import { requireAuth } from "@/lib/api-auth"
 import { canonicalJson, sha256Base64Url, signedPayload, signPresenceRelease } from "@/lib/crypto"
-import { generateChangelog } from "@/lib/openai"
+import { generateChangelog, translateChangelog } from "@/lib/openai"
 import { PRESENCES_DIR } from "@/lib/paths"
 import { addVersion, getPresenceMeta, getPresenceStats, getVersionHistory, setAdded, setPresenceMeta, setUpdated, setVersion } from "@/lib/redis"
 import { getPresence } from "@nowly/websites"
 import type { FastifyInstance } from "fastify"
 import { existsSync, readFileSync } from "fs"
 import { join } from "path"
+
+type ReleasePerson = {
+  name: string
+  github?: string
+}
+
+const formatBytes = (bytes: number): string => {
+  if (bytes >= 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(2)} MB`
+  return `${(bytes / 1024).toFixed(1)} KB`
+}
+
+const serializeJsonField = (value: unknown): string | undefined => {
+  if (value == null) return undefined
+  if (Array.isArray(value) && value.length === 0) return undefined
+  return JSON.stringify(value)
+}
 
 const buildRelease = async (slug: string, version?: string) => {
   const localMeta = getPresence(slug)
@@ -169,10 +185,19 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
         category?: string
         author?: string
         authorGithub?: string
+        releaseAuthor?: ReleasePerson
+        releaseContributors?: ReleasePerson[]
+        version?: string
+        versionType?: string
         description?: Record<string, string>
         color?: string
         url?: string[]
+        changelog?: string
         bundle?: string
+        source?: "cli" | "pr"
+        commitSha?: string
+        changedFiles?: string[]
+        diffSummary?: string
         metadata?: Record<string, any>
       }[]
       pr?: string
@@ -189,50 +214,66 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
       const stats = await getPresenceStats(p.slug)
       const currentVersion = stats.version
       const author = p.author || (stats.version ? (await getVersionHistory(p.slug))[0]?.author || "unknown" : "unknown")
-
-      const clCtx: Parameters<typeof generateChangelog>[0] = {
-        type: p.type,
-        name: p.name,
-        prTitle: body.prTitle,
-        changes: body.changes,
-      }
-      if (p.type === "new") {
-        clCtx.descriptions = p.description
-      }
-
-      const changelogs = await generateChangelog(clCtx)
+      const aiGeneratedChangelog = !p.changelog
+      const changelogs = p.changelog
+        ? await translateChangelog(p.changelog)
+        : await generateChangelog({
+          type: p.type,
+          name: p.name,
+          prTitle: body.prTitle,
+          changes: body.changes,
+          changedFiles: p.changedFiles,
+          diffSummary: p.diffSummary,
+          ...(p.type === "new" ? { descriptions: p.description } : {}),
+        })
       const changelog = JSON.stringify(changelogs)
       const displayChangelog = changelogs["en-US"] || ""
+      const timestamp = Date.now()
+      const createdAt = new Date(timestamp).toISOString()
+      const bundleSizeBytes = p.bundle ? Buffer.byteLength(p.bundle, "utf-8") : undefined
+      const bundleSha256 = p.bundle ? sha256Base64Url(p.bundle) : undefined
+      const versionEntryMeta = {
+        changelog,
+        author,
+        authorGithub: p.authorGithub,
+        releaseAuthor: serializeJsonField(p.releaseAuthor),
+        releaseContributors: serializeJsonField(p.releaseContributors),
+        pr: body.pr,
+        source: p.source ?? (body.pr ? "pr" as const : "cli" as const),
+        commitSha: p.commitSha,
+        changedFiles: serializeJsonField(p.changedFiles),
+        bundleSizeBytes,
+        bundleSizeLabel: bundleSizeBytes != null ? formatBytes(bundleSizeBytes) : undefined,
+        bundleSha256,
+        versionType: p.versionType,
+        aiGeneratedChangelog,
+        createdAt,
+        timestamp,
+      }
 
       if (p.type === "new" || !currentVersion) {
-        const version = "1.0.0"
+        const version = p.version ?? "1.0.0"
 
         await setVersion(p.slug, version)
         await setAdded(p.slug)
         await addVersion(p.slug, {
           version,
-          changelog,
-          author,
-          authorGithub: p.authorGithub,
-          pr: body.pr,
-          timestamp: Date.now(),
+          ...versionEntryMeta,
+          versionType: p.versionType ?? "new",
         })
 
         results.push({ slug: p.slug, version, changelog: displayChangelog })
       } else {
         const parts = currentVersion.split(".").map(Number)
         parts[2] = (parts[2] || 0) + 1
-        const nextVersion = parts.join(".")
+        const nextVersion = p.version ?? parts.join(".")
 
         await setVersion(p.slug, nextVersion)
         await setUpdated(p.slug)
         await addVersion(p.slug, {
           version: nextVersion,
-          changelog,
-          author,
-          authorGithub: p.authorGithub,
-          pr: body.pr,
-          timestamp: Date.now(),
+          ...versionEntryMeta,
+          versionType: p.versionType ?? "patch",
         })
 
         results.push({ slug: p.slug, version: nextVersion, changelog: displayChangelog })

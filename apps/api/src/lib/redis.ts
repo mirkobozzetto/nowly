@@ -145,7 +145,18 @@ export interface VersionEntry {
   changelog: string
   author: string
   authorGithub?: string
+  releaseAuthor?: string
+  releaseContributors?: string
   pr?: string
+  source?: "cli" | "pr"
+  commitSha?: string
+  changedFiles?: string
+  bundleSizeBytes?: number
+  bundleSizeLabel?: string
+  bundleSha256?: string
+  versionType?: string
+  aiGeneratedChangelog?: boolean
+  createdAt?: string
   timestamp: number
 }
 

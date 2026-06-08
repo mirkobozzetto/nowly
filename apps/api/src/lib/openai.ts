@@ -17,7 +17,15 @@ interface ChangelogContext {
   descriptions?: Record<string, string>
   prTitle?: string
   changes?: string
+  changedFiles?: string[]
+  diffSummary?: string
 }
+
+const sameChangelogInAllLocales = (text: string): z.infer<typeof ChangelogSchema> => ({
+  "en-US": text,
+  "fr-FR": text,
+  "es-ES": text,
+})
 
 const fallbackChangelogs = (ctx: ChangelogContext): z.infer<typeof ChangelogSchema> => {
   if (ctx.type === "new") {
@@ -30,8 +38,45 @@ const fallbackChangelogs = (ctx: ChangelogContext): z.infer<typeof ChangelogSche
   }
 
   const title = ctx.prTitle || `Update ${ctx.name} presence`
-  const suffix = ctx.changes ? ` — ${ctx.changes}` : ""
+  const details = [ctx.changes, ctx.changedFiles?.join(", "), ctx.diffSummary].filter(Boolean).join(" — ")
+  const suffix = details ? ` — ${details}` : ""
   return { "en-US": `${title}${suffix}`, "fr-FR": `${title}${suffix}`, "es-ES": `${title}${suffix}` }
+}
+
+export const translateChangelog = async (text: string): Promise<z.infer<typeof ChangelogSchema>> => {
+  if (!OPENAI_API_KEY) return sameChangelogInAllLocales(text)
+
+  const prompt = `Translate this changelog into French and Spanish while preserving the original English meaning.
+Return a JSON object with keys "en-US", "fr-FR", "es-ES".
+"en-US" must be the original text unchanged.
+Changelog: ${text}`
+
+  try {
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" },
+        max_tokens: 200,
+        temperature: 0.2,
+      }),
+    })
+
+    if (!res.ok) throw new Error(`OpenAI error: ${res.status}`)
+
+    const data = await res.json() as { choices: { message: { content: string } }[] }
+    const raw = data.choices[0].message.content.trim()
+
+    const parsed = JSON.parse(raw)
+    return ChangelogSchema.parse(parsed)
+  } catch {
+    return sameChangelogInAllLocales(text)
+  }
 }
 
 export const generateChangelog = async (ctx: ChangelogContext): Promise<z.infer<typeof ChangelogSchema>> => {
@@ -63,6 +108,10 @@ Name (es): ${nameEs}
 PR title: ${ctx.prTitle || ""}
 Changes:
 ${ctx.changes || "No details"}
+Changed files:
+${ctx.changedFiles?.join("\n") || "No changed files"}
+Diff summary:
+${ctx.diffSummary || "No diff summary"}
 
 Return a JSON object with keys "en-US", "fr-FR", "es-ES". Each value must be a concise single-line changelog (max 12 words).
 Example: {"en-US":"Fix video playback issues","fr-FR":"Correction des problèmes de lecture","es-ES":"Corrección de problemas de reproducción"}`

@@ -1,4 +1,5 @@
 import chalk from "chalk"
+import { execFileSync } from "child_process"
 import type { Command } from "commander"
 import { existsSync, readFileSync } from "fs"
 import { join } from "path"
@@ -8,6 +9,89 @@ import { DIST, getPresenceBySlug, getPresences } from "@/discover"
 import { logger, spinner } from "@/logger"
 import { input, multiselect, select } from "@/prompts"
 import { uploadToR2 } from "@/r2"
+
+const MAX_DIFF_SUMMARY_LENGTH = 12000
+
+type ReleasePerson = {
+  name: string
+  github?: string
+}
+
+const runGit = (args: string[]): string | undefined => {
+  try {
+    const output = execFileSync("git", args, {
+      encoding: "utf-8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim()
+
+    return output || undefined
+  } catch {
+    return undefined
+  }
+}
+
+const splitNames = (value?: string): string[] =>
+  value
+    ? value.split(",").map((name) => name.trim()).filter(Boolean)
+    : []
+
+const toReleasePerson = (value: string): ReleasePerson => {
+  const trimmed = value.trim().replace(/^@/, "")
+  const [namePart, githubPart] = trimmed.split(":").map((part) => part.trim()).filter(Boolean)
+  const github = githubPart || (/^[a-z\d](?:[a-z\d-]{0,37}[a-z\d])?$/i.test(namePart) ? namePart : undefined)
+
+  return {
+    name: namePart,
+    ...(github ? { github } : {}),
+  }
+}
+
+const getLocalReleaseAuthor = (author?: string, authors?: string): ReleasePerson | undefined => {
+  const authorList = splitNames(authors)
+  const value = author?.trim() || authorList[0] || runGit(["config", "github.user"]) || runGit(["config", "user.name"])
+  return value ? toReleasePerson(value) : undefined
+}
+
+const getLocalReleaseContributors = (releaseAuthor?: ReleasePerson, authors?: string): ReleasePerson[] => {
+  const contributors = splitNames(authors).map(toReleasePerson)
+  const seen = new Set<string>()
+
+  return contributors.filter((contributor) => {
+    const key = contributor.github ?? contributor.name
+    if (releaseAuthor && key === (releaseAuthor.github ?? releaseAuthor.name)) return false
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
+const getPresenceChangedFiles = (presenceDir: string): string[] => {
+  const files = new Set<string>()
+  const outputs = [
+    runGit(["diff", "--name-only", "--", presenceDir]),
+    runGit(["diff", "--cached", "--name-only", "--", presenceDir]),
+  ]
+
+  for (const output of outputs) {
+    for (const file of output?.split("\n") ?? []) {
+      if (file.trim()) files.add(file.trim().replaceAll("\\", "/"))
+    }
+  }
+
+  return [...files]
+}
+
+const getPresenceDiffSummary = (presenceDir: string): string | undefined => {
+  const diff = [
+    runGit(["diff", "--", presenceDir]),
+    runGit(["diff", "--cached", "--", presenceDir]),
+  ].filter(Boolean).join("\n\n")
+
+  if (!diff) return undefined
+  return diff.length > MAX_DIFF_SUMMARY_LENGTH
+    ? `${diff.slice(0, MAX_DIFF_SUMMARY_LENGTH)}\n[diff truncated]`
+    : diff
+}
 
 export const registerPush = (program: Command) => {
   program
@@ -19,8 +103,10 @@ export const registerPush = (program: Command) => {
     .option("--patch", "Auto bump patch version")
     .option("--minor", "Auto bump minor version")
     .option("--changelog <text>", "Changelog message")
+    .option("--author <name>", "Release author")
+    .option("--authors <names>", "Comma-separated release authors/contributors")
     .option("--ai", "Let API generate trilingual changelog via AI")
-    .action(async (slug?: string, options?: { all?: boolean; version?: string; patch?: boolean; minor?: boolean; changelog?: string; ai?: boolean }) => {
+    .action(async (slug?: string, options?: { all?: boolean; version?: string; patch?: boolean; minor?: boolean; changelog?: string; author?: string; authors?: string; ai?: boolean }) => {
       const opts = options || {} as any
       logger.newline()
 
@@ -75,10 +161,12 @@ export const registerPush = (program: Command) => {
 
         let version: string
         let changelog: string
+        let versionType: "new" | "patch" | "minor" | "manual" | "keep"
 
         if (isNew) {
           version = "1.0.0"
-          changelog = opts.ai ? "" : (opts.changelog || `✨ Initial release of ${p.name}`)
+          versionType = "new"
+          changelog = opts.changelog || ""
           spinner.succeed(`New presence — version ${version}${opts.ai ? " (AI changelog)" : ""}`)
         } else {
           const current = remote.version!
@@ -86,15 +174,18 @@ export const registerPush = (program: Command) => {
 
           if (opts.version) {
             version = opts.version
-            changelog = opts.changelog || (opts.ai ? "" : `🔖 ${version}`)
+            versionType = "manual"
+            changelog = opts.changelog || ""
             spinner.succeed(`Version set: ${version}`)
           } else if (opts.patch) {
             version = bumpVersion(current, "patch")
-            changelog = opts.changelog || (opts.ai ? "" : `🐛 Patch bump to ${version}`)
+            versionType = "patch"
+            changelog = opts.changelog || ""
             spinner.succeed(`Auto patch: ${current} → ${version}`)
           } else if (opts.minor) {
             version = bumpVersion(current, "minor")
-            changelog = opts.changelog || (opts.ai ? "" : `✨ Minor bump to ${version}`)
+            versionType = "minor"
+            changelog = opts.changelog || ""
             spinner.succeed(`Auto minor: ${current} → ${version}`)
           } else {
             spinner.stop()
@@ -108,13 +199,16 @@ export const registerPush = (program: Command) => {
 
             if (strategy === "keep") {
               version = current
-              changelog = opts.changelog || (opts.ai ? "" : `📦 ${version}`)
+              versionType = "keep"
+              changelog = opts.changelog || ""
             } else if (strategy === "manual") {
               version = await input("Version:", { initial: current })
-              changelog = opts.changelog || (opts.ai ? "" : `🔖 ${version}`)
+              versionType = "manual"
+              changelog = opts.changelog || ""
             } else {
               version = bumpVersion(current, strategy)
-              changelog = opts.changelog || (opts.ai ? "" : `📦 ${version}`)
+              versionType = strategy
+              changelog = opts.changelog || ""
             }
           }
         }
@@ -123,6 +217,11 @@ export const registerPush = (program: Command) => {
         const settings = existsSync(settingsPath)
           ? JSON.parse(readFileSync(settingsPath, "utf-8"))
           : undefined
+        const releaseAuthor = getLocalReleaseAuthor(opts.author, opts.authors)
+        const releaseContributors = getLocalReleaseContributors(releaseAuthor, opts.authors)
+        const changedFiles = getPresenceChangedFiles(p.dir)
+        const diffSummary = getPresenceDiffSummary(p.dir)
+        const commitSha = runGit(["rev-parse", "HEAD"])
 
         payload.push({
           slug: p.slug,
@@ -131,12 +230,19 @@ export const registerPush = (program: Command) => {
           category: p.category,
           author: p.metadata.author?.name || p.author,
           authorGithub: p.metadata.author?.github,
+          releaseAuthor,
+          releaseContributors,
           version,
+          versionType,
           description: p.descriptions,
           color: p.metadata.color,
           url: p.metadata.url,
           changelog,
           bundle,
+          source: "cli",
+          commitSha,
+          changedFiles,
+          diffSummary,
           metadata: {
             slug: p.slug,
             ...p.metadata,

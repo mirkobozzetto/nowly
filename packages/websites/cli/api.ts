@@ -41,6 +41,11 @@ export interface PresenceInfo {
   [key: string]: any
 }
 
+export interface ReleasePerson {
+  name: string
+  github?: string
+}
+
 export async function fetchPresenceInfo(slug: string): Promise<PresenceInfo | null> {
   try {
     const res = await fetch(`${API_BASE}/presences/${slug}`)
@@ -57,12 +62,19 @@ export interface SyncPayload {
   name: string
   author: string
   authorGithub?: string
+  releaseAuthor?: ReleasePerson
+  releaseContributors?: ReleasePerson[]
   version: string
+  versionType?: "new" | "patch" | "minor" | "manual" | "keep"
   description: Record<string, string>
   color?: string
   url?: string[]
   changelog?: string
   bundle?: string
+  source?: "cli" | "pr"
+  commitSha?: string
+  changedFiles?: string[]
+  diffSummary?: string
   metadata?: Record<string, any>
 }
 
