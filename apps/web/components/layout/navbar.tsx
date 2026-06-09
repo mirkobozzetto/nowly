@@ -27,8 +27,14 @@ export const Navbar: FC = (): ReactElement => {
           </Link>
           
           <div className="flex items-center gap-2">
+            <Link href="/docs"
+              className={_buttonVariants({ size: "md", variant: "ghost" })}
+            >
+              {t("docs")}
+            </Link>
+
             <Link href="/library"
-              className={_buttonVariants({ size: "md", variant: "link" })}
+              className={_buttonVariants({ size: "md", variant: "ghost" })}
             >
               {t("marketplace")}
             </Link>

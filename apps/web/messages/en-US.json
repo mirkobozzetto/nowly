@@ -1,6 +1,7 @@
 {
   "Navbar": {
     "marketplace": "Library",
+    "docs": "Docs",
     "downloadDesktop": "Download App",
     "downloadFor": "Download for {browser}",
     "downloadShort": "Download"
