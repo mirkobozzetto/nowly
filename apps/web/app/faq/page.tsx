@@ -1,3 +1,5 @@
+import { FaqStructuredData } from "@/components/seo/faq-structured-data";
+import { createMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { FC, ReactElement } from "react";
@@ -7,22 +9,24 @@ type Props = {
 };
 
 const generateMetadata = (): Metadata => {
-  return {
-    title: "FAQ — Nowly",
-    description: "Frequently asked questions about the Nowly browser extension, installation, supported platforms, privacy and more.",
-    openGraph: {
-      title: "FAQ — Nowly",
-      description: "Frequently asked questions about the Nowly browser extension, installation, supported platforms, privacy and more.",
-    },
-  };
+  return createMetadata({
+    title: "Nowly FAQ",
+    description: "Frequently asked questions about the Nowly Discord Rich Presence browser extension, installation, supported platforms and privacy.",
+    path: "/faq",
+  });
 };
 
 const Page: FC<Props> = async ({ params }: Props): Promise<ReactElement> => {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "FaqPage" });
+  const faqItems = Array.from({ length: 9 }, (_, i) => ({
+    question: t(`q${i + 1}`),
+    answer: (t.raw(`a${i + 1}`) as string).replace(/<[^>]*>/g, ""),
+  }));
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-24">
+      <FaqStructuredData items={faqItems} />
       <h1 className="text-3xl font-bold tracking-tight mb-12">
         {t("title")}
       </h1>
@@ -48,4 +52,5 @@ const Page: FC<Props> = async ({ params }: Props): Promise<ReactElement> => {
 };
 
 export { generateMetadata };
+
 export default Page;

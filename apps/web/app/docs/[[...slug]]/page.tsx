@@ -5,6 +5,8 @@ import { PageNavigation } from "@/components/docs/page-navigation";
 import { TableOfContents } from "@/components/docs/table-of-contents";
 import { getAdjacentPages, getDocContent, getDocsNav } from "@/lib/docs/content";
 import { extractTocItems } from "@/lib/docs/types";
+import { createMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
 import { getLocale } from "next-intl/server";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { notFound } from "next/navigation";
@@ -15,6 +17,33 @@ type Props = {
   params: Promise<{
     slug?: string[]
   }>;
+};
+
+const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
+  const locale = await getLocale();
+  const { slug } = await params;
+  const pageSlug = slug?.join("/") || "getting-started";
+  const doc = getDocContent(pageSlug, locale);
+
+  if (!doc) {
+    return { title: "Not Found" };
+  }
+
+  const section = getDocsNav().find((item) => item.slug === pageSlug);
+  const description = doc.description || "Nowly documentation for Discord Rich Presence setup and presence development.";
+  const ogParams = new URLSearchParams({
+    title: doc.title,
+    description,
+    category: section?.title["en-US"] ?? "Documentation",
+    mode: "dark",
+  });
+
+  return createMetadata({
+    title: doc.title,
+    description,
+    path: `/docs/${pageSlug}`,
+    image: `/api/og/docs/${pageSlug}?${ogParams.toString()}`,
+  });
 };
 
 const Page = async ({ params }: Props): Promise<ReactElement> => {
@@ -64,5 +93,7 @@ const Page = async ({ params }: Props): Promise<ReactElement> => {
     </>
   );
 };
+
+export { generateMetadata };
 
 export default Page;

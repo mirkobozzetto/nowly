@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/seo";
 import type { MetadataRoute } from "next";
 
 const robots = (): MetadataRoute.Robots => {
@@ -9,7 +10,7 @@ const robots = (): MetadataRoute.Robots => {
         disallow: "/api/",
       },
     ],
-    sitemap: "https://nowly.me/sitemap.xml",
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 };
 

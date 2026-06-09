@@ -1,5 +1,6 @@
 import { CommentsClient } from "@/components/library/comments-client";
 import { metadataToPlatform } from "@/lib/data/presence-adapter";
+import { createMetadata } from "@/lib/seo";
 import { clientEnv } from "@nowly/env/client";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -22,12 +23,14 @@ const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
   }
 
   const name = data.metadata?.name ?? item;
-  const title = `Comments — ${name} — Nowly`;
 
-  return {
-    title,
-    alternates: { canonical: `/library/${item}/comments` },
-  };
+  return createMetadata({
+    title: `${name} Presence Comments`,
+    description: `Read community comments and ratings for the ${name} Discord Rich Presence on Nowly.`,
+    path: `/library/${item}/comments`,
+    image: `/api/og/presence/${item}`,
+    noIndex: true,
+  });
 };
 
 const Page = async ({ params }: Props): Promise<ReactElement> => {

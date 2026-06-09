@@ -1,15 +1,13 @@
+import { createMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import type { FC, ReactElement } from "react";
 
 const generateMetadata = (): Metadata => {
-  return {
-    title: "Changelog — Nowly",
-    description: "Latest updates and changes to Nowly.",
-    openGraph: {
-      title: "Changelog — Nowly",
-      description: "Latest updates and changes to Nowly.",
-    },
-  };
+  return createMetadata({
+    title: "Nowly Changelog",
+    description: "Latest updates, and changes to the Nowly Discord Rich Presence app.",
+    path: "/changelog",
+  });
 };
 
 const Page: FC = (): ReactElement => {
