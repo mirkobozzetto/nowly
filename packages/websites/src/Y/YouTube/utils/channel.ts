@@ -11,20 +11,24 @@ export const findTitle = (): string =>
   || "YouTube"
 
 export const findUploader = (videoId?: string): string | undefined =>
-  cleanUploader($("yt-reel-channel-bar-view-model .ytAttributedStringHost a")?.textContent?.trim())
-  || cleanUploader($(".ytReelChannelBarViewModelChannelName a")?.textContent?.trim())
-  || cleanUploader($("ytd-reel-player-overlay-renderer ytd-channel-name a")?.textContent?.trim())
-  || cleanUploader($("ytd-reel-video-renderer #channel-name a")?.textContent?.trim())
-  || cleanUploader($("ytd-channel-name a")?.textContent?.trim())
+  cleanUploader($("#owner #attributed-channel-name")?.textContent?.trim())
+  || cleanUploader($("#owner ytd-channel-name a")?.textContent?.trim())
   || cleanUploader($("#owner yt-formatted-string a")?.textContent?.trim())
   || cleanUploader($("#owner #channel-name a")?.textContent?.trim())
-  || cleanUploader($(".ytd-channel-name a")?.textContent?.trim())
   || cleanUploader($("#owner-container a")?.textContent?.trim())
   || cleanUploader($("ytd-video-owner-renderer a[href^='/@']")?.textContent?.trim())
+  || cleanUploader($("ytd-video-owner-renderer #attributed-channel-name")?.textContent?.trim())
+  || cleanUploader($("ytd-video-owner-renderer ytd-channel-name a")?.textContent?.trim())
   || cleanUploader($("yt-content-metadata-view-model a[href^='/@']")?.textContent?.trim())
   || cleanUploader($("ytd-watch-metadata a[href^='/@']")?.textContent?.trim())
   || findUploaderFromData(videoId)
   || findUploaderFromMeta()
+  || cleanUploader($("yt-reel-channel-bar-view-model .ytAttributedStringHost a")?.textContent?.trim())
+  || cleanUploader($(".ytReelChannelBarViewModelChannelName a")?.textContent?.trim())
+  || cleanUploader($("ytd-reel-player-overlay-renderer ytd-channel-name a")?.textContent?.trim())
+  || cleanUploader($("ytd-reel-video-renderer #channel-name a")?.textContent?.trim())
+  || cleanUploader($("ytd-channel-name a")?.textContent?.trim())
+  || cleanUploader($(".ytd-channel-name a")?.textContent?.trim())
 
 export const getChannelName = (): string | undefined => {
   const title = document.title.replace(" - YouTube", "").trim()
