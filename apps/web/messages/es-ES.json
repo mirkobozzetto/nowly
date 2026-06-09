@@ -273,7 +273,14 @@
     "versionTitle": "Versión {version}",
     "currentBadge": "Actual",
     "installAction": "Instalar",
-    "versionPlaceholder": "Versión"
+    "installOldAction": "Instalar versión anterior",
+    "versionPlaceholder": "Versión",
+    "sizeLabel": "Tamaño",
+    "sourceLabel": "Origen",
+    "commitLabel": "Commit",
+    "authorLabel": "Autor de la versión",
+    "contributorsLabel": "Colaboradores",
+    "aiChangelog": "Changelog IA"
   },
 
   "NotFound": {

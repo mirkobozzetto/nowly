@@ -37,7 +37,7 @@ function Card({
             aria-hidden="true"
             className="size-full object-cover opacity-45"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-card/75 to-card" />
+          <div className="absolute inset-0 bg-linear-to-b from-transparent via-card/75 to-card" />
         </div>
       ) : null}
 

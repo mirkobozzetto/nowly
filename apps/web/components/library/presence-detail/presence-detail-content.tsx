@@ -19,11 +19,13 @@ type Props = {
   isInstalled: boolean;
   extDetected: boolean;
   needsUpdate: boolean;
+  installedVersion: string | null;
   loading: boolean;
   totalInstalls: number;
   savedRating: number;
   onInstall: () => void;
   onUninstall: () => void;
+  onInstallVersion: (version: string) => void;
 };
 
 export const PresenceDetailContent: FC<Props> = ({
@@ -31,11 +33,13 @@ export const PresenceDetailContent: FC<Props> = ({
   isInstalled,
   extDetected,
   needsUpdate,
+  installedVersion,
   loading,
   totalInstalls,
   savedRating,
   onInstall,
   onUninstall,
+  onInstallVersion,
 }): ReactElement => {
   const locale = useLocale();
   const t = useTranslations("MarketplaceDetail");
@@ -97,7 +101,12 @@ export const PresenceDetailContent: FC<Props> = ({
             <InstallVersionsCard platform={presence} />
 
             {presence.status !== "soon" ? (
-              <PresenceVersionUpdatesCard presence={presence} locale={locale} />
+              <PresenceVersionUpdatesCard
+                presence={presence}
+                locale={locale}
+                installedVersion={installedVersion}
+                onInstallVersion={onInstallVersion}
+              />
             ) : null}
           </div>
         </div>

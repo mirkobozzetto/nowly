@@ -11,11 +11,28 @@ type VersionHistoryEntry = {
   version: string;
   changelog: unknown;
   timestamp: number | string;
+  author?: string;
+  authorGithub?: string;
+  releaseAuthor?: unknown;
+  releaseContributors?: unknown;
+  pr?: string;
+  source?: "cli" | "pr";
+  commitSha?: string;
+  bundleSizeLabel?: string;
+  versionType?: string;
+  aiGeneratedChangelog?: boolean;
 };
 
 type Props = {
   presence: Presence;
   locale: string;
+  installedVersion: string | null;
+  onInstallVersion: (version: string) => void;
+};
+
+type ReleasePerson = {
+  name: string;
+  github?: string;
 };
 
 const getLocalizedChangelog = (
@@ -41,6 +58,27 @@ const getLocalizedChangelog = (
   }
 };
 
+const parseJsonField = <T,>(value: unknown): T | undefined => {
+  if (!value) return undefined;
+  if (typeof value !== "string") return value as T;
+
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return undefined;
+  }
+};
+
+const getReleaseAuthor = (entry: VersionHistoryEntry): ReleasePerson | undefined => {
+  const releaseAuthor = parseJsonField<ReleasePerson>(entry.releaseAuthor);
+  if (releaseAuthor?.name) return releaseAuthor;
+  if (!entry.author) return undefined;
+  return {
+    name: entry.author,
+    github: entry.authorGithub,
+  };
+};
+
 const formatVersionDate = (
   timestamp: number | string,
   dateFormatter: Intl.DateTimeFormat,
@@ -55,6 +93,8 @@ const formatVersionDate = (
 export const PresenceVersionUpdatesCard: FC<Props> = ({
   presence,
   locale,
+  installedVersion,
+  onInstallVersion,
 }): ReactElement | null => {
   const { data: versionHistory } = useQuery<VersionHistoryEntry[]>({
     queryKey: ["presence-versions", presence.slug],
@@ -82,6 +122,7 @@ export const PresenceVersionUpdatesCard: FC<Props> = ({
     version: presence.version,
     date: dateFormatter.format(new Date(presence.lastUpdated)),
     description: getLocalizedDescription(presence, locale),
+    author: presence.author,
   };
 
   const updates: VersionUpdate[] = versionHistory?.length
@@ -90,6 +131,14 @@ export const PresenceVersionUpdatesCard: FC<Props> = ({
       date: formatVersionDate(entry.timestamp, dateFormatter),
       description: getLocalizedChangelog(entry.changelog, locale)
         ?? getLocalizedDescription(presence, locale),
+      author: getReleaseAuthor(entry),
+      contributors: parseJsonField<ReleasePerson[]>(entry.releaseContributors) ?? [],
+      pr: entry.pr,
+      source: entry.source,
+      commitSha: entry.commitSha,
+      bundleSizeLabel: entry.bundleSizeLabel,
+      versionType: entry.versionType,
+      aiGeneratedChangelog: entry.aiGeneratedChangelog,
     }))
     : [fallbackUpdate];
 
@@ -104,7 +153,10 @@ export const PresenceVersionUpdatesCard: FC<Props> = ({
   return (
     <VersionUpdatesCard
       currentVersion={presence.version}
+      installedVersion={installedVersion}
+      accentColor={presence.iconColor}
       updates={visibleUpdates}
+      onInstallVersion={onInstallVersion}
     />
   );
 };

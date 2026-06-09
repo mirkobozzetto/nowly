@@ -17,6 +17,7 @@ type UsePresenceStatusReturn = {
   pendingVersion: string | null
   handleInstall: () => Promise<void>
   handleUninstallRequest: () => void
+  requestInstallVersion: (version: string) => void
   confirmUninstall: () => void
   installVersion: (version: string) => Promise<void>
   confirmDowngrade: () => void
@@ -177,6 +178,16 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
     setShowUninstallConfirm(true);
   }, []);
 
+  const requestInstallVersion = useCallback((version: string): void => {
+    if (version === presence.version) {
+      void handleInstall();
+      return;
+    }
+
+    setPendingVersion(version);
+    setShowDowngradeConfirm(true);
+  }, [handleInstall, presence.version]);
+
   const confirmUninstall = useCallback((): void => {
     setIsInstalled(false);
     setInstalledVersion(null);
@@ -249,6 +260,7 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
     pendingVersion,
     handleInstall,
     handleUninstallRequest,
+    requestInstallVersion,
     confirmUninstall,
     installVersion,
     confirmDowngrade,

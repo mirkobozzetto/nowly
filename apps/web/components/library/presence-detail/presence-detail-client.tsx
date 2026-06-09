@@ -20,11 +20,13 @@ export const PresenceDetailClient: FC<Props> = ({ presence }): ReactElement => {
         isInstalled={status.isInstalled}
         extDetected={status.extDetected}
         needsUpdate={status.needsUpdate}
+        installedVersion={status.installedVersion}
         loading={status.loading}
         totalInstalls={status.totalInstalls}
         savedRating={status.savedRating}
         onInstall={status.handleInstall}
         onUninstall={status.handleUninstallRequest}
+        onInstallVersion={status.requestInstallVersion}
       />
 
       <PresenceDetailDialogs
