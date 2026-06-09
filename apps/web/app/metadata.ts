@@ -1,12 +1,24 @@
+import { DEFAULT_OG_IMAGE, DEFAULT_SEO, SITE_NAME, SITE_URL } from "@/lib/seo";
 import type { Metadata, Viewport } from "next";
 
-const APP_NAME = "Nowly";
-const APP_DEFAULT_TITLE = "Nowly | Automatic Discord Rich Presence";
+const APP_DEFAULT_TITLE = DEFAULT_SEO.title;
 
 export const metadata: Metadata = {
-  applicationName: APP_NAME,
-  title: APP_DEFAULT_TITLE,
-  description: "Automatically display what you're watching in your Discord status. YouTube, Twitch, Disney+, Apple TV+, Prime Video and more.",
+  metadataBase: new URL(SITE_URL),
+  applicationName: SITE_NAME,
+  title: {
+    default: APP_DEFAULT_TITLE,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: DEFAULT_SEO.description,
+  keywords: DEFAULT_SEO.keywords,
+  alternates: {
+    canonical: SITE_URL,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -25,16 +37,22 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    siteName: "Nowly",
+    siteName: SITE_NAME,
+    url: SITE_URL,
     title: APP_DEFAULT_TITLE,
-    description:
-      "Automatically display what you're watching in your Discord status. YouTube, Twitch, Disney+, Apple TV+, Prime Video and more.",
+    description: DEFAULT_SEO.description,
+    images: [{
+      url: DEFAULT_OG_IMAGE,
+      width: 1200,
+      height: 630,
+      alt: APP_DEFAULT_TITLE
+    }],
   },
   twitter: {
     card: "summary_large_image",
     title: APP_DEFAULT_TITLE,
-    description:
-      "Automatically display what you're watching in your Discord status. YouTube, Twitch, Disney+, Apple TV+, Prime Video and more.",
+    description: DEFAULT_SEO.description,
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 
