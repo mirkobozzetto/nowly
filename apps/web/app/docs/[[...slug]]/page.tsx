@@ -10,6 +10,7 @@ import type { Metadata } from "next";
 import { getLocale } from "next-intl/server";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { notFound } from "next/navigation";
+import { ScrollToTop } from "@/components/docs/scroll-to-top";
 import type { ReactElement } from "react";
 
 type Props = {
@@ -60,6 +61,7 @@ const Page = async ({ params }: Props): Promise<ReactElement> => {
 
   return (
     <>
+      <ScrollToTop />
       <article className="py-8">
         <div className="flex items-start justify-between gap-4 mb-2">
           <h1 className="text-3xl font-semibold font-heading">

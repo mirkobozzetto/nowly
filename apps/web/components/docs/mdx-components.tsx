@@ -1,7 +1,9 @@
 import type { ComponentType, FC, ReactNode } from "react";
 import { Callout } from "./callout";
 import { CodeBlock } from "./code-block";
+import { Faq } from "./faq";
 import { HeadingAnchor } from "./heading-anchor";
+import { Steps, Step } from "./steps";
 import { TypeTable } from "./type-table";
 
 type MDXComponents = Record<string, ComponentType<Record<string, unknown>>>;
@@ -158,4 +160,9 @@ export const mdxComponents: MDXComponents = {
   )) as FC<{ children?: ReactNode }>,
 
   TypeTable: createSeparatedComponent(TypeTable, "TypeTable"),
+
+  Steps: Steps as ComponentType<Record<string, unknown>>,
+  Step: Step as ComponentType<Record<string, unknown>>,
+  CodeBlock: CodeBlock as ComponentType<Record<string, unknown>>,
+  Faq: Faq as ComponentType<Record<string, unknown>>,
 };
