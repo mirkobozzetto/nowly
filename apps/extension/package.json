@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "tsx scripts/build.ts",
+    "build:dev": "tsx scripts/build-dev.ts",
     "dev": "vite build --watch",
     "lint": "tsc --noEmit"
   },
