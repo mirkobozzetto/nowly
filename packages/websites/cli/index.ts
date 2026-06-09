@@ -1,10 +1,7 @@
 #!/usr/bin/env node
 import { registerBuild } from "@/commands/build"
-import { registerHostPublish } from "@/commands/host-publish"
 import { registerInit } from "@/commands/init"
 import { registerList } from "@/commands/list"
-import { registerPush } from "@/commands/push"
-import { registerR2Sync } from "@/commands/r2-sync"
 import { registerValidate } from "@/commands/validate"
 import { logger } from "@/logger"
 import { confirm, select } from "@/prompts"
@@ -14,16 +11,13 @@ import "dotenv/config"
 
 const program = new Command()
   .name("presence")
-  .description("Nowly presence manager — create, build, and push presences")
+  .description("Nowly presence manager — create, build, validate, and test presences")
   .version("1.0.0")
 
 registerInit(program)
 registerBuild(program)
-registerPush(program)
 registerList(program)
 registerValidate(program)
-registerR2Sync(program)
-registerHostPublish(program)
 
 async function runInteractive(): Promise<void> {
   logger.newline()
@@ -34,7 +28,6 @@ async function runInteractive(): Promise<void> {
   const action = await select("What would you like to do?", [
     { name: "init" as any, message: "Create a new presence" },
     { name: "build" as any, message: "Build presences" },
-    { name: "push" as any, message: "Push presences to API" },
     { name: "list" as any, message: "List all presences" },
     { name: "validate" as any, message: "Validate presences" },
     { name: "exit" as any, message: "Exit" },
@@ -48,9 +41,6 @@ async function runInteractive(): Promise<void> {
       break
     case "build":
       await program.parseAsync(["build"], { from: "user" })
-      break
-    case "push":
-      await program.parseAsync(["push"], { from: "user" })
       break
     case "list":
       await program.parseAsync(["list"], { from: "user" })
