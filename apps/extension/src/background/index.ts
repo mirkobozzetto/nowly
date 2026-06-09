@@ -4,6 +4,7 @@ import { connectNative, mapPresenceData, onNativeResponse, postNative, reconnect
 import { createPresenceRuntime, USER_SCRIPT_MESSAGE_SOURCE } from "./presence-runtime";
 import { verifyPresenceRelease } from "./release-security";
 import { getCurrentActivity, getDebug, getPresenceSettings, getPresences, getSettings, setCurrentActivity, setDebug, setPresences, setPresenceSettings, setSettings } from "./storage";
+import { BUNDLED_PRESENCES } from "@/generated/bundled-presences";
 
 let customApiUrl: string | undefined;
 
@@ -539,24 +540,57 @@ const initializeCustomApiUrl = async (): Promise<void> => {
   customApiUrl = settings.customApiBaseUrl;
 };
 
-chrome.runtime.onStartup.addListener(() => {
+const installBundledPresences = async (): Promise<void> => {
+  if (!BUNDLED_PRESENCES?.length) return;
+  const presences = await getPresences();
+  let changed = false;
+
+  for (const bp of BUNDLED_PRESENCES) {
+    const existing = presences[bp.slug];
+    if (existing?.release?.metadata?.version === bp.release.version) continue;
+
+    presences[bp.slug] = {
+      metadata: bp.release.metadata,
+      release: bp.release,
+      enabled: true,
+      installedAt: existing?.installedAt ?? Date.now(),
+      updatedAt: Date.now(),
+    };
+    changed = true;
+  }
+
+  if (changed) {
+    await setPresences(presences);
+    broadcastPresencesChanged();
+  }
+};
+
+chrome.runtime.onStartup.addListener(async () => {
   enableSidePanelAction();
-  void handleClearActivity();
+  await handleClearActivity();
   connectNative();
-  void initializeCustomApiUrl();
-  getPresences().then((presences) => void syncPresenceScripts(presences));
+  await initializeCustomApiUrl();
+  await installBundledPresences();
+  const presences = await getPresences();
+  await syncPresenceScripts(presences);
 });
 
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener(async () => {
   enableSidePanelAction();
-  void handleClearActivity();
+  await handleClearActivity();
   connectNative();
-  void initializeCustomApiUrl();
-  getPresences().then((presences) => void syncPresenceScripts(presences));
+  await initializeCustomApiUrl();
+  await installBundledPresences();
+  const presences = await getPresences();
+  await syncPresenceScripts(presences);
 });
 
 enableSidePanelAction();
-void handleClearActivity();
-connectNative();
-void initializeCustomApiUrl();
-getPresences().then((presences) => void syncPresenceScripts(presences));
+void (async () => {
+  await handleClearActivity();
+  connectNative();
+  await initializeCustomApiUrl();
+  await installBundledPresences();
+  const presences = await getPresences();
+  await syncPresenceScripts(presences);
+})();

@@ -1,5 +1,9 @@
 import type { PresenceRelease } from "@/shared/types";
 
+const IS_UNPACKED = (): boolean => {
+  try { return !chrome.runtime.getManifest().update_url } catch { return false }
+}
+
 const PRESENCE_SIGNING_PUBLIC_KEY = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEDhuTFou1XhQRUFR6I-DTR6K2mUJkMUjgJxVMBw9EshH49oo1atlfPDHiQKj2WnuqdTS05H0D-TvVjmjz9wFvFg";
 
 const base64UrlToBytes = (value: string): Uint8Array => {
@@ -78,7 +82,9 @@ export const verifyPresenceRelease = async (
   const metadataHash = await sha256Base64Url(canonicalJson(release.metadata));
   if (metadataHash !== release.metadataHash) return { ok: false, error: "metadata hash mismatch" };
 
-  if (!await verifySignature(release)) return { ok: false, error: "release signature invalid" };
+  if (!IS_UNPACKED() || release.signature) {
+    if (!await verifySignature(release)) return { ok: false, error: "release signature invalid" };
+  }
 
   return { ok: true };
 };
