@@ -2,7 +2,8 @@ import { DIST } from "@/discover"
 import { spinner } from "@/logger"
 import { CopyObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { cliEnv } from "@nowly/env/cli"
-import { existsSync, readdirSync, readFileSync } from "fs"
+import { createHash } from "crypto"
+import { existsSync, readdirSync, readFileSync, statSync } from "fs"
 import { join, relative } from "path"
 
 const R2_BUCKET = cliEnv.R2_BUCKET
@@ -19,6 +20,9 @@ const MIME_TYPES: Record<string, string> = {
   ".svg": "image/svg+xml",
   ".webp": "image/webp",
   ".ico": "image/x-icon",
+  ".exe": "application/vnd.microsoft.portable-executable",
+  ".zip": "application/zip",
+  ".gz": "application/gzip",
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
 }
@@ -32,6 +36,34 @@ const getCacheControl = (path: string): string => {
   if (path.endsWith(".js")) return "public, max-age=31536000, immutable"
   if (path.match(/\.(png|jpg|jpeg|gif|svg|webp|ico)$/)) return "public, max-age=31536000, immutable"
   return "public, max-age=3600"
+}
+
+const sha256File = (path: string): string => {
+  return createHash("sha256").update(readFileSync(path)).digest("hex")
+}
+
+const putFile = async (key: string, filePath: string, cacheControl?: string): Promise<string> => {
+  const client = getClient()
+  await client.send(new PutObjectCommand({
+    Bucket: R2_BUCKET,
+    Key: key,
+    Body: readFileSync(filePath),
+    ContentType: getContentType(filePath),
+    CacheControl: cacheControl ?? getCacheControl(filePath),
+  }))
+  return `${R2_PUBLIC_URL}/${key}`
+}
+
+const putJson = async (key: string, value: unknown, cacheControl = "public, max-age=60"): Promise<string> => {
+  const client = getClient()
+  await client.send(new PutObjectCommand({
+    Bucket: R2_BUCKET,
+    Key: key,
+    Body: JSON.stringify(value, null, 2),
+    ContentType: "application/json; charset=utf-8",
+    CacheControl: cacheControl,
+  }))
+  return `${R2_PUBLIC_URL}/${key}`
 }
 
 let s3Client: S3Client | null = null
@@ -178,4 +210,111 @@ export const uploadAllToR2 = async (): Promise<void> => {
   for (const slug of slugs) {
     await uploadToR2(slug)
   }
+}
+
+type HostReleaseArtifact = {
+  url: string
+  sha256: string
+  size: number
+}
+
+export type HostReleaseManifest = {
+  version: string
+  releasedAt: string
+  windows: {
+    installer: HostReleaseArtifact
+    portable?: HostReleaseArtifact
+  }
+  linux?: {
+    archive: HostReleaseArtifact
+  }
+  macos?: {
+    archive: HostReleaseArtifact
+  }
+}
+
+export const uploadHostReleaseToR2 = async (
+  version: string,
+  installerPath: string,
+  portablePath?: string,
+  linuxArchivePath?: string,
+  macosArchivePath?: string,
+): Promise<HostReleaseManifest> => {
+  if (!/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(version)) {
+    throw new Error(`Invalid host version: ${version}`)
+  }
+  if (!existsSync(installerPath)) {
+    throw new Error(`Installer not found: ${installerPath}`)
+  }
+  if (portablePath && !existsSync(portablePath)) {
+    throw new Error(`Portable archive not found: ${portablePath}`)
+  }
+  if (linuxArchivePath && !existsSync(linuxArchivePath)) {
+    throw new Error(`Linux archive not found: ${linuxArchivePath}`)
+  }
+  if (macosArchivePath && !existsSync(macosArchivePath)) {
+    throw new Error(`macOS archive not found: ${macosArchivePath}`)
+  }
+
+  const installerLatestKey = "installer/nowly-setup.exe"
+  const installerVersionKey = `installer/releases/${version}/nowly-setup.exe`
+  const installerUrl = await putFile(installerLatestKey, installerPath, "public, max-age=300")
+  await putFile(installerVersionKey, installerPath, "public, max-age=31536000, immutable")
+
+  const manifest: HostReleaseManifest = {
+    version,
+    releasedAt: new Date().toISOString(),
+    windows: {
+      installer: {
+        url: installerUrl,
+        sha256: sha256File(installerPath),
+        size: statSync(installerPath).size,
+      },
+    },
+  }
+
+  if (portablePath) {
+    const portableLatestKey = "installer/nowly-windows.zip"
+    const portableVersionKey = `installer/releases/${version}/nowly-windows.zip`
+    const portableUrl = await putFile(portableLatestKey, portablePath, "public, max-age=300")
+    await putFile(portableVersionKey, portablePath, "public, max-age=31536000, immutable")
+    manifest.windows.portable = {
+      url: portableUrl,
+      sha256: sha256File(portablePath),
+      size: statSync(portablePath).size,
+    }
+  }
+
+  if (linuxArchivePath) {
+    const linuxLatestKey = "installer/nowly-linux.tar.gz"
+    const linuxVersionKey = `installer/releases/${version}/nowly-linux.tar.gz`
+    const linuxUrl = await putFile(linuxLatestKey, linuxArchivePath, "public, max-age=300")
+    await putFile(linuxVersionKey, linuxArchivePath, "public, max-age=31536000, immutable")
+    manifest.linux = {
+      archive: {
+        url: linuxUrl,
+        sha256: sha256File(linuxArchivePath),
+        size: statSync(linuxArchivePath).size,
+      },
+    }
+  }
+
+  if (macosArchivePath) {
+    const macosLatestKey = "installer/nowly-macos.tar.gz"
+    const macosVersionKey = `installer/releases/${version}/nowly-macos.tar.gz`
+    const macosUrl = await putFile(macosLatestKey, macosArchivePath, "public, max-age=300")
+    await putFile(macosVersionKey, macosArchivePath, "public, max-age=31536000, immutable")
+    manifest.macos = {
+      archive: {
+        url: macosUrl,
+        sha256: sha256File(macosArchivePath),
+        size: statSync(macosArchivePath).size,
+      },
+    }
+  }
+
+  await putJson(`installer/releases/${version}/latest.json`, manifest, "public, max-age=31536000, immutable")
+  await putJson("installer/latest.json", manifest, "public, max-age=60")
+
+  return manifest
 }

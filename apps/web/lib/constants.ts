@@ -13,10 +13,10 @@ export const ADSENSE_CLIENT_ID = "ca-pub-6330177306711077";
 export const LANDING_AD_SLOT = "4584618586";
 export const LIBRARY_AD_SLOT = "8815663161";
 
-export const HOST_VERSION = "1.0.1";
 export const HOST_VERSION_URL = "https://nowly.me/host/version";
 
 export const CDN_INSTALLER_BASE_URL = "https://cdn.nowly.me/installer";
+export const HOST_LATEST_MANIFEST_URL = `${CDN_INSTALLER_BASE_URL}/latest.json`;
 
 export const buildPresenceUrl = (platform: Presence): string => {
   const firstChar = platform.slug.charAt(0);

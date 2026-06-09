@@ -1,0 +1,135 @@
+name: Host Release
+
+on:
+  push:
+    tags:
+      - "host-v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Host version to release, e.g. 1.0.0"
+        required: true
+        type: string
+
+jobs:
+  release-windows:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+          cache-dependency-path: apps/native/go.mod
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Resolve version
+        id: version
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $version = "${{ inputs.version }}"
+          } else {
+            $version = "${{ github.ref_name }}" -replace '^host-v', ''
+          }
+
+          if ($version -notmatch '^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$') {
+            throw "Invalid host version: $version"
+          }
+
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Test native host
+        working-directory: apps/native
+        run: go test ./...
+
+      - name: Build native host
+        working-directory: apps/native
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          $ldflags = "-X nowly.client/native/internal/contract.HostVersion=${{ steps.version.outputs.version }}"
+
+          $env:GOOS = "windows"
+          $env:GOARCH = "amd64"
+          go build -ldflags $ldflags -o dist/nowly-host.exe ./cmd/host
+
+          $env:GOOS = "linux"
+          $env:GOARCH = "amd64"
+          go build -ldflags $ldflags -o dist/nowly-host-linux ./cmd/host
+
+          $env:GOOS = "darwin"
+          $env:GOARCH = "amd64"
+          go build -ldflags $ldflags -o dist/nowly-host-darwin ./cmd/host
+
+          $env:GOOS = "darwin"
+          $env:GOARCH = "arm64"
+          go build -ldflags $ldflags -o dist/nowly-host-darwin-arm64 ./cmd/host
+
+      - name: Build Windows installer
+        working-directory: apps/native
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          & $iscc installer.iss /DAPP_VERSION=${{ steps.version.outputs.version }}
+
+      - name: Build portable archive
+        working-directory: apps/native
+        shell: pwsh
+        run: |
+          Compress-Archive -Path dist/nowly-host.exe -DestinationPath dist/nowly-windows.zip -Force
+
+          New-Item -ItemType Directory -Force -Path dist/linux/scripts | Out-Null
+          Copy-Item dist/nowly-host-linux dist/linux/nowly-host-linux
+          Copy-Item scripts/install-linux.sh dist/linux/scripts/install-linux.sh
+          Copy-Item scripts/uninstall-linux.sh dist/linux/scripts/uninstall-linux.sh
+          tar -czf dist/nowly-linux.tar.gz -C dist/linux .
+
+          New-Item -ItemType Directory -Force -Path dist/macos/scripts | Out-Null
+          Copy-Item dist/nowly-host-darwin dist/macos/nowly-host-darwin
+          Copy-Item dist/nowly-host-darwin-arm64 dist/macos/nowly-host-darwin-arm64
+          Copy-Item scripts/install-macos.sh dist/macos/scripts/install-macos.sh
+          Copy-Item scripts/uninstall-macos.sh dist/macos/scripts/uninstall-macos.sh
+          tar -czf dist/nowly-macos.tar.gz -C dist/macos .
+
+      - name: Publish to CDN
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET || 'nowly' }}
+        run: >
+          pnpm presence host:publish
+          --version ${{ steps.version.outputs.version }}
+          --installer apps/native/dist/NowlySetup.exe
+          --portable apps/native/dist/nowly-windows.zip
+          --linux apps/native/dist/nowly-linux.tar.gz
+          --macos apps/native/dist/nowly-macos.tar.gz
+
+      - name: Create GitHub release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: host-v${{ steps.version.outputs.version }}
+          name: Nowly Host v${{ steps.version.outputs.version }}
+          files: |
+            apps/native/dist/NowlySetup.exe
+            apps/native/dist/nowly-windows.zip
+            apps/native/dist/nowly-linux.tar.gz
+            apps/native/dist/nowly-macos.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

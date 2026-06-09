@@ -7,6 +7,7 @@ let connected = false;
 let status = "not connected";
 let connecting = false;
 let discordConnected = false;
+let version: string | undefined;
 const responseListeners = new Set<(message: NativeResponse) => void>();
 
 export const mapPresenceData = (data: PresenceData): PresencePayload => ({
@@ -23,19 +24,19 @@ export const mapPresenceData = (data: PresenceData): PresencePayload => ({
   buttons: data.buttons?.slice(0, 2),
 });
 
-export const getNativeStatus = () => ({ connected, status, discordConnected });
+export const getNativeStatus = () => ({ connected, status, discordConnected, version });
 
 export const onNativeResponse = (listener: (message: NativeResponse) => void): (() => void) => {
   responseListeners.add(listener);
   return () => responseListeners.delete(listener);
 };
 
-export const refreshNativeStatus = (): { connected: boolean; status: string; discordConnected: boolean } => {
+export const refreshNativeStatus = (): { connected: boolean; status: string; discordConnected: boolean; version?: string } => {
   postNative({ type: "PING" });
   return getNativeStatus();
 };
 
-export const reconnectNative = (): { connected: boolean; status: string; discordConnected: boolean } => {
+export const reconnectNative = (): { connected: boolean; status: string; discordConnected: boolean; version?: string } => {
   if (nativePort && (connected || connecting)) {
     postNative({ type: "PING" });
     return getNativeStatus();
@@ -52,6 +53,7 @@ export const reconnectNative = (): { connected: boolean; status: string; discord
   nativePort = null;
   connected = false;
   discordConnected = false;
+  version = undefined;
   status = "connecting";
   connectNative();
   return getNativeStatus();
@@ -80,13 +82,14 @@ export const connectNative = (): void => {
       connecting = false;
       connected = true;
       status = "connected";
+      version = message.version ?? version;
     }
 
     if (message.type === "PONG") {
       connecting = false;
       connected = message.connected;
       status = message.status;
-
+      version = message.version ?? version;
 
       discordConnected = Boolean(message.discordConnected);
       if (discordConnected) {
@@ -107,6 +110,7 @@ export const connectNative = (): void => {
     connecting = false;
     connected = false;
     discordConnected = false;
+    version = undefined;
     status = chrome.runtime.lastError?.message ?? "native disconnected";
     nativePort = null;
   });

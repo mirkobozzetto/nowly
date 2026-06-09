@@ -9,7 +9,7 @@ import type { ExtensionSettings } from "@/shared/types";
 import { DisplaySettings } from "./display-settings";
 
 type HostVersionInfo = {
-  currentVersion: string;
+  currentVersion?: string;
   latestVersion: string;
   updateAvailable: boolean;
 };

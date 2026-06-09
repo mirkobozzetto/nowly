@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { registerBuild } from "@/commands/build"
+import { registerHostPublish } from "@/commands/host-publish"
 import { registerInit } from "@/commands/init"
 import { registerList } from "@/commands/list"
 import { registerPush } from "@/commands/push"
@@ -22,6 +23,7 @@ registerPush(program)
 registerList(program)
 registerValidate(program)
 registerR2Sync(program)
+registerHostPublish(program)
 
 async function runInteractive(): Promise<void> {
   logger.newline()

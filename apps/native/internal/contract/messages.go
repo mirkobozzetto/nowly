@@ -8,8 +8,9 @@ const (
 	ExtensionID       = "abbegmindbabanjcabnmcjmamaoffbam"
 	DiscordClientID   = "1510223984392671302"
 
-	HostVersion = "1.0.0"
 )
+
+var HostVersion = "0.0.0-dev"
 
 func HostExecutableName() string {
 	if runtime.GOOS == "windows" {
@@ -64,6 +65,7 @@ type NativeResponse struct {
 	Connected bool            `json:"connected,omitempty"`
 	Discord    bool            `json:"discordConnected,omitempty"`
 	Status    string          `json:"status,omitempty"`
+	Version   string          `json:"version,omitempty"`
 	Profile   *DiscordProfile `json:"profile,omitempty"`
 	Error     string          `json:"error,omitempty"`
 }
@@ -76,15 +78,15 @@ type DiscordProfile struct {
 }
 
 func Pong(connected bool, status string) NativeResponse {
-	return NativeResponse{Type: ResponsePong, Connected: connected, Status: status}
+	return NativeResponse{Type: ResponsePong, Connected: connected, Status: status, Version: HostVersion}
 }
 
 func PongWithProfile(connected bool, discordConnected bool, status string, profile *DiscordProfile) NativeResponse {
-	return NativeResponse{Type: ResponsePong, Connected: connected, Discord: discordConnected, Status: status, Profile: profile}
+	return NativeResponse{Type: ResponsePong, Connected: connected, Discord: discordConnected, Status: status, Version: HostVersion, Profile: profile}
 }
 
 func Connected() NativeResponse {
-	return NativeResponse{Type: ResponseConnected}
+	return NativeResponse{Type: ResponseConnected, Version: HostVersion}
 }
 
 func OK() NativeResponse {

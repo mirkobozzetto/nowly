@@ -2,7 +2,7 @@
 
 import { AppleIcon, LinuxIcon, WindowsIcon } from "@/components/icons";
 import { usePlatform } from "@/hooks/use-platform";
-import { CDN_INSTALLER_BASE_URL, HOST_VERSION, HOST_VERSION_URL } from "@/lib/constants";
+import { CDN_INSTALLER_BASE_URL, HOST_VERSION_URL } from "@/lib/constants";
 import { Check, Code2, Feather, Monitor } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
@@ -25,9 +25,12 @@ export const HostContent: FC = (): ReactElement => {
     const timeout = setTimeout(() => controller.abort(), 5000);
 
     fetch(HOST_VERSION_URL, { signal: controller.signal })
-      .then((r) => r.json() as Promise<{ version: string }>)
+      .then((r) => {
+        if (!r.ok) throw new Error("failed to fetch host version");
+        return r.json() as Promise<{ version: string }>;
+      })
       .then((data) => setVersion(data.version))
-      .catch(() => setVersion(HOST_VERSION))
+      .catch(() => setVersion(null))
       .finally(() => clearTimeout(timeout));
 
     return () => {
@@ -105,7 +108,7 @@ export const HostContent: FC = (): ReactElement => {
         </h2>
 
         <p className="text-muted-foreground text-sm mb-8 max-w-sm mx-auto">
-          {t("cardVersion", { version: version ?? HOST_VERSION })}
+          {t("cardVersion", { version: version ?? "latest" })}
         </p>
 
         <HostDownload config={config} />

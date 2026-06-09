@@ -10,10 +10,11 @@ export type NativeResponse =
       type: "PONG";
       connected: boolean;
       status: string;
+      version?: string;
       discordConnected?: boolean;
       profile?: DiscordProfileSnapshot | null;
     }
-  | { type: "CONNECTED" }
+  | { type: "CONNECTED"; version?: string }
   | { type: "OK" }
   | { type: "ERROR"; error: string };
 

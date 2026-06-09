@@ -3,6 +3,7 @@ import type { ExtensionMessageType } from "@/shared/types";
 export type NativeStatus = {
   connected: boolean;
   status: string;
+  version?: string;
   discordConnected?: boolean;
 };
 

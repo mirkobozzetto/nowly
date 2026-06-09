@@ -42,7 +42,7 @@ make build
 #### Windows
 
 ```powershell
-go build -o dist/nowly-host.exe ./cmd/host
+go build -ldflags "-X nowly.client/native/internal/contract.HostVersion=1.0.0" -o dist/nowly-host.exe ./cmd/host
 ```
 
 #### Linux
@@ -92,7 +92,7 @@ GOOS=darwin GOARCH=arm64 go build -o dist/nowly-host-darwin-arm64 ./cmd/host
 ### Windows — Inno Setup installer
 
 ```powershell
-iscc installer.iss
+iscc installer.iss /DAPP_VERSION=1.0.0
 ```
 
 The installer registers the host with Chrome, Edge, and Brave via registry keys.
@@ -101,6 +101,37 @@ Override the extension ID for production:
 
 ```powershell
 iscc installer.iss /DEXTENSION_ID=your-store-id-here
+```
+
+## Release flow
+
+Host releases are driven by git tags. Push a tag named `host-vX.Y.Z`:
+
+```bash
+git tag host-v1.0.0
+git push origin host-v1.0.0
+```
+
+The `Host Release` GitHub Action then:
+
+1. Builds `nowly-host.exe` with `HostVersion` injected from the tag.
+2. Cross-compiles the Linux and macOS host binaries with the same version.
+3. Builds the Inno Setup installer with the same `AppVersion`.
+4. Creates the Windows, Linux, and macOS archives.
+5. Uploads the latest artifacts to Cloudflare R2:
+   - `installer/nowly-setup.exe`
+   - `installer/nowly-windows.zip`
+   - `installer/nowly-linux.tar.gz`
+   - `installer/nowly-macos.tar.gz`
+   - `installer/latest.json`
+6. Uploads immutable copies under `installer/releases/X.Y.Z/`.
+
+The extension checks `https://nowly.me/host/version`, which reads `https://cdn.nowly.me/installer/latest.json`. Once the workflow updates `latest.json`, users with an older native host see the update prompt automatically.
+
+For a manual re-publish, use:
+
+```bash
+pnpm presence host:publish --version 1.0.0 --installer apps/native/dist/NowlySetup.exe --portable apps/native/dist/nowly-windows.zip --linux apps/native/dist/nowly-linux.tar.gz --macos apps/native/dist/nowly-macos.tar.gz
 ```
 
 ### Linux

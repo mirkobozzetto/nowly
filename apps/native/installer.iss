@@ -5,6 +5,9 @@
 #define MyAppPublisher "Nowly"
 #define MyAppURL "https://nowly.me"
 #define MyAppExeName "nowly-host.exe"
+#ifndef APP_VERSION
+  #define APP_VERSION "0.0.0"
+#endif
 
 #define HostName "nowly.client"
 #define InstallFolder "NowlyClient"
@@ -15,7 +18,7 @@
 [Setup]
 AppId={{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}
 AppName={#MyAppName}
-AppVersion=1.0.0
+AppVersion={#APP_VERSION}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 DefaultDirName={localappdata}\{#InstallFolder}
