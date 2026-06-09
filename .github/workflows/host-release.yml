@@ -115,10 +115,10 @@ jobs:
         run: >
           pnpm presence host:publish
           --release-version ${{ steps.version.outputs.version }}
-          --installer apps/native/dist/NowlySetup.exe
-          --portable apps/native/dist/nowly-windows.zip
-          --linux apps/native/dist/nowly-linux.tar.gz
-          --macos apps/native/dist/nowly-macos.tar.gz
+          --installer "${{ github.workspace }}/apps/native/dist/NowlySetup.exe"
+          --portable "${{ github.workspace }}/apps/native/dist/nowly-windows.zip"
+          --linux "${{ github.workspace }}/apps/native/dist/nowly-linux.tar.gz"
+          --macos "${{ github.workspace }}/apps/native/dist/nowly-macos.tar.gz"
 
       - name: Create GitHub release
         if: github.event_name == 'push'

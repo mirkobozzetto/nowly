@@ -1,6 +1,20 @@
 import type { Command } from "commander"
 import { logger } from "@/logger"
 import { uploadHostReleaseToR2 } from "@/r2"
+import { existsSync } from "fs"
+import { resolve } from "path"
+
+const resolveArtifactPath = (path: string | undefined): string | undefined => {
+  if (!path) return undefined
+
+  const fromCurrentDirectory = resolve(path)
+  if (existsSync(fromCurrentDirectory)) return fromCurrentDirectory
+
+  const fromRepositoryRoot = resolve(process.cwd(), "../..", path)
+  if (existsSync(fromRepositoryRoot)) return fromRepositoryRoot
+
+  return fromCurrentDirectory
+}
 
 export const registerHostPublish = (program: Command) => {
   program
@@ -18,10 +32,10 @@ export const registerHostPublish = (program: Command) => {
       try {
         const manifest = await uploadHostReleaseToR2(
           options.releaseVersion,
-          options.installer,
-          options.portable,
-          options.linux,
-          options.macos,
+          resolveArtifactPath(options.installer)!,
+          resolveArtifactPath(options.portable),
+          resolveArtifactPath(options.linux),
+          resolveArtifactPath(options.macos),
         )
         logger.success(`Published host v${manifest.version}`)
         logger.success(manifest.windows.installer.url)
