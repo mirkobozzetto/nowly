@@ -33,23 +33,34 @@ pnpm presence build youtube
 
 ## Test a Presence Locally
 
-Start the local dev server with a presence to test it in your browser:
+Build the extension with your presences baked in (no server needed):
 
 ```bash
-pnpm presence dev-server youtube
+pnpm build:extension:dev
 ```
 
-This builds the presence and starts a studio app at `http://localhost:9372` with a local library page. To install the presence into the extension:
+This builds all presences and bundles them directly into the extension. To test after changes:
 
-1. Open the extension settings
-2. Set **Custom API URL** to `http://localhost:9372`
-3. Reload the extension
-4. Open `http://localhost:9372` in your browser
-5. Click **Install** on the presence card
+1. Edit the presence code (e.g., `packages/websites/src/Y/YouTube/presence.ts`)
+2. Rebuild only the changed presence then the extension:
 
-The extension fetches the presence from your local dev server, so no extension modification is needed.
+```bash
+pnpm presence build youtube
+pnpm build:extension:dev
+```
 
-Press `Ctrl+C` to stop the dev server.
+3. Reload the extension at `chrome://extensions`
+4. The presence is already installed and ready to use
+
+The extension auto-installs bundled presences on startup. No API server, no install page, no Custom API URL needed.
+
+For production/Chrome Web Store builds:
+
+```bash
+pnpm build:extension
+```
+
+This strips the manifest `key` (required by the store) and does **not** bundle any presences (they're fetched live from the Nowly API).
 
 ## List Presences
 
@@ -61,42 +72,4 @@ pnpm presence list
 
 ```bash
 pnpm presence validate
-```
-
----
-
-## Admin Commands
-
-The following commands are for internal use (CI/CD and maintainers only). They require API and R2 credentials, available via the admin CLI.
-
-### Push Presences to API
-
-Build and publish presence(s) to the Nowly API:
-
-```bash
-pnpm admin push
-```
-
-Push a specific presence:
-
-```bash
-pnpm admin push youtube
-```
-
-### Sync to CDN
-
-Upload built presence assets and bundles to Cloudflare R2:
-
-```bash
-pnpm admin r2:sync
-```
-
-### Publish Native Host Release
-
-Upload native host installer artifacts to Cloudflare R2:
-
-```bash
-pnpm admin host:publish \
-  --release-version 1.0.0 \
-  --installer ./dist/nowly-setup.exe
 ```

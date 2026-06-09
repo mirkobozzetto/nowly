@@ -10,7 +10,6 @@ Every presence needs:
 <TypeTable
   properties={[
     { name: "name", type: "string", description: "Display name of the service or platform.", required: true },
-    { name: "version", type: "string", description: "Semantic version of the presence, such as 1.0.0.", required: true },
     { name: "author", type: "object", description: "Main author displayed first in the library and OG images.", required: true },
     { name: "description", type: "object", description: "Short localized descriptions keyed by locale.", required: true },
     { name: "url", type: "string[]", description: "Supported domains or URL patterns for matching pages.", required: true },
@@ -26,7 +25,6 @@ Every presence needs:
 ```json
 {
   "name": "YouTube",
-  "version": "1.0.0",
   "author": {
     "name": "Nowly Developer",
     "github": "example"
