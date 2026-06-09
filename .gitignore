@@ -18,6 +18,5 @@ old-native/
 # Extension signing key (keep secret!)
 extension-key.pem
 
-# Auto-generated extension source (build-dev.ts) — except the committed placeholder
+# Auto-generated extension source
 apps/extension/src/generated/*
-!apps/extension/src/generated/bundled-presences.ts
