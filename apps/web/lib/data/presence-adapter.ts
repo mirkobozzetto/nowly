@@ -1,8 +1,9 @@
 import type { Metadata } from "@nowly/websites/types";
 import type { Contributor, Presence, PresenceCategory } from "./presences";
+import { CATEGORIES } from "./categories";
 
 type ContributorInput = {
-  name: string;
+  name?: string;
   github?: string;
   avatar?: string;
 };
@@ -15,15 +16,21 @@ type MetadataWithStats = Metadata & {
   ratingDistribution?: Record<number, number>
 };
 
-const toContributor = (c: ContributorInput): Contributor => {
+const toContributor = (c: ContributorInput | undefined, fallbackName: string): Contributor => {
+  const name = c?.name?.trim() || c?.github || fallbackName;
+
   return {
-    name: c.name,
-    github: c.github,
-    avatar: c.github ? `https://github.com/${c.github}.png` : undefined,
+    name,
+    github: c?.github,
+    avatar: c?.github ? `https://github.com/${c.github}.png` : undefined,
   };
 };
 
 const FALLBACK_LOCALE = "en-US";
+const DEFAULT_CATEGORY: PresenceCategory = "other";
+
+const toPresenceCategory = (category: Metadata["category"] | undefined): PresenceCategory =>
+  CATEGORIES.includes(category as PresenceCategory) ? category as PresenceCategory : DEFAULT_CATEGORY;
 
 export const metadataToPlatform = (m: MetadataWithStats): Presence => {
   const slug = m.slug ?? m.name.toLowerCase().replace(/\s+/g, "-");
@@ -36,7 +43,7 @@ export const metadataToPlatform = (m: MetadataWithStats): Presence => {
     longDescription: m.longDescription?.[FALLBACK_LOCALE] ?? desc,
     icon: slug,
     iconColor: m.color,
-    category: m.category as PresenceCategory,
+    category: toPresenceCategory(m.category),
     status: "available",
     version: m.version ?? null,
     activeUsers: m.activeUsers ?? 0,
@@ -47,8 +54,8 @@ export const metadataToPlatform = (m: MetadataWithStats): Presence => {
     addedAt: "2024-01-01",
     lastUpdated: new Date().toISOString().split("T")[0],
     supportedUrls: m.url,
-    author: toContributor(m.author),
-    contributors: (m.contributors ?? []).map(toContributor),
+    author: toContributor(m.author, m.name),
+    contributors: (m.contributors ?? []).map((contributor) => toContributor(contributor, m.name)),
     features: m.features?.[FALLBACK_LOCALE] ?? [],
     settings: m.settings ?? undefined,
     localized: {

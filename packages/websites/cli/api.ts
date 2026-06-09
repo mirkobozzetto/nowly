@@ -9,7 +9,7 @@ const ROOT = join(dirname(__filename), "..", "..", "..")
 
 const API_BASE = cliEnv.API_URL
 
-function resolveKey(): string | undefined {
+const resolveKey = (): string | undefined => {
   const envKey = cliEnv.API_SECRET_KEY
   if (envKey) return envKey
 
@@ -31,7 +31,7 @@ function resolveKey(): string | undefined {
 
 const API_KEY = resolveKey()
 
-function getHeaders(): Record<string, string> {
+const getHeaders = (): Record<string, string> => {
   const headers: Record<string, string> = { "Content-Type": "application/json" }
   if (API_KEY) headers["Authorization"] = `Bearer ${API_KEY}`
   return headers
@@ -47,7 +47,7 @@ export interface ReleasePerson {
   github?: string
 }
 
-export async function fetchPresenceInfo(slug: string): Promise<PresenceInfo | null> {
+export const fetchPresenceInfo = async (slug: string): Promise<PresenceInfo | null> => {
   try {
     const res = await fetch(`${API_BASE}/presences/${slug}`)
     if (!res.ok) return null
@@ -89,7 +89,13 @@ export interface SyncResponse {
   results: SyncResult[]
 }
 
-export async function pushPresences(payload: SyncPayload[]): Promise<SyncResponse> {
+export interface SyncContext {
+  pr?: string
+  prTitle?: string
+  changes?: string
+}
+
+export const pushPresences = async (payload: SyncPayload[], context: SyncContext = {}): Promise<SyncResponse> => {
   if (!API_KEY) {
     throw new Error("API_SECRET_KEY is required. Set it in your environment variables.")
   }
@@ -97,7 +103,7 @@ export async function pushPresences(payload: SyncPayload[]): Promise<SyncRespons
   const res = await fetch(`${API_BASE}/presences/sync`, {
     method: "POST",
     headers: getHeaders(),
-    body: JSON.stringify({ presences: payload }),
+    body: JSON.stringify({ ...context, presences: payload }),
   })
 
   if (!res.ok) {
@@ -108,7 +114,7 @@ export async function pushPresences(payload: SyncPayload[]): Promise<SyncRespons
   return await res.json()
 }
 
-export function getLocalBundle(slug: string): string | null {
+export const getLocalBundle = (slug: string): string | null => {
   try {
     const bundlePath = join(DIST, "presences", slug, "bundle.js")
     return readFileSync(bundlePath, "utf-8")
@@ -117,7 +123,7 @@ export function getLocalBundle(slug: string): string | null {
   }
 }
 
-export function bumpVersion(current: string, strategy: "patch" | "minor" | "major"): string {
+export const bumpVersion = (current: string, strategy: "patch" | "minor" | "major"): string => {
   const parts = current.split(".").map(Number)
   if (strategy === "major") {
     parts[0] = (parts[0] || 0) + 1

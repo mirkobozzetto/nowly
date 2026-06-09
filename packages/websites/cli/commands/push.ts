@@ -1,7 +1,7 @@
 import chalk from "chalk"
 import { execFileSync } from "child_process"
 import type { Command } from "commander"
-import { existsSync, readFileSync } from "fs"
+import { existsSync, readFileSync, writeFileSync } from "fs"
 import { join } from "path"
 import { bumpVersion, fetchPresenceInfo, pushPresences } from "@/api"
 import { buildPresence } from "@/builder"
@@ -65,12 +65,33 @@ const getLocalReleaseContributors = (releaseAuthor?: ReleasePerson, authors?: st
   })
 }
 
-const getPresenceChangedFiles = (presenceDir: string): string[] => {
+type PushOptions = {
+  all?: boolean
+  version?: string
+  patch?: boolean
+  minor?: boolean
+  changelog?: string
+  author?: string
+  authors?: string
+  ai?: boolean
+  base?: string
+  head?: string
+  pr?: string
+  prTitle?: string
+  source?: "cli" | "pr"
+}
+
+const getGitRange = (opts: PushOptions): string | undefined =>
+  opts.base && opts.head ? `${opts.base}...${opts.head}` : undefined
+
+const getPresenceChangedFiles = (presenceDir: string, range?: string): string[] => {
   const files = new Set<string>()
-  const outputs = [
-    runGit(["diff", "--name-only", "--", presenceDir]),
-    runGit(["diff", "--cached", "--name-only", "--", presenceDir]),
-  ]
+  const outputs = range
+    ? [runGit(["diff", "--name-only", range, "--", presenceDir])]
+    : [
+        runGit(["diff", "--name-only", "--", presenceDir]),
+        runGit(["diff", "--cached", "--name-only", "--", presenceDir]),
+      ]
 
   for (const output of outputs) {
     for (const file of output?.split("\n") ?? []) {
@@ -81,11 +102,13 @@ const getPresenceChangedFiles = (presenceDir: string): string[] => {
   return [...files]
 }
 
-const getPresenceDiffSummary = (presenceDir: string): string | undefined => {
-  const diff = [
-    runGit(["diff", "--", presenceDir]),
-    runGit(["diff", "--cached", "--", presenceDir]),
-  ].filter(Boolean).join("\n\n")
+const getPresenceDiffSummary = (presenceDir: string, range?: string): string | undefined => {
+  const diff = (range
+    ? [runGit(["diff", "--unified=3", range, "--", presenceDir])]
+    : [
+        runGit(["diff", "--", presenceDir]),
+        runGit(["diff", "--cached", "--", presenceDir]),
+      ]).filter(Boolean).join("\n\n")
 
   if (!diff) return undefined
   return diff.length > MAX_DIFF_SUMMARY_LENGTH
@@ -106,8 +129,14 @@ export const registerPush = (program: Command) => {
     .option("--author <name>", "Release author")
     .option("--authors <names>", "Comma-separated release authors/contributors")
     .option("--ai", "Let API generate trilingual changelog via AI")
-    .action(async (slug?: string, options?: { all?: boolean; version?: string; patch?: boolean; minor?: boolean; changelog?: string; author?: string; authors?: string; ai?: boolean }) => {
-      const opts = options || {} as any
+    .option("--base <sha>", "Base git SHA for PR/change metadata")
+    .option("--head <sha>", "Head git SHA for PR/change metadata")
+    .option("--pr <number>", "Pull request reference, for example #10")
+    .option("--pr-title <title>", "Pull request title")
+    .option("--source <source>", "Release source: cli or pr", "cli")
+    .action(async (slug?: string, options?: PushOptions) => {
+      const opts = options || {}
+      const range = getGitRange(opts)
       logger.newline()
 
       let presences = getPresences()
@@ -217,11 +246,19 @@ export const registerPush = (program: Command) => {
         const settings = existsSync(settingsPath)
           ? JSON.parse(readFileSync(settingsPath, "utf-8"))
           : undefined
+        const metadata = {
+          slug: p.slug,
+          ...p.metadata,
+          version,
+          settings,
+        }
         const releaseAuthor = getLocalReleaseAuthor(opts.author, opts.authors)
         const releaseContributors = getLocalReleaseContributors(releaseAuthor, opts.authors)
-        const changedFiles = getPresenceChangedFiles(p.dir)
-        const diffSummary = getPresenceDiffSummary(p.dir)
-        const commitSha = runGit(["rev-parse", "HEAD"])
+        const changedFiles = getPresenceChangedFiles(p.dir, range)
+        const diffSummary = getPresenceDiffSummary(p.dir, range)
+        const commitSha = opts.head || runGit(["rev-parse", "HEAD"])
+
+        writeFileSync(join(DIST, "presences", p.slug, "metadata.json"), JSON.stringify(metadata, null, 2))
 
         payload.push({
           slug: p.slug,
@@ -239,16 +276,11 @@ export const registerPush = (program: Command) => {
           url: p.metadata.url,
           changelog,
           bundle,
-          source: "cli",
+          source: opts.source ?? "cli",
           commitSha,
           changedFiles,
           diffSummary,
-          metadata: {
-            slug: p.slug,
-            ...p.metadata,
-            version,
-            settings,
-          },
+          metadata,
         })
 
         oldVersions[p.slug] = oldVersion
@@ -263,7 +295,11 @@ export const registerPush = (program: Command) => {
       spinner.start(`Sending ${payload.length} presence${payload.length > 1 ? "s" : ""} to API...`)
 
       try {
-        const result = await pushPresences(payload)
+        const result = await pushPresences(payload, {
+          pr: opts.pr,
+          prTitle: opts.prTitle,
+          changes: range ? runGit(["log", "--oneline", range]) : undefined,
+        })
         spinner.succeed("Push complete!")
 
         logger.newline()
