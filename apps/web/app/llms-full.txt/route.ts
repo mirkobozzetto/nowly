@@ -18,11 +18,13 @@ export const GET = async () => {
   const parts: string[] = ["# Nowly Documentation\n"];
 
   for (const section of sections) {
-    const doc = getDocContent(section.slug, "en-US");
-    if (!doc) continue;
+    for (const page of section.children) {
+      const doc = getDocContent(`${section.slug}/${page.slug}`, "en-US");
+      if (!doc) continue;
 
-    const body = stripMdx(doc.content);
-    parts.push(`# ${doc.title}\n\n${body}\n`);
+      const body = stripMdx(doc.content);
+      parts.push(`# ${doc.title}\n\n${body}\n`);
+    }
   }
 
   return new NextResponse(parts.join("\n---\n\n"), {

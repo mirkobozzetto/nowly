@@ -1,0 +1,102 @@
+---
+title: CLI
+description: Use the Nowly CLI to create, build, validate, and test presences locally.
+---
+
+## Interactive Mode
+
+Run the CLI without arguments to open an interactive menu:
+
+```bash
+pnpm presence
+```
+
+## Create a Presence
+
+```bash
+pnpm presence init "Netflix"
+```
+
+## Build Presences
+
+Build every presence:
+
+```bash
+pnpm presence build
+```
+
+Build one presence:
+
+```bash
+pnpm presence build youtube
+```
+
+## Test a Presence Locally
+
+Start the local dev server with a presence to test it in your browser:
+
+```bash
+pnpm presence dev-server youtube
+```
+
+This builds the presence and starts a studio app at `http://localhost:9372` with a local library page. To install the presence into the extension:
+
+1. Open the extension settings
+2. Set **Custom API URL** to `http://localhost:9372`
+3. Reload the extension
+4. Open `http://localhost:9372` in your browser
+5. Click **Install** on the presence card
+
+The extension fetches the presence from your local dev server, so no extension modification is needed.
+
+Press `Ctrl+C` to stop the dev server.
+
+## List Presences
+
+```bash
+pnpm presence list
+```
+
+## Validate Metadata
+
+```bash
+pnpm presence validate
+```
+
+---
+
+## Admin Commands
+
+The following commands are for internal use (CI/CD and maintainers only). They require API and R2 credentials, available via the admin CLI.
+
+### Push Presences to API
+
+Build and publish presence(s) to the Nowly API:
+
+```bash
+pnpm admin push
+```
+
+Push a specific presence:
+
+```bash
+pnpm admin push youtube
+```
+
+### Sync to CDN
+
+Upload built presence assets and bundles to Cloudflare R2:
+
+```bash
+pnpm admin r2:sync
+```
+
+### Publish Native Host Release
+
+Upload native host installer artifacts to Cloudflare R2:
+
+```bash
+pnpm admin host:publish \
+  --release-version 1.0.0 \
+  --installer ./dist/nowly-setup.exe
+```

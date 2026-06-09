@@ -1,0 +1,65 @@
+---
+title: Metadata
+description: Document every required and optional field in a Nowly presence metadata.json file.
+---
+
+## Required Fields
+
+Every presence needs:
+
+<TypeTable
+  properties={[
+    { name: "name", type: "string", description: "Display name of the service or platform.", required: true },
+    { name: "version", type: "string", description: "Semantic version of the presence, such as 1.0.0.", required: true },
+    { name: "author", type: "object", description: "Main author displayed first in the library and OG images.", required: true },
+    { name: "description", type: "object", description: "Short localized descriptions keyed by locale.", required: true },
+    { name: "url", type: "string[]", description: "Supported domains or URL patterns for matching pages.", required: true },
+    { name: "color", type: "string", description: "Brand color in hex format, used by UI and embeds.", required: true },
+    { name: "category", type: "string", description: "One of streaming, music, tv, anime, or other.", required: true },
+    { name: "tags", type: "string[]", description: "Search and discovery tags.", required: true },
+    { name: "assets", type: "object", description: "Logo, icon, and thumbnail filenames.", required: true }
+  ]}
+/>
+
+## Example
+
+```json
+{
+  "name": "YouTube",
+  "version": "1.0.0",
+  "author": {
+    "name": "Nowly Developer",
+    "github": "example"
+  },
+  "url": ["youtube.com", "www.youtube.com"],
+  "color": "#FF0033",
+  "category": "streaming",
+  "tags": ["video", "media", "streaming"],
+  "description": {
+    "en-US": "Watch and share videos on YouTube."
+  },
+  "assets": {
+    "logo": "logo.png",
+    "icon": "icon.png",
+    "thumbnail": "thumbnail.jpg"
+  }
+}
+```
+
+## Author and Contributors
+
+`author` is the main maintainer and is displayed first. `contributors` are additional people who helped with the presence.
+
+GitHub usernames are used to resolve avatars.
+
+## Descriptions and Features
+
+Use `description` for short marketplace copy. Use `longDescription` for detail pages. Use `features` for a localized list of supported behavior.
+
+## URL Matching
+
+Use `url` for supported domains or URL patterns. Use `regExp` only when simple matching is not enough.
+
+## Category
+
+Allowed categories are `streaming`, `music`, `tv`, `anime`, and `other`.

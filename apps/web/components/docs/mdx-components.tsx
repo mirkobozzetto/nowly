@@ -2,6 +2,7 @@ import type { ComponentType, FC, ReactNode } from "react";
 import { Callout } from "./callout";
 import { CodeBlock } from "./code-block";
 import { HeadingAnchor } from "./heading-anchor";
+import { TypeTable } from "./type-table";
 
 type MDXComponents = Record<string, ComponentType<Record<string, unknown>>>;
 
@@ -12,6 +13,20 @@ type CodeProps = {
 
 type InlineCodeProps = {
   children?: ReactNode;
+};
+
+const createSeparatedComponent = (
+  Component: ComponentType<Record<string, unknown>>,
+  displayName: string,
+): ComponentType<Record<string, unknown>> => {
+  const WrappedComponent: FC<Record<string, unknown>> = (props) => (
+    <div className="mb-2 [&+div[data-component]]:mt-6" data-component={displayName}>
+      <Component {...props} />
+    </div>
+  );
+
+  WrappedComponent.displayName = `Separated(${displayName})`;
+  return WrappedComponent;
 };
 
 export const mdxComponents: MDXComponents = {
@@ -141,4 +156,6 @@ export const mdxComponents: MDXComponents = {
   CalloutWarning: (({ children }: { children?: ReactNode }) => (
     <Callout type="warning">{children}</Callout>
   )) as FC<{ children?: ReactNode }>,
+
+  TypeTable: createSeparatedComponent(TypeTable, "TypeTable"),
 };

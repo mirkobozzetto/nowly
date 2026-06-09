@@ -29,11 +29,12 @@ const loadInter = async (weight: 400 | 500): Promise<ArrayBuffer | null> => {
 
 export const GET = async (req: Request, { params }: Props) => {
   const { slug } = await params;
-  const pageSlug = slug?.join("/") || "getting-started";
+  const pageSlug = slug?.join("/") || "getting-started/introduction";
+  const docSlug = pageSlug.split("/").at(-1) ?? pageSlug;
   const url = new URL(req.url);
   const mode = (url.searchParams.get("mode") || "dark") as "dark" | "light";
   const [fontMedium, fontRegular] = await Promise.all([loadInter(500), loadInter(400)]);
-  const docMetadata = getDocOgMetadata(pageSlug);
+  const docMetadata = getDocOgMetadata(docSlug);
 
   const category = url.searchParams.get("category") ?? docMetadata?.category ?? "Documentation";
   const title = url.searchParams.get("title") ?? docMetadata?.title ?? "Nowly Documentation";

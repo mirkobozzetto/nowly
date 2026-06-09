@@ -2,6 +2,8 @@ export type DocSection = {
   slug: string;
   order: number;
   title: Record<string, string>;
+  path: string;
+  children: DocSection[];
 };
 
 export type DocNavigationItem = {
@@ -9,11 +11,14 @@ export type DocNavigationItem = {
   title: string;
   description: string;
   order: number;
+  path: string;
   children: DocNavigationItem[];
 };
 
 export type DocContent = {
   slug: string;
+  path: string;
+  sourcePath: string;
   title: string;
   description: string;
   content: string;

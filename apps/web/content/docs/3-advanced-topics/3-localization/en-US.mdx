@@ -1,0 +1,38 @@
+---
+title: Localization
+description: Localize presence metadata, features, settings, and strings.
+---
+
+## Supported Locales
+
+Nowly currently uses:
+
+- `en-US`
+- `fr-FR`
+- `es-ES`
+
+English should always be present as the fallback.
+
+## Metadata Localization
+
+```json
+{
+  "description": {
+    "en-US": "Watch and share videos.",
+    "fr-FR": "Regardez et partagez des vidéos.",
+    "es-ES": "Mira y comparte videos."
+  }
+}
+```
+
+## Settings Localization
+
+Settings labels and descriptions use the same locale format.
+
+## Runtime Strings
+
+Use `presence.getStrings` when runtime strings need to vary by locale.
+
+## Keep Text Short
+
+Discord activity fields are compact. Keep localized strings concise and avoid long paragraphs in runtime activity.

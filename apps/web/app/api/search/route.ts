@@ -59,32 +59,34 @@ export const GET = async (request: NextRequest) => {
   const results: SearchResult[] = [];
 
   for (const section of sections) {
-    const doc = getDocContent(section.slug, validLocale);
-    if (!doc) continue;
+    for (const page of section.children) {
+      const doc = getDocContent(`${section.slug}/${page.slug}`, validLocale);
+      if (!doc) continue;
 
-    const title = doc.title;
-    const description = doc.description || "";
-    const body = stripMdx(doc.content);
-    const searchableText = `${title} ${description} ${body}`.toLowerCase();
-    const lowerQuery = query.toLowerCase();
+      const title = doc.title;
+      const description = doc.description || "";
+      const body = stripMdx(doc.content);
+      const searchableText = `${title} ${description} ${body}`.toLowerCase();
+      const lowerQuery = query.toLowerCase();
 
-    if (!searchableText.includes(lowerQuery)) continue;
+      if (!searchableText.includes(lowerQuery)) continue;
 
-    const titleMatches = countMatches(title, query) * 3;
-    const descMatches = countMatches(description, query) * 2;
-    const bodyMatches = countMatches(body, query);
-    const totalMatches = titleMatches + descMatches + bodyMatches;
+      const titleMatches = countMatches(title, query) * 3;
+      const descMatches = countMatches(description, query) * 2;
+      const bodyMatches = countMatches(body, query);
+      const totalMatches = titleMatches + descMatches + bodyMatches;
 
-    const matchContext = findContext(body, query);
+      const matchContext = findContext(body, query);
 
-    results.push({
-      title,
-      href: `/docs/${section.slug}`,
-      description,
-      content: body.slice(0, 200),
-      matches: totalMatches,
-      matchContext,
-    });
+      results.push({
+        title,
+        href: `/docs/${doc.path}`,
+        description,
+        content: body.slice(0, 200),
+        matches: totalMatches,
+        matchContext,
+      });
+    }
   }
 
   results.sort((a, b) => b.matches - a.matches);

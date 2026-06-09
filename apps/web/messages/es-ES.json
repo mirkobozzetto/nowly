@@ -279,8 +279,7 @@
     "sourceLabel": "Origen",
     "commitLabel": "Commit",
     "authorLabel": "Autor de la versión",
-    "contributorsLabel": "Colaboradores",
-    "aiChangelog": "Changelog IA"
+    "contributorsLabel": "Colaboradores"
   },
 
   "NotFound": {

@@ -12,10 +12,12 @@ export const GET = async () => {
   ];
 
   for (const section of sections) {
-    const doc = getDocContent(section.slug, "en-US");
-    if (!doc) continue;
+    for (const page of section.children) {
+      const doc = getDocContent(`${section.slug}/${page.slug}`, "en-US");
+      if (!doc) continue;
 
-    lines.push(`- [${doc.title}](https://nowly.me/docs/${section.slug}): ${doc.description || "Documentation for " + doc.title}`);
+      lines.push(`- [${doc.title}](https://nowly.me/docs/${doc.path}): ${doc.description || "Documentation for " + doc.title}`);
+    }
   }
 
   lines.push("", "## Resources", "", "- [GitHub Repository](https://github.com/q-kimi/nowly)", "- [Discord Rich Presence](https://discord.com/rich-presence)");

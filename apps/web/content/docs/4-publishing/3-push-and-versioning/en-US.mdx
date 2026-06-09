@@ -1,0 +1,48 @@
+---
+title: Push and Versioning
+description: Publish presence releases and manage versions with the Nowly CLI.
+---
+
+## Push a Presence
+
+Run:
+
+```bash
+pnpm presence push youtube
+```
+
+This builds and publishes the presence through the API.
+
+## Version Options
+
+Specify a version manually:
+
+```bash
+pnpm presence push youtube --version 1.1.0
+```
+
+Patch version:
+
+```bash
+pnpm presence push youtube --patch
+```
+
+Minor version:
+
+```bash
+pnpm presence push youtube --minor
+```
+
+## Changelog
+
+Add a changelog message:
+
+```bash
+pnpm presence push youtube --patch --changelog "Fix player detection"
+```
+
+## Batch Publishing
+
+```bash
+pnpm presence push --all --patch --changelog "Batch update"
+```

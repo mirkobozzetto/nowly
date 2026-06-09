@@ -281,8 +281,7 @@
     "sourceLabel": "Source",
     "commitLabel": "Commit",
     "authorLabel": "Release author",
-    "contributorsLabel": "Contributors",
-    "aiChangelog": "AI changelog"
+    "contributorsLabel": "Contributors"
   },
 
   "NotFound": {

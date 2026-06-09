@@ -1,0 +1,44 @@
+---
+title: Creating Your First Presence
+description: Create a new Nowly presence with the CLI and send your first Discord Rich Presence activity.
+---
+
+## Start With the CLI
+
+Use the Nowly CLI to scaffold a new presence:
+
+```bash
+pnpm presence init "Example"
+```
+
+The CLI creates metadata, a presence script, and required assets.
+
+## Basic Presence Code
+
+```ts
+import { PresenceType } from "@nowly/presence"
+
+const presence = new Presence()
+
+presence.on("UpdateData", async () => {
+  await presence.setActivity({
+    details: document.title,
+    state: document.location.hostname,
+    largeImageKey: Assets.Logo,
+    type: PresenceType.Watching,
+  })
+})
+```
+
+## Runtime Flow
+
+When the user visits a matching URL, Nowly loads your presence. The presence reads page state and calls `setActivity`. The extension forwards that payload to the native host, which updates Discord.
+
+## Development Loop
+
+1. Scaffold a presence.
+2. Edit `metadata.json`.
+3. Implement `presence.ts`.
+4. Validate metadata.
+5. Build the presence.
+6. Test on the target website.

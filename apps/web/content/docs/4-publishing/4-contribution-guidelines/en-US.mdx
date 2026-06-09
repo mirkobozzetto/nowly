@@ -1,0 +1,40 @@
+---
+title: Contribution Guidelines
+description: Follow Nowly contribution expectations for reliable and maintainable presences.
+---
+
+## Before Contributing
+
+Make sure the platform is appropriate for Discord Rich Presence and that the activity is useful to display.
+
+## Presence Quality
+
+A good presence should:
+
+- work on the main supported URLs
+- avoid private or sensitive data
+- handle loading and missing elements
+- use clear metadata and assets
+- include useful localized descriptions
+
+## Code Style
+
+Keep presence code small and readable. Prefer named helper functions for parsing page state and avoid unrelated abstractions.
+
+## Assets
+
+Use clean platform assets. Icons should be readable on dark backgrounds. Thumbnails should clearly represent the service.
+
+## Testing
+
+Test the presence before submitting:
+
+- install it locally
+- visit supported URLs
+- check Discord activity
+- check paused and unsupported states
+- run metadata validation
+
+## Publishing
+
+Only publish when the presence builds, validates, and behaves correctly on the target website.

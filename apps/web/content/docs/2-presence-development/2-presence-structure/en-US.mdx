@@ -1,0 +1,40 @@
+---
+title: Presence Structure
+description: Understand the required folder layout for a Nowly presence.
+---
+
+## Folder Layout
+
+A presence lives under `packages/websites/src`, grouped by the first letter of its name:
+
+```txt
+src/Y/YouTube/
+|-- metadata.json
+|-- presence.ts
+`-- assets/
+    |-- logo.png
+    |-- icon.png
+    `-- thumbnail.jpg
+```
+
+## metadata.json
+
+`metadata.json` describes the platform, supported URLs, author, category, localized descriptions, and marketplace assets.
+
+## presence.ts
+
+`presence.ts` contains runtime logic. It detects page state and calls the Presence API.
+
+## assets
+
+Assets are used by the marketplace, installed presence package, Discord activity payloads, and Open Graph images.
+
+Required files:
+
+<TypeTable
+  properties={[
+    { name: "logo.png", type: "PNG", description: "Wide brand mark for marketplace headers, presence pages, and generated OG images.", required: true },
+    { name: "icon.png", type: "PNG", description: "Square icon for compact UI surfaces and Discord activity image keys.", required: true },
+    { name: "thumbnail.jpg", type: "JPG", description: "Preview image used when the presence needs a larger visual.", required: true }
+  ]}
+/>

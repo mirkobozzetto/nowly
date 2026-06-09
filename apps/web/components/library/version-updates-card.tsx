@@ -5,10 +5,11 @@ import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader,
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { Contributor } from "@/lib/data/presences";
 import { cn } from "@/lib/utils";
-import { DownloadIcon, GitBranchIcon, GithubIcon, SparklesIcon } from "lucide-react";
+import { DownloadIcon, GitBranchIcon, GithubIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 import { useMemo, useState } from "react";
+import { GitHubIcon } from "../icons";
 import { Badge } from "../ui/badge";
 
 export type VersionUpdate = {
@@ -175,7 +176,7 @@ export const VersionUpdatesCard: FC<VersionUpdatesCardProps> = ({ currentVersion
                         rel="noopener noreferrer"
                       >
                         <Badge variant="outline" className="max-w-36">
-                          <GithubIcon className="size-3" />
+                          <GitHubIcon className="size-3" />
                           <span className="truncate">{contributor.name}</span>
                         </Badge>
                       </a>
@@ -199,13 +200,6 @@ export const VersionUpdatesCard: FC<VersionUpdatesCardProps> = ({ currentVersion
                 {selectedUpdate.pr ?? selectedUpdate.commitSha?.slice(0, 7)}
               </Badge>
             </a>
-          ) : null}
-
-          {selectedUpdate.aiGeneratedChangelog ? (
-            <Badge variant="ghost">
-              <SparklesIcon className="size-3" />
-              {t("aiChangelog")}
-            </Badge>
           ) : null}
         </div>
       </CardContent>
