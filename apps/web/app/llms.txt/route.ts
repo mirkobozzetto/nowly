@@ -1,6 +1,8 @@
 import { getDocsNav, getDocContent } from "@/lib/docs/content";
 import { NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 export const GET = async () => {
   const sections = getDocsNav();
   const lines: string[] = [

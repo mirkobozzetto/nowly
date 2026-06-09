@@ -7,7 +7,7 @@ type Props = {
   }>
 };
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 const loadInter = async (weight: 400 | 500): Promise<ArrayBuffer | null> => {
   try {
