@@ -15,7 +15,7 @@ The CLI creates metadata, a presence script, and required assets.
 
 ## Basic Presence Code
 
-```ts
+```ts filename="presence.ts"
 import { PresenceType } from "@nowly/presence"
 
 const presence = new Presence()
@@ -51,7 +51,7 @@ Edit `metadata.json` — see [Metadata](/docs/presence-development/metadata) for
 </Step>
 <Step title="Implement" description="Write the presence logic using the Presence SDK.">
 
-```typescript
+```typescript filename="presence.ts"
 const presence = new Presence()
 
 presence.on("UpdateData", async () => {

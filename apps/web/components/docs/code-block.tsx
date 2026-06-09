@@ -18,6 +18,8 @@ type CodeBlockProps = {
   className?: string;
   children: ReactNode;
   filename?: string;
+  language?: string;
+  ["data-meta"]?: string;
 };
 
 const getCodeText = (children: ReactNode): string => {
@@ -59,9 +61,12 @@ const languageIcons: Record<string, ReactNode> = {
   markdown: <MarkdownDark className="size-3.5" />,
 };
 
-export const CodeBlock = async ({ className, children, filename }: CodeBlockProps) => {
+export const CodeBlock = async ({ className, children, filename, language, ["data-meta"]: dataMeta }: CodeBlockProps) => {
+  const fromMeta = dataMeta?.match(/filename="([^"]+)"/)?.[1]
+  const resolvedFilename = filename ?? fromMeta
+
   const match = /language-([\w-]+)/.exec(className || "");
-  const lang = match ? match[1] : "";
+  const lang = language ?? (match ? match[1] : "");
   const code = getCodeText(children);
 
   let highlightedCode: string | null = null;
@@ -88,9 +93,9 @@ export const CodeBlock = async ({ className, children, filename }: CodeBlockProp
               </code>
             )
           )}
-          {filename && (
+          {resolvedFilename && (
             <code className="text-muted-foreground truncate text-sm">
-              {filename}
+              {resolvedFilename}
             </code>
           )}
         </div>

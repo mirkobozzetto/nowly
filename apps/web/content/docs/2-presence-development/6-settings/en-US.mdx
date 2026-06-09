@@ -22,7 +22,7 @@ Nowly supports boolean, input, select, and slider settings.
 
 ## Defining Settings
 
-```ts
+```ts filename="presence.ts"
 const settings = Presence.Settings({
   showButtons: {
     type: "boolean",
@@ -38,7 +38,7 @@ const settings = Presence.Settings({
 
 Use `getSetting` at runtime:
 
-```ts
+```ts filename="presence.ts"
 const showButtons = await presence.getSetting<boolean>("showButtons")
 ```
 

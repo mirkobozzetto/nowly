@@ -31,7 +31,7 @@ Use `thumbnail.jpg` for marketplace and detail page visuals. It should represent
 
 The runtime exposes default assets:
 
-```ts
+```ts filename="presence.ts"
 Assets.Logo
 Assets.Icon
 Assets.Thumbnail
@@ -39,7 +39,7 @@ Assets.Thumbnail
 
 Use them in activity payloads:
 
-```ts
+```ts filename="presence.ts"
 await presence.setActivity({
   largeImageKey: Assets.Logo,
   largeImageText: "YouTube",

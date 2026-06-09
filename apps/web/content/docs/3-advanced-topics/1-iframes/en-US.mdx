@@ -11,7 +11,7 @@ Some websites render media players or important state inside iframes. A normal p
 
 The Presence API exposes an `iFrameData` event for integrations that need frame-level communication.
 
-```ts
+```ts filename="presence.ts"
 presence.on("iFrameData", async (...args) => {
   presence.info("Received iframe data")
 })

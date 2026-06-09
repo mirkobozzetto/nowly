@@ -7,7 +7,7 @@ description: Use the Nowly Presence API to update Discord Rich Presence from a w
 
 Every presence starts with a global `Presence` instance:
 
-```ts
+```ts filename="presence.ts"
 const presence = new Presence()
 ```
 
@@ -15,7 +15,7 @@ const presence = new Presence()
 
 Use `UpdateData` to refresh activity:
 
-```ts
+```ts filename="presence.ts"
 presence.on("UpdateData", async () => {
   await presence.setActivity({
     details: "Watching a video",
@@ -46,7 +46,7 @@ presence.on("UpdateData", async () => {
 
 Call `clearActivity` when the user is no longer doing anything worth showing:
 
-```ts
+```ts filename="presence.ts"
 presence.clearActivity()
 ```
 
