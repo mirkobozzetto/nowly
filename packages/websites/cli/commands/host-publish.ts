@@ -6,18 +6,18 @@ export const registerHostPublish = (program: Command) => {
   program
     .command("host:publish")
     .description("Upload Nowly native host release artifacts to Cloudflare R2")
-    .requiredOption("-v, --version <version>", "Host release version")
+    .requiredOption("--release-version <version>", "Host release version")
     .requiredOption("--installer <path>", "Path to nowly setup executable")
     .option("--portable <path>", "Path to Windows portable zip archive")
     .option("--linux <path>", "Path to Linux tar.gz archive")
     .option("--macos <path>", "Path to macOS tar.gz archive")
-    .action(async (options: { version: string; installer: string; portable?: string; linux?: string; macos?: string }) => {
+    .action(async (options: { releaseVersion: string; installer: string; portable?: string; linux?: string; macos?: string }) => {
       logger.newline()
       logger.title("Host release publish")
 
       try {
         const manifest = await uploadHostReleaseToR2(
-          options.version,
+          options.releaseVersion,
           options.installer,
           options.portable,
           options.linux,

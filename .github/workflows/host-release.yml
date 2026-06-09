@@ -114,7 +114,7 @@ jobs:
           R2_BUCKET: ${{ secrets.R2_BUCKET || 'nowly' }}
         run: >
           pnpm presence host:publish
-          --version ${{ steps.version.outputs.version }}
+          --release-version ${{ steps.version.outputs.version }}
           --installer apps/native/dist/NowlySetup.exe
           --portable apps/native/dist/nowly-windows.zip
           --linux apps/native/dist/nowly-linux.tar.gz

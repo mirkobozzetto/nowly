@@ -131,7 +131,7 @@ The extension checks `https://nowly.me/host/version`, which reads `https://cdn.n
 For a manual re-publish, use:
 
 ```bash
-pnpm presence host:publish --version 1.0.0 --installer apps/native/dist/NowlySetup.exe --portable apps/native/dist/nowly-windows.zip --linux apps/native/dist/nowly-linux.tar.gz --macos apps/native/dist/nowly-macos.tar.gz
+pnpm presence host:publish --release-version 1.0.0 --installer apps/native/dist/NowlySetup.exe --portable apps/native/dist/nowly-windows.zip --linux apps/native/dist/nowly-linux.tar.gz --macos apps/native/dist/nowly-macos.tar.gz
 ```
 
 ### Linux
