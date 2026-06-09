@@ -1,5 +1,5 @@
 import { presenceApi } from "@/lib/presence-api";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactElement } from "react";
 import type { PresenceRelease } from "./fetch-presence";
 import { createPresenceMetadata, renderPresencePage } from "./presence-page";
@@ -27,6 +27,18 @@ const Page = async ({ params }: Props): Promise<ReactElement> => {
   return renderPresencePage(raw.toLowerCase());
 };
 
-export { generateMetadata };
+const generateViewport = async ({ params }: Props): Promise<Viewport> => {
+  const { item: raw } = await params;
+  const item = raw.toLowerCase();
+  const data = await presenceApi.get<PresenceRelease>(`/${item}`).catch(() => null);
+
+  return {
+    themeColor: data?.metadata?.color ?? "#22d3ee",
+    width: "device-width",
+    initialScale: 1,
+  };
+};
+
+export { generateMetadata, generateViewport };
 
 export default Page;
