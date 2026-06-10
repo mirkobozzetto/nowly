@@ -38,6 +38,19 @@ pnpm presence list
 pnpm presence validate
 ```
 
+### Root scripts (from monorepo root)
+
+```bash
+# Same as `pnpm presence build`
+pnpm presence:build
+
+# Remove all built presence dist files
+pnpm presence:clean
+
+# Clean + rebuild all presences
+pnpm presence:rebuild
+```
+
 ### Push options
 
 ```bash
@@ -68,10 +81,15 @@ pnpm presence push --all --patch --changelog "Batch update"
 
 ```
 src/Y/YouTube/
-├── metadata.json    # Name, urls, category, description…
+├── metadata.json    # Name, urls, category, description… (version is backend-managed)
 ├── presence.ts      # Presence logic
 └── assets/
     ├── logo.png
     ├── icon.png
     └── thumbnail.jpg
 ```
+
+### Notes
+
+- The `version` field in `metadata.json` is **not required** — versions are managed by the backend when pushing.
+- For dev builds, use `pnpm presence build <slug>` to build only the presence you need, then `pnpm build:extension:dev` to bundle it into the extension.

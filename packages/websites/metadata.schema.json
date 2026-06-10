@@ -5,7 +5,6 @@
   "type": "object",
   "required": [
     "name",
-    "version",
     "author",
     "description",
     "url",
@@ -22,11 +21,6 @@
     "name": {
       "type": "string",
       "description": "Display name of the service/platform"
-    },
-    "version": {
-      "type": "string",
-      "description": "Semantic version of the presence",
-      "pattern": "^\\d+\\.\\d+\\.\\d+$"
     },
     "author": {
       "type": "object",
