@@ -1,5 +1,6 @@
 import { createMediaTimestamps, PresenceType } from "@nowly/presence"
-import { findVideo, isOnChannelPage, isOnClipPage, isOnVideoPage } from "./utils/dom"
+import { findCategoryImage, findCategoryName } from "./utils/category"
+import { findVideo, isOnCategoryPage, isOnChannelPage, isOnClipPage, isOnFollowingPage, isOnVideoPage } from "./utils/dom"
 import { findGame, findStreamerAvatar, findStreamerName, findStreamTitle } from "./utils/streamer"
 import { getClipInfo, getVodTitle } from "./utils/vod"
 
@@ -42,8 +43,9 @@ presence.on("UpdateData", async (ctx) => {
 
   const isOnVideo = isOnVideoPage()
   const isClip = isOnClipPage()
-  // On a VOD/clip page duration is irrelevant — only rely on path for detection
-  const isLive = !isOnVideo && !isClip && video && video.duration >= 1073741824
+  // Only flag as live on an actual channel page — the homepage has an autoplaying featured stream
+  // that would otherwise trigger this branch after a few seconds.
+  const isLive = isOnChannelPage() && !isOnVideo && !isClip && video && video.duration >= 1073741824
 
   if (isLive) {
     const title = findStreamTitle()
@@ -56,8 +58,6 @@ presence.on("UpdateData", async (ctx) => {
       state: streamer ? `${streamer}${game ? ` — ${game}` : ""}` : game,
       largeImageKey: avatar || Assets.Logo,
       largeImageText: streamer || "Twitch",
-      smallImageKey: "live",
-      smallImageText: "Live",
       type: PresenceType.Watching,
       buttons: [{ label: "Watch Stream", url: window.location.href.split("?")[0] }],
     })
@@ -141,17 +141,44 @@ presence.on("UpdateData", async (ctx) => {
 
   if (path === "" || path === "/") {
     await presence.setActivity({
-      details: "Browsing home",
-      state: "Twitch",
+      details: "Viewing homepage",
       largeImageKey: Assets.Logo,
+      largeImageText: "Twitch",
+      type: PresenceType.Watching,
+    })
+  } else if (pathname === "/directory" || pathname === "/directory/") {
+    await presence.setActivity({
+      details: "Browsing categories",
+      largeImageKey: Assets.Logo,
+      largeImageText: "Twitch",
       type: PresenceType.Watching,
     })
   } else if (pathname.includes("/directory/")) {
-    await presence.setActivity({
-      details: "Browsing directory",
-      largeImageKey: Assets.Logo,
-      type: PresenceType.Watching,
-    })
+    if (isOnCategoryPage()) {
+      const category = findCategoryName()
+      const categoryImage = findCategoryImage()
+      await presence.setActivity({
+        details: category ? `Browsing ${category}` : "Browsing category",
+        largeImageKey: categoryImage || Assets.Logo,
+        largeImageText: category || "Twitch",
+        smallImageKey: Assets.Logo,
+        smallImageText: "Twitch",
+        type: PresenceType.Watching,
+        buttons: [{ label: "View Category", url: window.location.href.split("?")[0] }],
+      })
+    } else if (isOnFollowingPage()) {
+      await presence.setActivity({
+        details: "Browsing followed channels",
+        largeImageKey: Assets.Logo,
+        type: PresenceType.Watching,
+      })
+    } else {
+      await presence.setActivity({
+        details: "Browsing directory",
+        largeImageKey: Assets.Logo,
+        type: PresenceType.Watching,
+      })
+    }
   } else if (pathname.includes("/search")) {
     const query = new URLSearchParams(window.location.search).get("term")
     await presence.setActivity({

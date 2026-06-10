@@ -27,3 +27,9 @@ export const isOnVideoPage = (): boolean => location.pathname.includes("/videos/
 
 export const isOnClipPage = (): boolean =>
   location.hostname === "clips.twitch.tv" || location.pathname.includes("/clip/")
+
+export const isOnCategoryPage = (): boolean =>
+  /\/directory\/(category|game)\//.test(location.pathname)
+
+export const isOnFollowingPage = (): boolean =>
+  location.pathname.startsWith("/directory/following")
