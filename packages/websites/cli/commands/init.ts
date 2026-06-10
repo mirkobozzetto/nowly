@@ -66,6 +66,6 @@ export const registerInit = (program: Command) => {
 
       spinner.succeed(`Presence "${name}" created at ${dir}`)
       logger.info(`Slug: ${slug}`)
-      logger.info("Next: run `pnpm presence build` to build it")
+      logger.info(`Next: run \`pnpm presence build ${slug}\` to build it`)
     })
 }

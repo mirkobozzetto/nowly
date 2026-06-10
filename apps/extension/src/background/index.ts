@@ -547,7 +547,7 @@ const installBundledPresences = async (): Promise<void> => {
 
   for (const bp of BUNDLED_PRESENCES) {
     const existing = presences[bp.slug];
-    if (existing?.release?.metadata?.version === bp.release.version) continue;
+    if (existing?.release?.metadata?.version && existing?.release?.metadata?.version === bp.release.version) continue;
 
     presences[bp.slug] = {
       metadata: bp.release.metadata,

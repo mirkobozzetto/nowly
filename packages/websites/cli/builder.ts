@@ -48,6 +48,8 @@ export async function buildPresence(p: PresenceMeta): Promise<string | null> {
     writeFileSync(join(distDir, "settings.json"), JSON.stringify(settings, null, 2))
   }
 
+  writeFileSync(join(distDir, "metadata.json"), JSON.stringify(p.metadata, null, 2))
+
   const assetsDir = join(p.dir, "assets")
   if (existsSync(assetsDir)) {
     const distAssets = join(distDir, "assets")
