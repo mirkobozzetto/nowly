@@ -115,7 +115,7 @@ jobs:
 
           while IFS= read -r slug; do
             [ -z "$slug" ] && continue
-            pnpm presence push "$slug" \
+            pnpm admin push "$slug" \
               --patch \
               --ai \
               --source pr \
