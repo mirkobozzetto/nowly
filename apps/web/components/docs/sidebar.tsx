@@ -58,7 +58,7 @@ export const AppSidebar: FC<AppSidebarProps> = ({ items }) => {
   return (
     <>
       <aside className="hidden lg:block w-56 shrink-0">
-        <div className="fixed top-24 w-56 max-h-[calc(100vh-8rem)] overflow-y-auto">
+        <div className="sticky top-24 w-56 max-h-[calc(100vh-8rem)] overflow-y-auto">
           {sidebarContent}
         </div>
       </aside>
