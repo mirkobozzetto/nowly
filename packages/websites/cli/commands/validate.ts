@@ -28,7 +28,7 @@ export const registerValidate = (program: Command) => {
         const issues: string[] = []
 
         if (!p.metadata.name) issues.push("Missing metadata.name")
-        if (!p.metadata.version) issues.push("Missing metadata.version")
+
         if (!p.metadata.color) issues.push("Missing metadata.color")
         if (!p.metadata.category) issues.push("Missing metadata.category")
         if (!p.metadata.description?.["en-US"]) issues.push("Missing description.en-US")

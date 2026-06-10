@@ -115,42 +115,41 @@ const sha256Base64Url = (input: string): string => {
 }
 
 const generateBundledPresences = (): void => {
-  if (!existsSync(WEBSITES_PRESENCES)) {
-    console.error("Presences not built. Run `pnpm presence build` first.")
-    process.exit(1)
-  }
-
-  const dirs = readdirSync(WEBSITES_PRESENCES, { withFileTypes: true })
-    .filter((d) => d.isDirectory())
-
   const entries: { slug: string; release: any }[] = []
 
-  for (const dir of dirs) {
-    const slug = dir.name
-    const bundlePath = join(WEBSITES_PRESENCES, slug, "bundle.js")
-    const metadataPath = join(WEBSITES_PRESENCES, slug, "metadata.json")
+  if (!existsSync(WEBSITES_PRESENCES)) {
+    console.warn("  ⚠ No presences found — building extension without bundled presences")
+  } else {
+    const dirs = readdirSync(WEBSITES_PRESENCES, { withFileTypes: true })
+      .filter((d) => d.isDirectory())
 
-    if (!existsSync(bundlePath) || !existsSync(metadataPath)) continue
+    for (const dir of dirs) {
+      const slug = dir.name
+      const bundlePath = join(WEBSITES_PRESENCES, slug, "bundle.js")
+      const metadataPath = join(WEBSITES_PRESENCES, slug, "metadata.json")
 
-    const bundle = readFileSync(bundlePath, "utf-8")
-    const metadata = { ...JSON.parse(readFileSync(metadataPath, "utf-8")), slug }
+      if (!existsSync(bundlePath) || !existsSync(metadataPath)) continue
 
-    const sha256 = sha256Base64Url(bundle)
-    const metadataHash = sha256Base64Url(canonicalJson(metadata))
+      const bundle = readFileSync(bundlePath, "utf-8")
+      const metadata = { ...JSON.parse(readFileSync(metadataPath, "utf-8")), slug }
 
-    entries.push({
-      slug,
-      release: {
+      const sha256 = sha256Base64Url(bundle)
+      const metadataHash = sha256Base64Url(canonicalJson(metadata))
+
+      entries.push({
         slug,
-        version: metadata.version,
-        metadata,
-        bundle,
-        sha256,
-        metadataHash,
-        signature: "",
-        signedAt: new Date().toISOString(),
-      },
-    })
+        release: {
+          slug,
+          version: metadata.version ?? `0.0.0-dev.${Date.now()}`,
+          metadata,
+          bundle,
+          sha256,
+          metadataHash,
+          signature: "",
+          signedAt: new Date().toISOString(),
+        },
+      })
+    }
   }
 
   mkdirSync(GENERATED_DIR, { recursive: true })

@@ -17,7 +17,7 @@ SCRIPTS_DIR    := scripts
 HOST_VERSION   ?= 0.0.0-dev
 LDFLAGS        := -X nowly.client/native/internal/contract.HostVersion=$(HOST_VERSION)
 
-.PHONY: build build/windows build/linux build/darwin build/darwin-arm clean
+.PHONY: build build/windows build/linux build/darwin build/darwin-arm installer clean
 
 build: build/windows build/linux build/darwin build/darwin-arm
 
@@ -32,6 +32,14 @@ build/darwin:
 
 build/darwin-arm:
 	GOOS=darwin GOARCH=arm64 go build -ldflags "$(LDFLAGS)" -o $(DIST_DIR)/$(BINARY_NAME)-darwin-arm64 ./cmd/host
+
+ifneq ($(OS),Windows_NT)
+installer:
+	@echo "Installer build is Windows only"
+else
+installer:
+	$(RUNNER) scripts/installer.ps1 $(HOST_VERSION)
+endif
 
 install/linux: build/linux
 	EXTENSION_ID=$(EXTENSION_ID) $(SCRIPTS_DIR)/install-linux.sh $(DIST_DIR)/$(BINARY_NAME)-linux
