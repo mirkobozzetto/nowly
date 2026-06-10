@@ -1,6 +1,23 @@
 import { createMediaTimestamps, PresenceType } from "@nowly/presence"
+import { findVideo, isOnChannelPage, isOnClipPage, isOnVideoPage } from "./utils/dom"
+import { findGame, findStreamerAvatar, findStreamerName, findStreamTitle } from "./utils/streamer"
+import { getClipInfo, getVodTitle } from "./utils/vod"
 
 const settings = Presence.Settings({
+  showVods: {
+    type: "boolean",
+    default: true,
+    label: {
+      "en-US": "Show VOD activity",
+      "fr-FR": "Afficher l'activité des VODs",
+      "es-ES": "Mostrar actividad de VODs",
+    },
+    description: {
+      "en-US": "Show presence activity when watching VODs or clips.",
+      "fr-FR": "Affiche votre activité lorsque vous regardez des VODs ou des clips.",
+      "es-ES": "Muestra actividad de presencia al ver VODs o clips.",
+    },
+  },
   showBrowsing: {
     type: "boolean",
     default: false,
@@ -19,156 +36,82 @@ const settings = Presence.Settings({
 
 const presence = new Presence(settings)
 
-const findVideo = (): HTMLVideoElement | null => {
-  const selectors = [
-    ".channel-root video",
-    ".video-player video",
-    ".persistent-player video",
-    ".tw-full-screen video",
-    "video",
-  ] as const
-
-  for (const selector of selectors) {
-    const video = document.querySelector<HTMLVideoElement>(selector)
-    if (video) return video
-  }
-
-  return null
-}
-
-const findStreamTitle = (): string | undefined => {
-  const selectors = [
-    '[data-a-target="stream-title"]',
-    ".stream-info-card p a",
-    ".channel-info-content h2",
-  ] as const
-
-  for (const selector of selectors) {
-    const el = document.querySelector<HTMLElement>(selector)
-    if (el?.textContent?.trim()) return el.textContent.trim()
-  }
-
-  return undefined
-}
-
-const findStreamerName = (): string | undefined => {
-  const selectors = [
-    ".channel-info-content h1",
-    ".channel-root__info h1",
-    ".tw-title",
-    '[class*="channel-header"] h1',
-  ] as const
-
-  for (const selector of selectors) {
-    const el = document.querySelector<HTMLElement>(selector)
-    if (el?.textContent?.trim()) return el.textContent.trim()
-  }
-
-  return undefined
-}
-
-const findGame = (): string | undefined => {
-  const selectors = [
-    '[data-a-target="stream-game-link"]',
-    ".stream-info-card [data-a-target='stream-game-link']",
-  ] as const
-
-  for (const selector of selectors) {
-    const el = document.querySelector<HTMLElement>(selector)
-    if (el?.textContent?.trim()) return el.textContent.trim()
-  }
-
-  return undefined
-}
-
-const isOnChannelPage = (): boolean => {
-  const path = location.pathname
-  const parts = path.replace(/\/$/, "").split("/").filter(Boolean)
-  return parts.length === 1 && !["directory", "search", "downloads", "turbo", "jobs"].includes(parts[0]!)
-}
-
-const isOnVideoPage = (): boolean => {
-  return location.pathname.includes("/videos/")
-}
-
-const isOnClipPage = (): boolean => {
-  return location.hostname === "clips.twitch.tv" || location.pathname.includes("/clip/")
-}
-
-const getClipInfo = (): { title?: string; creator?: string } => {
-  const title = document.querySelector("article h1")?.textContent?.trim()
-  const creator = document.querySelector(".clip-creator a")?.textContent?.trim()
-  return { title, creator }
-}
-
 presence.on("UpdateData", async (ctx) => {
   const video = findVideo()
-  const { pathname, hostname } = document.location
+  const { pathname } = document.location
 
-  const isLive = video && video.duration >= 1073741824
-  const isOnVideo = isOnVideoPage() && video && video.duration < 1073741824
+  const isOnVideo = isOnVideoPage()
   const isClip = isOnClipPage()
+  // On a VOD/clip page duration is irrelevant — only rely on path for detection
+  const isLive = !isOnVideo && !isClip && video && video.duration >= 1073741824
 
   if (isLive) {
     const title = findStreamTitle()
     const streamer = findStreamerName()
     const game = findGame()
+    const avatar = findStreamerAvatar(streamer)
 
-    const data: Parameters<typeof presence.setActivity>[0] = {
+    await presence.setActivity({
       details: title || "Live",
       state: streamer ? `${streamer}${game ? ` — ${game}` : ""}` : game,
-      largeImageKey: Assets.Logo,
-      largeImageText: title || "Twitch",
+      largeImageKey: avatar || Assets.Logo,
+      largeImageText: streamer || "Twitch",
       smallImageKey: "live",
       smallImageText: "Live",
       type: PresenceType.Watching,
       buttons: [{ label: "Watch Stream", url: window.location.href.split("?")[0] }],
-    }
-
-    await presence.setActivity(data)
+    })
     return
   }
 
   if (isOnVideo) {
-    const title = document.title.replace(" - Twitch", "").split(" - ")[0]?.trim()
-    const uploader = findStreamerName()
+    if (!ctx.settings.showVods) {
+      presence.clearActivity()
+      return
+    }
+
+    const title = getVodTitle()
+    const streamer = findStreamerName()
+    const avatar = findStreamerAvatar(streamer)
 
     const data: Parameters<typeof presence.setActivity>[0] = {
       details: title || "VOD",
-      state: uploader,
-      largeImageKey: Assets.Logo,
-      largeImageText: title || "Twitch",
+      state: streamer,
+      largeImageKey: avatar || Assets.Logo,
+      largeImageText: streamer || "Twitch",
       smallImageKey: video?.paused ? "pause" : "play",
       smallImageText: video?.paused ? "Paused" : "Playing",
       type: PresenceType.Watching,
       buttons: [{ label: "Watch Video", url: window.location.href.split("?")[0] }],
     }
 
-    if (video && !video.paused) {
-      Object.assign(data, createMediaTimestamps(video))
-    }
+    if (video && !video.paused) Object.assign(data, createMediaTimestamps(video))
 
     await presence.setActivity(data)
     return
   }
 
   if (isClip) {
-    const clipInfo = getClipInfo()
+    if (!ctx.settings.showVods) {
+      presence.clearActivity()
+      return
+    }
+
+    const { title, creator } = getClipInfo()
+    const avatar = findStreamerAvatar(creator)
 
     const data: Parameters<typeof presence.setActivity>[0] = {
-      details: clipInfo.title || "Clip",
-      state: clipInfo.creator,
-      largeImageKey: Assets.Logo,
-      largeImageText: clipInfo.title || "Twitch Clip",
+      details: title || "Clip",
+      state: creator,
+      largeImageKey: avatar || Assets.Logo,
+      largeImageText: creator || "Twitch Clip",
       smallImageKey: video?.paused ? "pause" : "play",
       smallImageText: video?.paused ? "Paused" : "Playing",
       type: PresenceType.Watching,
       buttons: [{ label: "Watch Clip", url: window.location.href }],
     }
 
-    if (video && !video.paused) {
-      Object.assign(data, createMediaTimestamps(video))
-    }
+    if (video && !video.paused) Object.assign(data, createMediaTimestamps(video))
 
     await presence.setActivity(data)
     return
@@ -181,10 +124,14 @@ presence.on("UpdateData", async (ctx) => {
 
   if (isOnChannelPage()) {
     const streamer = findStreamerName()
+    const avatar = findStreamerAvatar(streamer)
     await presence.setActivity({
       details: streamer ? `Viewing ${streamer}` : "Viewing channel",
       state: "Browsing...",
-      largeImageKey: Assets.Logo,
+      largeImageKey: avatar || Assets.Logo,
+      largeImageText: streamer || "Twitch",
+      smallImageKey: Assets.Logo,
+      smallImageText: "Twitch",
       type: PresenceType.Watching,
     })
     return
