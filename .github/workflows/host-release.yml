@@ -113,7 +113,7 @@ jobs:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_BUCKET: ${{ secrets.R2_BUCKET || 'nowly' }}
         run: >
-          pnpm presence host:publish
+          pnpm admin host:publish
           --release-version ${{ steps.version.outputs.version }}
           --installer "${{ github.workspace }}/apps/native/dist/NowlySetup.exe"
           --portable "${{ github.workspace }}/apps/native/dist/nowly-windows.zip"
