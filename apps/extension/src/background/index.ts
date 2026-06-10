@@ -1,4 +1,4 @@
-import { WEB_BASE_URL, API_BASE_URL } from "@/shared/constants";
+import { WEB_BASE_URL, API_BASE_URL, CDN_BASE_URL } from "@/shared/constants";
 import type { ExtensionMessage, ExtensionSettings, InstalledPresences, PresenceData, PresenceDebug, PresenceRelease, StoredPresence } from "@/shared/types";
 import { connectNative, mapPresenceData, onNativeResponse, postNative, reconnectNative, refreshNativeStatus } from "./native";
 import { createPresenceRuntime, USER_SCRIPT_MESSAGE_SOURCE } from "./presence-runtime";
@@ -134,7 +134,7 @@ const unregisterPresenceScript = async (slug: string): Promise<void> => {
 const getPresenceRuntime = async (slug: string, name: string, bundle: string): Promise<string> => {
   const allSettings = await getPresenceSettings();
   const presenceSettings = allSettings[slug] ?? {};
-  return createPresenceRuntime(slug, name, bundle, presenceSettings, getEffectiveApiUrl());
+  return createPresenceRuntime(slug, name, bundle, presenceSettings, getEffectiveApiUrl(), CDN_BASE_URL);
 };
 
 const registerPresenceScript = async (slug: string, presence: StoredPresence): Promise<{ ok: boolean; error?: string }> => {

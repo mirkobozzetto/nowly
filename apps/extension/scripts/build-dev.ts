@@ -14,7 +14,7 @@ const GENERATED_DIR = join(ROOT, "src", "generated")
 
 const webBaseUrl = process.env.VITE_WEB_BASE_URL ?? "https://nowly.me"
 const apiBaseUrl = process.env.VITE_API_BASE_URL ?? "https://api.nowly.me"
-const cdnBaseUrl = process.env.VITE_CDN_BASE_URL ?? "https://cdn.nowly.me"
+const cdnBaseUrl = process.env.VITE_CDN_BASE_URL ?? ""
 
 const define = {
   "import.meta.env.VITE_WEB_BASE_URL": JSON.stringify(webBaseUrl),
@@ -170,9 +170,30 @@ export const BUNDLED_PRESENCES: BundledPresence[] = ${JSON.stringify(entries, nu
   console.log(`  ✔ Bundled ${entries.length} presences`)
 }
 
+const copyPresenceAssets = (): void => {
+  if (!existsSync(WEBSITES_PRESENCES)) return
+
+  const dirs = readdirSync(WEBSITES_PRESENCES, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+
+  let count = 0
+  for (const dir of dirs) {
+    const slug = dir.name
+    const assetsSrc = join(WEBSITES_PRESENCES, slug, "assets")
+    if (!existsSync(assetsSrc)) continue
+
+    const assetsDest = join(DIST, "presences", slug, "assets")
+    cpSync(assetsSrc, assetsDest, { recursive: true })
+    count++
+  }
+
+  if (count > 0) console.log(`  ✔ Copied assets for ${count} presences`)
+}
+
 await generateBundledPresences()
 await buildPage("sidepanel", "app")
 await buildScript("background", join(ROOT, "src", "background", "index.ts"))
 await buildScript("content", join(ROOT, "src", "content", "index.ts"))
 copyManifest()
 copyStatic()
+copyPresenceAssets()

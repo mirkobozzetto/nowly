@@ -5,8 +5,13 @@ export const createPresenceRuntime = (
   name: string,
   bundle: string,
   settings: Record<string, unknown> = {},
-  apiBaseUrl = "https://api.nowly.me"
-): string => `
+  apiBaseUrl = "https://api.nowly.me",
+  cdnBaseUrl?: string
+): string => {
+  const assetsBase = cdnBaseUrl
+    ? `${cdnBaseUrl.replace(/\/+$/, "")}/presences/${slug}/assets`
+    : chrome.runtime.getURL(`presences/${slug}/assets`)
+  return `
 (() => {
   "use strict";
 
@@ -14,7 +19,7 @@ export const createPresenceRuntime = (
   const NOWLY_NAME = ${JSON.stringify(name)};
   const NOWLY_SOURCE = ${JSON.stringify(USER_SCRIPT_MESSAGE_SOURCE)};
   const NOWLY_SETTINGS = ${JSON.stringify(settings)};
-  const NOWLY_ASSETS_BASE = ${JSON.stringify(`https://cdn.nowly.me/presences/${slug}/assets`)};
+  const NOWLY_ASSETS_BASE = ${JSON.stringify(assetsBase)};
   const listeners = new Map();
   const instances = [];
   const storage = new Map();
@@ -163,3 +168,4 @@ export const createPresenceRuntime = (
   }
 })();
 `;
+}

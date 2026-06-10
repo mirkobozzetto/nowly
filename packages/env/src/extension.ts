@@ -17,7 +17,7 @@ export const extensionEnv = createEnv({
   client: {
     VITE_WEB_BASE_URL: z.string().trim().url().default("https://nowly.me"),
     VITE_API_BASE_URL: z.string().trim().url().default("https://api.nowly.me"),
-    VITE_CDN_BASE_URL: z.string().trim().url().default("https://cdn.nowly.me"),
+    VITE_CDN_BASE_URL: z.string().trim().url().optional(),
   },
   runtimeEnv: metaEnv,
   emptyStringAsUndefined: true,
