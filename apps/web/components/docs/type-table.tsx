@@ -13,6 +13,7 @@ export type TypeProperty = {
 export type LanguageEntry = {
   language: string;
   code: string;
+  default?: boolean;
 };
 
 export type ApiMethod = {
@@ -84,7 +85,7 @@ const tableConfigs = {
   },
 
   language: {
-    headers: ["Language", "Code"],
+    headers: ["Language", "Code", "Default"],
     renderRow: (lang: LanguageEntry): ReactElement => (
       <tr
         key={lang.code}
@@ -94,8 +95,16 @@ const tableConfigs = {
           {lang.language}
         </td>
 
-        <td className="px-4 py-3">
+        <td className="border-r border-border px-4 py-3">
           <InlineCode>{lang.code}</InlineCode>
+        </td>
+
+        <td className="px-4 py-3">
+          {lang.default ? (
+            <span className="font-medium text-primary">Yes</span>
+          ) : (
+            <span className="text-muted-foreground/70">—</span>
+          )}
         </td>
       </tr>
     ),

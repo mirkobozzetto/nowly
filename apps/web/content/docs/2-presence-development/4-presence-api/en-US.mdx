@@ -5,7 +5,9 @@ description: Use the Nowly Presence API to update Discord Rich Presence from a w
 
 ## Creating a Presence
 
-Every presence starts with a global `Presence` instance:
+`Presence` is a **global** injected by the Nowly runtime — you don't need to import it.
+
+Every presence starts with a `Presence` instance:
 
 ```ts filename="presence.ts"
 const presence = new Presence()
@@ -33,7 +35,7 @@ presence.on("UpdateData", async () => {
     { name: "state", type: "string", description: "Secondary activity line shown below details." },
     { name: "startTimestamp", type: "number", description: "Unix timestamp for elapsed activity progress." },
     { name: "endTimestamp", type: "number", description: "Unix timestamp for remaining activity progress." },
-    { name: "largeImageKey", type: "string", description: "Main image asset key, usually Assets.Logo or Assets.Thumbnail." },
+    { name: "largeImageKey", type: "string", description: "Main image asset key, usually Assets.Logo or Assets.Thumbnail (globals provided by the runtime)." },
     { name: "largeImageText", type: "string", description: "Tooltip for the large image." },
     { name: "smallImageKey", type: "string", description: "Optional small image asset key." },
     { name: "smallImageText", type: "string", description: "Tooltip for the small image." },
@@ -52,7 +54,13 @@ presence.clearActivity()
 
 ## PresenceType
 
-`PresenceType` maps to Discord activity types: `Playing`, `Streaming`, `Listening`, `Watching`, and `Competing`.
+`PresenceType` is a named export from `@nowly/presence`:
+
+```ts filename="presence.ts"
+import { PresenceType } from "@nowly/presence"
+```
+
+It maps to Discord activity types: `Playing`, `Streaming`, `Listening`, `Watching`, and `Competing`.
 
 ## Logging
 

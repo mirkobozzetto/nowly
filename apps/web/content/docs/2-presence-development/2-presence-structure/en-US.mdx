@@ -25,6 +25,36 @@ src/Y/YouTube/
 
 `presence.ts` contains runtime logic. It detects page state and calls the Presence API.
 
+## utils/
+
+For complex presences, split your logic into dedicated files under a `utils/` folder. The YouTube presence, for example, organizes DOM helpers, channel parsing, and Shorts resolution into separate modules:
+
+```txt
+src/Y/YouTube/
+|-- metadata.json
+|-- presence.ts
+|-- assets/
+|   |-- logo.png
+|   |-- icon.png
+|   `-- thumbnail.jpg
+`-- utils/
+    |-- categories.ts
+    |-- dom.ts
+    |-- channel.ts
+    |-- text.ts
+    |-- bridge.ts
+    |-- shorts-dom.ts
+    |-- shorts-resolve.ts
+    `-- youtube-data.ts
+```
+
+The bundler resolves local imports from `presence.ts`, so you can import utility files normally:
+
+```ts filename="presence.ts"
+import { findVideo } from "./utils/dom"
+import { getChannelInfo } from "./utils/channel"
+```
+
 ## assets
 
 Assets are used by the marketplace, installed presence package, Discord activity payloads, and Open Graph images.

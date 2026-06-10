@@ -15,8 +15,7 @@ Every presence needs:
     { name: "url", type: "string[]", description: "Supported domains or URL patterns for matching pages.", required: true },
     { name: "color", type: "string", description: "Brand color in hex format, used by UI and embeds.", required: true },
     { name: "category", type: "string", description: "One of streaming, music, tv, anime, or other.", required: true },
-    { name: "tags", type: "string[]", description: "Search and discovery tags.", required: true },
-    { name: "assets", type: "object", description: "Logo, icon, and thumbnail filenames.", required: true }
+    { name: "tags", type: "string[]", description: "Search and discovery tags.", required: true }
   ]}
 />
 
@@ -35,28 +34,33 @@ Every presence needs:
   "tags": ["video", "media", "streaming"],
   "description": {
     "en-US": "Watch and share videos on YouTube."
-  },
-  "assets": {
-    "logo": "logo.png",
-    "icon": "icon.png",
-    "thumbnail": "thumbnail.jpg"
   }
 }
 ```
 
 ## Author and Contributors
 
-`author` is the main maintainer and is displayed first. `contributors` are additional people who helped with the presence.
+- `author` — Main maintainer, displayed first in the library and OG images.
+- `contributors` — Additional people who helped with the presence.
 
-GitHub usernames are used to resolve avatars.
+<CalloutInfo>
+GitHub usernames (the `github` key) are used to resolve avatars.
+</CalloutInfo>
 
 ## Descriptions and Features
 
-Use `description` for short marketplace copy. Use `longDescription` for detail pages. Use `features` for a localized list of supported behavior.
+- `description` — Short marketplace copy, keyed by locale.
+- `longDescription` — Expanded description for detail pages.
+- `features` — Localized list of supported behavior (e.g., button support, media keys).
 
 ## URL Matching
 
-Use `url` for supported domains or URL patterns. Use `regExp` only when simple matching is not enough.
+- `url` — Supported domains or URL patterns for matching pages.
+- `regExp` — Regex-based matching for complex URL patterns.
+
+<CalloutWarning>
+Use `regExp` only when simple `url` matching is not enough. Prefer explicit domain lists.
+</CalloutWarning>
 
 ## Category
 

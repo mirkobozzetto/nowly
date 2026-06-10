@@ -4,7 +4,7 @@ import { CodeBlock } from "./code-block";
 import { Faq } from "./faq";
 import { HeadingAnchor } from "./heading-anchor";
 import { Steps, Step } from "./steps";
-import { TypeTable } from "./type-table";
+import { TypeTable, LanguageTable } from "./type-table";
 
 type MDXComponents = Record<string, ComponentType<Record<string, unknown>>>;
 
@@ -160,6 +160,7 @@ export const mdxComponents: MDXComponents = {
   )) as FC<{ children?: ReactNode }>,
 
   TypeTable: createSeparatedComponent(TypeTable, "TypeTable"),
+  LanguageTable: createSeparatedComponent(LanguageTable, "LanguageTable"),
 
   Steps: Steps as ComponentType<Record<string, unknown>>,
   Step: Step as ComponentType<Record<string, unknown>>,
