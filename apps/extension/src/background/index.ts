@@ -456,10 +456,19 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
       const { slug, partial } = message.payload as { slug: string; partial: Record<string, unknown> };
       void setPresenceSettings(slug, partial).then((settings) => {
         respond(sendResponse, settings);
-        getPresences().then((presences) => {
+        getPresences().then(async (presences) => {
           const stored = presences[slug];
           if (stored?.enabled && stored.release?.bundle) {
             void registerPresenceScript(slug, stored);
+            // Push updated settings to the already-running presence on the active tab
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            if (tab?.id) {
+              chrome.tabs.sendMessage(tab.id, {
+                type: "PRESENCE_SETTINGS_UPDATED",
+                slug,
+                settings,
+              }).catch(() => {});
+            }
           }
         });
       });

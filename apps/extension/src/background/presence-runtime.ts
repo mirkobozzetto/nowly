@@ -23,6 +23,8 @@ export const createPresenceRuntime = (
   const listeners = new Map();
   const instances = [];
   const storage = new Map();
+  // Mutable settings object: extension-injected values take priority, missing keys fall back to presence defaults
+  const ctxSettings = Object.assign({}, NOWLY_SETTINGS);
 
   const post = (type, payload = {}) => {
     window.postMessage({
@@ -41,16 +43,16 @@ export const createPresenceRuntime = (
       if (typeof __PRESENCE_SETTINGS__ !== "undefined") {
         __PRESENCE_SETTINGS__ = definitions;
       }
-      if (typeof definitions !== "object" || definitions === null) return {};
-      const defaults = {};
+      if (typeof definitions !== "object" || definitions === null) return ctxSettings;
+      // Apply defaults only for keys the extension hasn't explicitly set
       for (const [key, value] of Object.entries(definitions)) {
-        if (typeof value === "object" && value !== null && "default" in value) {
-          defaults[key] = value.default;
-        } else {
-          defaults[key] = value;
+        if (!(key in ctxSettings)) {
+          ctxSettings[key] = typeof value === "object" && value !== null && "default" in value
+            ? value.default
+            : value;
         }
       }
-      return defaults;
+      return ctxSettings;
     }
 
     static Assets(assets) {
@@ -117,7 +119,7 @@ export const createPresenceRuntime = (
       post("CLEAR_ACTIVITY");
     },
     storage,
-    settings: NOWLY_SETTINGS,
+    settings: ctxSettings,
   };
 
   try {
@@ -159,6 +161,14 @@ export const createPresenceRuntime = (
       clearInterval(timer);
       factory?.destroy?.();
       post("CLEAR_ACTIVITY");
+    });
+
+    window.addEventListener("message", (event) => {
+      if (event.data?.source !== "NOWLY_HOST") return;
+      if (event.data?.type !== "SETTINGS_UPDATED") return;
+      if (event.data?.slug !== NOWLY_SLUG) return;
+      Object.assign(ctx.settings, event.data.settings);
+      tick();
     });
   } catch (error) {
     post("DEBUG", {

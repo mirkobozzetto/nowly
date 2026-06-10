@@ -131,7 +131,12 @@ const generateBundledPresences = (): void => {
       if (!existsSync(bundlePath) || !existsSync(metadataPath)) continue
 
       const bundle = readFileSync(bundlePath, "utf-8")
-      const metadata = { ...JSON.parse(readFileSync(metadataPath, "utf-8")), slug }
+      const metadata: Record<string, unknown> = { ...JSON.parse(readFileSync(metadataPath, "utf-8")), slug }
+
+      const settingsPath = join(WEBSITES_PRESENCES, slug, "settings.json")
+      if (existsSync(settingsPath)) {
+        metadata.settings = JSON.parse(readFileSync(settingsPath, "utf-8"))
+      }
 
       const sha256 = sha256Base64Url(bundle)
       const metadataHash = sha256Base64Url(canonicalJson(metadata))
