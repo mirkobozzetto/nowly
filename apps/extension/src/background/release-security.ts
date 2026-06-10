@@ -73,7 +73,6 @@ export const verifyPresenceRelease = async (
   if (typeof release.signedAt !== "string") return { ok: false, error: "release signedAt missing" };
   if (expectedSlug && release.slug !== expectedSlug) return { ok: false, error: "release slug mismatch" };
   if (release.metadata.slug !== release.slug) return { ok: false, error: "metadata slug mismatch" };
-  if (release.metadata.version !== release.version) return { ok: false, error: "metadata version mismatch" };
   if (!release.bundle?.trim()) return { ok: false, error: "release bundle missing" };
 
   const bundleHash = await sha256Base64Url(release.bundle);

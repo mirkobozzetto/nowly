@@ -427,7 +427,7 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
         for (const result of results) {
           if (result.status === "fulfilled") {
             const { slug, latestVersion } = result.value;
-            const installed = presences[slug].release?.metadata?.version;
+            const installed = presences[slug].release?.version;
             if (installed && latestVersion !== installed) {
               updates[slug] = latestVersion;
             }
@@ -547,7 +547,7 @@ const installBundledPresences = async (): Promise<void> => {
 
   for (const bp of BUNDLED_PRESENCES) {
     const existing = presences[bp.slug];
-    if (existing?.release?.metadata?.version && existing?.release?.metadata?.version === bp.release.version) continue;
+    if (existing?.release?.version && existing?.release?.version === bp.release.version) continue;
 
     presences[bp.slug] = {
       metadata: bp.release.metadata,
