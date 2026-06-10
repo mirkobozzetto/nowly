@@ -24,6 +24,17 @@ Chromium Native Messaging host for Discord Rich Presence integration.
 | `OK` | Host → Extension | — |
 | `ERROR` | Host → Extension | `error` string |
 
+## Configuration
+
+Copy `.env.example` to `.env` and set the extension ID:
+
+```bash
+EXTENSION_ID=kmnlnfldimgneaopdihplkebobckcjpf   # prod (default)
+EXTENSION_ID=abbegmindbabanjcabnmcjmamaoffbam    # dev
+```
+
+The `.env` file is auto-loaded by `make` targets and scripts.
+
 ## Build
 
 ### Prerequisites
@@ -36,6 +47,14 @@ Chromium Native Messaging host for Discord Rich Presence integration.
 ```bash
 make build
 ```
+
+### Build Windows binary + installer (one command)
+
+```bash
+make installer HOST_VERSION=1.0.0-dev
+```
+
+Outputs `dist/nowly-host.exe` + `dist/NowlySetup.exe`.
 
 ### Platform-specific builds
 
@@ -87,59 +106,36 @@ GOOS=darwin GOARCH=arm64 go build -o dist/nowly-host-darwin-arm64 ./cmd/host
 | Linux    | Linux 2.6.32+ / glibc 2.17+ | `nowly-linux.tar.gz` | ~1.9 MB | `nowly-host-linux` binary + install/uninstall scripts |
 | macOS    | macOS 11 Big Sur+ | `nowly-macos.tar.gz` | ~3.7 MB | Intel + ARM binaries + install/uninstall scripts |
 
-## Install
-
-### Windows — Inno Setup installer
-
-```powershell
-iscc installer.iss /DAPP_VERSION=1.0.0
-```
-
-The installer registers the host with Chrome, Edge, and Brave via registry keys.
-
-Override the extension ID via `.env` (copied from `.env.example`):
-
-```bash
-EXTENSION_ID=kmnlnfldimgneaopdihplkebobckcjpf   # prod
-EXTENSION_ID=abbegmindbabanjcabnmcjmamaoffbam    # dev
-```
-
-Builds via `make` and shell scripts load `.env` automatically.
-For the Windows installer (Inno Setup), pass it manually:
-
-```powershell
-iscc installer.iss /DEXTENSION_ID=%EXTENSION_ID%
-```
-
 ## Release flow
 
-Host releases are driven by git tags. Push a tag named `host-vX.Y.Z`:
+### Quick release (build + publish to CDN)
+
+```bash
+make release-prod HOST_VERSION=1.0.0
+```
+
+This runs `scripts/release.sh` (or `release.ps1` on Windows) then `scripts/publish-prod.sh` (or `publish-prod.ps1`):
+
+1. **Release**: builds all platform binaries, creates the Inno Setup installer (if `iscc` is available), packages archives, generates `latest.json` → `releases/{version}/`
+2. **Publish**: uploads all artifacts to Cloudflare R2 via `pnpm admin host:publish`
+
+### Host releases via git tags
+
+Push a tag named `host-vX.Y.Z`:
 
 ```bash
 git tag host-v1.0.0
 git push origin host-v1.0.0
 ```
 
-The `Host Release` GitHub Action then:
+The `Host Release` GitHub Action then builds and publishes automatically.
 
-1. Builds `nowly-host.exe` with `HostVersion` injected from the tag.
-2. Cross-compiles the Linux and macOS host binaries with the same version.
-3. Builds the Inno Setup installer with the same `AppVersion`.
-4. Creates the Windows, Linux, and macOS archives.
-5. Uploads the latest artifacts to Cloudflare R2:
-   - `installer/nowly-setup.exe`
-   - `installer/nowly-windows.zip`
-   - `installer/nowly-linux.tar.gz`
-   - `installer/nowly-macos.tar.gz`
-   - `installer/latest.json`
-6. Uploads immutable copies under `installer/releases/X.Y.Z/`.
+The extension checks `https://cdn.nowly.me/installer/latest.json` for updates. Once the workflow updates `latest.json`, users with an older native host see the update prompt.
 
-The extension checks `https://nowly.me/host/version`, which reads `https://cdn.nowly.me/installer/latest.json`. Once the workflow updates `latest.json`, users with an older native host see the update prompt automatically.
-
-For a manual re-publish, use:
+### Manual publish
 
 ```bash
-pnpm presence host:publish --release-version 1.0.0 --installer apps/native/dist/NowlySetup.exe --portable apps/native/dist/nowly-windows.zip --linux apps/native/dist/nowly-linux.tar.gz --macos apps/native/dist/nowly-macos.tar.gz
+pnpm admin host:publish --release-version 1.0.0 --installer releases/1.0.0/nowly-setup.exe --portable releases/1.0.0/nowly-windows.zip --linux releases/1.0.0/nowly-linux.tar.gz --macos releases/1.0.0/nowly-macos.tar.gz
 ```
 
 ### Linux
