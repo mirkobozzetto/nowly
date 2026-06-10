@@ -97,10 +97,18 @@ iscc installer.iss /DAPP_VERSION=1.0.0
 
 The installer registers the host with Chrome, Edge, and Brave via registry keys.
 
-Override the extension ID for production:
+Override the extension ID via `.env` (copied from `.env.example`):
+
+```bash
+EXTENSION_ID=kmnlnfldimgneaopdihplkebobckcjpf   # prod
+EXTENSION_ID=abbegmindbabanjcabnmcjmamaoffbam    # dev
+```
+
+Builds via `make` and shell scripts load `.env` automatically.
+For the Windows installer (Inno Setup), pass it manually:
 
 ```powershell
-iscc installer.iss /DEXTENSION_ID=your-store-id-here
+iscc installer.iss /DEXTENSION_ID=%EXTENSION_ID%
 ```
 
 ## Release flow
