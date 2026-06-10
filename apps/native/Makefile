@@ -11,7 +11,6 @@ endif
 -include .env
 
 BINARY_NAME    := nowly-host
-EXTENSION_ID   ?= kmnlnfldimgneaopdihplkebobckcjpf
 DIST_DIR       := dist
 SCRIPTS_DIR    := scripts
 HOST_VERSION   ?= 0.0.0-dev
@@ -42,13 +41,13 @@ installer:
 endif
 
 install/linux: build/linux
-	EXTENSION_ID=$(EXTENSION_ID) $(SCRIPTS_DIR)/install-linux.sh $(DIST_DIR)/$(BINARY_NAME)-linux
+	$(SCRIPTS_DIR)/install-linux.sh $(DIST_DIR)/$(BINARY_NAME)-linux
 
 install/darwin: build/darwin
-	EXTENSION_ID=$(EXTENSION_ID) $(SCRIPTS_DIR)/install-macos.sh $(DIST_DIR)/$(BINARY_NAME)-darwin
+	$(SCRIPTS_DIR)/install-macos.sh $(DIST_DIR)/$(BINARY_NAME)-darwin
 
 install/darwin-arm: build/darwin-arm
-	EXTENSION_ID=$(EXTENSION_ID) $(SCRIPTS_DIR)/install-macos.sh $(DIST_DIR)/$(BINARY_NAME)-darwin-arm64
+	$(SCRIPTS_DIR)/install-macos.sh $(DIST_DIR)/$(BINARY_NAME)-darwin-arm64
 
 release:
 	$(RUNNER) $(RELEASE_SCRIPT) $(HOST_VERSION)

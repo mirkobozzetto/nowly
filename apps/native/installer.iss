@@ -11,9 +11,6 @@
 
 #define HostName "nowly.client"
 #define InstallFolder "NowlyClient"
-#ifndef EXTENSION_ID
-  #define EXTENSION_ID "kmnlnfldimgneaopdihplkebobckcjpf"
-#endif
 
 [Setup]
 AppId={{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}
@@ -80,7 +77,8 @@ begin
       '  "path": "' + HostPath + '",' + #13#10 +
       '  "type": "stdio",' + #13#10 +
       '  "allowed_origins": [' + #13#10 +
-      '    "chrome-extension://{#EXTENSION_ID}/"' + #13#10 +
+      '    "chrome-extension://kmnlnfldimgneaopdihplkebobckcjpf/",' + #13#10 +
+      '    "chrome-extension://abbegmindbabanjcabnmcjmamaoffbam/"' + #13#10 +
       '  ]' + #13#10 +
       '}';
 

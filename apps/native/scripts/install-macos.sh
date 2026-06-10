@@ -5,7 +5,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 [ -f "$SCRIPT_DIR/../.env" ] && source "$SCRIPT_DIR/../.env"
 
 HOST_NAME="nowly.client"
-EXTENSION_ID="${EXTENSION_ID:-kmnlnfldimgneaopdihplkebobckcjpf}"
 BINARY_NAME="nowly-host"
 BINARY_SRC="${1:-dist/nowly-host-darwin}"
 
@@ -42,7 +41,10 @@ MANIFEST=$(cat <<MANIFEST_END
   "description": "Nowly Native Messaging Host",
   "path": "${INSTALL_DIR}/${BINARY_NAME}",
   "type": "stdio",
-  "allowed_origins": ["chrome-extension://${EXTENSION_ID}/"]
+  "allowed_origins": [
+    "chrome-extension://kmnlnfldimgneaopdihplkebobckcjpf/",
+    "chrome-extension://abbegmindbabanjcabnmcjmamaoffbam/"
+  ]
 }
 MANIFEST_END
 )

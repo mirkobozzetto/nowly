@@ -13,11 +13,7 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist"
 RELEASE_DIR="$ROOT_DIR/releases/$VERSION"
 
-source "$ROOT_DIR/.env" 2>/dev/null || true
-EXTENSION_ID="${EXTENSION_ID:-kmnlnfldimgneaopdihplkebobckcjpf}"
-
 echo "=== Nowly Native Host v$VERSION release ==="
-echo "Extension ID: $EXTENSION_ID"
 echo ""
 
 # --------------- Build binaries ---------------
@@ -53,8 +49,7 @@ fi
 if [ -n "$ISCC" ]; then
   echo ">> Building Windows installer..."
   "$ISCC" "$ROOT_DIR/installer.iss" \
-    /DAPP_VERSION="$VERSION" \
-    /DEXTENSION_ID="$EXTENSION_ID"
+    /DAPP_VERSION="$VERSION"
   
   if [ -f "$DIST_DIR/NowlySetup.exe" ]; then
     cp "$DIST_DIR/NowlySetup.exe" "$RELEASE_DIR/nowly-setup.exe"
