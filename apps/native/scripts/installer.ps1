@@ -5,24 +5,8 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RootDir = Split-Path -Parent $ScriptDir
 $DistDir = Join-Path $RootDir 'dist'
 
-# Source .env
-$EnvFile = Join-Path $RootDir '.env'
-if (Test-Path $EnvFile) {
-  Get-Content $EnvFile | ForEach-Object {
-    if ($_ -match '^\s*([^#=]+)=(.*)\s*$') {
-      $k = $matches[1].Trim()
-      $v = $matches[2].Trim()
-      Set-Item -Path "env:$k" -Value $v
-    }
-  }
-}
-$ExtensionId = $env:EXTENSION_ID
-if (-not $ExtensionId) {
-  $ExtensionId = 'kmnlnfldimgneaopdihplkebobckcjpf'
-}
-
 Write-Host "=== Building Windows binary + installer ==="
-Write-Host "Version: $Version | Extension ID: $ExtensionId"
+Write-Host "Version: $Version"
 Write-Host ""
 
 New-Item -ItemType Directory -Force -Path $DistDir | Out-Null
@@ -43,7 +27,7 @@ if (-not $Iscc) {
     if (Test-Path $p) { $Iscc = $p; break }
   }
 }
-& "$Iscc" (Join-Path $RootDir 'installer.iss') "/DAPP_VERSION=$Version" "/DEXTENSION_ID=$ExtensionId"
+& "$Iscc" (Join-Path $RootDir 'installer.iss') "/DAPP_VERSION=$Version"
 
 $SetupExe = Join-Path $DistDir 'NowlySetup.exe'
 if (Test-Path $SetupExe) {

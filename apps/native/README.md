@@ -7,8 +7,7 @@ Chromium Native Messaging host for Discord Rich Presence integration.
 | Field | Value |
 |-------|-------|
 | Host name | `nowly.client` |
-| Extension ID (dev) | `abbegmindbabanjcabnmcjmamaoffbam` |
-| Extension ID (prod) | *(set when published to Chrome Web Store)* |
+| Extension IDs | `kmnlnfldimgneaopdihplkebobckcjpf` (prod), `abbegmindbabanjcabnmcjmamaoffbam` (dev) |
 | Binary | `nowly-host` (Unix) / `nowly-host.exe` (Windows) |
 | Log dir | `~/.cache/NowlyClient/` (Unix) / `%LOCALAPPDATA%\NowlyClient\` (Windows) |
 
@@ -23,17 +22,6 @@ Chromium Native Messaging host for Discord Rich Presence integration.
 | `CLEAR_ACTIVITY` | Extension → Host | — |
 | `OK` | Host → Extension | — |
 | `ERROR` | Host → Extension | `error` string |
-
-## Configuration
-
-Copy `.env.example` to `.env` and set the extension ID:
-
-```bash
-EXTENSION_ID=kmnlnfldimgneaopdihplkebobckcjpf   # prod (default)
-EXTENSION_ID=abbegmindbabanjcabnmcjmamaoffbam    # dev
-```
-
-The `.env` file is auto-loaded by `make` targets and scripts.
 
 ## Build
 
@@ -168,12 +156,7 @@ make build/darwin-arm
 
 The install scripts place the binary in `~/.local/share/NowlyClient/` (Linux) or `~/Library/Application Support/NowlyClient/` (macOS) and write the native messaging manifest to each browser's config directory.
 
-Override the extension ID:
-
-```bash
-EXTENSION_ID=your-store-id-here ./scripts/install-linux.sh
-EXTENSION_ID=your-store-id-here ./scripts/install-macos.sh
-```
+The manifest allows both the prod and dev extension IDs, so a single install works with either version of the extension.
 
 **Note:** The native messaging manifest points to the binary's absolute path. If you move the binary after installation, re-run the install script or update the manifest.
 

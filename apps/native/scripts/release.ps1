@@ -11,24 +11,7 @@ $RootDir = Split-Path -Parent $ScriptDir
 $DistDir = Join-Path $RootDir 'dist'
 $ReleaseDir = Join-Path (Join-Path $RootDir 'releases') $Version
 
-# Source .env
-$EnvFile = Join-Path $RootDir '.env'
-if (Test-Path $EnvFile) {
-  Get-Content $EnvFile | ForEach-Object {
-    if ($_ -match '^\s*([^#=]+)=(.*)\s*$') {
-      $k = $matches[1].Trim()
-      $v = $matches[2].Trim()
-      Set-Item -Path "env:$k" -Value $v
-    }
-  }
-}
-$ExtensionId = $env:EXTENSION_ID
-if (-not $ExtensionId) {
-  $ExtensionId = 'kmnlnfldimgneaopdihplkebobckcjpf'
-}
-
 Write-Host "=== Nowly Native Host v$Version release ==="
-Write-Host "Extension ID: $ExtensionId"
 Write-Host ""
 
 # Build binaries
@@ -74,8 +57,7 @@ if (-not $Iscc) {
 if ($Iscc) {
   Write-Host ">> Building Windows installer..."
   & "$Iscc" (Join-Path $RootDir 'installer.iss') `
-    "/DAPP_VERSION=$Version" `
-    "/DEXTENSION_ID=$ExtensionId"
+    "/DAPP_VERSION=$Version"
   $SetupExe = Join-Path $DistDir 'NowlySetup.exe'
   if (Test-Path $SetupExe) {
     Copy-Item $SetupExe (Join-Path $ReleaseDir 'nowly-setup.exe')
