@@ -160,7 +160,7 @@ export const mdxComponents: MDXComponents = {
   )) as FC<{ children?: ReactNode }>,
 
   TypeTable: createSeparatedComponent(TypeTable, "TypeTable"),
-  LanguageTable: createSeparatedComponent(LanguageTable, "LanguageTable"),
+  LanguageTable: createSeparatedComponent(LanguageTable as ComponentType<Record<string, unknown>>, "LanguageTable"),
 
   Steps: Steps as ComponentType<Record<string, unknown>>,
   Step: Step as ComponentType<Record<string, unknown>>,
