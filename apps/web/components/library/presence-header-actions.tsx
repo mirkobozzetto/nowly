@@ -30,39 +30,44 @@ export const PresenceHeaderActions: FC<Props> = ({
 }) => {
   const t = useTranslations("MarketplaceDetail");
 
+  const hasInstall = !isInstalled || needsUpdate;
+  const hasUninstall = isInstalled && isExtDetected && !loading;
+
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      {(!isInstalled || needsUpdate) && (
-        <button
-          onClick={onInstall}
-          disabled={!isExtDetected || loading}
-          className={cn(
-            "inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-lg font-semibold text-sm transition-all",
-            !isExtDetected || loading
-              ? "bg-card-2 text-muted-foreground border border-border cursor-not-allowed opacity-60"
-              : isExtDetected && needsUpdate && !loading
-                ? "bg-warning/10 text-warning border border-warning/20 hover:bg-warning/20"
-                : "bg-foreground text-background hover:bg-[#e4e4e7]",
-          )}
-        >
-          {loading ? <Spinner /> : <Download className="w-4 h-4" />}
-          {loading ? t("installing") : needsUpdate ? t("updateAction") : t("installAction")}
-        </button>
-      )}
+      <div className="flex items-center gap-2 flex-1 min-w-0">
+        {hasInstall && (
+          <button
+            onClick={onInstall}
+            disabled={!isExtDetected || loading}
+            className={cn(
+              "inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-lg font-semibold text-sm transition-all",
+              !isExtDetected || loading
+                ? "bg-card-2 text-muted-foreground border border-border cursor-not-allowed opacity-60"
+                : isExtDetected && needsUpdate && !loading
+                  ? "bg-warning/10 text-warning border border-warning/20 hover:bg-warning/20"
+                  : "bg-foreground text-background hover:bg-[#e4e4e7]",
+            )}
+          >
+            {loading ? <Spinner /> : <Download className="w-4 h-4" />}
+            {loading ? t("installing") : needsUpdate ? t("updateAction") : t("installAction")}
+          </button>
+        )}
 
-      {isInstalled && isExtDetected && !loading && (
-        <button
-          onClick={onUninstall}
-          className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-lg font-semibold text-sm transition-all bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20"
-        >
-          <Trash2 className="w-4 h-4" />
-          {t("uninstallAction")}
-        </button>
-      )}
+        {hasUninstall && (
+          <button
+            onClick={onUninstall}
+            className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-lg font-semibold text-sm transition-all bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20"
+          >
+            <Trash2 className="w-4 h-4" />
+            {t("uninstallAction")}
+          </button>
+        )}
+      </div>
 
       <Link
         href={`/library/${slug}/comments`}
-        className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-lg font-semibold text-sm transition-all border border-border bg-transparent text-muted-foreground hover:border-border-light hover:bg-card-2 hover:text-foreground ml-auto"
+        className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-lg font-semibold text-sm transition-all border border-border bg-transparent text-muted-foreground hover:border-border-light hover:bg-card-2 hover:text-foreground"
       >
         <Users className="w-4 h-4" />
         {t("community")} ({commentCount})

@@ -40,7 +40,7 @@ export const SupportButton: FC = () => {
       size="sm"
       variant="secondary"
       className={cn(
-        "text-muted-foreground",
+        "text-muted-foreground text-xs sm:text-sm px-2 sm:px-3",
         thanked
           ? "border-red-500/50 text-foreground bg-red-500/10 pointer-events-none"
           : "hover:border-red-500/40 hover:text-foreground hover:bg-red-500/5",

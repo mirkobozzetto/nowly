@@ -16,7 +16,7 @@ export const HeroSection: FC = (): ReactElement => {
 
   return (
     <>
-      <section className="min-h-screen flex items-center py-[120px_0_60px] relative overflow-hidden border-b border-border">
+      <section className="min-h-screen flex items-center pt-[120px] pb-[60px] relative overflow-hidden border-b border-border">
         {/* <div
           aria-hidden="true"
           className="absolute inset-0 pointer-events-none"

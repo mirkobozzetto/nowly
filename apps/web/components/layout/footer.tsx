@@ -19,7 +19,7 @@ export const Footer: FC = (): ReactElement => {
     <footer className="py-8 border-t border-border text-dim-foreground text-sm">
       <div className="max-w-300 mx-auto px-6">
         <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between flex-wrap gap-5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
             <div className="flex items-center gap-3">
               <AvatarGroup className="-space-x-4">
                 <Avatar size="lg" className="z-6">
@@ -54,7 +54,7 @@ export const Footer: FC = (): ReactElement => {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               <SupportButton />
 
               <Link
@@ -62,13 +62,13 @@ export const Footer: FC = (): ReactElement => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={buttonVariants({
-                  className: "text-muted-foreground hover:border-zinc-500/40 hover:text-foreground hover:bg-zinc-500/10",
+                  className: "text-muted-foreground hover:border-zinc-500/40 hover:text-foreground hover:bg-zinc-500/10 text-xs sm:text-sm px-2 sm:px-3",
                   size: "sm",
                   variant: "secondary",
                 })}
               >
                 <GitHubIcon className="w-4 h-4" />
-                {t("openSource")}
+                <span className="hidden sm:inline">{t("openSource")}</span>
               </Link>
             </div>
           </div>

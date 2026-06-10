@@ -1,13 +1,13 @@
 "use client";
 
-import { buttonVariants as _buttonVariants, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useBrowser } from "@/hooks/use-browser";
 import { cn } from "@/lib/utils";
-import { Download } from "lucide-react";
+import { Download, Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
-// import { useEffect, useState } from "react";
 
 export const Navbar: FC = (): ReactElement => {
   const browser = useBrowser();
@@ -25,16 +25,54 @@ export const Navbar: FC = (): ReactElement => {
           <Link href="/">
             <img src="/app_title_white.png" alt="Nowly" className="h-8 w-auto" />
           </Link>
-          
-          <div className="flex items-center gap-2">
+
+          {/* Mobile: hamburger menu */}
+          <div className="lg:hidden">
+            <Sheet>
+              <SheetTrigger asChild>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-lg p-2 text-muted-foreground hover:text-foreground hover:bg-card-hover transition-colors"
+                  aria-label="Open menu"
+                >
+                  <Menu size={22} />
+                </button>
+              </SheetTrigger>
+
+              <SheetContent side="right" showCloseButton={false}>
+                <div className="flex flex-col gap-6 px-6 pt-12">
+                  <SheetClose asChild>
+                    <Link
+                      href="/docs"
+                      className="text-lg font-semibold text-foreground hover:text-accent transition-colors"
+                    >
+                      {t("docs")}
+                    </Link>
+                  </SheetClose>
+
+                  <SheetClose asChild>
+                    <Link
+                      href="/library"
+                      className="text-lg font-semibold text-foreground hover:text-accent transition-colors"
+                    >
+                      {t("marketplace")}
+                    </Link>
+                  </SheetClose>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* Desktop: nav links + download button */}
+          <div className="hidden lg:flex items-center gap-2">
             <Link href="/docs"
-              className={_buttonVariants({ size: "md", variant: "ghost" })}
+              className={buttonVariants({ size: "md", variant: "ghost" })}
             >
               {t("docs")}
             </Link>
 
             <Link href="/library"
-              className={_buttonVariants({ size: "md", variant: "ghost" })}
+              className={buttonVariants({ size: "md", variant: "ghost" })}
             >
               {t("marketplace")}
             </Link>
