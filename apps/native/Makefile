@@ -1,5 +1,17 @@
+ifneq ($(OS),Windows_NT)
+  RUNNER        :=
+  RELEASE_SCRIPT := scripts/release.sh
+  PUBLISH_SCRIPT := scripts/publish-prod.sh
+else
+  RUNNER        := powershell -NoProfile -File
+  RELEASE_SCRIPT := scripts/release.ps1
+  PUBLISH_SCRIPT := scripts/publish-prod.ps1
+endif
+
+-include .env
+
 BINARY_NAME    := nowly-host
-EXTENSION_ID   ?= abbegmindbabanjcabnmcjmamaoffbam
+EXTENSION_ID   ?= kmnlnfldimgneaopdihplkebobckcjpf
 DIST_DIR       := dist
 SCRIPTS_DIR    := scripts
 HOST_VERSION   ?= 0.0.0-dev
@@ -29,6 +41,14 @@ install/darwin: build/darwin
 
 install/darwin-arm: build/darwin-arm
 	EXTENSION_ID=$(EXTENSION_ID) $(SCRIPTS_DIR)/install-macos.sh $(DIST_DIR)/$(BINARY_NAME)-darwin-arm64
+
+release:
+	$(RUNNER) $(RELEASE_SCRIPT) $(HOST_VERSION)
+
+publish-prod: release
+	$(RUNNER) $(PUBLISH_SCRIPT) $(HOST_VERSION)
+
+release-prod: publish-prod
 
 uninstall/linux:
 	$(SCRIPTS_DIR)/uninstall-linux.sh

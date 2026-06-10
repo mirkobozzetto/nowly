@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+[ -f "$SCRIPT_DIR/../.env" ] && source "$SCRIPT_DIR/../.env"
+
 HOST_NAME="nowly.client"
-EXTENSION_ID="${EXTENSION_ID:-abbegmindbabanjcabnmcjmamaoffbam}"
+EXTENSION_ID="${EXTENSION_ID:-kmnlnfldimgneaopdihplkebobckcjpf}"
 BINARY_NAME="nowly-host"
 BINARY_SRC="${1:-dist/nowly-host-darwin}"
 

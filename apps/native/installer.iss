@@ -12,7 +12,7 @@
 #define HostName "nowly.client"
 #define InstallFolder "NowlyClient"
 #ifndef EXTENSION_ID
-  #define EXTENSION_ID "abbegmindbabanjcabnmcjmamaoffbam"
+  #define EXTENSION_ID "kmnlnfldimgneaopdihplkebobckcjpf"
 #endif
 
 [Setup]
