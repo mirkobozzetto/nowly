@@ -76,6 +76,12 @@ pnpm presence push --all --patch --changelog "Batch update"
 |---|---|---|
 | `API_URL` | `https://api.nowly.me` | API base URL |
 | `API_SECRET_KEY` | — | API authentication key |
+| `R2_ACCESS_KEY_ID` | — | Cloudflare R2 access key |
+| `R2_SECRET_ACCESS_KEY` | — | Cloudflare R2 secret key |
+| `R2_ACCOUNT_ID` | — | Cloudflare account ID for R2 |
+| `R2_BUCKET` | `nowly` | Cloudflare R2 bucket |
+| `CLOUDFLARE_API_TOKEN` | — | Optional token used to purge latest CDN files after upload |
+| `CLOUDFLARE_ZONE_ID` | — | Optional Cloudflare zone ID used for CDN purge |
 
 ## Presence structure
 

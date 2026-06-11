@@ -1,5 +1,5 @@
 import { DIST } from "@/discover"
-import { spinner } from "@/logger"
+import { logger, spinner } from "@/logger"
 import { CopyObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { cliEnv } from "@nowly/env/cli"
 import { createHash } from "crypto"
@@ -8,6 +8,8 @@ import { join, relative } from "path"
 
 const R2_BUCKET = cliEnv.R2_BUCKET
 const R2_PUBLIC_URL = cliEnv.R2_PUBLIC_URL
+const CLOUDFLARE_API_TOKEN = cliEnv.CLOUDFLARE_API_TOKEN
+const CLOUDFLARE_ZONE_ID = cliEnv.CLOUDFLARE_ZONE_ID
 
 const MIME_TYPES: Record<string, string> = {
   ".js": "application/javascript; charset=utf-8",
@@ -32,9 +34,10 @@ const getContentType = (path: string): string => {
   return MIME_TYPES[ext ?? ""] ?? "application/octet-stream"
 }
 
-const getCacheControl = (path: string): string => {
-  if (path.endsWith(".js")) return "public, max-age=31536000, immutable"
-  if (path.match(/\.(png|jpg|jpeg|gif|svg|webp|ico)$/)) return "public, max-age=31536000, immutable"
+const getCacheControl = (path: string, immutable = false): string => {
+  if (immutable && path.endsWith(".js")) return "public, max-age=31536000, immutable"
+  if (immutable && path.match(/\.(png|jpg|jpeg|gif|svg|webp|ico)$/)) return "public, max-age=31536000, immutable"
+  if (path.endsWith(".js")) return "public, max-age=60"
   return "public, max-age=3600"
 }
 
@@ -103,7 +106,7 @@ const walkDir = (dir: string): string[] => {
   return files
 }
 
-const uploadFiles = async (slug: string, prefix: string): Promise<string[]> => {
+const uploadFiles = async (slug: string, prefix: string, immutable = false): Promise<string[]> => {
   const presenceDir = join(DIST, "presences", slug)
   const files = walkDir(presenceDir)
   const uploaded: string[] = []
@@ -113,7 +116,7 @@ const uploadFiles = async (slug: string, prefix: string): Promise<string[]> => {
     const relativePath = relative(presenceDir, filePath).replace(/\\/g, "/")
     const key = join(prefix, relativePath).replace(/\\/g, "/")
     const contentType = getContentType(filePath)
-    const cacheControl = getCacheControl(filePath)
+    const cacheControl = getCacheControl(filePath, immutable)
 
     await client.send(new PutObjectCommand({
       Bucket: R2_BUCKET,
@@ -127,6 +130,27 @@ const uploadFiles = async (slug: string, prefix: string): Promise<string[]> => {
   }
 
   return uploaded
+}
+
+const purgeCloudflareFiles = async (urls: string[]): Promise<void> => {
+  if (!CLOUDFLARE_API_TOKEN || !CLOUDFLARE_ZONE_ID || urls.length === 0) return
+
+  const res = await fetch(
+    `https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/purge_cache`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${CLOUDFLARE_API_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ files: urls }),
+    },
+  )
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "")
+    throw new Error(`Cloudflare purge failed (${res.status}): ${text || res.statusText}`)
+  }
 }
 
 const archiveCurrentOnR2 = async (slug: string, oldVersion: string): Promise<number> => {
@@ -180,13 +204,26 @@ export const uploadToR2 = async (slug: string, newVersion?: string, oldVersion?:
 
   const latest = await uploadFiles(slug, `presences/${slug}`)
   const uploaded = [...latest]
+  const versioned = newVersion
+    ? await uploadFiles(slug, `presences/${slug}/versions/${newVersion}`, true)
+    : []
+  uploaded.push(...versioned)
+
+  try {
+    await purgeCloudflareFiles(latest)
+    if (CLOUDFLARE_API_TOKEN && CLOUDFLARE_ZONE_ID) {
+      logger.success(`Purged ${latest.length} latest CDN file${latest.length > 1 ? "s" : ""} for "${slug}"`)
+    }
+  } catch (err: any) {
+    s.warn(`Cloudflare purge skipped for "${slug}": ${err.message}`)
+  }
 
   if (!newVersion) {
     s.succeed(`Uploaded ${latest.length} files to R2 for "${slug}"`)
   } else if (archived > 0) {
-    s.succeed(`Uploaded ${latest.length} files (latest v${newVersion}) + archived ${archived} files as v${oldVersion} for "${slug}"`)
+    s.succeed(`Uploaded ${latest.length} latest files + ${versioned.length} immutable version files (v${newVersion}) + archived ${archived} files as v${oldVersion} for "${slug}"`)
   } else {
-    s.succeed(`Uploaded ${latest.length} files to R2 for "${slug}" (v${newVersion})`)
+    s.succeed(`Uploaded ${latest.length} latest files + ${versioned.length} immutable version files to R2 for "${slug}" (v${newVersion})`)
   }
 
   return uploaded

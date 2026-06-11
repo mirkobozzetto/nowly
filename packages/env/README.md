@@ -38,3 +38,5 @@ Typed environment access for the Nowly monorepo.
 | `R2_ACCESS_KEY_ID` | `cliEnv` | For R2 sync | - |
 | `R2_SECRET_ACCESS_KEY` | `cliEnv` | For R2 sync | - |
 | `R2_ACCOUNT_ID` | `cliEnv` | For R2 sync | - |
+| `CLOUDFLARE_API_TOKEN` | `cliEnv` | For CDN cache purge after R2 sync | - |
+| `CLOUDFLARE_ZONE_ID` | `cliEnv` | For CDN cache purge after R2 sync | - |

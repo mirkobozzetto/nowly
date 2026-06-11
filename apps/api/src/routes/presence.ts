@@ -24,11 +24,23 @@ const serializeJsonField = (value: unknown): string | undefined => {
   return JSON.stringify(value)
 }
 
+const fetchText = async (url: string): Promise<string | null> => {
+  try {
+    const res = await fetch(url)
+    if (res.ok) return await res.text()
+  } catch {}
+
+  return null
+}
+
 const buildRelease = async (slug: string, version?: string) => {
   const localMeta = getPresence(slug)
   const redisMeta = await getPresenceMeta(slug)
   const metadata = { ...(localMeta ?? {}), ...(redisMeta ?? {}) } as Record<string, unknown>
   if (!Object.keys(metadata).length) return null
+
+  const stats = await getPresenceStats(slug)
+  const resolvedVersion = version ?? stats.version ?? metadata.version ?? "0.0.0"
 
   const bundlePath = join(PRESENCES_DIR, slug, "bundle.js")
 
@@ -37,19 +49,19 @@ const buildRelease = async (slug: string, version?: string) => {
   if (existsSync(bundlePath)) {
     bundle = readFileSync(bundlePath, "utf-8")
   } else {
-    try {
-      const res = await fetch(`https://cdn.nowly.me/presences/${slug}/bundle.js`)
-      if (res.ok) bundle = await res.text()
-    } catch {}
+    bundle = await fetchText(`https://cdn.nowly.me/presences/${slug}/versions/${resolvedVersion}/bundle.js`)
+      ?? await fetchText(`https://cdn.nowly.me/presences/${slug}/bundle.js?v=${encodeURIComponent(String(resolvedVersion))}`)
+      ?? await fetchText(`https://cdn.nowly.me/presences/${slug}/bundle.js`)
   }
 
   if (!bundle) return null
 
   if (!metadata.settings) {
     try {
-      const res = await fetch(`https://cdn.nowly.me/presences/${slug}/settings.json`)
-      if (res.ok) {
-        const raw = await res.text()
+      const raw = await fetchText(`https://cdn.nowly.me/presences/${slug}/versions/${resolvedVersion}/settings.json`)
+        ?? await fetchText(`https://cdn.nowly.me/presences/${slug}/settings.json?v=${encodeURIComponent(String(resolvedVersion))}`)
+        ?? await fetchText(`https://cdn.nowly.me/presences/${slug}/settings.json`)
+      if (raw) {
         const parsed = JSON.parse(raw)
         if (parsed && typeof parsed === "object") {
           metadata.settings = parsed
@@ -58,9 +70,6 @@ const buildRelease = async (slug: string, version?: string) => {
       }
     } catch {}
   }
-
-  const stats = await getPresenceStats(slug)
-  const resolvedVersion = version ?? stats.version ?? metadata.version ?? "0.0.0"
 
   const releaseMetadata = {
     ...metadata,
