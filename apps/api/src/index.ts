@@ -11,7 +11,7 @@ import Fastify from "fastify"
 const server = Fastify({ logger: true })
 
 await server.register(cors, {
-  origin: true,
+  origin: [serverEnv.FRONTEND_URL],
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "x-user-token"],
 })
@@ -21,7 +21,11 @@ await server.register(presenceRoutes, { prefix: "/presences" })
 await server.register(assetsRoutes, { prefix: "/presences" })
 await server.register(statsRoutes, { prefix: "/presences" })
 await server.register(authRoutes, { prefix: "/auth" })
-await server.register(imageProxyRoutes)
+
+await server.register(async (instance) => {
+  await instance.register(cors, { origin: true })
+  await instance.register(imageProxyRoutes)
+})
 
 const port = serverEnv.PORT
 
