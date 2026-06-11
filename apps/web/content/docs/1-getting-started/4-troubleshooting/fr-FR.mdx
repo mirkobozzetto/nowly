@@ -1,0 +1,34 @@
+---
+title: Dépannage
+description: Résolvez les problèmes courants d'installation de Nowly, de détection d'extension, d'hôte natif et de Discord Rich Presence.
+---
+
+## Le statut Discord ne se met pas à jour
+
+Vérifiez d'abord ces éléments&nbsp;:
+
+- Discord Desktop est en cours d'exécution.
+- L'application hôte Nowly est installée.
+- L'extension navigateur Nowly est activée.
+- La presence pour le site web actuel est installée.
+- L'URL actuelle correspond aux URL prises en charge de la presence.
+
+## Extension non détectée
+
+Rechargez la page après avoir installé ou activé l'extension. Les scripts de contenu du navigateur nécessitent généralement un rafraîchissement de la page avant d'être disponibles.
+
+## Hôte natif introuvable
+
+L'application hôte native est distincte de l'extension navigateur. Si le panneau de l'extension signale que l'hôte est manquant, réinstallez l'application hôte pour votre système d'exploitation.
+
+## Presence ne s'exécute pas
+
+La presence ne s'exécute que sur les URL prises en charge. Vérifiez la section URL prises en charge sur la page de détail de la presence et comparez-la avec l'URL actuelle du navigateur.
+
+## Problèmes IPC Discord
+
+Nowly envoie l'activité au client de bureau Discord via IPC local. Si Discord a été démarré après Nowly, rechargez l'onglet actif ou redémarrez le navigateur.
+
+<CalloutWarning>
+Nowly ne peut pas mettre à jour Discord Rich Presence si l'application de bureau Discord est fermée.
+</CalloutWarning>

@@ -1,0 +1,75 @@
+---
+title: CLI
+description: Usa la CLI de Nowly para crear, compilar, validar y probar presences localmente.
+---
+
+## Modo interactivo
+
+Ejecuta la CLI sin argumentos para abrir un menú interactivo:
+
+```bash
+pnpm presence
+```
+
+## Crear una presence
+
+```bash
+pnpm presence init "Netflix"
+```
+
+## Compilar presences
+
+Compila todas las presences:
+
+```bash
+pnpm presence build
+```
+
+Compila una presence:
+
+```bash
+pnpm presence build youtube
+```
+
+## Probar una presence localmente
+
+Compila la extensión con tus presences incluidas (sin necesidad de servidor):
+
+```bash
+pnpm build:extension:dev
+```
+
+Esto compila todas las presences y las empaqueta directamente en la extensión. Para probar después de cambios:
+
+1. Edita el código de la presence (ej. `packages/websites/src/Y/YouTube/presence.ts`)
+2. Recompila solo la presence modificada y luego la extensión:
+
+```bash
+pnpm presence build youtube
+pnpm build:extension:dev
+```
+
+3. Recarga la extensión en `chrome://extensions`
+4. La presence ya está instalada y lista para usar
+
+La extensión auto-instala las presences empaquetadas al iniciar. Sin servidor API, sin página de instalación, sin URL de API personalizada.
+
+Para compilaciones de producción/Chrome Web Store:
+
+```bash
+pnpm build:extension
+```
+
+Esto elimina la clave `key` del manifiesto (requerida por la tienda) y **no** incluye ninguna presence (se obtienen en vivo desde la API de Nowly).
+
+## Listar presences
+
+```bash
+pnpm presence list
+```
+
+## Validar metadatos
+
+```bash
+pnpm presence validate
+```

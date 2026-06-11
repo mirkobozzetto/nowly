@@ -1,0 +1,32 @@
+---
+title: Validar y compilar
+description: Valida los metadatos de la presence y compila los paquetes de presence antes de publicar.
+---
+
+## Validar metadatos
+
+Ejecuta:
+
+```bash
+pnpm presence validate
+```
+
+La validación comprueba `metadata.json` contra el esquema de Nowly. Corrige los errores de validación antes de compilar.
+
+## Compilar todas las presences
+
+Ejecuta:
+
+```bash
+pnpm presence build
+```
+
+## Compilar una presence
+
+Ejecuta:
+
+```bash
+pnpm presence build youtube
+```
+
+Usa el slug o el nombre derivado de la carpeta para la presence objetivo.

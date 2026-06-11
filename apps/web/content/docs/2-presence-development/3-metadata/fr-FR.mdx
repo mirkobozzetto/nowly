@@ -1,0 +1,67 @@
+---
+title: Métadonnées
+description: Documentez chaque champ obligatoire et facultatif du fichier metadata.json d'une presence Nowly.
+---
+
+## Champs obligatoires
+
+Chaque presence nécessite&nbsp;:
+
+<TypeTable
+  properties={[
+    { name: "name", type: "string", description: "Nom affiché du service ou de la plateforme.", required: true },
+    { name: "author", type: "object", description: "Auteur principal affiché en premier dans la bibliothèque et les images OG.", required: true },
+    { name: "description", type: "object", description: "Descriptions courtes localisées par langue.", required: true },
+    { name: "url", type: "string[]", description: "Domaines ou motifs d'URL pris en charge pour la correspondance des pages.", required: true },
+    { name: "color", type: "string", description: "Couleur de la marque au format hex, utilisée par l'interface et les embeds.", required: true },
+    { name: "category", type: "string", description: "Un parmi streaming, music, tv, anime ou other.", required: true },
+    { name: "tags", type: "string[]", description: "Étiquettes de recherche et de découverte.", required: true }
+  ]}
+/>
+
+## Exemple
+
+```json
+{
+  "name": "YouTube",
+  "author": {
+    "name": "Développeur Nowly",
+    "github": "exemple"
+  },
+  "url": ["youtube.com", "www.youtube.com"],
+  "color": "#FF0033",
+  "category": "streaming",
+  "tags": ["video", "media", "streaming"],
+  "description": {
+    "en-US": "Watch and share videos on YouTube."
+  }
+}
+```
+
+## Auteur et contributeurs
+
+- `author` — Mainteneur principal, affiché en premier dans la bibliothèque et les images OG.
+- `contributors` — Personnes supplémentaires ayant contribué à la presence.
+
+<CalloutInfo>
+Les noms d'utilisateur GitHub (la clé `github`) sont utilisés pour résoudre les avatars.
+</CalloutInfo>
+
+## Descriptions et fonctionnalités
+
+- `description` — Texte court pour la place de marché, organisé par langue.
+- `longDescription` — Description détaillée pour les pages de détail.
+- `features` — Liste localisée des comportements pris en charge (ex. prise en charge des boutons, touches multimédias).
+
+## Correspondance d'URL
+
+- `url` — Domaines ou motifs d'URL pris en charge pour la correspondance des pages.
+- `regExp` — Correspondance basée sur des expressions régulières pour les motifs d'URL complexes.
+
+<CalloutWarning>
+Utilisez `regExp` uniquement lorsque la correspondance simple d'`url` ne suffit pas. Préférez des listes de domaines explicites.
+</CalloutWarning>
+
+## Catégorie
+
+Les catégories autorisées sont `streaming`, `music`, `tv`, `anime` et `other`.

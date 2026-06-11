@@ -1,0 +1,75 @@
+---
+title: CLI
+description: Utilisez la CLI Nowly pour créer, compiler, valider et tester les presences localement.
+---
+
+## Mode interactif
+
+Exécutez la CLI sans arguments pour ouvrir un menu interactif&nbsp;:
+
+```bash
+pnpm presence
+```
+
+## Créer une presence
+
+```bash
+pnpm presence init "Netflix"
+```
+
+## Compiler les presences
+
+Compiler toutes les presences&nbsp;:
+
+```bash
+pnpm presence build
+```
+
+Compiler une presence&nbsp;:
+
+```bash
+pnpm presence build youtube
+```
+
+## Tester une presence localement
+
+Compilez l'extension avec vos presences intégrées (aucun serveur nécessaire)&nbsp;:
+
+```bash
+pnpm build:extension:dev
+```
+
+Ceci compile toutes les presences et les empaquette directement dans l'extension. Pour tester après des modifications&nbsp;:
+
+1. Modifiez le code de la presence (ex. `packages/websites/src/Y/YouTube/presence.ts`)
+2. Recompilez uniquement la presence modifiée puis l'extension&nbsp;:
+
+```bash
+pnpm presence build youtube
+pnpm build:extension:dev
+```
+
+3. Rechargez l'extension dans `chrome://extensions`
+4. La presence est déjà installée et prête à l'emploi
+
+L'extension installe automatiquement les presences empaquetées au démarrage. Pas de serveur API, pas de page d'installation, pas d'URL API personnalisée.
+
+Pour les builds de production / Chrome Web Store&nbsp;:
+
+```bash
+pnpm build:extension
+```
+
+Ceci supprime la clé `key` du manifeste (requise par le store) et **n'inclut aucune** presence (elles sont récupérées en direct depuis l'API Nowly).
+
+## Lister les presences
+
+```bash
+pnpm presence list
+```
+
+## Valider les métadonnées
+
+```bash
+pnpm presence validate
+```
