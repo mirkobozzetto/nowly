@@ -148,6 +148,15 @@ const getPublicBaseUrl = (request: FastifyRequest): string => {
 }
 
 export const imageProxyRoutes = async (fastify: FastifyInstance) => {
+  fastify.addHook("onRequest", async (request, reply) => {
+    reply.header("Access-Control-Allow-Origin", PUBLIC_IMAGE_PROXY_ORIGIN)
+    reply.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+    reply.header("Access-Control-Allow-Headers", "Content-Type")
+    if (request.method === "OPTIONS" && !reply.sent) {
+      reply.status(204).send()
+    }
+  })
+
   fastify.options("/images-proxy", async (_request, reply) =>
     withPublicCors(reply).status(204).send()
   )

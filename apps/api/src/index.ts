@@ -21,11 +21,7 @@ await server.register(presenceRoutes, { prefix: "/presences" })
 await server.register(assetsRoutes, { prefix: "/presences" })
 await server.register(statsRoutes, { prefix: "/presences" })
 await server.register(authRoutes, { prefix: "/auth" })
-
-await server.register(async (instance) => {
-  await instance.register(cors, { origin: true })
-  await instance.register(imageProxyRoutes)
-})
+await server.register(imageProxyRoutes)
 
 const port = serverEnv.PORT
 
