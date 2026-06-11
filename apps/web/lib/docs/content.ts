@@ -77,6 +77,34 @@ const getLocalizedTitle = (title: Record<string, string>, locale: string, fallba
   return title[locale] ?? title["en-US"] ?? fallback;
 };
 
+const CHANGELOG_ROOT = join(DOCS_ROOT, "changelog");
+
+type ChangelogVersion = {
+  raw: string;
+  parts: [number, number, number];
+};
+
+const parseChangelogVersion = (name: string): ChangelogVersion | null => {
+  const match = /^(\d+)-(\d+)-(\d+)$/.exec(name);
+
+  if (!match) return null;
+
+  return {
+    raw: name,
+    parts: [Number(match[1]), Number(match[2]), Number(match[3])],
+  };
+};
+
+const compareChangelogVersionsDesc = (left: ChangelogVersion, right: ChangelogVersion): number => {
+  return right.parts[0] - left.parts[0] || right.parts[1] - left.parts[1] || right.parts[2] - left.parts[2];
+};
+
+const readMdxFile = (filePath: string): { raw: string } | null => {
+  if (!existsSync(filePath)) return null;
+
+  return { raw: readFileSync(filePath, "utf-8") };
+};
+
 const readDocFile = (page: DocSection, locale: string): { raw: string } | null => {
   const validLocale = getValidLocale(locale);
   const localizedPath = join(page.path, `${validLocale}.mdx`);
@@ -91,6 +119,42 @@ const readDocFile = (page: DocSection, locale: string): { raw: string } | null =
   }
 
   return null;
+};
+
+const readChangelogDocFile = (slug: string, locale: string): { raw: string } | null => {
+  const validLocale = getValidLocale(locale);
+
+  if (slug === "changelog") {
+    return readMdxFile(join(CHANGELOG_ROOT, `${validLocale}.mdx`)) ?? readMdxFile(join(CHANGELOG_ROOT, "en-US.mdx"));
+  }
+
+  const versionSlug = slug.replace(/^changelog\//, "");
+  const versionPath = join(CHANGELOG_ROOT, versionSlug);
+
+  return readMdxFile(join(versionPath, `${validLocale}.mdx`)) ?? readMdxFile(join(versionPath, "en-US.mdx"));
+};
+
+const readChangelogFrontmatter = (slug: string, locale: string): { title?: string; description?: string } => {
+  const docFile = readChangelogDocFile(slug, locale);
+
+  if (!docFile) return {};
+
+  const { data } = matter(docFile.raw);
+
+  return {
+    title: typeof data.title === "string" ? data.title : undefined,
+    description: typeof data.description === "string" ? data.description : undefined,
+  };
+};
+
+const getChangelogVersions = (): ChangelogVersion[] => {
+  if (!existsSync(CHANGELOG_ROOT)) return [];
+
+  return readdirSync(CHANGELOG_ROOT, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => parseChangelogVersion(entry.name))
+    .filter((version): version is ChangelogVersion => Boolean(version))
+    .sort(compareChangelogVersionsDesc);
 };
 
 const findCategory = (slug: string): DocSection | null => {
@@ -126,7 +190,7 @@ export const getFirstDocPath = (): string => {
 export const getNavigationItems = (locale: string): DocNavigationItem[] => {
   const validLocale = getValidLocale(locale);
 
-  return getDocsNav().map((category) => ({
+  const items = getDocsNav().map((category) => ({
     slug: category.slug,
     title: getLocalizedTitle(category.title, validLocale, category.slug),
     description: "",
@@ -146,9 +210,56 @@ export const getNavigationItems = (locale: string): DocNavigationItem[] => {
       };
     }),
   }));
+
+  const changelogIndex = readChangelogFrontmatter("changelog", validLocale);
+  const changelogVersions = getChangelogVersions();
+
+  items.push({
+    slug: "changelog",
+    title: changelogIndex.title ?? "Changelog",
+    description: changelogIndex.description ?? "",
+    order: 99,
+    path: "changelog",
+    children: changelogVersions.map((version, index) => {
+      const label = version.raw.replace(/-/g, ".");
+      const frontmatter = readChangelogFrontmatter(`changelog/${version.raw}`, validLocale);
+
+      return {
+        slug: label,
+        title: frontmatter.title ?? label,
+        description: frontmatter.description ?? "",
+        order: index + 1,
+        path: `changelog/${version.raw}`,
+        children: [],
+      };
+    }),
+  });
+
+  return items;
 };
 
 export const getDocContent = (slug: string, locale: string): DocContent | null => {
+  if (slug === "changelog" || slug.startsWith("changelog/")) {
+    const docFile = readChangelogDocFile(slug, locale);
+    if (!docFile) return null;
+
+    const { data, content } = matter(docFile.raw);
+    const normalizedSlug = slug === "changelog" ? "changelog" : slug;
+    const fallbackTitle = normalizedSlug === "changelog"
+      ? "Changelog"
+      : normalizedSlug.split("/").at(-1)?.replace(/-/g, ".") ?? normalizedSlug;
+
+    return {
+      slug: normalizedSlug.split("/").at(-1) ?? "changelog",
+      path: normalizedSlug,
+      sourcePath: normalizedSlug,
+      title: typeof data.title === "string" ? data.title : fallbackTitle,
+      description: typeof data.description === "string" ? data.description : "",
+      content,
+      frontmatter: data,
+    };
+  }
+
   const resolved = findPage(slug);
   if (!resolved) return null;
 
@@ -172,6 +283,11 @@ export const getDocContent = (slug: string, locale: string): DocContent | null =
 export const getCategoryForPath = (slug: string, locale: string): string => {
   const validLocale = getValidLocale(locale);
   const categorySlug = slug.split("/").filter(Boolean)[0];
+
+  if (categorySlug === "changelog") {
+    return readChangelogFrontmatter("changelog", validLocale).title ?? "Changelog";
+  }
+
   const category = categorySlug ? findCategory(categorySlug) : null;
 
   return category ? getLocalizedTitle(category.title, validLocale, category.slug) : "Documentation";

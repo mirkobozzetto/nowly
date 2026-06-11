@@ -1,4 +1,4 @@
-import { getDocContent, getDocsNav } from "@/lib/docs/content";
+import { getDocContent, getNavigationItems } from "@/lib/docs/content";
 import { NextResponse } from "next/server";
 
 const stripMdx = (content: string): string => {
@@ -14,16 +14,31 @@ const stripMdx = (content: string): string => {
 };
 
 export const GET = async () => {
-  const sections = getDocsNav();
+  const sections = getNavigationItems("en-US");
   const parts: string[] = ["# Nowly Documentation\n"];
 
   for (const section of sections) {
+    if (section.slug === "changelog") continue;
+
     for (const page of section.children) {
-      const doc = getDocContent(`${section.slug}/${page.slug}`, "en-US");
+      const doc = getDocContent(page.path, "en-US");
       if (!doc) continue;
 
       const body = stripMdx(doc.content);
       parts.push(`# ${doc.title}\n\n${body}\n`);
+    }
+  }
+
+  const changelog = sections.find((section) => section.slug === "changelog");
+  if (changelog) {
+    parts.push("", "## Changelog", "");
+
+    for (const page of changelog.children) {
+      const doc = getDocContent(page.path, "en-US");
+      if (!doc) continue;
+
+      const body = stripMdx(doc.content);
+      parts.push(`### ${doc.title}\n\n${body}\n`);
     }
   }
 

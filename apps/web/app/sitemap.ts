@@ -1,3 +1,4 @@
+import { getNavigationItems } from "@/lib/docs/content";
 import { SITE_URL } from "@/lib/seo";
 import { buildPresenceRichPresencePath, buildPresenceSeoPath } from "@/lib/seo-presence";
 import { clientEnv } from "@nowly/env/client";
@@ -53,6 +54,28 @@ const fetchPresencePages = async (): Promise<MetadataRoute.Sitemap> => {
 };
 
 const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
+  const docs = getNavigationItems("en-US");
+  const docPages = docs.flatMap((section) => {
+    const pages = section.children.map((page) => ({
+      url: `${SITE_URL}/docs/${page.path}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: section.slug === "changelog" ? 0.65 : 0.7,
+    }));
+
+    return section.slug === "changelog"
+      ? [
+          {
+            url: `${SITE_URL}/docs/changelog`,
+            lastModified: new Date(),
+            changeFrequency: "monthly" as const,
+            priority: 0.7,
+          },
+          ...pages,
+        ]
+      : pages;
+  });
+
   const pages: MetadataRoute.Sitemap = [
     {
       url: SITE_URL,
@@ -79,12 +102,6 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
       priority: 0.8,
     },
     {
-      url: `${SITE_URL}/changelog`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
       url: `${SITE_URL}/privacy`,
       lastModified: new Date(),
       changeFrequency: "yearly",
@@ -98,8 +115,7 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
     },
   ];
 
-  // Documentation pages are intentionally excluded until the MDX content is ready.
-  return [...pages, ...await fetchPresencePages()];
+  return [...pages, ...docPages, ...await fetchPresencePages()];
 };
 
 export default sitemap;

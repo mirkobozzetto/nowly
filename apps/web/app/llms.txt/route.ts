@@ -1,10 +1,10 @@
-import { getDocsNav, getDocContent } from "@/lib/docs/content";
+import { getDocContent, getNavigationItems } from "@/lib/docs/content";
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
 export const GET = async () => {
-  const sections = getDocsNav();
+  const sections = getNavigationItems("en-US");
   const lines: string[] = [
     "# Nowly Documentation",
     "> Automatically update your Discord status with what you're watching on streaming platforms.",
@@ -14,11 +14,25 @@ export const GET = async () => {
   ];
 
   for (const section of sections) {
+    if (section.slug === "changelog") continue;
+
     for (const page of section.children) {
-      const doc = getDocContent(`${section.slug}/${page.slug}`, "en-US");
+      const doc = getDocContent(page.path, "en-US");
       if (!doc) continue;
 
       lines.push(`- [${doc.title}](https://nowly.me/docs/${doc.path}): ${doc.description || "Documentation for " + doc.title}`);
+    }
+  }
+
+  const changelog = sections.find((section) => section.slug === "changelog");
+  if (changelog) {
+    lines.push("", "## Changelog", "");
+
+    for (const page of changelog.children) {
+      const doc = getDocContent(page.path, "en-US");
+      if (!doc) continue;
+
+      lines.push(`- [${doc.title}](https://nowly.me/docs/${doc.path}): ${doc.description || "Release notes for Nowly."}`);
     }
   }
 

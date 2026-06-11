@@ -11,7 +11,7 @@ export const FooterLinks: FC = () => {
         {t("faq")}
       </Link>
 
-      <Link href="/changelog" className="hover:text-foreground transition-colors">
+      <Link href="/docs/changelog" className="hover:text-foreground transition-colors">
         {t("changelog")}
       </Link>
 

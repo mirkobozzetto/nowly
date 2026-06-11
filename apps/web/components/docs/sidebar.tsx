@@ -30,11 +30,12 @@ export const AppSidebar: FC<AppSidebarProps> = ({ items }) => {
             <ul className="space-y-0.5">
               {item.children.map((child) => {
                 const isChildActive = pathname === `/docs/${child.path}`;
+                const href = `/docs/${child.path}`;
 
                 return (
                   <li key={child.slug}>
                     <Link
-                      href={`/docs/${child.path}`}
+                      href={href}
                       onClick={() => setMobileOpen(false)}
                       className={cn(
                         "block rounded-lg px-3 py-1.5 text-sm transition-colors", {

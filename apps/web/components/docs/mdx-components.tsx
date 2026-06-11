@@ -3,8 +3,9 @@ import { Callout } from "./callout";
 import { CodeBlock } from "./code-block";
 import { Faq } from "./faq";
 import { HeadingAnchor } from "./heading-anchor";
-import { Steps, Step } from "./steps";
-import { TypeTable, LanguageTable } from "./type-table";
+import { ReleaseTable } from "./release-table";
+import { Step, Steps } from "./steps";
+import { LanguageTable, TypeTable } from "./type-table";
 
 type MDXComponents = Record<string, ComponentType<Record<string, unknown>>>;
 
@@ -166,4 +167,5 @@ export const mdxComponents: MDXComponents = {
   Step: Step as ComponentType<Record<string, unknown>>,
   CodeBlock: CodeBlock as ComponentType<Record<string, unknown>>,
   Faq: Faq as ComponentType<Record<string, unknown>>,
+  ReleaseTable: ReleaseTable as ComponentType<Record<string, unknown>>,
 };

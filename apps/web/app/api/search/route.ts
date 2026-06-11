@@ -1,4 +1,4 @@
-import { getDocContent, getDocsNav } from "@/lib/docs/content";
+import { getDocContent, getNavigationItems } from "@/lib/docs/content";
 import { NextRequest, NextResponse } from "next/server";
 
 type SearchResult = {
@@ -55,12 +55,12 @@ export const GET = async (request: NextRequest) => {
   }
 
   const validLocale = SUPPORTED_LOCALES.includes(locale) ? locale : "en-US";
-  const sections = getDocsNav();
+  const sections = getNavigationItems(validLocale);
   const results: SearchResult[] = [];
 
   for (const section of sections) {
     for (const page of section.children) {
-      const doc = getDocContent(`${section.slug}/${page.slug}`, validLocale);
+      const doc = getDocContent(page.path, validLocale);
       if (!doc) continue;
 
       const title = doc.title;
