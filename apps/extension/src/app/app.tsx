@@ -5,7 +5,6 @@ import { WEB_BASE_URL } from "@/shared/constants";
 import { useExtensionState } from "@/hooks/use-extension-state";
 import { useLocalePreference } from "@/hooks/use-locale-preference";
 import { useOnboardingState } from "@/hooks/use-onboarding-state";
-import { resolveLocale } from "@/shared/i18n";
 import { ActivityView } from "@/features/presences/activity-view";
 import { DebugPanel } from "@/features/settings/debug-panel";
 import { OnboardingOverlay } from "@/features/onboarding/onboarding-overlay";
@@ -19,15 +18,8 @@ const App: FC = (): ReactElement => {
   const { onboarding, setOnboarding, nativeStatus: onboardingNativeStatus, userScripts, refresh } = useOnboardingState();
   const [activeView, setActiveView] = useState<SidepanelView>("activity");
 
-  const marketplaceLocale = (): string => {
-    const locale = resolveLocale(localePreference);
-    if (locale === "fr") return "fr-FR";
-    if (locale === "es") return "es-ES";
-    return "en-US";
-  };
-
   const onOpenMarketplace = (slug: string): void => {
-    void chrome.tabs.create({ url: `${WEB_BASE_URL}/${marketplaceLocale()}/library/${slug}` });
+    void chrome.tabs.create({ url: `${WEB_BASE_URL}/library/${slug}` });
   };
 
   return (

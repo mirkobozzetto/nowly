@@ -10,6 +10,7 @@ const mockRedis = vi.hoisted(() => ({
   set: vi.fn(),
   get: vi.fn(),
   zadd: vi.fn(),
+  zcard: vi.fn(),
   hset: vi.fn(),
   hgetall: vi.fn(),
   zrange: vi.fn(),
@@ -18,6 +19,8 @@ const mockRedis = vi.hoisted(() => ({
   del: vi.fn(),
   decr: vi.fn(),
   zrem: vi.fn(),
+  exists: vi.fn(),
+  zremrangebyscore: vi.fn(),
 }))
 
 vi.mock("@upstash/redis", () => ({
@@ -32,6 +35,9 @@ const mockRedisModule = vi.hoisted(() => ({
   getPresenceStats: vi.fn(),
   incrementInstalls: vi.fn(),
   setActiveUsers: vi.fn(),
+  markActiveDevice: vi.fn(),
+  clearActiveDevice: vi.fn(),
+  clearActiveDevicesForDevice: vi.fn(),
   hasDiscordRated: vi.fn(),
   markDiscordRated: vi.fn(),
   submitRating: vi.fn(),
@@ -343,19 +349,45 @@ describe("Stats Routes", () => {
   })
 
   it("POST /presences/active updates multiple presences", async () => {
-    mockRedisModule.setActiveUsers.mockResolvedValue(undefined as any)
+    mockRedisModule.markActiveDevice.mockResolvedValue(undefined as any)
 
     const res = await app.inject({
       method: "POST",
       url: "/presences/active",
-      payload: { presences: ["youtube", "twitch"] },
+      payload: { presences: ["youtube", "twitch"], deviceId: "device-123" },
     })
 
     expect(res.statusCode).toBe(200)
     expect(JSON.parse(res.body)).toEqual({ ok: true, count: 2 })
-    expect(mockRedisModule.setActiveUsers).toHaveBeenCalledTimes(2)
-    expect(mockRedisModule.setActiveUsers).toHaveBeenCalledWith("youtube", 1)
-    expect(mockRedisModule.setActiveUsers).toHaveBeenCalledWith("twitch", 1)
+    expect(mockRedisModule.markActiveDevice).toHaveBeenCalledTimes(2)
+    expect(mockRedisModule.markActiveDevice).toHaveBeenCalledWith("youtube", "device-123")
+    expect(mockRedisModule.markActiveDevice).toHaveBeenCalledWith("twitch", "device-123")
+  })
+
+  it("DELETE /presences/active/:deviceId/:slug clears one tracked presence", async () => {
+    mockRedisModule.clearActiveDevice.mockResolvedValue(undefined as any)
+
+    const res = await app.inject({
+      method: "DELETE",
+      url: "/presences/active/device-123/youtube",
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(JSON.parse(res.body)).toEqual({ ok: true, removed: 1 })
+    expect(mockRedisModule.clearActiveDevice).toHaveBeenCalledWith("youtube", "device-123")
+  })
+
+  it("DELETE /presences/active/:deviceId clears every tracked presence", async () => {
+    mockRedisModule.clearActiveDevicesForDevice.mockResolvedValue(undefined as any)
+
+    const res = await app.inject({
+      method: "DELETE",
+      url: "/presences/active/device-123",
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(JSON.parse(res.body)).toEqual({ ok: true, removed: null })
+    expect(mockRedisModule.clearActiveDevicesForDevice).toHaveBeenCalledWith("device-123")
   })
 
   it("POST /presences/:slug/installs increments and returns count", async () => {

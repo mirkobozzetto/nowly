@@ -1,9 +1,11 @@
-import { requireAuth } from "@/lib/api-auth"
 import { hashDiscordId, verifyToken } from "@/lib/auth"
 import {
+  clearActiveDevice,
+  clearActiveDevicesForDevice,
   getComments, getPresenceStats, getUserRating,
   hasDiscordRated,
   incrementInstalls,
+  markActiveDevice,
   markDiscordRated,
   redis,
   removeUserRating,
@@ -16,17 +18,46 @@ import type { FastifyInstance } from "fastify"
 
 export const statsRoutes = async (fastify: FastifyInstance) => {
   fastify.post("/active", async (request, _reply) => {
-    const body = request.body as { presences?: string[] }
+    const body = request.body as { presences?: string[]; deviceId?: string }
     const slugs = body?.presences ?? []
+    const deviceId = body?.deviceId?.trim()
+
+    if (!deviceId) {
+      for (const slug of slugs) {
+        await setActiveUsers(slug, 1)
+      }
+
+      return {
+        ok: true,
+        count: slugs.length,
+      }
+    }
 
     for (const slug of slugs) {
-      await setActiveUsers(slug, 1)
+      await markActiveDevice(slug, deviceId)
     }
 
     return {
       ok: true,
       count: slugs.length
     }
+  })
+
+  fastify.delete<{ Params: { deviceId: string; slug?: string } }>("/active/:deviceId/:slug?", async (request, _reply) => {
+    const deviceId = request.params.deviceId.trim()
+    const slug = request.params.slug?.trim()
+
+    if (!deviceId) {
+      return { ok: false, error: "deviceId is required" }
+    }
+
+    if (slug) {
+      await clearActiveDevice(slug, deviceId)
+      return { ok: true, removed: 1 }
+    }
+
+    await clearActiveDevicesForDevice(deviceId)
+    return { ok: true, removed: null }
   })
 
   fastify.post<{ Params: { slug: string } }>("/:slug/installs", async (request, _reply) => {

@@ -3,10 +3,11 @@ import type { ExtensionMessage, ExtensionSettings, InstalledPresences, PresenceD
 import { connectNative, mapPresenceData, onNativeResponse, postNative, reconnectNative, refreshNativeStatus } from "./native";
 import { createPresenceRuntime, USER_SCRIPT_MESSAGE_SOURCE } from "./presence-runtime";
 import { verifyPresenceRelease } from "./release-security";
-import { getCurrentActivity, getDebug, getPresenceSettings, getPresences, getSettings, setCurrentActivity, setDebug, setPresences, setPresenceSettings, setSettings } from "./storage";
+import { getCurrentActivity, getDebug, getDeviceId, getPresenceSettings, getPresences, getSettings, setCurrentActivity, setDebug, setPresences, setPresenceSettings, setSettings } from "./storage";
 import { BUNDLED_PRESENCES } from "@/generated/bundled-presences";
 
 let customApiUrl: string | undefined;
+let cachedDeviceId: string | null = null;
 
 const getEffectiveApiUrl = (): string => customApiUrl?.replace(/\/$/, "") || API_BASE_URL;
 const getEffectiveWebUrl = (): string => WEB_BASE_URL;
@@ -20,6 +21,21 @@ const updateContentScriptsOrigin = async (): Promise<void> => {
 };
 
 const respond = <T>(sendResponse: (response?: T) => void, value: T): void => sendResponse(value);
+
+const getActiveDeviceId = async (): Promise<string> => {
+  if (cachedDeviceId) return cachedDeviceId;
+  cachedDeviceId = await getDeviceId();
+  return cachedDeviceId;
+};
+
+const syncUninstallUrl = async (): Promise<void> => {
+  try {
+    const deviceId = await getActiveDeviceId();
+    chrome.runtime.setUninstallURL(`${WEB_BASE_URL}/uninstall?deviceId=${encodeURIComponent(deviceId)}`);
+  } catch {
+    // Best effort only.
+  }
+};
 
 let activeTabId: number | null = null;
 
@@ -310,9 +326,13 @@ const handleActivityUpdate = async (
   return { ok: true };
 };
 
-const handleClearActivity = async (): Promise<{ ok: boolean }> => {
+const handleClearActivity = async (slug?: string): Promise<{ ok: boolean }> => {
   activeTabId = null;
-  activeSlugs.clear();
+  if (slug) {
+    removeActiveSlug(slug);
+  } else {
+    activeSlugs.clear();
+  }
   postNative({ type: "CLEAR_ACTIVITY" });
 
   await Promise.all([
@@ -371,12 +391,19 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
     case "UNINSTALL_PRESENCE":
       getPresences().then(async (presences) => {
         const { slug } = message.payload as { slug: string };
+        const deviceId = await getActiveDeviceId();
         delete presences[slug];
 
         await setPresences(presences);
         broadcastPresencesChanged();
         await unregisterPresenceScript(slug);
-        await handleClearActivity();
+        removeActiveSlug(slug);
+        await fetch(`${getEffectiveApiUrl()}/presences/active/${encodeURIComponent(deviceId)}/${encodeURIComponent(slug)}`, {
+          method: "DELETE",
+        }).catch(() => {});
+        if (activeSlugs.size === 0) {
+          await handleClearActivity();
+        }
         respond(sendResponse, { ok: true });
       });
       return true;
@@ -384,6 +411,7 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
     case "TOGGLE_PRESENCE":
       getPresences().then(async (presences) => {
         const { slug, enabled } = message.payload as { slug: string; enabled: boolean };
+        const deviceId = await getActiveDeviceId();
 
         if (!presences[slug]) {
           respond(sendResponse, { ok: false });
@@ -392,6 +420,7 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
 
         presences[slug].enabled = enabled;
         await setPresences(presences);
+        broadcastPresencesChanged();
         if (enabled) {
           const result = await registerPresenceScript(slug, presences[slug]);
           respond(sendResponse, result);
@@ -399,6 +428,10 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
         }
 
         await unregisterPresenceScript(slug);
+        removeActiveSlug(slug);
+        await fetch(`${getEffectiveApiUrl()}/presences/active/${encodeURIComponent(deviceId)}/${encodeURIComponent(slug)}`, {
+          method: "DELETE",
+        }).catch(() => {});
         respond(sendResponse, { ok: true });
       });
       return true;
@@ -497,7 +530,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
   }
 
   if (message.type === "CLEAR_ACTIVITY") {
-    void handleClearActivity();
+    void handleClearActivity(slug);
   }
 
   if (message.type === "DEBUG") {
@@ -523,12 +556,15 @@ chrome.alarms.create("api-heartbeat", { periodInMinutes: 5 });
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === "native-heartbeat") postNative({ type: "PING" });
   if (alarm.name === "api-heartbeat" && activeSlugs.size > 0) {
-    const slugs = [...activeSlugs];
-    fetch(`${getEffectiveApiUrl()}/presences/active`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ presences: slugs }),
-    }).catch(() => {});
+    void (async () => {
+      const slugs = [...activeSlugs];
+      const deviceId = await getActiveDeviceId();
+      fetch(`${getEffectiveApiUrl()}/presences/active`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ presences: slugs, deviceId }),
+      }).catch(() => {});
+    })();
   }
 });
 
@@ -579,6 +615,7 @@ chrome.runtime.onStartup.addListener(async () => {
   await handleClearActivity();
   connectNative();
   await initializeCustomApiUrl();
+  await syncUninstallUrl();
   await installBundledPresences();
   const presences = await getPresences();
   await syncPresenceScripts(presences);
@@ -589,6 +626,7 @@ chrome.runtime.onInstalled.addListener(async () => {
   await handleClearActivity();
   connectNative();
   await initializeCustomApiUrl();
+  await syncUninstallUrl();
   await installBundledPresences();
   const presences = await getPresences();
   await syncPresenceScripts(presences);
@@ -599,6 +637,7 @@ void (async () => {
   await handleClearActivity();
   connectNative();
   await initializeCustomApiUrl();
+  await syncUninstallUrl();
   await installBundledPresences();
   const presences = await getPresences();
   await syncPresenceScripts(presences);

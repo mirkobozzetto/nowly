@@ -8,12 +8,16 @@ const mockRedis = vi.hoisted(() => ({
   set: vi.fn(),
   get: vi.fn(),
   zadd: vi.fn(),
+  zcard: vi.fn(),
   hset: vi.fn(),
   hgetall: vi.fn(),
   zrange: vi.fn(),
   scan: vi.fn(),
   srem: vi.fn(),
   del: vi.fn(),
+  exists: vi.fn(),
+  zremrangebyscore: vi.fn(),
+  zrem: vi.fn(),
 }))
 
 vi.mock("@upstash/redis", () => ({
@@ -24,6 +28,9 @@ import {
   getPresenceStats,
   incrementInstalls,
   setActiveUsers,
+  markActiveDevice,
+  clearActiveDevice,
+  clearActiveDevicesForDevice,
   submitRating,
   hasDiscordRated,
   markDiscordRated,
@@ -48,6 +55,7 @@ describe("getPresenceStats", () => {
 
   it("returns defaults when no data", async () => {
     mockRedis.mget.mockResolvedValue([null, null, null, null, null, null, null, null, null])
+    mockRedis.exists.mockResolvedValue(0)
     const stats = await getPresenceStats("youtube")
     expect(stats.totalInstalls).toBe(0)
     expect(stats.activeUsers).toBe(0)
@@ -69,6 +77,7 @@ describe("getPresenceStats", () => {
 
   it("computes weighted rating", async () => {
     mockRedis.mget.mockResolvedValue([null, null, null, null, null, 10, 20, 30, 20, 10])
+    mockRedis.exists.mockResolvedValue(0)
     const stats = await getPresenceStats("youtube")
     expect(stats.ratingCount).toBe(90)
     expect(stats.rating).toBe(3)
@@ -77,12 +86,26 @@ describe("getPresenceStats", () => {
 
   it("returns integer fields when present", async () => {
     mockRedis.mget.mockResolvedValue([100, 25, "1.2.3", "2024-01-01", "2024-06-01", 0, 0, 0, 0, 0])
+    mockRedis.exists.mockResolvedValue(0)
     const stats = await getPresenceStats("youtube")
     expect(stats.totalInstalls).toBe(100)
     expect(stats.activeUsers).toBe(25)
     expect(stats.version).toBe("1.2.3")
     expect(stats.addedAt).toBe("2024-01-01")
     expect(stats.lastUpdated).toBe("2024-06-01")
+  })
+
+  it("returns active users from tracked devices when present", async () => {
+    mockRedis.mget.mockResolvedValue([100, 0, "1.2.3", "2024-01-01", "2024-06-01", 0, 0, 0, 0, 0])
+    mockRedis.exists.mockResolvedValue(1)
+    mockRedis.zremrangebyscore.mockResolvedValue(0)
+    mockRedis.zcard.mockResolvedValue(7)
+
+    const stats = await getPresenceStats("youtube")
+
+    expect(stats.activeUsers).toBe(7)
+    expect(mockRedis.zremrangebyscore).toHaveBeenCalledWith("presence:youtube:active-devices", 0, expect.any(Number))
+    expect(mockRedis.zcard).toHaveBeenCalledWith("presence:youtube:active-devices")
   })
 })
 
@@ -102,6 +125,33 @@ describe("setActiveUsers", () => {
   it("sets active users count", async () => {
     await setActiveUsers("yt", 10)
     expect(mockRedis.set).toHaveBeenCalledWith("presence:yt:active", 10)
+  })
+})
+
+describe("markActiveDevice / clearActiveDevice", () => {
+  beforeEach(() => { vi.clearAllMocks() })
+
+  it("tracks active devices in a sorted set", async () => {
+    await markActiveDevice("yt", "device-1", 123)
+    expect(mockRedis.zadd).toHaveBeenCalledWith("presence:yt:active-devices", {
+      score: 123,
+      member: "device-1",
+    })
+  })
+
+  it("removes an active device from a presence", async () => {
+    await clearActiveDevice("yt", "device-1")
+    expect(mockRedis.zrem).toHaveBeenCalledWith("presence:yt:active-devices", "device-1")
+  })
+
+  it("clears a device across every presence", async () => {
+    mockRedis.scan.mockResolvedValue(["0", ["presence:a:version", "presence:b:version"]])
+    mockRedis.zrem.mockResolvedValue(1)
+
+    await clearActiveDevicesForDevice("device-1")
+
+    expect(mockRedis.zrem).toHaveBeenCalledWith("presence:a:active-devices", "device-1")
+    expect(mockRedis.zrem).toHaveBeenCalledWith("presence:b:active-devices", "device-1")
   })
 })
 

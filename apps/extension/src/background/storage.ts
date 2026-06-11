@@ -6,6 +6,7 @@ const DEBUG_KEY = "presenceDebug";
 const ONBOARDING_KEY = "onboarding";
 const SETTINGS_KEY = "settings";
 const PRESENCE_SETTINGS_KEY = "presenceSettings";
+const DEVICE_ID_KEY = "deviceId";
 
 export const DEFAULT_SETTINGS: ExtensionSettings = {
   presenceDisplayMode: "category" as PresenceDisplayMode,
@@ -91,4 +92,16 @@ export const setSettings = async (partial: Partial<ExtensionSettings>): Promise<
   const next = { ...current, ...partial } satisfies ExtensionSettings;
   await chrome.storage.local.set({ [SETTINGS_KEY]: next });
   return next;
+};
+
+export const getDeviceId = async (): Promise<string> => {
+  const result = await chrome.storage.local.get(DEVICE_ID_KEY);
+  const existing = result[DEVICE_ID_KEY];
+  if (typeof existing === "string" && existing.trim()) {
+    return existing;
+  }
+
+  const deviceId = crypto.randomUUID();
+  await chrome.storage.local.set({ [DEVICE_ID_KEY]: deviceId });
+  return deviceId;
 };

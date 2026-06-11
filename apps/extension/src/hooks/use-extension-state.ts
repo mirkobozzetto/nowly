@@ -96,6 +96,17 @@ export const useExtensionState = (): ExtensionState => {
     void fetchHostVersion();
   }, []);
 
+  const refreshUpdates = useCallback((): void => {
+    setIsCheckingUpdates(true);
+    void sendMessage<Record<string, string>>("CHECK_UPDATES")
+      .then((nextUpdates) => {
+        setUpdates(nextUpdates ?? {});
+      })
+      .finally(() => {
+        setIsCheckingUpdates(false);
+      });
+  }, []);
+
   useEffect(() => {
     refresh();
     const interval = window.setInterval(refresh, 3000);
@@ -114,6 +125,7 @@ export const useExtensionState = (): ExtensionState => {
     const onRuntimeMessage = (message: Record<string, unknown>): void => {
       if (message.source === "PRESENCES_BACKGROUND" && message.type === "PRESENCES_CHANGED") {
         refresh();
+        refreshUpdates();
       }
     };
     chrome.runtime.onMessage.addListener(onRuntimeMessage);
@@ -145,17 +157,6 @@ export const useExtensionState = (): ExtensionState => {
     });
   };
 
-  const checkUpdates = useCallback((): void => {
-    setIsCheckingUpdates(true);
-    void sendMessage<Record<string, string>>("CHECK_UPDATES")
-      .then((nextUpdates) => {
-        setUpdates(nextUpdates ?? {});
-      })
-      .finally(() => {
-        setIsCheckingUpdates(false);
-      });
-  }, []);
-
   const connectNative = (): void => {
     setNativeStatus((current) => ({ ...current, status: "connecting" }));
     void sendMessage<NativeStatus>("CONNECT_NATIVE").then((status) => {
@@ -171,7 +172,7 @@ export const useExtensionState = (): ExtensionState => {
 
   return {
     activity,
-    checkUpdates,
+    checkUpdates: refreshUpdates,
     checkHostUpdate,
     hostVersionInfo,
     isCheckingHostVersion,

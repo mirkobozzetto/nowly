@@ -58,12 +58,15 @@ export type PresenceMetadata = {
   slug: string;
   name: string;
   author: { name: string; github?: string };
+  contributors?: { name: string; github?: string }[];
   description: Record<string, string>;
+  longDescription?: Record<string, string>;
   url: string[];
   regExp?: string;
   color: string;
   category: "streaming" | "music" | "tv" | "anime" | "other";
   tags: string[];
+  features?: Record<string, string[]>;
   version?: string | null;
   settings?: Record<string, unknown>;
   assets: {

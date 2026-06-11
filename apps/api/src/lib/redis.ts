@@ -19,13 +19,44 @@ export interface PresenceStats {
 }
 
 const key = (slug: string, ...parts: string[]): string => ["presence", slug, ...parts].join(":")
+const activeDevicesKey = (slug: string): string => key(slug, "active-devices")
 
 const ratingKey = (slug: string, stars: number): string => key(slug, "ratings", String(stars))
 
 const STARS = [5, 4, 3, 2, 1] as const
+const ACTIVE_DEVICE_STALE_MS = 12 * 60 * 1000
+
+export const markActiveDevice = async (slug: string, deviceId: string, timestamp = Date.now()): Promise<void> => {
+  await redis.zadd(activeDevicesKey(slug), {
+    score: timestamp,
+    member: deviceId,
+  })
+}
+
+export const clearActiveDevice = async (slug: string, deviceId: string): Promise<void> => {
+  await redis.zrem(activeDevicesKey(slug), deviceId)
+}
+
+export const clearActiveDevicesForDevice = async (deviceId: string): Promise<void> => {
+  const slugs = await getAllPresenceSlugs()
+  await Promise.all(slugs.map((slug) => clearActiveDevice(slug, deviceId)))
+}
+
+export const getActiveUsers = async (slug: string, legacyActiveUsers: number | null): Promise<number> => {
+  const activeKey = activeDevicesKey(slug)
+  const usesDeviceTracking = await redis.exists(activeKey)
+
+  if (!usesDeviceTracking) {
+    return legacyActiveUsers ?? 0
+  }
+
+  const staleBefore = Date.now() - ACTIVE_DEVICE_STALE_MS
+  await redis.zremrangebyscore(activeKey, 0, staleBefore)
+  return redis.zcard(activeKey)
+}
 
 export const getPresenceStats = async (slug: string): Promise<PresenceStats> => {
-  const [installs, active, version, added, updated, ...perStar] = await redis.mget<
+  const [installs, legacyActive, version, added, updated, ...perStar] = await redis.mget<
     [number | null, number | null, string | null, string | null, string | null, ...(number | null)[]]
   >(
     key(slug, "installs"),
@@ -49,7 +80,7 @@ export const getPresenceStats = async (slug: string): Promise<PresenceStats> => 
 
   return {
     totalInstalls: installs ?? 0,
-    activeUsers: active ?? 0,
+    activeUsers: await getActiveUsers(slug, legacyActive ?? null),
     rating: total > 0 ? Number((weightedSum / total).toFixed(1)) : 0,
     ratingCount: total,
     ratingDistribution: distribution,
