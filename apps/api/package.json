@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
+    "lint": "pnpm run typecheck && pnpm run lint:test",
+    "lint:test": "tsc --noEmit -p tsconfig.test.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"

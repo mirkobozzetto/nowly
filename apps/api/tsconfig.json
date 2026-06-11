@@ -8,9 +8,10 @@
     "skipLibCheck": true,
     "declaration": false,
     "sourceMap": true,
+    "types": ["node", "vitest/globals"],
     "paths": {
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "test/**/*", "vitest.config.ts"]
 }

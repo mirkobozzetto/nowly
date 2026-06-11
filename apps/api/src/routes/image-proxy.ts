@@ -1,13 +1,23 @@
+import { redis } from "@/lib/redis"
+import { createHash } from "crypto"
 import type { FastifyInstance, FastifyReply } from "fastify"
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 const FETCH_TIMEOUT_MS = 8_000
+const CACHED_IMAGE_TTL_SECONDS = 5 * 60
+const CACHED_IMAGE_STALE_SECONDS = 60
+const CACHED_IMAGE_KEY_PREFIX = "image-proxy:cached"
+const PUBLIC_IMAGE_PROXY_ORIGIN = "*"
 
 type ImageProxyService = {
   id: string
   hostSuffixes: string[]
   headers?: HeadersInit
-  pageHeaders?: HeadersInit
+}
+
+type CachedImage = {
+  contentType: string
+  body: string
 }
 
 const SUPPORTED_IMAGE_PROXY_SERVICES: ImageProxyService[] = [
@@ -22,12 +32,18 @@ const SUPPORTED_IMAGE_PROXY_SERVICES: ImageProxyService[] = [
     headers: {
       Referer: "https://www.tiktok.com/",
     },
-    pageHeaders: {
-      Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-      Referer: "https://www.tiktok.com/",
-    },
   },
 ]
+
+const cacheKey = (id: string): string => `${CACHED_IMAGE_KEY_PREFIX}:${id}`
+
+const createCacheId = (serviceId: string, imageUrl: string): string =>
+  createHash("sha256")
+    .update(serviceId)
+    .update("\0")
+    .update(imageUrl)
+    .digest("base64url")
+    .slice(0, 24)
 
 const matchesHostSuffix = (hostname: string, suffixes: string[]): boolean => {
   const host = hostname.toLowerCase()
@@ -103,50 +119,77 @@ const fetchImage = async (
   }
 }
 
-const fetchPageImage = async (
-  pageUrl: URL,
-  service: ImageProxyService,
-): Promise<URL | undefined> => {
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
-
-  try {
-    const response = await fetch(pageUrl, {
-      signal: controller.signal,
-      headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125 Safari/537.36",
-        ...service.pageHeaders,
-      },
-    })
-
-    if (!response.ok) return undefined
-
-    const html = await response.text()
-    const match = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
-      ?? html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i)
-    const rawImage = match?.[1]?.replace(/&amp;/g, "&")
-    if (!rawImage) return undefined
-
-    const imageUrl = new URL(rawImage)
-    if (imageUrl.protocol !== "https:") return undefined
-    if (!matchesHostSuffix(imageUrl.hostname, service.hostSuffixes)) return undefined
-    return imageUrl
-  } catch {
-    return undefined
-  } finally {
-    clearTimeout(timeout)
-  }
-}
-
 const sendImage = (
   reply: FastifyReply,
   image: { buffer: Buffer; contentType: string },
+  maxAge = 86400,
 ) => reply
   .header("Content-Type", image.contentType)
-  .header("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800")
+  .header("Cache-Control", `public, max-age=${maxAge}, stale-while-revalidate=${CACHED_IMAGE_STALE_SECONDS}`)
   .send(image.buffer)
 
+const withPublicCors = (reply: FastifyReply): FastifyReply =>
+  reply
+    .header("Access-Control-Allow-Origin", PUBLIC_IMAGE_PROXY_ORIGIN)
+    .header("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
+    .header("Access-Control-Allow-Headers", "Content-Type")
+
+const getPublicBaseUrl = (request: { protocol: string; hostname: string }): string =>
+  `${request.protocol}://${request.hostname}`
+
 export const imageProxyRoutes = async (fastify: FastifyInstance) => {
+  fastify.options("/images-proxy", async (_request, reply) =>
+    withPublicCors(reply).status(204).send()
+  )
+
+  fastify.post<{ Body: { service?: string; url?: string } }>("/images-proxy", async (request, reply) => {
+    const target = parseProxyUrl(request.body?.url, request.body?.service)
+    if (!target) {
+      return withPublicCors(reply).status(400).send({ error: "Invalid image URL" })
+    }
+
+    const id = createCacheId(target.service.id, target.url.href)
+    const existing = await redis.get<CachedImage>(cacheKey(id))
+    if (existing?.contentType && existing.body) {
+      return withPublicCors(reply).send({
+        url: `${getPublicBaseUrl(request)}/images-proxy/${id}`,
+        expiresIn: CACHED_IMAGE_TTL_SECONDS,
+      })
+    }
+
+    const image = await fetchImage(target.url, target.service)
+    if (!image.ok) {
+      return withPublicCors(reply).status(image.status).send({ error: image.error })
+    }
+
+    await redis.set(cacheKey(id), {
+      contentType: image.contentType,
+      body: image.buffer.toString("base64"),
+    } satisfies CachedImage, { ex: CACHED_IMAGE_TTL_SECONDS })
+
+    return withPublicCors(reply).send({
+      url: `${getPublicBaseUrl(request)}/images-proxy/${id}`,
+      expiresIn: CACHED_IMAGE_TTL_SECONDS,
+    })
+  })
+
+  fastify.get<{ Params: { id: string } }>("/images-proxy/:id", async (request, reply) => {
+    const { id } = request.params
+    if (!/^[a-zA-Z0-9_-]{16,64}$/.test(id)) {
+      return reply.status(400).send({ error: "Invalid image id" })
+    }
+
+    const cached = await redis.get<CachedImage>(cacheKey(id))
+    if (!cached?.contentType || !cached.body) {
+      return reply.status(404).send({ error: "Image not found" })
+    }
+
+    return sendImage(reply, {
+      contentType: cached.contentType,
+      buffer: Buffer.from(cached.body, "base64"),
+    }, CACHED_IMAGE_TTL_SECONDS)
+  })
+
   fastify.get<{ Querystring: { u?: string; [key: string]: string | undefined } }>("/i", async (request, reply) => {
     const extraParams = Object.keys(request.query).filter(key => key !== "u")
     if (extraParams.length > 0) {
@@ -189,54 +232,4 @@ export const imageProxyRoutes = async (fastify: FastifyInstance) => {
     return sendImage(reply, image)
   })
 
-  fastify.get<{ Params: { handle: string; videoId: string } }>("/image-proxy/tiktok/video/:handle/:videoId", async (request, reply) => {
-    const service = SUPPORTED_IMAGE_PROXY_SERVICES.find(s => s.id === "tiktok")
-    if (!service) return reply.status(404).send({ error: "Unsupported service" })
-
-    const handle = request.params.handle.replace(/^@/, "")
-    if (!/^[a-zA-Z0-9._]{1,64}$/.test(handle) || !/^\d{5,32}$/.test(request.params.videoId)) {
-      return reply.status(400).send({ error: "Invalid TikTok video reference" })
-    }
-
-    const imageUrl = await fetchPageImage(new URL(`https://www.tiktok.com/@${handle}/video/${request.params.videoId}`), service)
-    if (!imageUrl) return reply.status(404).send({ error: "Image not found" })
-
-    const image = await fetchImage(imageUrl, service)
-    if (!image.ok) return reply.status(image.status).send({ error: image.error })
-    return sendImage(reply, image)
-  })
-
-  fastify.get<{ Params: { handle: string } }>("/image-proxy/tiktok/profile/:handle", async (request, reply) => {
-    const service = SUPPORTED_IMAGE_PROXY_SERVICES.find(s => s.id === "tiktok")
-    if (!service) return reply.status(404).send({ error: "Unsupported service" })
-
-    const handle = request.params.handle.replace(/^@/, "")
-    if (!/^[a-zA-Z0-9._]{1,64}$/.test(handle)) {
-      return reply.status(400).send({ error: "Invalid TikTok profile reference" })
-    }
-
-    const imageUrl = await fetchPageImage(new URL(`https://www.tiktok.com/@${handle}`), service)
-    if (!imageUrl) return reply.status(404).send({ error: "Image not found" })
-
-    const image = await fetchImage(imageUrl, service)
-    if (!image.ok) return reply.status(image.status).send({ error: image.error })
-    return sendImage(reply, image)
-  })
-
-  fastify.get<{ Params: { section: string; category: string } }>("/image-proxy/tiktok/category/:section/:category", async (request, reply) => {
-    const service = SUPPORTED_IMAGE_PROXY_SERVICES.find(s => s.id === "tiktok")
-    if (!service) return reply.status(404).send({ error: "Unsupported service" })
-
-    const { section, category } = request.params
-    if (!/^[a-zA-Z0-9_-]{1,64}$/.test(section) || !/^[a-zA-Z0-9_.-]{1,128}$/.test(category)) {
-      return reply.status(400).send({ error: "Invalid TikTok category reference" })
-    }
-
-    const imageUrl = await fetchPageImage(new URL(`https://www.tiktok.com/live/category/${section}/${category}`), service)
-    if (!imageUrl) return reply.status(404).send({ error: "Image not found" })
-
-    const image = await fetchImage(imageUrl, service)
-    if (!image.ok) return reply.status(image.status).send({ error: image.error })
-    return sendImage(reply, image)
-  })
 }

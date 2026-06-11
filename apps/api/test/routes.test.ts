@@ -1,6 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
-import Fastify from "fastify"
 import cors from "@fastify/cors"
+import { imageProxyRoutes } from "@/routes/image-proxy"
+import { presenceRoutes } from "@/routes/presence"
+import { registryRoutes } from "@/routes/registry"
+import { statsRoutes } from "@/routes/stats"
+import { getPresence } from "@nowly/websites"
+import Fastify from "fastify"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 const mockRedis = vi.hoisted(() => ({
   mget: vi.fn(),
@@ -91,10 +96,6 @@ vi.mock("@/lib/paths", () => ({
 async function buildApp() {
   const app = Fastify()
   await app.register(cors, { origin: true })
-  const { registryRoutes } = await import("@/routes/registry")
-  const { presenceRoutes } = await import("@/routes/presence")
-  const { statsRoutes } = await import("@/routes/stats")
-  const { imageProxyRoutes } = await import("@/routes/image-proxy")
   await app.register(registryRoutes, { prefix: "/presences" })
   await app.register(presenceRoutes, { prefix: "/presences" })
   await app.register(statsRoutes, { prefix: "/presences" })
@@ -186,14 +187,15 @@ describe("Presence Routes", () => {
   })
 
   it("GET /presences/:slug returns 200 with release data", async () => {
-    const { getPresence } = await import("@nowly/websites")
-    const websites = await import("@nowly/websites")
-
     vi.mocked(getPresence).mockReturnValue({
       name: "YouTube",
-      author: "test",
+      author: { name: "test" },
       category: "streaming",
-      description: "Watch videos",
+      description: { "en-US": "Watch videos" },
+      url: ["youtube.com"],
+      color: "#FF0033",
+      tags: ["video"],
+      assets: { logo: "logo.png", icon: "icon.png", thumbnail: "thumbnail.jpg" },
       settings: {},
     })
 
@@ -708,6 +710,8 @@ describe("Image Proxy Routes", () => {
 
   beforeEach(async () => {
     vi.clearAllMocks()
+    mockRedis.get.mockReset()
+    mockRedis.set.mockReset()
     app = await buildApp()
   })
 
@@ -781,6 +785,89 @@ describe("Image Proxy Routes", () => {
     )
   })
 
+  it("POST /images-proxy caches fetched images and returns a short public URL", async () => {
+    mockRedis.get.mockResolvedValue(null)
+    mockRedis.set.mockResolvedValue("OK")
+    globalThis.fetch = vi.fn().mockResolvedValue(new Response(new Uint8Array([21, 22, 23]), {
+      status: 200,
+      headers: { "content-type": "image/png", "content-length": "3" },
+    }))
+
+    const res = await app.inject({
+      method: "POST",
+      url: "/images-proxy",
+      payload: {
+        service: "tiktok",
+        url: "https://p16-common-sign.tiktokcdn-eu.com/image.png?x=1&y=2",
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.headers["access-control-allow-origin"]).toBe("*")
+
+    const body = JSON.parse(res.body) as { url: string; expiresIn: number }
+    expect(body.url).toMatch(
+      /^http:\/\/localhost(?::\d+)?\/images-proxy\/[a-zA-Z0-9_-]{24}$/,
+    )
+    expect(body.expiresIn).toBe(300)
+    expect(mockRedis.set).toHaveBeenCalledWith(
+      expect.stringMatching(/^image-proxy:cached:[a-zA-Z0-9_-]{24}$/),
+      { contentType: "image/png", body: Buffer.from([21, 22, 23]).toString("base64") },
+      { ex: 300 },
+    )
+  })
+
+  it("POST /images-proxy reuses a cached image URL without refetching", async () => {
+    mockRedis.get.mockResolvedValue({
+      contentType: "image/jpeg",
+      body: Buffer.from([1, 2, 3]).toString("base64"),
+    })
+    globalThis.fetch = vi.fn()
+
+    const res = await app.inject({
+      method: "POST",
+      url: "/images-proxy",
+      payload: {
+        service: "tiktok",
+        url: "https://p16-common-sign.tiktokcdn-eu.com/image.jpg",
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    const body = JSON.parse(res.body) as { url: string }
+    expect(body.url).toContain("/images-proxy/")
+    expect(globalThis.fetch).not.toHaveBeenCalled()
+    expect(mockRedis.set).not.toHaveBeenCalled()
+  })
+
+  it("GET /images-proxy/:id returns a cached image", async () => {
+    mockRedis.get.mockResolvedValue({
+      contentType: "image/webp",
+      body: Buffer.from([31, 32, 33]).toString("base64"),
+    })
+
+    const res = await app.inject({
+      method: "GET",
+      url: "/images-proxy/abcDEF1234567890_-abcDEF",
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.headers["content-type"]).toBe("image/webp")
+    expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([31, 32, 33]))
+  })
+
+  it("GET /images-proxy/:id returns 404 when the cached image expired", async () => {
+    mockRedis.get.mockResolvedValue(null)
+
+    const res = await app.inject({
+      method: "GET",
+      url: "/images-proxy/abcDEF1234567890_-abcDEF",
+    })
+
+    expect(res.statusCode).toBe(404)
+    expect(JSON.parse(res.body)).toEqual({ error: "Image not found" })
+  })
+
   it("GET /image-proxy supports explicit service matching", async () => {
     globalThis.fetch = vi.fn().mockResolvedValue(new Response(new Uint8Array([4, 5, 6]), {
       status: 200,
@@ -795,82 +882,6 @@ describe("Image Proxy Routes", () => {
     expect(res.statusCode).toBe(200)
     expect(res.headers["content-type"]).toBe("image/webp")
     expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([4, 5, 6]))
-  })
-
-  it("GET /image-proxy/tiktok/video/:handle/:videoId resolves page image before fetching it", async () => {
-    globalThis.fetch = vi.fn()
-      .mockResolvedValueOnce(new Response(
-        '<meta property="og:image" content="https://p16-common-sign.tiktokcdn-eu.com/image.jpg?x=1&amp;y=2">',
-        { status: 200, headers: { "content-type": "text/html" } },
-      ))
-      .mockResolvedValueOnce(new Response(new Uint8Array([7, 8, 9]), {
-        status: 200,
-        headers: { "content-type": "image/jpeg", "content-length": "3" },
-      }))
-
-    const res = await app.inject({
-      method: "GET",
-      url: "/image-proxy/tiktok/video/codemtc/7642364749505727751",
-    })
-
-    expect(res.statusCode).toBe(200)
-    expect(res.headers["content-type"]).toBe("image/jpeg")
-    expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([7, 8, 9]))
-    expect(globalThis.fetch).toHaveBeenNthCalledWith(
-      1,
-      new URL("https://www.tiktok.com/@codemtc/video/7642364749505727751"),
-      expect.any(Object),
-    )
-    expect(globalThis.fetch).toHaveBeenNthCalledWith(
-      2,
-      new URL("https://p16-common-sign.tiktokcdn-eu.com/image.jpg?x=1&y=2"),
-      expect.any(Object),
-    )
-  })
-
-  it("GET /image-proxy/tiktok/profile/:handle resolves profile image before fetching it", async () => {
-    globalThis.fetch = vi.fn()
-      .mockResolvedValueOnce(new Response(
-        '<meta property="og:image" content="https://p16-common-sign.tiktokcdn-eu.com/avatar.jpg">',
-        { status: 200, headers: { "content-type": "text/html" } },
-      ))
-      .mockResolvedValueOnce(new Response(new Uint8Array([10, 11, 12]), {
-        status: 200,
-        headers: { "content-type": "image/jpeg", "content-length": "3" },
-      }))
-
-    const res = await app.inject({
-      method: "GET",
-      url: "/image-proxy/tiktok/profile/codemtc",
-    })
-
-    expect(res.statusCode).toBe(200)
-    expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([10, 11, 12]))
-  })
-
-  it("GET /image-proxy/tiktok/category/:section/:category resolves category image before fetching it", async () => {
-    globalThis.fetch = vi.fn()
-      .mockResolvedValueOnce(new Response(
-        '<meta property="og:image" content="https://p16-common-sign.tiktokcdn-eu.com/category.jpg">',
-        { status: 200, headers: { "content-type": "text/html" } },
-      ))
-      .mockResolvedValueOnce(new Response(new Uint8Array([13, 14, 15]), {
-        status: 200,
-        headers: { "content-type": "image/jpeg", "content-length": "3" },
-      }))
-
-    const res = await app.inject({
-      method: "GET",
-      url: "/image-proxy/tiktok/category/gaming/Garena_Free_Fire",
-    })
-
-    expect(res.statusCode).toBe(200)
-    expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([13, 14, 15]))
-    expect(globalThis.fetch).toHaveBeenNthCalledWith(
-      1,
-      new URL("https://www.tiktok.com/live/category/gaming/Garena_Free_Fire"),
-      expect.any(Object),
-    )
   })
 
   it("GET /image-proxy rejects URLs that do not match the explicit service", async () => {
