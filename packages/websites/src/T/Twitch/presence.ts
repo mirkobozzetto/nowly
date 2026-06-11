@@ -1,6 +1,14 @@
 import { createMediaTimestamps, PresenceType } from "@nowly/presence"
 import { findCategoryImage, findCategoryName } from "./utils/category"
-import { findVideo, isOnCategoryPage, isOnChannelPage, isOnClipPage, isOnFollowingPage, isOnVideoPage } from "./utils/dom"
+import {
+  findVideo,
+  isOnCategoryPage,
+  isOnChannelPage,
+  isOnClipPage,
+  isOnFollowingPage,
+  isOnHomePage,
+  isOnVideoPage,
+} from "./utils/dom"
 import { findGame, findStreamerAvatar, findStreamerName, findStreamTitle } from "./utils/streamer"
 import { getClipInfo, getVodTitle } from "./utils/vod"
 
@@ -43,9 +51,30 @@ presence.on("UpdateData", async (ctx) => {
 
   const isOnVideo = isOnVideoPage()
   const isClip = isOnClipPage()
-  // Only flag as live on an actual channel page — the homepage has an autoplaying featured stream
-  // that would otherwise trigger this branch after a few seconds.
-  const isLive = isOnChannelPage() && !isOnVideo && !isClip && video && video.duration >= 1073741824
+  const isHome = isOnHomePage()
+
+  if (isHome) {
+    if (!ctx.settings.showBrowsing) {
+      presence.clearActivity()
+      return
+    }
+
+    await presence.setActivity({
+      details: "Viewing homepage",
+      largeImageKey: Assets.Logo,
+      largeImageText: "Twitch",
+      type: PresenceType.Watching,
+    })
+    return
+  }
+
+  const isLive =
+    isOnChannelPage() &&
+    !isOnVideo &&
+    !isClip &&
+    video &&
+    video.duration >= 1073741824 &&
+    Boolean(findStreamerName() || findStreamTitle())
 
   if (isLive) {
     const title = findStreamTitle()
@@ -55,7 +84,7 @@ presence.on("UpdateData", async (ctx) => {
 
     await presence.setActivity({
       details: title || "Live",
-      state: streamer ? `${streamer}${game ? ` — ${game}` : ""}` : game,
+      state: streamer ? `${streamer}${game ? ` - ${game}` : ""}` : game,
       largeImageKey: avatar || Assets.Logo,
       largeImageText: streamer || "Twitch",
       type: PresenceType.Watching,
@@ -137,16 +166,7 @@ presence.on("UpdateData", async (ctx) => {
     return
   }
 
-  const path = pathname.replace(/\/$/, "")
-
-  if (path === "" || path === "/") {
-    await presence.setActivity({
-      details: "Viewing homepage",
-      largeImageKey: Assets.Logo,
-      largeImageText: "Twitch",
-      type: PresenceType.Watching,
-    })
-  } else if (pathname === "/directory" || pathname === "/directory/") {
+  if (pathname === "/directory" || pathname === "/directory/") {
     await presence.setActivity({
       details: "Browsing categories",
       largeImageKey: Assets.Logo,

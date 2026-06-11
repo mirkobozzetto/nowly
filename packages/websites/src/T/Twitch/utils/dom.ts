@@ -15,6 +15,9 @@ export const findVideo = (): HTMLVideoElement | null => {
   return null
 }
 
+export const isOnHomePage = (): boolean =>
+  location.hostname.endsWith("twitch.tv") && location.pathname.replace(/\/$/, "") === ""
+
 export const isOnChannelPage = (): boolean => {
   const parts = location.pathname.replace(/\/$/, "").split("/").filter(Boolean)
   return (
