@@ -77,9 +77,16 @@ For TikTok, the short paths are:
 ```txt
 https://api.nowly.me/image-proxy/tiktok/video/<handle>/<videoId>
 https://api.nowly.me/image-proxy/tiktok/profile/<handle>
+https://api.nowly.me/image-proxy/tiktok/category/<section>/<category>
 ```
 
 Those paths let the API resolve the actual CDN image server-side while keeping the Discord `large_image` value short.
+
+The TikTok category path is intended for live category pages such as:
+
+```txt
+https://www.tiktok.com/live/category/gaming/Garena_Free_Fire
+```
 
 ## Supported URLs
 

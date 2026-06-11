@@ -77,9 +77,16 @@ Pour TikTok, les routes courtes sont :
 ```txt
 https://api.nowly.me/image-proxy/tiktok/video/<handle>/<videoId>
 https://api.nowly.me/image-proxy/tiktok/profile/<handle>
+https://api.nowly.me/image-proxy/tiktok/category/<section>/<category>
 ```
 
 Ces routes permettent à l’API de résoudre l’image CDN réelle côté serveur, tout en gardant la valeur `large_image` suffisamment courte pour Discord.
+
+La route de catégorie TikTok est prévue pour les pages de catégorie live, par exemple :
+
+```txt
+https://www.tiktok.com/live/category/gaming/Garena_Free_Fire
+```
 
 ## URLs prises en charge
 
