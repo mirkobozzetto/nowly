@@ -109,7 +109,7 @@ export const useExtensionState = (): ExtensionState => {
 
   useEffect(() => {
     refresh();
-    const interval = window.setInterval(refresh, 3000);
+    const interval = window.setInterval(refresh, 3600000);
 
     const onStorageChanged = (
       changes: Record<string, chrome.storage.StorageChange>,
