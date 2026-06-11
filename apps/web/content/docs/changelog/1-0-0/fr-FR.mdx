@@ -1,0 +1,84 @@
+---
+title: 1.0.0
+description: Le premier lancement stable de Nowly, couvrant l'extension navigateur, l'hôte natif, la bibliothèque publique et le workflow de publication.
+---
+
+`1.0.0` est le point où Nowly est devenu un produit complet au lieu d'une collection de pièces séparées. C'est le premier lancement stable et la base de référence pour tout ce qui suit.
+
+<ReleaseTable
+  headers={["Surface", "Ce qui a été livré", "Pourquoi c'est important"]}
+  rows={[
+    ["Extension navigateur", "Détecte les sites web pris en charge, charge les presences signées et transmet l'activité à l'hôte natif.", "C'est le point d'entrée visible pour toute l'activité des presences."],
+    ["Hôte natif", "Fait le pont entre l'activité du navigateur et Discord Rich Presence.", "Les mises à jour Discord se font localement sans transformer le navigateur en couche d'intégration."],
+    ["Bibliothèque publique", "Liste les presences, affiche les pages de détail, commentaires, évaluations et historique des versions.", "Les utilisateurs peuvent inspecter une presence avant de l'installer."],
+    ["Cycle de vie des presences", "Prend en charge les flux d'installation, mise à jour, désactivation et désinstallation.", "La gestion des presences est exposée comme un workflow utilisateur normal."],
+    ["Documentation", "Couvre l'installation, le dépannage, le développement de presences et la publication.", "Les contributeurs et utilisateurs ont un endroit unique pour consulter le comportement du produit."],
+    ["CLI", "Compile, valide et publie les paquets de presences.", "Le développement de presences est reproductible au lieu d'être un processus manuel ponctuel."],
+  ]}
+/>
+
+## Extension navigateur
+
+L'extension est la première pièce visible du système. Elle surveille les sites pris en charge, installe le bon paquet de presence et maintient l'activité en mouvement vers l'hôte natif sans demander à l'utilisateur de gérer l'infrastructure.
+
+- Les presences ne s'exécutent que sur les sites web correspondants.
+- L'extension charge le paquet signé correct pour la presence.
+- L'activité est transmise à Discord via l'hôte natif local.
+- La prise en charge des scripts utilisateur est documentée et restreinte car il s'agit d'une permission sensible.
+
+## Hôte natif
+
+Le compagnon natif est ce qui transforme l'état de la page en un véritable statut Discord. Il maintient la couche navigateur concentrée et donne au système un point de passage propre.
+
+- Il reçoit les payloads de presences depuis l'extension.
+- Il traduit ces payloads en mises à jour Discord Rich Presence.
+- Il maintient la connexion Discord séparée de la session navigateur.
+
+## Bibliothèque et découverte
+
+La bibliothèque publique est la surface du produit que les gens parcourent avant d'installer quoi que ce soit.
+
+- Chaque presence a une page de détail dédiée.
+- Les URL prises en charge, l'historique des versions, les évaluations et les commentaires sont visibles avant l'installation.
+- Les statistiques d'installation aident à juger si une presence est active et maintenue.
+- Les pages de presence exposent suffisamment de métadonnées pour comprendre ce que fait l'intégration avant que l'utilisateur ne s'engage.
+
+## Cycle de vie des presences
+
+Le cycle de vie est délibérément simple et visible pour l'utilisateur&nbsp;:
+
+```txt
+install -> enable -> update -> disable -> uninstall
+```
+
+- Install récupère la dernière version signée.
+- Update maintient le paquet installé aligné avec la version publiée.
+- Disable arrête la presence sans la supprimer de la liste utilisateur.
+- Uninstall supprime la presence de l'extension.
+
+## Documentation et onboarding
+
+Le premier lancement stable a également établi le matériel de support autour du produit.
+
+- Le flux d'onboarding explique la relation entre l'extension, l'hôte natif et les presences.
+- Le dépannage couvre les modes de défaillance courants au lieu de supposer que l'utilisateur peut les déduire.
+- La documentation explique la structure d'une presence et comment elle est publiée.
+
+## Workflow développeur
+
+La publication est aussi le point où le projet est devenu publiable de manière reproductible.
+
+```bash
+pnpm presence init "Exemple"
+pnpm presence validate
+pnpm presence build exemple
+pnpm presence push exemple
+```
+
+- La validation des métadonnées aide à maintenir le catalogue cohérent.
+- L'empaquetage et la signature font partie du chemin de publication.
+- La CLI offre aux contributeurs un moyen prévisible de créer et d'expédier des presences.
+
+## Pourquoi `1.0.0` est important
+
+> C'est la version où le produit devient cohérent&nbsp;: l'extension, l'hôte, la bibliothèque, les docs et le pipeline de publication, tout est aligné.

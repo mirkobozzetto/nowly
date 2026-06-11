@@ -1,0 +1,87 @@
+---
+title: 1.1.0
+description: La primera versión de mantenimiento de Nowly, centrada en flujos de actualización, seguimiento activo, limpieza de desinstalación, limpieza de documentos y pulido del lanzamiento.
+---
+
+`1.1.0` es una versión de mantenimiento. No cambia la forma central del producto; hace que los flujos existentes se comporten de manera que coincidan con las expectativas del usuario y reorganiza el registro de cambios en páginas de versión dedicadas.
+
+<ReleaseTable
+  headers={["Área", "Lo que cambió", "Por qué es importante"]}
+  rows={[
+    ["Navegación de extensión", "La insignia de actualización ahora abre `/library/[item]` directamente.", "Ya no hay un desvío a través de la antigua estructura de rutas localizadas."],
+    ["Estado de actualización", "La versión instalada se actualiza tan pronto como llega una actualización.", "La insignia se limpia inmediatamente en lugar de persistir hasta el reinicio."],
+    ["Seguimiento activo", "`activeUsers` ahora sigue un modelo por dispositivo.", "El número refleja dispositivos activos reales en lugar de un marcador de posición plano."],
+    ["Flujo de desactivación", "Desactivar una presence elimina ese dispositivo del contador activo.", "La actividad obsoleta no permanece después de un cambio."],
+    ["Limpieza de desinstalación", "La extensión establece una URL de desinstalación de mejor esfuerzo y la página web purga el dispositivo.", "La eliminación aún ocurre cuando la extensión ya no está disponible."],
+    ["Pulido de página de detalle", "Los bloques de iconos transparentes usan un desenfoque de fondo.", "El banner ya no se filtra a través del tratamiento del icono de forma agresiva."],
+    ["Estructura del changelog", "El registro de cambios se movió a `/docs/changelog` y ahora usa una página por versión.", "Cada versión puede ser enlazada, escaneada y mantenida de forma independiente."],
+    ["Navegación de docs", "El registro de cambios ahora aparece en la barra lateral de docs con las versiones como hijas.", "Las notas de versión son descubribles desde la misma superficie de navegación que el resto de la documentación."],
+    ["Mapa del sitio de docs", "El mapa del sitio de docs ahora incluye el índice del changelog y las páginas de versión.", "Las notas de versión están indexadas como el resto de la documentación."],
+  ]}
+/>
+
+## Navegación de extensión
+
+La insignia de actualización ahora envía a los usuarios a la ruta actual de la biblioteca en lugar de a la antigua ruta con prefijo de idioma. Esto mantiene la extensión alineada con la estructura actual del sitio y elimina la última dependencia de la antigua forma de URL localizada.
+
+## Estado de actualización
+
+Cuando una presence termina de actualizarse, la versión instalada se actualiza inmediatamente. La insignia ya no permanece visible hasta que se vuelve a abrir la extensión, por lo que el estado de la extensión coincide con lo que el usuario acaba de hacer.
+
+## Seguimiento activo
+
+`activeUsers` ahora rastrea dispositivos en lugar de solo almacenar un indicador de presence plano. Esto hace que el recuento visible sea significativo, y le da a los flujos de desactivación y desinstalación algo concreto que eliminar.
+
+- Se utiliza un `deviceId` estable como clave de seguimiento.
+- Los heartbeats actualizan el registro activo en lugar de solo cambiar un indicador de un bit.
+- El sitio ahora puede reflejar un recuento activo real en lugar de un marcador de posición de "al menos una sesión activa".
+
+## Flujo de desactivación
+
+Desactivar una presence ahora elimina el dispositivo del conjunto activo. Volver a activarla añade el dispositivo de nuevo en el mismo modelo de seguimiento, por lo que el contador se mantiene alineado con el estado real de ejecución.
+
+## Limpieza de desinstalación
+
+La extensión utiliza una URL de desinstalación de mejor esfuerzo, y la parte web purga el dispositivo asociado cuando llega esa solicitud de limpieza.
+
+- Este es un flujo de limpieza de mejor esfuerzo, no un script posterior a la desinstalación.
+- El `deviceId` se pasa a la ruta de limpieza para que el backend pueda eliminar el estado activo asociado.
+- Esto mantiene un comportamiento de desinstalación consistente incluso cuando la extensión ya no está presente.
+
+## Pulido de página de detalle
+
+Los bloques de iconos transparentes ahora se sitúan sobre un desenfoque de fondo para que el banner de la presence ya no se filtre a través del tratamiento del icono. Esto se aplica al contenedor del icono en sí, no al banner detrás de él.
+
+## Estructura del changelog
+
+El registro de cambios ya no es una página larga con anclajes. Ahora está dividido en un índice y páginas por versión:
+
+```txt
+/docs/changelog
+/docs/changelog/1-0-0
+/docs/changelog/1-1-0
+```
+
+Esa estructura hace que el historial de versiones sea más fácil de mantener, enlazar y navegar desde la barra lateral.
+
+## Navegación de docs
+
+El registro de cambios ahora aparece en la barra lateral de docs como su propia categoría, con cada versión listada como un elemento hijo. Esto significa que las notas de versión son accesibles desde el mismo modelo de navegación que el resto de la documentación.
+
+## Indexación de docs
+
+El mapa del sitio ahora incluye las páginas del changelog, por lo que las notas de versión son tratadas como documentación real en lugar de quedar fuera del índice público.
+
+## Impacto
+
+```txt
+Rutas afectadas:
+POST /presences/active
+DELETE /presences/active/:deviceId
+GET /library/[item]
+GET /docs/changelog
+GET /docs/changelog/1-0-0
+GET /docs/changelog/1-1-0
+```
+
+> Esta versión no introduce un nuevo flujo de trabajo. Hace que el flujo de trabajo existente sea consistente y medible.

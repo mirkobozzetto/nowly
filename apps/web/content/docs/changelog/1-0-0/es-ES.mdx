@@ -1,0 +1,84 @@
+---
+title: 1.0.0
+description: El primer lanzamiento estable de Nowly, que cubre la extensión de navegador, el host nativo, la biblioteca pública y el flujo de trabajo de publicación.
+---
+
+`1.0.0` es el punto en el que Nowly se convirtió en un producto completo en lugar de una colección de piezas separadas. Es el primer lanzamiento estable y la línea base para todo lo que sigue.
+
+<ReleaseTable
+  headers={["Superficie", "Lo que se envió", "Por qué es importante"]}
+  rows={[
+    ["Extensión de navegador", "Detecta sitios web compatibles, carga presences firmadas y reenvía la actividad al host nativo.", "Este es el punto de entrada visible para toda la actividad de las presences."],
+    ["Host nativo", "Puentea la actividad del navegador a Discord Rich Presence.", "Las actualizaciones de Discord ocurren localmente sin convertir el navegador en la capa de integración."],
+    ["Biblioteca pública", "Lista presences, muestra páginas de detalle, comentarios, valoraciones e historial de versiones.", "Los usuarios pueden inspeccionar una presence antes de instalarla."],
+    ["Ciclo de vida de presence", "Admite flujos de instalación, actualización, desactivación y desinstalación.", "La gestión de presences se expone como un flujo de trabajo normal para el usuario."],
+    ["Documentación", "Cubre configuración, solución de problemas, desarrollo de presences y publicación.", "Los colaboradores y usuarios tienen un lugar único para consultar el comportamiento del producto."],
+    ["CLI", "Compila, valida y publica paquetes de presences.", "El desarrollo de presences es repetible en lugar de ser un proceso manual único."],
+  ]}
+/>
+
+## Extensión de navegador
+
+La extensión es la primera pieza visible del sistema. Vigila los sitios compatibles, instala el paquete de presence correcto y mantiene la actividad en movimiento hacia el host nativo sin pedir al usuario que gestione la infraestructura.
+
+- Las presences solo se ejecutan en sitios web coincidentes.
+- La extensión carga el paquete firmado correcto para la presence.
+- La actividad se reenvía a Discord a través del host nativo local.
+- El soporte de scripts de usuario está documentado y restringido porque es un permiso sensible.
+
+## Host nativo
+
+El compañero nativo es lo que convierte el estado de la página en un estado real de Discord. Mantiene la capa del navegador enfocada y le da al sistema un punto de entrega limpio.
+
+- Recibe payloads de presences desde la extensión.
+- Traduce esos payloads en actualizaciones de Discord Rich Presence.
+- Mantiene la conexión de Discord separada de la sesión del navegador.
+
+## Biblioteca y descubrimiento
+
+La biblioteca pública es la superficie del producto que la gente navega antes de instalar algo.
+
+- Cada presence tiene una página de detalle dedicada.
+- Las URL compatibles, el historial de versiones, las valoraciones y los comentarios son visibles antes de la instalación.
+- Las estadísticas de instalación ayudan a las personas a juzgar si una presence está activa y mantenida.
+- Las páginas de presence exponen suficientes metadatos para entender lo que hace la integración antes de que el usuario se comprometa con ella.
+
+## Ciclo de vida de presence
+
+El ciclo de vida es deliberadamente simple y visible para el usuario:
+
+```txt
+install -> enable -> update -> disable -> uninstall
+```
+
+- Install obtiene la última versión firmada.
+- Update mantiene el paquete instalado alineado con la versión publicada.
+- Disable detiene la presence sin eliminarla de la lista del usuario.
+- Uninstall elimina la presence de la extensión.
+
+## Documentación y onboarding
+
+El primer lanzamiento estable también estableció el material de soporte alrededor del producto.
+
+- El flujo de onboarding explica la relación entre la extensión, el host nativo y las presences.
+- La solución de problemas cubre los modos de fallo comunes en lugar de asumir que el usuario puede inferirlos.
+- La documentación explica la estructura de una presence y cómo se publica.
+
+## Flujo de trabajo del desarrollador
+
+El lanzamiento es también el punto en el que el proyecto se volvió publicable de forma repetible.
+
+```bash
+pnpm presence init "Ejemplo"
+pnpm presence validate
+pnpm presence build example
+pnpm presence push example
+```
+
+- La validación de metadatos ayuda a mantener el catálogo consistente.
+- El empaquetado y la firma son parte del camino de publicación.
+- La CLI ofrece a los colaboradores una forma predecible de crear y enviar presences.
+
+## Por qué `1.0.0` es importante
+
+> Este es el lanzamiento donde el producto se vuelve coherente: la extensión, el host, la biblioteca, los docs y el pipeline de publicación, todo alineado.
