@@ -11,7 +11,7 @@ import Fastify from "fastify"
 const server = Fastify({ logger: true })
 
 await server.register(cors, {
-  origin: [serverEnv.FRONTEND_URL],
+  origin: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "x-user-token"],
 })
