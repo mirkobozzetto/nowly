@@ -7,6 +7,42 @@ type ReleaseTableProps = {
   className?: string;
 };
 
+const markdownLinkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+
+function renderCell(text: string): ReactNode {
+  if (!markdownLinkRegex.test(text)) {
+    return text;
+  }
+
+  markdownLinkRegex.lastIndex = 0;
+
+  const parts: ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = markdownLinkRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    parts.push(
+      <a
+        key={match.index}
+        href={match[2]}
+        className="text-accent underline underline-offset-2 decoration-accent/30 hover:decoration-accent transition-colors"
+      >
+        {match[1]}
+      </a>,
+    );
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length === 1 ? parts[0] : parts;
+}
+
 export const ReleaseTable: FC<ReleaseTableProps> = ({ headers, rows, className }) => {
   return (
     <div className={cn("my-6 overflow-x-auto rounded-md border border-border", className)}>
@@ -38,7 +74,7 @@ export const ReleaseTable: FC<ReleaseTableProps> = ({ headers, rows, className }
                     cellIndex < row.length - 1 && "border-r border-border",
                   )}
                 >
-                  {cell as ReactNode}
+                  {renderCell(cell)}
                 </td>
               ))}
             </tr>
