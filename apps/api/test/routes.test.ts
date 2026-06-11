@@ -94,9 +94,11 @@ async function buildApp() {
   const { registryRoutes } = await import("@/routes/registry")
   const { presenceRoutes } = await import("@/routes/presence")
   const { statsRoutes } = await import("@/routes/stats")
+  const { imageProxyRoutes } = await import("@/routes/image-proxy")
   await app.register(registryRoutes, { prefix: "/presences" })
   await app.register(presenceRoutes, { prefix: "/presences" })
   await app.register(statsRoutes, { prefix: "/presences" })
+  await app.register(imageProxyRoutes)
   return app
 }
 
@@ -697,5 +699,91 @@ describe("Stats Routes", () => {
     expect(mockRedis.del).not.toHaveBeenCalled()
     expect(mockRedis.decr).toHaveBeenCalledWith("presence:youtube:ratings:5")
     expect(mockRedisModule.removeUserRating).toHaveBeenCalledWith("youtube", "12345")
+  })
+})
+
+describe("Image Proxy Routes", () => {
+  let app: Awaited<ReturnType<typeof buildApp>>
+  const originalFetch = globalThis.fetch
+
+  beforeEach(async () => {
+    vi.clearAllMocks()
+    app = await buildApp()
+  })
+
+  afterEach(async () => {
+    await app.close()
+    globalThis.fetch = originalFetch
+  })
+
+  it("GET /image-proxy rejects non-TikTok CDN URLs", async () => {
+    const res = await app.inject({
+      method: "GET",
+      url: `/image-proxy?url=${encodeURIComponent("https://example.com/image.jpg")}`,
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body)).toEqual({ error: "Invalid image URL" })
+  })
+
+  it("GET /image-proxy rejects unencoded nested query parameters", async () => {
+    const res = await app.inject({
+      method: "GET",
+      url: "/image-proxy?service=tiktok&url=https://p16-common-sign.tiktokcdn-eu.com/image.jpg?dr=1&x-signature=abc",
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body)).toEqual({
+      error: "Image URL must be encoded",
+      message: "Encode the full image URL with encodeURIComponent before passing it to the url parameter.",
+    })
+  })
+
+  it("GET /image-proxy returns fetched TikTok CDN images", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue(new Response(new Uint8Array([1, 2, 3]), {
+      status: 200,
+      headers: { "content-type": "image/jpeg", "content-length": "3" },
+    }))
+
+    const res = await app.inject({
+      method: "GET",
+      url: `/image-proxy?url=${encodeURIComponent("https://p16-common-sign.tiktokcdn-eu.com/image.jpg")}`,
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.headers["content-type"]).toBe("image/jpeg")
+    expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([1, 2, 3]))
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      new URL("https://p16-common-sign.tiktokcdn-eu.com/image.jpg"),
+      expect.objectContaining({
+        headers: expect.objectContaining({ Referer: "https://www.tiktok.com/" }),
+      }),
+    )
+  })
+
+  it("GET /image-proxy supports explicit service matching", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue(new Response(new Uint8Array([4, 5, 6]), {
+      status: 200,
+      headers: { "content-type": "image/webp", "content-length": "3" },
+    }))
+
+    const res = await app.inject({
+      method: "GET",
+      url: `/image-proxy?service=tiktok&url=${encodeURIComponent("https://p16-common-sign.tiktokcdn-eu.com/image.webp")}`,
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.headers["content-type"]).toBe("image/webp")
+    expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([4, 5, 6]))
+  })
+
+  it("GET /image-proxy rejects URLs that do not match the explicit service", async () => {
+    const res = await app.inject({
+      method: "GET",
+      url: `/image-proxy?service=unknown&url=${encodeURIComponent("https://p16-common-sign.tiktokcdn-eu.com/image.jpg")}`,
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body)).toEqual({ error: "Invalid image URL" })
   })
 })

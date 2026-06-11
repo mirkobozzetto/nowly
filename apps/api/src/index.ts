@@ -1,5 +1,6 @@
 import { assetsRoutes } from "@/routes/assets"
 import { authRoutes } from "@/routes/auth"
+import { imageProxyRoutes } from "@/routes/image-proxy"
 import { presenceRoutes } from "@/routes/presence"
 import { registryRoutes } from "@/routes/registry"
 import { statsRoutes } from "@/routes/stats"
@@ -20,6 +21,7 @@ await server.register(presenceRoutes, { prefix: "/presences" })
 await server.register(assetsRoutes, { prefix: "/presences" })
 await server.register(statsRoutes, { prefix: "/presences" })
 await server.register(authRoutes, { prefix: "/auth" })
+await server.register(imageProxyRoutes)
 
 const port = serverEnv.PORT
 

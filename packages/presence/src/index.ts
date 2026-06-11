@@ -140,3 +140,13 @@ export const createMediaTimestamps = (
       : undefined,
   };
 };
+
+export type ImageProxyService = "tiktok" | (string & {});
+
+export const createImageProxyUrl = (
+  service: ImageProxyService,
+  imageUrl: string | undefined,
+): string | undefined => {
+  if (!imageUrl?.startsWith("https://")) return undefined;
+  return `https://api.nowly.me/image-proxy?service=${encodeURIComponent(service)}&url=${encodeURIComponent(imageUrl)}`;
+};

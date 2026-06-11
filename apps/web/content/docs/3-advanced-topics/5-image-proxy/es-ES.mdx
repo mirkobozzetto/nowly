@@ -1,0 +1,90 @@
+---
+title: Proxy de imágenes
+description: Usa el proxy de imágenes de Nowly cuando Discord no pueda cargar directamente una imagen de presencia desde un CDN externo compatible.
+---
+
+## Para qué sirve
+
+El proxy de imágenes es una herramienta del servidor pensada para casos concretos: imágenes públicas, visibles desde el navegador, pero que Discord no puede descargar correctamente de forma directa.
+
+Es útil para imágenes como miniaturas de vídeo, posters o recursos servidos por un CDN externo cuando:
+
+- la URL de la imagen es pública en el navegador;
+- Discord rechaza, deja expirar o no puede descargar la URL original;
+- la presencia necesita mostrar una imagen real del contenido en lugar de usar solo el logo de la plataforma.
+
+No es un proxy de imágenes genérico. Solo acepta orígenes explícitamente compatibles con la API de Nowly.
+
+## Endpoint
+
+```txt
+https://api.nowly.me/image-proxy?service=<service>&url=<url-de-imagen-codificada>
+```
+
+El parámetro `url` debe codificarse con `encodeURIComponent`. El parámetro `service` es opcional, pero se recomienda cuando sabes qué servicio compatible proporciona la imagen.
+
+```ts filename="presence.ts"
+import { createImageProxyUrl } from "@nowly/presence"
+
+const proxiedImage = createImageProxyUrl("tiktok", imageUrl)
+
+await presence.setActivity({
+  details: "Watching a video",
+  largeImageKey: proxiedImage ?? Assets.Logo,
+})
+```
+
+## Cuándo usarlo
+
+Usa el proxy de imágenes únicamente cuando una URL de imagen normal no funcione de forma fiable en Discord Rich Presence.
+
+Prefiere `Assets.Logo`, `Assets.Icon` o una URL `https://` directa y estable cuando funcionen. El proxy está diseñado para casos especiales en los que un CDN externo necesita una descarga desde el servidor, cabeceras específicas o una validación previa para que Discord pueda mostrar la imagen.
+
+## Configuración en una presencia
+
+Primero, extrae la URL de la imagen desde la página. Por ejemplo, para un poster de vídeo:
+
+```ts filename="presence.ts"
+function getPoster(video: HTMLVideoElement): string | undefined {
+  if (video.poster) return video.poster
+
+  const image = video.closest("[data-video]")?.querySelector("img")
+  return image?.getAttribute("src") ?? undefined
+}
+```
+
+Después, pasa esa URL al proxy antes de enviar la actividad:
+
+```ts filename="presence.ts"
+import { createImageProxyUrl } from "@nowly/presence"
+
+const poster = video ? createImageProxyUrl("tiktok", getPoster(video)) : undefined
+
+await presence.setActivity({
+  details: "Watching a video",
+  largeImageKey: poster ?? Assets.Logo,
+})
+```
+
+Mantén siempre un asset de respaldo para que la presencia siga funcionando si la página no proporciona ninguna imagen o si el proxy rechaza la URL.
+
+## URLs compatibles
+
+Los dominios permitidos se validan en la API, no en la presencia. Si un dominio no está en la lista permitida, el proxy devuelve un error en lugar de descargar la imagen.
+
+En la API, los servicios compatibles se configuran mediante entradas con un `id`, sufijos de dominio permitidos y, si es necesario, cabeceras de solicitud. Esto permite añadir nuevos servicios fácilmente sin convertir el proxy en un proxy público abierto.
+
+Si tu presencia necesita un nuevo origen de imagen, incluye el uso del proxy en tu PR de presencia y explica:
+
+- qué hostnames exactos necesitan soporte;
+- por qué Discord no puede usar la URL directa;
+- qué imagen verá el usuario;
+- por qué la imagen es pública y se puede proxificar de forma segura.
+
+Los reviewers decidirán si añaden esas URLs a la lista compatible. Pueden rechazar orígenes demasiado amplios, inestables, privados o inseguros.
+
+## Seguridad
+
+El proxy debe mantenerse limitado. Solo debe descargar imágenes públicas de CDN necesarias para presencias revisadas y aceptadas.
+
+No lo uses para imágenes de cuentas privadas, recursos autenticados, URLs de tracking, entradas arbitrarias del usuario o contenido que no sea una imagen.
