@@ -147,6 +147,27 @@ const sendImage = (
   .send(image.buffer)
 
 export const imageProxyRoutes = async (fastify: FastifyInstance) => {
+  fastify.get<{ Querystring: { u?: string; [key: string]: string | undefined } }>("/i", async (request, reply) => {
+    const extraParams = Object.keys(request.query).filter(key => key !== "u")
+    if (extraParams.length > 0) {
+      return reply.status(400).send({
+        error: "Image URL must be encoded",
+        message: "Encode the full image URL with encodeURIComponent before passing it to the u parameter.",
+      })
+    }
+
+    const target = parseProxyUrl(request.query.u)
+    if (!target) {
+      return reply.status(400).send({ error: "Invalid image URL" })
+    }
+
+    const image = await fetchImage(target.url, target.service)
+    if (!image.ok) {
+      return reply.status(image.status).send({ error: image.error })
+    }
+    return sendImage(reply, image)
+  })
+
   fastify.get<{ Querystring: { url?: string; service?: string; [key: string]: string | undefined } }>("/image-proxy", async (request, reply) => {
     const extraParams = Object.keys(request.query).filter(key => key !== "url" && key !== "service")
     if (extraParams.length > 0) {

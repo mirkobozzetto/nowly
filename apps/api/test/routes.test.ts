@@ -761,6 +761,26 @@ describe("Image Proxy Routes", () => {
     )
   })
 
+  it("GET /i returns fetched supported CDN images with a short URL", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue(new Response(new Uint8Array([16, 17, 18]), {
+      status: 200,
+      headers: { "content-type": "image/jpeg", "content-length": "3" },
+    }))
+
+    const res = await app.inject({
+      method: "GET",
+      url: `/i?u=${encodeURIComponent("https://p16-common-sign.tiktokcdn-eu.com/image.jpg?x=1&y=2")}`,
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.headers["content-type"]).toBe("image/jpeg")
+    expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([16, 17, 18]))
+    expect(globalThis.fetch).toHaveBeenCalledWith(
+      new URL("https://p16-common-sign.tiktokcdn-eu.com/image.jpg?x=1&y=2"),
+      expect.any(Object),
+    )
+  })
+
   it("GET /image-proxy supports explicit service matching", async () => {
     globalThis.fetch = vi.fn().mockResolvedValue(new Response(new Uint8Array([4, 5, 6]), {
       status: 200,
