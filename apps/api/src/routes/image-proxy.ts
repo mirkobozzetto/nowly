@@ -1,6 +1,6 @@
 import { redis } from "@/lib/redis"
 import { createHash } from "crypto"
-import type { FastifyInstance, FastifyReply } from "fastify"
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 const FETCH_TIMEOUT_MS = 8_000
@@ -134,8 +134,18 @@ const withPublicCors = (reply: FastifyReply): FastifyReply =>
     .header("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
     .header("Access-Control-Allow-Headers", "Content-Type")
 
-const getPublicBaseUrl = (request: { protocol: string; hostname: string }): string =>
-  `${request.protocol}://${request.hostname}`
+const getPublicBaseUrl = (request: FastifyRequest): string => {
+  const forwardedProto = request.headers["x-forwarded-proto"]
+  const proto = Array.isArray(forwardedProto)
+    ? forwardedProto[0]
+    : forwardedProto
+
+  const protocol = proto === "https" || request.hostname === "api.nowly.me"
+    ? "https"
+    : request.protocol
+
+  return `${protocol}://${request.hostname}`
+}
 
 export const imageProxyRoutes = async (fastify: FastifyInstance) => {
   fastify.options("/images-proxy", async (_request, reply) =>
