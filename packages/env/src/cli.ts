@@ -13,6 +13,8 @@ export const cliEnv = createEnv({
     R2_ACCESS_KEY_ID: required.optional(),
     R2_SECRET_ACCESS_KEY: required.optional(),
     R2_ACCOUNT_ID: required.optional(),
+    CLOUDFLARE_API_TOKEN: required.optional(),
+    CLOUDFLARE_ZONE_ID: required.optional(),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

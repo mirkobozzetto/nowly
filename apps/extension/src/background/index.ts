@@ -1,4 +1,4 @@
-import { WEB_BASE_URL, API_BASE_URL } from "@/shared/constants";
+import { WEB_BASE_URL, API_BASE_URL, CDN_BASE_URL } from "@/shared/constants";
 import type { ExtensionMessage, ExtensionSettings, InstalledPresences, PresenceData, PresenceDebug, PresenceRelease, StoredPresence } from "@/shared/types";
 import { connectNative, mapPresenceData, onNativeResponse, postNative, reconnectNative, refreshNativeStatus } from "./native";
 import { createPresenceRuntime, USER_SCRIPT_MESSAGE_SOURCE } from "./presence-runtime";
@@ -134,7 +134,7 @@ const unregisterPresenceScript = async (slug: string): Promise<void> => {
 const getPresenceRuntime = async (slug: string, name: string, bundle: string): Promise<string> => {
   const allSettings = await getPresenceSettings();
   const presenceSettings = allSettings[slug] ?? {};
-  return createPresenceRuntime(slug, name, bundle, presenceSettings, getEffectiveApiUrl());
+  return createPresenceRuntime(slug, name, bundle, presenceSettings, getEffectiveApiUrl(), CDN_BASE_URL);
 };
 
 const registerPresenceScript = async (slug: string, presence: StoredPresence): Promise<{ ok: boolean; error?: string }> => {
@@ -427,7 +427,7 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
         for (const result of results) {
           if (result.status === "fulfilled") {
             const { slug, latestVersion } = result.value;
-            const installed = presences[slug].release?.metadata?.version;
+            const installed = presences[slug].release?.version;
             if (installed && latestVersion !== installed) {
               updates[slug] = latestVersion;
             }
@@ -456,10 +456,19 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
       const { slug, partial } = message.payload as { slug: string; partial: Record<string, unknown> };
       void setPresenceSettings(slug, partial).then((settings) => {
         respond(sendResponse, settings);
-        getPresences().then((presences) => {
+        getPresences().then(async (presences) => {
           const stored = presences[slug];
           if (stored?.enabled && stored.release?.bundle) {
             void registerPresenceScript(slug, stored);
+            // Push updated settings to the already-running presence on the active tab
+            const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+            if (tab?.id) {
+              chrome.tabs.sendMessage(tab.id, {
+                type: "PRESENCE_SETTINGS_UPDATED",
+                slug,
+                settings,
+              }).catch(() => {});
+            }
           }
         });
       });
@@ -547,7 +556,7 @@ const installBundledPresences = async (): Promise<void> => {
 
   for (const bp of BUNDLED_PRESENCES) {
     const existing = presences[bp.slug];
-    if (existing?.release?.metadata?.version && existing?.release?.metadata?.version === bp.release.version) continue;
+    if (existing?.release?.version && existing?.release?.version === bp.release.version) continue;
 
     presences[bp.slug] = {
       metadata: bp.release.metadata,

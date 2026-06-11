@@ -122,6 +122,15 @@ chrome.runtime.onMessage.addListener((message) => {
   if (message?.type === "UPDATE_MARKETPLACE_ORIGIN" && typeof message.origin === "string") {
     MARKETPLACE_ORIGIN = message.origin;
   }
+
+  if (message?.type === "PRESENCE_SETTINGS_UPDATED") {
+    window.postMessage({
+      source: "NOWLY_HOST",
+      type: "SETTINGS_UPDATED",
+      slug: message.slug,
+      settings: message.settings,
+    }, "*");
+  }
 });
 
 broadcastDetected();

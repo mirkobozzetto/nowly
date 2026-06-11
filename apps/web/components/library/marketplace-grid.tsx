@@ -14,7 +14,7 @@ type Props = {
 };
 
 const AD_FREQUENCY = 6;
-const SHOW_INITIAL_TEST_AD = true;
+const SHOW_INITIAL_TEST_AD = process.env.NODE_ENV !== "development";
 
 export const MarketplaceGrid: FC<Props> = ({ platforms, locale, onReset }) => {
   const t = useTranslations("MarketplacePage");
