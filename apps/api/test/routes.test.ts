@@ -777,6 +777,82 @@ describe("Image Proxy Routes", () => {
     expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([4, 5, 6]))
   })
 
+  it("GET /image-proxy/tiktok/video/:handle/:videoId resolves page image before fetching it", async () => {
+    globalThis.fetch = vi.fn()
+      .mockResolvedValueOnce(new Response(
+        '<meta property="og:image" content="https://p16-common-sign.tiktokcdn-eu.com/image.jpg?x=1&amp;y=2">',
+        { status: 200, headers: { "content-type": "text/html" } },
+      ))
+      .mockResolvedValueOnce(new Response(new Uint8Array([7, 8, 9]), {
+        status: 200,
+        headers: { "content-type": "image/jpeg", "content-length": "3" },
+      }))
+
+    const res = await app.inject({
+      method: "GET",
+      url: "/image-proxy/tiktok/video/codemtc/7642364749505727751",
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.headers["content-type"]).toBe("image/jpeg")
+    expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([7, 8, 9]))
+    expect(globalThis.fetch).toHaveBeenNthCalledWith(
+      1,
+      new URL("https://www.tiktok.com/@codemtc/video/7642364749505727751"),
+      expect.any(Object),
+    )
+    expect(globalThis.fetch).toHaveBeenNthCalledWith(
+      2,
+      new URL("https://p16-common-sign.tiktokcdn-eu.com/image.jpg?x=1&y=2"),
+      expect.any(Object),
+    )
+  })
+
+  it("GET /image-proxy/tiktok/profile/:handle resolves profile image before fetching it", async () => {
+    globalThis.fetch = vi.fn()
+      .mockResolvedValueOnce(new Response(
+        '<meta property="og:image" content="https://p16-common-sign.tiktokcdn-eu.com/avatar.jpg">',
+        { status: 200, headers: { "content-type": "text/html" } },
+      ))
+      .mockResolvedValueOnce(new Response(new Uint8Array([10, 11, 12]), {
+        status: 200,
+        headers: { "content-type": "image/jpeg", "content-length": "3" },
+      }))
+
+    const res = await app.inject({
+      method: "GET",
+      url: "/image-proxy/tiktok/profile/codemtc",
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([10, 11, 12]))
+  })
+
+  it("GET /image-proxy/tiktok/category/:section/:category resolves category image before fetching it", async () => {
+    globalThis.fetch = vi.fn()
+      .mockResolvedValueOnce(new Response(
+        '<meta property="og:image" content="https://p16-common-sign.tiktokcdn-eu.com/category.jpg">',
+        { status: 200, headers: { "content-type": "text/html" } },
+      ))
+      .mockResolvedValueOnce(new Response(new Uint8Array([13, 14, 15]), {
+        status: 200,
+        headers: { "content-type": "image/jpeg", "content-length": "3" },
+      }))
+
+    const res = await app.inject({
+      method: "GET",
+      url: "/image-proxy/tiktok/category/gaming/Garena_Free_Fire",
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([13, 14, 15]))
+    expect(globalThis.fetch).toHaveBeenNthCalledWith(
+      1,
+      new URL("https://www.tiktok.com/live/category/gaming/Garena_Free_Fire"),
+      expect.any(Object),
+    )
+  })
+
   it("GET /image-proxy rejects URLs that do not match the explicit service", async () => {
     const res = await app.inject({
       method: "GET",

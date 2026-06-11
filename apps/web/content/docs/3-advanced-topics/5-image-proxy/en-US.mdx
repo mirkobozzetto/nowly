@@ -23,6 +23,8 @@ https://api.nowly.me/image-proxy?service=<service>&url=<encoded-image-url>
 
 The `url` parameter must be encoded with `encodeURIComponent`. The `service` parameter is optional, but recommended when you know which supported service owns the image.
 
+Discord also limits image keys to 300 characters. If the final proxy URL would be longer than that, use a short service-specific proxy path instead of passing the full CDN URL.
+
 ```ts filename="presence.ts"
 import { createImageProxyUrl } from "@nowly/presence"
 
@@ -33,6 +35,8 @@ await presence.setActivity({
   largeImageKey: proxiedImage ?? Assets.Logo,
 })
 ```
+
+`createImageProxyUrl` returns `undefined` when the generated URL would exceed Discord’s length limit.
 
 ## When To Use It
 
@@ -53,12 +57,12 @@ function getPoster(video: HTMLVideoElement): string | undefined {
 }
 ```
 
-Then pass that URL through the proxy before sending the activity:
+Then pass that URL through the proxy before sending the activity. For services that support short proxy paths, prefer `createImageProxyPath`:
 
 ```ts filename="presence.ts"
-import { createImageProxyUrl } from "@nowly/presence"
+import { createImageProxyPath } from "@nowly/presence"
 
-const poster = video ? createImageProxyUrl("tiktok", getPoster(video)) : undefined
+const poster = createImageProxyPath("tiktok", "video", handle, videoId)
 
 await presence.setActivity({
   details: "Watching a video",
@@ -67,6 +71,15 @@ await presence.setActivity({
 ```
 
 Always keep a fallback asset so the presence still works when the page has no image or the proxy rejects the URL.
+
+For TikTok, the short paths are:
+
+```txt
+https://api.nowly.me/image-proxy/tiktok/video/<handle>/<videoId>
+https://api.nowly.me/image-proxy/tiktok/profile/<handle>
+```
+
+Those paths let the API resolve the actual CDN image server-side while keeping the Discord `large_image` value short.
 
 ## Supported URLs
 

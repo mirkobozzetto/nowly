@@ -142,11 +142,27 @@ export const createMediaTimestamps = (
 };
 
 export type ImageProxyService = "tiktok" | (string & {});
+const DISCORD_IMAGE_KEY_MAX_LENGTH = 300;
+const IMAGE_PROXY_BASE_URL = "https://api.nowly.me/image-proxy";
 
 export const createImageProxyUrl = (
   service: ImageProxyService,
   imageUrl: string | undefined,
 ): string | undefined => {
   if (!imageUrl?.startsWith("https://")) return undefined;
-  return `https://api.nowly.me/image-proxy?service=${encodeURIComponent(service)}&url=${encodeURIComponent(imageUrl)}`;
+  const proxyUrl = `${IMAGE_PROXY_BASE_URL}?service=${encodeURIComponent(service)}&url=${encodeURIComponent(imageUrl)}`;
+  return proxyUrl.length <= DISCORD_IMAGE_KEY_MAX_LENGTH ? proxyUrl : undefined;
+};
+
+export const createImageProxyPath = (
+  service: ImageProxyService,
+  ...parts: Array<string | number | undefined>
+): string | undefined => {
+  if (parts.some(part => part === undefined || String(part).trim() === "")) return undefined;
+  const path = [
+    IMAGE_PROXY_BASE_URL,
+    encodeURIComponent(service),
+    ...parts.map(part => encodeURIComponent(String(part))),
+  ].join("/");
+  return path.length <= DISCORD_IMAGE_KEY_MAX_LENGTH ? path : undefined;
 };

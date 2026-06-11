@@ -23,6 +23,8 @@ https://api.nowly.me/image-proxy?service=<service>&url=<url-de-l-image-encodée>
 
 Le paramètre `url` doit être encodé avec `encodeURIComponent`. Le paramètre `service` est optionnel, mais recommandé lorsque vous savez quel service pris en charge fournit l’image.
 
+Discord limite aussi les clés d’image à 300 caractères. Si l’URL proxy finale dépasse cette limite, utilisez une route courte spécifique au service au lieu de transmettre toute l’URL CDN encodée.
+
 ```ts filename="presence.ts"
 import { createImageProxyUrl } from "@nowly/presence"
 
@@ -33,6 +35,8 @@ await presence.setActivity({
   largeImageKey: proxiedImage ?? Assets.Logo,
 })
 ```
+
+`createImageProxyUrl` renvoie `undefined` lorsque l’URL générée dépasserait la limite de longueur imposée par Discord.
 
 ## Quand l’utiliser
 
@@ -53,12 +57,12 @@ function getPoster(video: HTMLVideoElement): string | undefined {
 }
 ```
 
-Ensuite, passez cette URL au proxy avant d’envoyer l’activité :
+Ensuite, passez cette URL au proxy avant d’envoyer l’activité. Pour les services qui disposent d’une route courte, préférez `createImageProxyPath` :
 
 ```ts filename="presence.ts"
-import { createImageProxyUrl } from "@nowly/presence"
+import { createImageProxyPath } from "@nowly/presence"
 
-const poster = video ? createImageProxyUrl("tiktok", getPoster(video)) : undefined
+const poster = createImageProxyPath("tiktok", "video", handle, videoId)
 
 await presence.setActivity({
   details: "Watching a video",
@@ -67,6 +71,15 @@ await presence.setActivity({
 ```
 
 Gardez toujours un asset de secours afin que la présence continue de fonctionner si la page ne fournit aucune image ou si le proxy refuse l’URL.
+
+Pour TikTok, les routes courtes sont :
+
+```txt
+https://api.nowly.me/image-proxy/tiktok/video/<handle>/<videoId>
+https://api.nowly.me/image-proxy/tiktok/profile/<handle>
+```
+
+Ces routes permettent à l’API de résoudre l’image CDN réelle côté serveur, tout en gardant la valeur `large_image` suffisamment courte pour Discord.
 
 ## URLs prises en charge
 
