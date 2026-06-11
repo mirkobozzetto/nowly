@@ -40,7 +40,7 @@ export const MarketplaceGrid: FC<Props> = ({ platforms, locale, onReset }) => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {SHOW_INITIAL_TEST_AD && <MarketplaceAdCard />}
+      {/* {SHOW_INITIAL_TEST_AD && <MarketplaceAdCard />} */}
 
       {platforms.map((presence, index): ReactElement => {
         const shouldShowAd = (index + 1) % AD_FREQUENCY === 0 && index < platforms.length - 1;
