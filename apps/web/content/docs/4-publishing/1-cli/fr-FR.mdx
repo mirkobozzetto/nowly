@@ -54,14 +54,6 @@ pnpm build:extension:dev
 
 L'extension installe automatiquement les presences empaquetées au démarrage. Pas de serveur API, pas de page d'installation, pas d'URL API personnalisée.
 
-Pour les builds de production / Chrome Web Store&nbsp;:
-
-```bash
-pnpm build:extension
-```
-
-Ceci supprime la clé `key` du manifeste (requise par le store) et **n'inclut aucune** presence (elles sont récupérées en direct depuis l'API Nowly).
-
 ## Lister les presences
 
 ```bash

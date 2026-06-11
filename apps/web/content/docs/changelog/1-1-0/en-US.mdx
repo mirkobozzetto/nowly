@@ -17,6 +17,13 @@ description: The first maintenance release for Nowly, focused on update flows, a
     ["Changelog structure", "The changelog moved to `/docs/changelog` and now uses one page per version.", "Each release can be linked, scanned, and maintained independently."],
     ["Docs navigation", "The changelog now appears in the docs sidebar with version children.", "Release notes are discoverable from the same navigation surface as the rest of the docs."],
     ["Docs sitemap", "The docs sitemap now includes the changelog index and version pages.", "Release notes are indexed like the rest of the documentation."],
+    ["Host page UI", "The host page download flow was consolidated into the main hero and the secondary open source / low footprint cards were hidden.", "The page keeps one clear download area instead of multiple competing blocks."],
+    ["Host download panel", "The platform select, version line, and download buttons now live in a compact panel below the hero.", "The hero stays clean while the download controls remain grouped."],
+    ["Host CTA", "The install extension CTA now uses an icon and points to the library.", "The call to action is clearer and matches the real install flow."],
+    ["Host storage", "The storage note now shows the exact package sizes from the `1.1.0` host manifest.", "The requirement text is precise instead of using a fake fixed size."],
+    ["Home platforms", "The homepage platform section now uses richer service cards and removes the `Available` heading.", "The service list feels current and stays driven by the live presence data."],
+    ["Contributor spacing", "The contributor rows are now compact and full-width.", "The section no longer shows an awkward gap between people."],
+    ["CLI docs", "The production build note was removed from the CLI documentation.", "The docs no longer suggest a separate Chrome Web Store build path there."],
   ]}
 />
 
@@ -72,6 +79,35 @@ The changelog now appears in the docs sidebar as its own category, with each ver
 
 The sitemap now includes the changelog pages, so the release notes are treated like real documentation instead of being left out of the public index.
 
+## Host page UI
+
+The host page now keeps the download flow in one place. The secondary open source and low-footprint cards are hidden for now, and the install extension CTA uses an icon instead of a text arrow.
+
+The platform picker, version line, and download buttons are now grouped in a compact panel below the main hero. macOS and Linux no longer inherit Windows-specific copy, and the page no longer shows a second competing title below the hero.
+
+## Host storage
+
+The host requirements no longer advertise a fixed `~15 MB` size. That note was not accurate, so the page now shows the exact package sizes from the `1.1.0` host manifest:
+
+- Windows installer: `3.71 MB`
+- Windows portable: `1.82 MB`
+- macOS archive: `3.38 MB`
+- Linux archive: `1.76 MB`
+
+## Home platforms
+
+The homepage platform section has been rebuilt around the live presence list instead of a static-looking logo wall. The old `Available` label was removed, and each service now has a richer card with its icon, localized description, install count, active users, rating, and a direct link to the library detail page.
+
+The card treatment also uses a two-layer color glow based on the presence icon color, with one wider soft layer and one shorter layer near the top-right corner. This keeps the section more current without disconnecting it from the real library data.
+
+## Contributor spacing
+
+The contributor rows are now full-width and tighter, which removes the extra visual gap that showed up between people in the section.
+
+## CLI docs
+
+The production build note was removed from the CLI documentation so the docs do not imply a separate Chrome Web Store build path there.
+
 ## Impact
 
 ```txt
@@ -79,6 +115,7 @@ Affected paths:
 POST /presences/active
 DELETE /presences/active/:deviceId
 GET /library/[item]
+GET /
 GET /docs/changelog
 GET /docs/changelog/1-0-0
 GET /docs/changelog/1-1-0

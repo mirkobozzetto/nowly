@@ -1,84 +1,84 @@
 ---
 title: 1.0.0
-description: El primer lanzamiento estable de Nowly, que cubre la extensión de navegador, el host nativo, la biblioteca pública y el flujo de trabajo de publicación.
+description: Primer lanzamiento estable de Nowly, cubriendo la extensión del navegador, la app nativa, la biblioteca pública y el flujo de publicación.
 ---
 
-`1.0.0` es el punto en el que Nowly se convirtió en un producto completo en lugar de una colección de piezas separadas. Es el primer lanzamiento estable y la línea base para todo lo que sigue.
+`1.0.0` es el momento en que Nowly pasó a ser un producto completo y no un conjunto de piezas separadas. Es el primer lanzamiento estable y la base de todo lo que viene después.
 
 <ReleaseTable
-  headers={["Superficie", "Lo que se envió", "Por qué es importante"]}
+  headers={["Superficie", "Lo que se lanzó", "Por qué importa"]}
   rows={[
-    ["Extensión de navegador", "Detecta sitios web compatibles, carga presences firmadas y reenvía la actividad al host nativo.", "Este es el punto de entrada visible para toda la actividad de las presences."],
-    ["Host nativo", "Puentea la actividad del navegador a Discord Rich Presence.", "Las actualizaciones de Discord ocurren localmente sin convertir el navegador en la capa de integración."],
-    ["Biblioteca pública", "Lista presences, muestra páginas de detalle, comentarios, valoraciones e historial de versiones.", "Los usuarios pueden inspeccionar una presence antes de instalarla."],
-    ["Ciclo de vida de presence", "Admite flujos de instalación, actualización, desactivación y desinstalación.", "La gestión de presences se expone como un flujo de trabajo normal para el usuario."],
-    ["Documentación", "Cubre configuración, solución de problemas, desarrollo de presences y publicación.", "Los colaboradores y usuarios tienen un lugar único para consultar el comportamiento del producto."],
-    ["CLI", "Compila, valida y publica paquetes de presences.", "El desarrollo de presences es repetible en lugar de ser un proceso manual único."],
+    ["Extensión del navegador", "Detecta los sitios compatibles, carga las presences firmadas y envía la actividad a la app nativa.", "Es el punto de entrada visible para toda la actividad de presence."],
+    ["App nativa", "Hace de puente entre la actividad del navegador y Discord Rich Presence.", "Las actualizaciones de Discord se hacen localmente sin convertir el navegador en la capa de integración."],
+    ["Biblioteca pública", "Lista las presences, muestra páginas de detalle, comentarios, valoraciones e historial de versiones.", "Los usuarios pueden revisar una presence antes de instalarla."],
+    ["Ciclo de vida de las presences", "Soporta instalación, actualización, desactivación y desinstalación.", "La gestión de presences pasa a ser un flujo normal de usuario."],
+    ["Documentación", "Cubre instalación, solución de problemas, desarrollo de presences y publicación.", "Contribuidores y usuarios tienen un único lugar para entender el comportamiento del producto."],
+    ["CLI", "Compila, valida y publica los bundles de presence.", "El desarrollo de presences pasa a ser reproducible en lugar de manual."],
   ]}
 />
 
-## Extensión de navegador
+## Extensión del navegador
 
-La extensión es la primera pieza visible del sistema. Vigila los sitios compatibles, instala el paquete de presence correcto y mantiene la actividad en movimiento hacia el host nativo sin pedir al usuario que gestione la infraestructura.
+La extensión es la primera parte visible del sistema. Vigila los sitios compatibles, instala el bundle correcto de la presence y envía la actividad a la app nativa sin pedir al usuario que gestione la infraestructura.
 
-- Las presences solo se ejecutan en sitios web coincidentes.
-- La extensión carga el paquete firmado correcto para la presence.
-- La actividad se reenvía a Discord a través del host nativo local.
-- El soporte de scripts de usuario está documentado y restringido porque es un permiso sensible.
+- Las presences solo se ejecutan en los sitios compatibles.
+- La extensión carga el bundle firmado correcto para la presence.
+- La actividad se envía a Discord a través de la app nativa local.
+- El soporte para user scripts está documentado y limitado porque es un permiso sensible.
 
-## Host nativo
+## App nativa
 
-El compañero nativo es lo que convierte el estado de la página en un estado real de Discord. Mantiene la capa del navegador enfocada y le da al sistema un punto de entrega limpio.
+El compañero nativo convierte el estado de una página en un estado real de Discord. Mantiene la capa del navegador simple y da al sistema un punto de paso claro.
 
-- Recibe payloads de presences desde la extensión.
-- Traduce esos payloads en actualizaciones de Discord Rich Presence.
-- Mantiene la conexión de Discord separada de la sesión del navegador.
+- Recibe payloads de presence desde la extensión.
+- Los convierte en actualizaciones de Discord Rich Presence.
+- Mantiene la conexión con Discord separada de la sesión del navegador.
 
 ## Biblioteca y descubrimiento
 
-La biblioteca pública es la superficie del producto que la gente navega antes de instalar algo.
+La biblioteca pública es la superficie del producto que la gente consulta antes de instalar nada.
 
 - Cada presence tiene una página de detalle dedicada.
-- Las URL compatibles, el historial de versiones, las valoraciones y los comentarios son visibles antes de la instalación.
-- Las estadísticas de instalación ayudan a las personas a juzgar si una presence está activa y mantenida.
-- Las páginas de presence exponen suficientes metadatos para entender lo que hace la integración antes de que el usuario se comprometa con ella.
+- Las URLs soportadas, el historial de versiones, las valoraciones y los comentarios están visibles antes de instalar.
+- Las estadísticas de instalación ayudan a saber si una presence está activa y mantenida.
+- Las páginas de presence muestran suficiente metadato para entender la integración antes de adoptarla.
 
-## Ciclo de vida de presence
+## Ciclo de vida de las presences
 
-El ciclo de vida es deliberadamente simple y visible para el usuario:
+El ciclo de vida es deliberadamente simple y orientado al usuario:
 
 ```txt
 install -> enable -> update -> disable -> uninstall
 ```
 
-- Install obtiene la última versión firmada.
-- Update mantiene el paquete instalado alineado con la versión publicada.
-- Disable detiene la presence sin eliminarla de la lista del usuario.
-- Uninstall elimina la presence de la extensión.
+- La instalación descarga la última release firmada.
+- La actualización mantiene el bundle instalado alineado con la release publicada.
+- La desactivación detiene la presence sin quitarla de la lista del usuario.
+- La desinstalación elimina la presence de la extensión.
 
 ## Documentación y onboarding
 
-El primer lanzamiento estable también estableció el material de soporte alrededor del producto.
+El primer lanzamiento estable también definió el material de soporte alrededor del producto.
 
-- El flujo de onboarding explica la relación entre la extensión, el host nativo y las presences.
-- La solución de problemas cubre los modos de fallo comunes en lugar de asumir que el usuario puede inferirlos.
+- El onboarding explica la relación entre extensión, app nativa y presences.
+- La ayuda cubre los fallos comunes en lugar de asumir que el usuario los deduce.
 - La documentación explica la estructura de una presence y cómo se publica.
 
-## Flujo de trabajo del desarrollador
+## Flujo de desarrollo
 
-El lanzamiento es también el punto en el que el proyecto se volvió publicable de forma repetible.
+Esta release también marca el momento en que el proyecto se volvió publicable de forma repetible.
 
 ```bash
-pnpm presence init "Ejemplo"
+pnpm presence init "Example"
 pnpm presence validate
 pnpm presence build example
 pnpm presence push example
 ```
 
-- La validación de metadatos ayuda a mantener el catálogo consistente.
-- El empaquetado y la firma son parte del camino de publicación.
-- La CLI ofrece a los colaboradores una forma predecible de crear y enviar presences.
+- La validación de metadatos ayuda a mantener el catálogo coherente.
+- El empaquetado y la firma forman parte del camino de release.
+- La CLI da a los contribuidores una forma predecible de crear y publicar presences.
 
-## Por qué `1.0.0` es importante
+## Por qué importa `1.0.0`
 
-> Este es el lanzamiento donde el producto se vuelve coherente: la extensión, el host, la biblioteca, los docs y el pipeline de publicación, todo alineado.
+> Es la release en la que el producto se vuelve coherente: la extensión, la app nativa, la biblioteca, la documentación y la cadena de publicación encajan.

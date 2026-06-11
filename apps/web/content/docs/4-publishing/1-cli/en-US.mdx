@@ -54,14 +54,6 @@ pnpm build:extension:dev
 
 The extension auto-installs bundled presences on startup. No API server, no install page, no Custom API URL needed.
 
-For production/Chrome Web Store builds:
-
-```bash
-pnpm build:extension
-```
-
-This strips the manifest `key` (required by the store) and does **not** bundle any presences (they're fetched live from the Nowly API).
-
 ## List Presences
 
 ```bash

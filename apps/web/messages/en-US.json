@@ -17,9 +17,12 @@
     "sectionLabel": "Platforms",
     "title": "Your favorite services",
     "description": "Compatible with the most popular streaming platforms",
+    "libraryCta": "Open library",
+    "servicesCount": "{count, plural, one {# service ready} other {# services ready}}",
     "availableHeading": "Available",
     "comingSoonHeading": "Coming Soon",
-    "comingSoonBadge": "Coming Soon"
+    "comingSoonBadge": "Coming Soon",
+    "moreToDiscover": "More to discover"
   },
   "StepsSection": {
     "sectionLabel": "How it works",
@@ -294,8 +297,12 @@
     "badge": "Native App",
     "title": "Download the Host App",
     "description": "The native host is the bridge between your browser and Discord. It runs in the background and keeps your Rich Presence synced.",
-    "cardTitle": "Nowly Host for Windows",
-    "cardVersion": "Version {version} — Windows 10/11, 64-bit",
+    "cardTitle": "Download host for",
+    "cardVersion": "Version {version} — {details}",
+    "platformSelectLabel": "Select platform",
+    "windowsDetails": "Windows 10/11, 64-bit",
+    "macosDetails": "macOS 11+, Intel or Apple Silicon",
+    "linuxDetails": "Linux 2.6.32+ / glibc 2.17+",
     "downloadButton": "Download Installer",
     "downloadFor": "Download for {platform}",
     "winDownloadInstaller": "Download Installer",
@@ -303,6 +310,8 @@
     "downloadArchive": "Download Archive (.tar.gz)",
     "chipOpenSource": "Open source",
     "chipLightweight": "Low footprint",
+    "chipOpenSourceDesc": "Source code and project history on GitHub.",
+    "chipLightweightDesc": "Small, quiet, and built to stay out of the way.",
     "guideTitle": "Installation Guide",
     "step1Title": "Download the installer",
     "step1Desc": "Click the download button above to get the latest version of the Nowly Host application.",
@@ -323,7 +332,10 @@
     "reqBrowser": "Browser",
     "reqBrowserValue": "Chromium-based browser (Chrome, Edge, Brave, Opera)",
     "reqStorage": "Storage",
-    "reqStorageValue": "~15 MB"
+    "reqStorageValue": "Varies by package",
+    "reqStorageWindowsValue": "Installer 3.71 MB / Portable 1.82 MB",
+    "reqStorageMacosValue": "3.38 MB",
+    "reqStorageLinuxValue": "1.76 MB"
   },
   "ErrorPage": {
     "title": "Something went wrong",

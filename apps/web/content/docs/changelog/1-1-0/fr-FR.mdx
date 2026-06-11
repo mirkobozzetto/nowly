@@ -1,60 +1,67 @@
 ---
 title: 1.1.0
-description: La première version de maintenance de Nowly, axée sur les flux de mise à jour, le suivi actif, le nettoyage de désinstallation, le nettoyage de la documentation et les finitions de publication.
+description: Première release de maintenance de Nowly, centrée sur les flux de mise à jour, le tracking actif, le nettoyage à la désinstallation, le nettoyage de la doc, le polish du host et les corrections de release.
 ---
 
-`1.1.0` est une version de maintenance. Elle ne modifie pas la forme centrale du produit&nbsp;; elle fait en sorte que les flux existants se comportent d'une manière qui corresponde aux attentes des utilisateurs et réorganise le journal des modifications en pages de version dédiées.
+`1.1.0` est une release de maintenance. Elle ne change pas la forme du produit ; elle fait simplement en sorte que les flux existants se comportent comme on s'y attend et réorganise le changelog en pages de release séparées.
 
 <ReleaseTable
-  headers={["Domaine", "Ce qui a changé", "Pourquoi c'est important"]}
+  headers={["Zone", "Ce qui change", "Pourquoi c'est utile"]}
   rows={[
-    ["Navigation extension", "Le badge de mise à jour ouvre désormais `/library/[item]` directement.", "Il n'y a plus de détour par l'ancienne structure de routes localisées."],
-    ["État de mise à jour", "La version installée s'actualise dès qu'une mise à jour arrive.", "Le badge disparaît immédiatement au lieu de persister jusqu'au redémarrage."],
-    ["Suivi actif", "`activeUsers` suit désormais un modèle par appareil.", "Le nombre reflète les appareils actifs réels au lieu d'un espace réservé."],
-    ["Flux de désactivation", "Désactiver une presence retire cet appareil du compteur actif.", "L'activité obsolète ne reste pas après un basculement."],
-    ["Nettoyage désinstallation", "L'extension définit une URL de désinstallation au mieux et la page web purge l'appareil.", "La suppression a toujours lieu même lorsque l'extension n'est plus disponible."],
-    ["Finition page détail", "Les blocs d'icônes transparents utilisent un flou d'arrière-plan.", "La bannière ne traverse plus le traitement de l'icône de manière agressive."],
-    ["Structure du changelog", "Le journal des modifications a été déplacé vers `/docs/changelog` et utilise désormais une page par version.", "Chaque version peut être liée, parcourue et maintenue indépendamment."],
-    ["Navigation docs", "Le changelog apparaît désormais dans la barre latérale des docs avec les versions comme enfants.", "Les notes de version sont découvrables depuis la même surface de navigation que le reste de la documentation."],
-    ["Plan du site docs", "Le plan du site des docs inclut désormais l'index du changelog et les pages de version.", "Les notes de version sont indexées comme le reste de la documentation."],
+    ["Navigation de l'extension", "Le badge de mise à jour ouvre maintenant directement `/library/[item]`.", "Il n'y a plus de détour par l'ancienne structure d'URL localisée."],
+    ["État de mise à jour", "La version installée se rafraîchit dès que la mise à jour arrive.", "Le badge disparaît tout de suite au lieu de rester jusqu'au redémarrage."],
+    ["Tracking actif", "`activeUsers` suit maintenant un modèle par appareil.", "Le chiffre reflète de vrais appareils actifs au lieu d'un simple placeholder."],
+    ["Désactivation", "Désactiver une presence retire cet appareil du compteur actif.", "Aucune activité fantôme ne reste après un toggle."],
+    ["Nettoyage de désinstallation", "L'extension définit une URL de désinstallation best-effort et la page web purge l'appareil.", "La suppression continue de fonctionner même quand l'extension n'est plus disponible."],
+    ["Polish des pages détail", "Les blocs d'icône transparents utilisent un backdrop blur.", "La bannière ne traverse plus autant le traitement de l'icône."],
+    ["Structure du changelog", "Le changelog a été déplacé vers `/docs/changelog` et utilise maintenant une page par version.", "Chaque release peut être reliée, parcourue et maintenue indépendamment."],
+    ["Navigation docs", "Le changelog apparaît maintenant dans la sidebar docs avec des enfants par version.", "Les notes de version deviennent accessibles comme le reste de la documentation."],
+    ["Sitemap docs", "Le sitemap docs inclut maintenant l'index du changelog et les pages de version.", "Les release notes sont indexées comme le reste de la doc."],
+    ["UI du host", "Le flux de téléchargement du host a été consolidé dans le hero principal et les cartes secondaires open source / faible empreinte ont été masquées.", "La page garde une seule zone de téléchargement claire au lieu de plusieurs blocs concurrents."],
+    ["Panneau de téléchargement du host", "Le select de plateforme, la ligne de version et les boutons de téléchargement sont maintenant dans un panneau compact sous le hero.", "Le hero reste propre pendant que les contrôles de téléchargement restent groupés."],
+    ["CTA du host", "Le CTA d'installation de l'extension utilise maintenant une icône et pointe vers la bibliothèque.", "L'appel à l'action est plus clair et correspond au vrai flux d'installation."],
+    ["Stockage du host", "La note de stockage affiche maintenant les tailles exactes du manifest host `1.1.0`.", "Le texte est précis au lieu d'utiliser une taille fixe inventée."],
+    ["Plateformes accueil", "La section plateformes de l'accueil utilise maintenant des cartes de service plus complètes et retire le titre `Disponibles`.", "La liste des services paraît plus actuelle et reste alimentée par les données live des presences."],
+    ["Espacement contributeurs", "Les lignes de contributeurs sont maintenant compactes et pleine largeur.", "La section n'affiche plus un espace étrange entre les personnes."],
+    ["Docs CLI", "La note de build production a été retirée de la documentation CLI.", "La doc n'implique plus un chemin séparé de build Chrome Web Store à cet endroit."],
   ]}
 />
 
-## Navigation extension
+## Navigation de l'extension
 
-Le badge de mise à jour envoie désormais les utilisateurs vers la route actuelle de la bibliothèque au lieu de l'ancien chemin préfixé par la langue. Cela maintient l'extension alignée avec la structure actuelle du site et supprime la dernière dépendance à l'ancienne forme d'URL localisée.
+Le badge de mise à jour envoie maintenant vers la route courante de la bibliothèque au lieu de l'ancien chemin préfixé par la langue. L'extension reste ainsi alignée avec la structure actuelle du site.
 
 ## État de mise à jour
 
-Lorsqu'une presence termine sa mise à jour, la version installée est actualisée immédiatement. Le badge ne reste plus visible jusqu'à la réouverture de l'extension, donc l'état de l'extension correspond à ce que l'utilisateur vient de faire.
+Quand une presence termine sa mise à jour, la version installée est rafraîchie immédiatement. Le badge ne reste plus visible jusqu'à la réouverture de l'extension, donc l'état affiché correspond à ce que l'utilisateur vient de faire.
 
-## Suivi actif
+## Tracking actif
 
-`activeUsers` suit désormais les appareils au lieu de simplement stocker un indicateur de presence plat. Cela rend le comptage visible significatif, et donne aux flux de désactivation et de désinstallation quelque chose de concret à supprimer.
+`activeUsers` suit maintenant des appareils au lieu de stocker un simple drapeau de presence.
 
-- Un `deviceId` stable est utilisé comme clé de suivi.
-- Les heartbeats mettent à jour l'enregistrement actif au lieu de simplement basculer un indicateur d'un bit.
-- Le site peut désormais refléter un nombre actif réel au lieu d'un espace réservé «&nbsp;au moins une session active&nbsp;».
+- un `deviceId` stable sert de clé de tracking
+- les heartbeats mettent à jour l'enregistrement actif au lieu de simplement basculer un bit
+- le site peut enfin refléter un vrai compteur d'actifs au lieu d'un placeholder du type "au moins une session active"
 
-## Flux de désactivation
+## Désactivation
 
-Désactiver une presence retire désormais l'appareil de l'ensemble actif. La réactivation rajoute l'appareil dans le même modèle de suivi, donc le compteur reste aligné avec l'état d'exécution réel.
+Désactiver une presence retire maintenant l'appareil de l'ensemble actif. La réactiver le remet dans le même modèle de tracking, pour garder le compteur aligné avec l'état runtime réel.
 
-## Nettoyage désinstallation
+## Nettoyage à la désinstallation
 
-L'extension utilise une URL de désinstallation au mieux, et la partie web purge l'appareil associé lorsque cette demande de nettoyage arrive.
+L'extension utilise une URL de désinstallation best-effort, et le côté web purge l'appareil associé quand la requête de cleanup arrive.
 
-- Il s'agit d'un flux de nettoyage au mieux, pas d'un script post-désinstallation.
-- Le `deviceId` est transmis à la route de nettoyage pour que le backend puisse supprimer l'état actif associé.
-- Cela maintient un comportement de désinstallation cohérent même lorsque l'extension n'est plus présente.
+- c'est un flux de cleanup best-effort, pas un script post-uninstall
+- le `deviceId` est transmis à la route de cleanup pour que le backend retire l'état actif associé
+- cela garde un comportement cohérent même quand l'extension a déjà disparu
 
-## Finition page détail
+## Polish des pages détail
 
-Les blocs d'icônes transparents se situent désormais sur un flou d'arrière-plan afin que la bannière de la presence ne traverse plus le traitement de l'icône. Cela s'applique au conteneur d'icônes lui-même, pas à la bannière derrière lui.
+Les blocs d'icône transparents reposent maintenant sur un backdrop blur, pour que la bannière de la presence ne traverse plus autant le traitement de l'icône. L'effet est appliqué au conteneur de l'icône, pas à la bannière derrière.
 
 ## Structure du changelog
 
-Le journal des modifications n'est plus une longue page avec des ancres. Il est désormais divisé en un index et des pages par version&nbsp;:
+Le changelog n'est plus une seule page avec des ancres. Il est maintenant découpé en un index et des pages par version :
 
 ```txt
 /docs/changelog
@@ -62,26 +69,56 @@ Le journal des modifications n'est plus une longue page avec des ancres. Il est 
 /docs/changelog/1-1-0
 ```
 
-Cette structure rend l'historique des versions plus facile à maintenir, à lier et à parcourir depuis la barre latérale.
+Cette structure rend l'historique des releases plus simple à maintenir, à lier et à parcourir depuis la sidebar.
 
 ## Navigation docs
 
-Le changelog apparaît désormais dans la barre latérale des docs comme sa propre catégorie, chaque version étant listée comme un élément enfant. Cela signifie que les notes de version sont accessibles depuis le même modèle de navigation que le reste de la documentation.
+Le changelog apparaît maintenant dans la sidebar docs comme une catégorie dédiée, avec chaque version listée en enfant. Les notes de version restent ainsi dans le même modèle de navigation que le reste de la documentation.
 
 ## Indexation docs
 
-Le plan du site inclut désormais les pages du changelog, donc les notes de version sont traitées comme de la documentation réelle au lieu d'être exclues de l'index public.
+Le sitemap inclut maintenant les pages du changelog, donc les release notes sont traitées comme de la vraie documentation au lieu d'être laissées hors de l'index public.
+
+## UI du host
+
+La page host garde maintenant le flux de téléchargement au même endroit. Les cartes secondaires open source et faible empreinte sont masquées pour l'instant, et le CTA d'installation utilise une icône au lieu d'une flèche texte.
+
+Le sélecteur de plateforme, la ligne de version et les boutons de téléchargement sont maintenant regroupés dans un panneau compact sous le hero principal. macOS et Linux n'héritent plus d'un texte spécifique à Windows, et la page n'affiche plus un deuxième titre concurrent sous le hero.
+
+## Stockage du host
+
+Les requirements du host n'annoncent plus un `~15 MB` fixe. Cette note n'était pas exacte, donc la page affiche maintenant les tailles exactes du manifest host `1.1.0` :
+
+- installateur Windows : `3,71 Mo`
+- portable Windows : `1,82 Mo`
+- archive macOS : `3,38 Mo`
+- archive Linux : `1,76 Mo`
+
+## Plateformes accueil
+
+La section plateformes de la page d'accueil a été reconstruite autour de la liste live des presences, au lieu d'un mur de logos trop statique. L'ancien libellé `Disponibles` a été retiré, et chaque service utilise maintenant une carte plus complète avec son icône, sa description localisée, le nombre d'installations, les utilisateurs actifs, la note et un lien direct vers la page détail de la bibliothèque.
+
+Le traitement visuel des cartes utilise aussi un glow en deux couches basé sur la couleur de l'icône : une couche large et douce, puis une couche plus courte près du coin supérieur droit. La section paraît plus actuelle sans se déconnecter des vraies données de la bibliothèque.
+
+## Espacement contributeurs
+
+Les lignes de contributeurs sont maintenant pleine largeur et plus serrées, ce qui retire l'écart visuel parasite entre les personnes dans la section.
+
+## Docs CLI
+
+La note de build production a été retirée de la documentation CLI pour ne pas laisser entendre qu'il faut suivre un chemin séparé de build Chrome Web Store à cet endroit.
 
 ## Impact
 
 ```txt
-Chemins affectés&nbsp;:
+Affected paths:
 POST /presences/active
 DELETE /presences/active/:deviceId
 GET /library/[item]
+GET /
 GET /docs/changelog
 GET /docs/changelog/1-0-0
 GET /docs/changelog/1-1-0
 ```
 
-> Cette version n'introduit pas un nouveau workflow. Elle rend le workflow existant cohérent et mesurable.
+> Cette release n'introduit pas un nouveau workflow. Elle rend le workflow existant cohérent et mesurable.

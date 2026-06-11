@@ -17,9 +17,12 @@
     "sectionLabel": "Plateformes",
     "title": "Vos services favoris",
     "description": "Compatible avec les plateformes de streaming les plus populaires",
+    "libraryCta": "Ouvrir la bibliothèque",
+    "servicesCount": "{count, plural, one {# service prêt} other {# services prêts}}",
     "availableHeading": "Disponibles",
     "comingSoonHeading": "Bientôt disponibles",
-    "comingSoonBadge": "Bientôt"
+    "comingSoonBadge": "Bientôt",
+    "moreToDiscover": "Encore à découvrir"
   },
   "StepsSection": {
     "sectionLabel": "Comment ça marche",
@@ -292,8 +295,12 @@
     "badge": "Application native",
     "title": "Télécharger l'application hôte",
     "description": "L'hôte natif est le pont entre votre navigateur et Discord. Il fonctionne en arrière-plan et maintient votre Rich Presence synchronisée.",
-    "cardTitle": "Nowly Host pour Windows",
-    "cardVersion": "Version {version} — Windows 10/11, 64-bit",
+    "cardTitle": "Télécharger l'hôte pour",
+    "cardVersion": "Version {version} — {details}",
+    "platformSelectLabel": "Sélectionner la plateforme",
+    "windowsDetails": "Windows 10/11, 64-bit",
+    "macosDetails": "macOS 11+, Intel ou Apple Silicon",
+    "linuxDetails": "Linux 2.6.32+ / glibc 2.17+",
     "downloadButton": "Télécharger l'installateur",
     "downloadFor": "Télécharger pour {platform}",
     "winDownloadInstaller": "Télécharger l'installeur",
@@ -301,6 +308,8 @@
     "downloadArchive": "Télécharger l'archive (.tar.gz)",
     "chipOpenSource": "Open source",
     "chipLightweight": "Faible empreinte",
+    "chipOpenSourceDesc": "Code source et historique du projet sur GitHub.",
+    "chipLightweightDesc": "Petit, silencieux et conçu pour se faire oublier.",
     "guideTitle": "Guide d'installation",
     "step1Title": "Téléchargez l'installateur",
     "step1Desc": "Cliquez sur le bouton de téléchargement ci-dessus pour obtenir la dernière version de l'application hôte Nowly.",
@@ -321,7 +330,10 @@
     "reqBrowser": "Navigateur",
     "reqBrowserValue": "Navigateur basé sur Chromium (Chrome, Edge, Brave, Opera)",
     "reqStorage": "Stockage",
-    "reqStorageValue": "~15 Mo"
+    "reqStorageValue": "Taille variable selon le package",
+    "reqStorageWindowsValue": "Installateur 3,71 Mo / Portable 1,82 Mo",
+    "reqStorageMacosValue": "3,38 Mo",
+    "reqStorageLinuxValue": "1,76 Mo"
   },
   "ErrorPage": {
     "title": "Une erreur est survenue",

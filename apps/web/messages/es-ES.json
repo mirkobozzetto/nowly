@@ -17,9 +17,12 @@
     "sectionLabel": "Plataformas",
     "title": "Tus servicios favoritos",
     "description": "Compatible con las plataformas de streaming más populares",
+    "libraryCta": "Abrir biblioteca",
+    "servicesCount": "{count, plural, one {# servicio listo} other {# servicios listos}}",
     "availableHeading": "Disponibles",
     "comingSoonHeading": "Próximamente",
-    "comingSoonBadge": "Próximamente"
+    "comingSoonBadge": "Próximamente",
+    "moreToDiscover": "Más por descubrir"
   },
   "StepsSection": {
     "sectionLabel": "Cómo funciona",
@@ -292,8 +295,12 @@
     "badge": "Aplicación nativa",
     "title": "Descargar la aplicación host",
     "description": "El host nativo es el puente entre tu navegador y Discord. Funciona en segundo plano y mantiene tu Rich Presence sincronizada.",
-    "cardTitle": "Nowly Host para Windows",
-    "cardVersion": "Versión {version} — Windows 10/11, 64-bit",
+    "cardTitle": "Descargar host para",
+    "cardVersion": "Versión {version} — {details}",
+    "platformSelectLabel": "Seleccionar plataforma",
+    "windowsDetails": "Windows 10/11, 64-bit",
+    "macosDetails": "macOS 11+, Intel o Apple Silicon",
+    "linuxDetails": "Linux 2.6.32+ / glibc 2.17+",
     "downloadButton": "Descargar instalador",
     "downloadFor": "Descargar para {platform}",
     "winDownloadInstaller": "Descargar instalador",
@@ -301,6 +308,8 @@
     "downloadArchive": "Descargar archivo (.tar.gz)",
     "chipOpenSource": "Código abierto",
     "chipLightweight": "Bajo impacto",
+    "chipOpenSourceDesc": "Código fuente e historial del proyecto en GitHub.",
+    "chipLightweightDesc": "Pequeño, silencioso y pensado para no molestar.",
     "guideTitle": "Guía de instalación",
     "step1Title": "Descarga el instalador",
     "step1Desc": "Haz clic en el botón de descarga de arriba para obtener la última versión de la aplicación host de Nowly.",
@@ -321,7 +330,10 @@
     "reqBrowser": "Navegador",
     "reqBrowserValue": "Navegador basado en Chromium (Chrome, Edge, Brave, Opera)",
     "reqStorage": "Almacenamiento",
-    "reqStorageValue": "~15 MB"
+    "reqStorageValue": "Varía según el paquete",
+    "reqStorageWindowsValue": "Instalador 3,71 MB / Portable 1,82 MB",
+    "reqStorageMacosValue": "3,38 MB",
+    "reqStorageLinuxValue": "1,76 MB"
   },
   "ErrorPage": {
     "title": "Algo salió mal",
