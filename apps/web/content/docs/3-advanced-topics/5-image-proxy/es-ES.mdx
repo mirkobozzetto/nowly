@@ -5,51 +5,64 @@ description: Usa el proxy de imágenes de Nowly cuando Discord no pueda cargar d
 
 ## Para qué sirve
 
-El proxy de imágenes es una herramienta del servidor pensada para casos concretos: imágenes públicas, visibles desde el navegador, pero que Discord no puede descargar correctamente de forma directa.
+El proxy de imágenes está pensado para un caso concreto: una presencia puede ver una imagen pública en la página, pero Discord no puede cargarla de forma fiable desde la URL original.
 
-Es útil para imágenes como miniaturas de vídeo, posters o recursos servidos por un CDN externo cuando:
+Es útil para miniaturas de vídeo, avatares, posters o imágenes de categoría servidas por un CDN externo cuando:
 
-- la URL de la imagen es pública en el navegador;
-- Discord rechaza, deja expirar o no puede descargar la URL original;
-- la presencia necesita mostrar una imagen real del contenido en lugar de usar solo el logo de la plataforma.
+- la imagen es pública y ya está visible en el navegador;
+- la URL del CDN es demasiado larga para Discord Rich Presence;
+- Discord rechaza, deja expirar o no puede descargar la imagen directa;
+- la presencia necesita mostrar una imagen del contenido en lugar de usar solo el logo del servicio.
 
-No es un proxy de imágenes genérico. Solo acepta orígenes explícitamente compatibles con la API de Nowly.
+No es un proxy de imágenes genérico. La API solo acepta servicios y dominios permitidos explícitamente.
 
-## Endpoint
+## Cómo funciona
+
+El flujo recomendado usa una URL corta temporal:
 
 ```txt
-https://api.nowly.me/image-proxy?service=<service>&url=<url-de-imagen-codificada>
+POST https://api.nowly.me/images-proxy
+GET  https://api.nowly.me/images-proxy/<id>
 ```
 
-El parámetro `url` debe codificarse con `encodeURIComponent`. El parámetro `service` es opcional, pero se recomienda cuando sabes qué servicio compatible proporciona la imagen.
+La presencia envía a la API la URL CDN real de la imagen. La API comprueba que el servicio esté permitido, descarga la imagen, valida su tipo MIME y su tamaño, y la guarda temporalmente en caché. Después devuelve una URL corta como:
 
-Discord también limita las claves de imagen a 300 caracteres. Si la URL final del proxy supera ese límite, usa una ruta corta específica del servicio en lugar de enviar toda la URL del CDN codificada.
+```txt
+https://api.nowly.me/images-proxy/abc123...
+```
+
+Esa URL devuelve directamente los bytes de la imagen con el `Content-Type` correcto. Está pensada para `largeImageKey` o `smallImageKey`.
 
 ```ts filename="presence.ts"
-import { createImageProxyUrl } from "@nowly/presence"
+import { createCachedImageProxyUrl } from "@nowly/presence"
 
-const proxiedImage = createImageProxyUrl("tiktok", imageUrl)
+const image = await createCachedImageProxyUrl("tiktok", imageUrl)
 
 await presence.setActivity({
   details: "Watching a video",
-  largeImageKey: proxiedImage ?? Assets.Logo,
+  largeImageKey: image ?? Assets.Logo,
 })
 ```
 
-`createImageProxyUrl` devuelve `undefined` cuando la URL generada superaría el límite de longitud de Discord.
+La caché es corta, actualmente cinco minutos. El helper también mantiene una caché en memoria dentro de la presencia para no llamar a la API en cada actualización.
 
-## Cuándo usarlo
+## Endpoint directo
 
-Usa el proxy de imágenes únicamente cuando una URL de imagen normal no funcione de forma fiable en Discord Rich Presence.
+El proxy directo anterior sigue disponible para pruebas manuales o URLs que ya sean suficientemente cortas:
 
-Prefiere `Assets.Logo`, `Assets.Icon` o una URL `https://` directa y estable cuando funcionen. El proxy está diseñado para casos especiales en los que un CDN externo necesita una descarga desde el servidor, cabeceras específicas o una validación previa para que Discord pueda mostrar la imagen.
+```txt
+https://api.nowly.me/image-proxy?service=<service>&url=<url-codificada>
+https://api.nowly.me/i?u=<url-codificada>
+```
+
+Los parámetros `url` y `u` deben codificarse con `encodeURIComponent`. Para Discord Rich Presence, prefiere `createCachedImageProxyUrl`, porque Discord limita las claves de imagen a 300 caracteres.
 
 ## Configuración en una presencia
 
-Primero, extrae la URL de la imagen desde la página. Por ejemplo, para un poster de vídeo:
+Primero, extrae la URL real de la imagen desde la página:
 
 ```ts filename="presence.ts"
-function getPoster(video: HTMLVideoElement): string | undefined {
+const getPoster = (video: HTMLVideoElement): string | undefined => {
   if (video.poster) return video.poster
 
   const image = video.closest("[data-video]")?.querySelector("img")
@@ -57,12 +70,12 @@ function getPoster(video: HTMLVideoElement): string | undefined {
 }
 ```
 
-Después, pasa esa URL al proxy antes de enviar la actividad. Para servicios con rutas cortas, prefiere `createImageProxyPath`:
+Después, pasa esa URL por el helper antes de definir la actividad:
 
 ```ts filename="presence.ts"
-import { createImageProxyPath } from "@nowly/presence"
+import { createCachedImageProxyUrl } from "@nowly/presence"
 
-const poster = createImageProxyPath("tiktok", "video", handle, videoId)
+const poster = await createCachedImageProxyUrl("tiktok", getPoster(video))
 
 await presence.setActivity({
   details: "Watching a video",
@@ -70,41 +83,28 @@ await presence.setActivity({
 })
 ```
 
-Mantén siempre un asset de respaldo para que la presencia siga funcionando si la página no proporciona ninguna imagen o si el proxy rechaza la URL.
+Mantén siempre un asset de respaldo. Si la página no tiene imagen, la imagen es demasiado pesada o el origen no está permitido, la presencia debe seguir funcionando con `Assets.Logo` o un asset local.
 
-Para TikTok, las rutas cortas son:
+## Añadir un servicio
 
-```txt
-https://api.nowly.me/image-proxy/tiktok/video/<handle>/<videoId>
-https://api.nowly.me/image-proxy/tiktok/profile/<handle>
-https://api.nowly.me/image-proxy/tiktok/category/<section>/<category>
-```
+Los dominios permitidos se validan en la API, no en la presencia. Para añadir un servicio nuevo, agrega una entrada de configuración del proxy con:
 
-Estas rutas permiten que la API resuelva la imagen real del CDN en el servidor, manteniendo el valor `large_image` lo bastante corto para Discord.
+- un `id` de servicio estable;
+- los sufijos de host CDN permitidos;
+- las cabeceras que requiera el CDN;
+- un límite claro sobre lo que la presencia puede enviar al proxy.
 
-La ruta de categoría de TikTok está pensada para páginas de categoría live, por ejemplo:
-
-```txt
-https://www.tiktok.com/live/category/gaming/Garena_Free_Fire
-```
-
-## URLs compatibles
-
-Los dominios permitidos se validan en la API, no en la presencia. Si un dominio no está en la lista permitida, el proxy devuelve un error en lugar de descargar la imagen.
-
-En la API, los servicios compatibles se configuran mediante entradas con un `id`, sufijos de dominio permitidos y, si es necesario, cabeceras de solicitud. Esto permite añadir nuevos servicios fácilmente sin convertir el proxy en un proxy público abierto.
-
-Si tu presencia necesita un nuevo origen de imagen, incluye el uso del proxy en tu PR de presencia y explica:
+Si una presencia necesita un nuevo dominio de imagen, puedes usar el helper en tu PR de presencia y explicar:
 
 - qué hostnames exactos necesitan soporte;
 - por qué Discord no puede usar la URL directa;
 - qué imagen verá el usuario;
 - por qué la imagen es pública y se puede proxificar de forma segura.
 
-Los reviewers decidirán si añaden esas URLs a la lista compatible. Pueden rechazar orígenes demasiado amplios, inestables, privados o inseguros.
+Los reviewers decidirán si añaden esas URLs a los servicios compatibles. Pueden rechazar orígenes demasiado amplios, inestables, privados o inseguros.
 
-## Seguridad
+## Límites y seguridad
 
-El proxy debe mantenerse limitado. Solo debe descargar imágenes públicas de CDN necesarias para presencias revisadas y aceptadas.
+El proxy solo debe servir imágenes públicas necesarias para presencias revisadas y aceptadas. Rechaza URLs que no sean HTTPS, dominios no permitidos, respuestas que no sean imágenes y archivos demasiado grandes.
 
-No lo uses para imágenes de cuentas privadas, recursos autenticados, URLs de tracking, entradas arbitrarias del usuario o contenido que no sea una imagen.
+No lo uses para contenido de cuentas privadas, recursos autenticados, URLs de tracking, entradas arbitrarias del usuario o contenido que no sea una imagen.

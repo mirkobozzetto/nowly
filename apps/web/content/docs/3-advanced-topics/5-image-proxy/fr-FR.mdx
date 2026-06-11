@@ -1,55 +1,68 @@
 ---
-title: Proxy d’image
-description: Utilisez le proxy d’image Nowly lorsque Discord ne peut pas charger directement une image de présence depuis un CDN externe pris en charge.
+title: Proxy d'image
+description: Utilisez le proxy d'image Nowly lorsque Discord ne peut pas charger directement une image de présence depuis un CDN externe pris en charge.
 ---
 
 ## À quoi ça sert
 
-Le proxy d’image est un outil côté serveur prévu pour certains cas précis : des images publiques, visibles depuis le navigateur, mais que Discord ne parvient pas à récupérer correctement en direct.
+Le proxy d'image est prévu pour un cas précis : une présence peut voir une image publique dans la page, mais Discord ne parvient pas à la charger correctement depuis l'URL d'origine.
 
-C’est utile pour des images comme des miniatures de vidéos, des posters ou des visuels servis par un CDN externe lorsque :
+C'est typiquement utile pour des miniatures de vidéos, des avatars, des posters ou des images de catégorie servies par un CDN externe lorsque :
 
-- l’URL de l’image est publique dans le navigateur ;
-- Discord refuse, laisse expirer ou n’arrive pas à télécharger l’URL d’origine ;
-- la présence a besoin d’une vraie image liée au contenu, plutôt que du logo de la plateforme uniquement.
+- l'image est publique et déjà visible dans le navigateur ;
+- l'URL CDN est trop longue pour Discord Rich Presence ;
+- Discord refuse, laisse expirer ou ne télécharge pas correctement l'image directe ;
+- la présence doit afficher une image liée au contenu plutôt que seulement le logo du service.
 
-Ce n’est pas un proxy d’image générique. Il accepte uniquement les origines explicitement prises en charge par l’API Nowly.
+Ce n'est pas un proxy d'image générique. L'API accepte uniquement les services et les domaines explicitement autorisés.
 
-## Endpoint
+## Fonctionnement
+
+Le flux recommandé passe par une URL courte temporaire :
 
 ```txt
-https://api.nowly.me/image-proxy?service=<service>&url=<url-de-l-image-encodée>
+POST https://api.nowly.me/images-proxy
+GET  https://api.nowly.me/images-proxy/<id>
 ```
 
-Le paramètre `url` doit être encodé avec `encodeURIComponent`. Le paramètre `service` est optionnel, mais recommandé lorsque vous savez quel service pris en charge fournit l’image.
+La présence envoie à l'API l'URL CDN réelle de l'image. L'API vérifie que le service est pris en charge, télécharge l'image, valide son type MIME et sa taille, puis la stocke temporairement en cache. Elle renvoie ensuite une URL courte du type :
 
-Discord limite aussi les clés d’image à 300 caractères. Si l’URL proxy finale dépasse cette limite, utilisez une route courte spécifique au service au lieu de transmettre toute l’URL CDN encodée.
+```txt
+https://api.nowly.me/images-proxy/abc123...
+```
+
+Cette URL renvoie directement les bytes de l'image avec le bon `Content-Type`. Elle est conçue pour être utilisée dans `largeImageKey` ou `smallImageKey`.
 
 ```ts filename="presence.ts"
-import { createImageProxyUrl } from "@nowly/presence"
+import { createCachedImageProxyUrl } from "@nowly/presence"
 
-const proxiedImage = createImageProxyUrl("tiktok", imageUrl)
+const image = await createCachedImageProxyUrl("tiktok", imageUrl)
 
 await presence.setActivity({
   details: "Watching a video",
-  largeImageKey: proxiedImage ?? Assets.Logo,
+  largeImageKey: image ?? Assets.Logo,
 })
 ```
 
-`createImageProxyUrl` renvoie `undefined` lorsque l’URL générée dépasserait la limite de longueur imposée par Discord.
+Le cache est court, actuellement cinq minutes. Le helper garde aussi un cache mémoire côté présence pour éviter de rappeler l'API à chaque update.
 
-## Quand l’utiliser
+## Endpoint direct
 
-Utilisez le proxy d’image uniquement lorsqu’une URL d’image normale ne fonctionne pas de manière fiable dans Discord Rich Presence.
+L'ancien proxy direct reste disponible pour les tests manuels ou les URLs déjà assez courtes :
 
-Préférez `Assets.Logo`, `Assets.Icon` ou une URL `https://` directe et stable lorsque cela fonctionne. Le proxy est conçu pour les cas particuliers où un CDN externe nécessite une récupération côté serveur, des en-têtes spécifiques ou une validation avant que Discord puisse afficher l’image.
+```txt
+https://api.nowly.me/image-proxy?service=<service>&url=<url-encodée>
+https://api.nowly.me/i?u=<url-encodée>
+```
+
+Les paramètres `url` et `u` doivent être encodés avec `encodeURIComponent`. Pour Discord Rich Presence, préférez `createCachedImageProxyUrl`, car Discord limite les clés d'image à 300 caractères.
 
 ## Mise en place dans une présence
 
-Commencez par récupérer l’URL de l’image depuis la page. Par exemple, pour un poster vidéo :
+Récupérez d'abord l'URL réelle de l'image depuis la page :
 
 ```ts filename="presence.ts"
-function getPoster(video: HTMLVideoElement): string | undefined {
+const getPoster = (video: HTMLVideoElement): string | undefined => {
   if (video.poster) return video.poster
 
   const image = video.closest("[data-video]")?.querySelector("img")
@@ -57,12 +70,12 @@ function getPoster(video: HTMLVideoElement): string | undefined {
 }
 ```
 
-Ensuite, passez cette URL au proxy avant d’envoyer l’activité. Pour les services qui disposent d’une route courte, préférez `createImageProxyPath` :
+Envoyez ensuite cette URL au helper avant de définir l'activité :
 
 ```ts filename="presence.ts"
-import { createImageProxyPath } from "@nowly/presence"
+import { createCachedImageProxyUrl } from "@nowly/presence"
 
-const poster = createImageProxyPath("tiktok", "video", handle, videoId)
+const poster = await createCachedImageProxyUrl("tiktok", getPoster(video))
 
 await presence.setActivity({
   details: "Watching a video",
@@ -70,41 +83,28 @@ await presence.setActivity({
 })
 ```
 
-Gardez toujours un asset de secours afin que la présence continue de fonctionner si la page ne fournit aucune image ou si le proxy refuse l’URL.
+Gardez toujours un asset de secours. Si la page ne fournit aucune image, si l'image est trop lourde ou si l'origine n'est pas autorisée, la présence doit continuer à fonctionner avec `Assets.Logo` ou un asset local.
 
-Pour TikTok, les routes courtes sont :
+## Ajouter un service
 
-```txt
-https://api.nowly.me/image-proxy/tiktok/video/<handle>/<videoId>
-https://api.nowly.me/image-proxy/tiktok/profile/<handle>
-https://api.nowly.me/image-proxy/tiktok/category/<section>/<category>
-```
+Les domaines autorisés sont vérifiés côté API, pas côté présence. Pour ajouter un nouveau service, il faut ajouter une entrée de configuration côté proxy avec :
 
-Ces routes permettent à l’API de résoudre l’image CDN réelle côté serveur, tout en gardant la valeur `large_image` suffisamment courte pour Discord.
+- un `id` de service stable ;
+- les suffixes de domaines CDN autorisés ;
+- les en-têtes nécessaires, si le CDN en exige ;
+- une limite claire sur ce que la présence peut envoyer au proxy.
 
-La route de catégorie TikTok est prévue pour les pages de catégorie live, par exemple :
+Si une présence a besoin d'un nouveau domaine d'image, vous pouvez utiliser le helper dans votre PR et expliquer :
 
-```txt
-https://www.tiktok.com/live/category/gaming/Garena_Free_Fire
-```
-
-## URLs prises en charge
-
-Les domaines autorisés sont vérifiés par l’API, pas par la présence. Si un domaine n’est pas dans la liste d’autorisation, le proxy renvoie une erreur au lieu de télécharger l’image.
-
-Côté API, les services pris en charge sont configurés via des entrées contenant un `id`, des suffixes de domaines autorisés et, si nécessaire, des en-têtes de requête. Cela permet d’ajouter un nouveau service facilement, sans transformer le proxy en proxy public ouvert.
-
-Si votre présence a besoin d’une nouvelle origine d’image, ajoutez l’utilisation du proxy dans votre PR de présence et expliquez :
-
-- les hostnames exacts qui doivent être pris en charge ;
-- pourquoi Discord ne peut pas utiliser l’URL directe ;
-- quelle image sera affichée à l’utilisateur ;
+- les hostnames exacts à prendre en charge ;
+- pourquoi Discord ne peut pas utiliser l'URL directe ;
+- quelle image sera affichée à l'utilisateur ;
 - pourquoi cette image est publique et peut être proxifiée sans risque.
 
-Les reviewers décideront ensuite s’ils ajoutent ces URLs à la liste prise en charge. Ils peuvent refuser les origines trop larges, instables, privées ou dangereuses.
+Les reviewers décideront ensuite s'ils acceptent d'ajouter ces URLs aux services pris en charge. Ils peuvent refuser les origines trop larges, instables, privées ou dangereuses.
 
-## Notes de sécurité
+## Limites et sécurité
 
-Le proxy doit rester limité. Il doit uniquement télécharger des images publiques issues de CDN nécessaires à des présences relues et acceptées.
+Le proxy ne doit servir que des images publiques nécessaires à des présences relues et acceptées. Il refuse les URLs non HTTPS, les domaines non autorisés, les réponses qui ne sont pas des images et les fichiers trop lourds.
 
-Ne l’utilisez pas pour des images de comptes privés, des ressources authentifiées, des URLs de tracking, des entrées utilisateur arbitraires ou du contenu qui n’est pas une image.
+Ne l'utilisez pas pour des comptes privés, des ressources authentifiées, des URLs de tracking, des entrées utilisateur arbitraires ou du contenu qui n'est pas une image.
