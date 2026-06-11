@@ -9,7 +9,7 @@ import { DevelopmentCard } from "../development-card";
 import { FeaturesCard } from "../features-card";
 import { HeaderCard } from "../header-card";
 import { InstallVersionsCard } from "../install-versions-card";
-import { PresenceVersionUpdatesCard } from "../presence-version-updates-card";
+// import { PresenceVersionUpdatesCard } from "../presence-version-updates-card";
 import { SettingsCard } from "../settings-card";
 import { StatsCard } from "../stats-card";
 import { SupportedUrlsCard } from "../supported-urls-card";
@@ -33,13 +33,11 @@ export const PresenceDetailContent: FC<Props> = ({
   isInstalled,
   extDetected,
   needsUpdate,
-  installedVersion,
   loading,
   totalInstalls,
   savedRating,
   onInstall,
   onUninstall,
-  onInstallVersion,
 }): ReactElement => {
   const locale = useLocale();
   const t = useTranslations("MarketplaceDetail");
@@ -100,14 +98,15 @@ export const PresenceDetailContent: FC<Props> = ({
 
             <InstallVersionsCard platform={presence} />
 
-            {presence.status !== "soon" ? (
+            {/* TODO: Rework the version updates card before displaying it again. */}
+            {/* {presence.status !== "soon" ? (
               <PresenceVersionUpdatesCard
                 presence={presence}
                 locale={locale}
                 installedVersion={installedVersion}
                 onInstallVersion={onInstallVersion}
               />
-            ) : null}
+            ) : null} */}
           </div>
         </div>
       </div>

@@ -14,8 +14,8 @@ type Props = {
 export const PresenceHeaderInfo: FC<Props> = ({ presence, locale, categoryLabel }) => (
   <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
     <div
-      className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl flex items-center justify-center shrink-0 overflow-hidden"
-      style={{ backgroundColor: `${presence.iconColor}15` }}
+      className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl flex items-center justify-center shrink-0 overflow-hidden backdrop-blur-xl"
+      style={{ backgroundColor: `${presence.iconColor}20` }}
     >
       <img
         src={ASSET_URL(presence.slug, "icon")}

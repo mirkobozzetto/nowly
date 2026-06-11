@@ -15,7 +15,7 @@ export const PresenceCardBody: FC<Props> = ({ presence, locale }) => {
     <div className="flex items-start gap-4">
       <div
         className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0 overflow-hidden"
-        style={{ backgroundColor: `${presence.iconColor}15` }}
+        style={{ backgroundColor: `${presence.iconColor}20` }}
       >
         <img
           src={ASSET_URL(presence.slug, "icon")}
