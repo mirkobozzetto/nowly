@@ -12,30 +12,34 @@ const requirementsData: Record<Exclude<Platform, "">, Array<{ key: string; value
     { key: "reqArch", value: "64-bit (x64)" },
     { key: "reqDiscord", value: "Application Discord installée et en cours d'exécution" },
     { key: "reqBrowser", value: "Navigateur basé sur Chromium (Chrome, Edge, Brave, Opera)" },
-    { key: "reqStorage", value: "~15 Mo" },
+    { key: "reqStorage", value: "reqStorageWindowsValue" },
   ],
   macos: [
     { key: "reqOs", value: "macOS 11 Big Sur ou ultérieur" },
     { key: "reqArch", value: "Intel x64 / Apple Silicon (ARM64)" },
     { key: "reqDiscord", value: "Application Discord installée et en cours d'exécution" },
     { key: "reqBrowser", value: "Navigateur basé sur Chromium (Chrome, Edge, Brave, Opera)" },
-    { key: "reqStorage", value: "~15 Mo" },
+    { key: "reqStorage", value: "reqStorageMacosValue" },
   ],
   linux: [
     { key: "reqOs", value: "Linux 2.6.32+ / glibc 2.17+" },
     { key: "reqArch", value: "64-bit (x64)" },
     { key: "reqDiscord", value: "Application Discord installée et en cours d'exécution" },
     { key: "reqBrowser", value: "Navigateur basé sur Chromium (Chrome, Edge, Brave, Opera)" },
-    { key: "reqStorage", value: "~15 Mo" },
+    { key: "reqStorage", value: "reqStorageLinuxValue" },
   ],
 };
 
 export const HostRequirements: FC<Props> = ({ platform }): ReactElement => {
   const t = useTranslations("HostPage");
-  const reqs = requirementsData[platform];
+  const reqs = requirementsData[platform].map((req) => (
+    req.key === "reqStorage"
+      ? { ...req, value: t(req.value) }
+      : req
+  ));
 
   return (
-    <section>
+    <section id="requirements" className="scroll-mt-24">
       <h2 className="text-2xl font-bold tracking-tight mb-6">{t("reqTitle")}</h2>
 
       <div className="bg-card border border-border rounded-xl divide-y divide-border">

@@ -31,14 +31,16 @@ export const DevelopmentCard: FC<Props> = ({ platform }): ReactElement => {
         </Link>
       </div>
 
-      <AuthorItem
-        contributor={platform.author}
-        label={platform.contributors.length > 0 ? t("authorLabel") : undefined}
-      />
+      <div>
+        <AuthorItem
+          contributor={platform.author}
+          label={platform.contributors.length > 0 ? t("authorLabel") : undefined}
+        />
 
-      {platform.contributors.length > 0 && platform.contributors.map((contributor, index) => (
-        <AuthorItem key={index} contributor={contributor} label={t("contributorLabel")} />
-      ))}
+        {platform.contributors.length > 0 && platform.contributors.map((contributor, index) => (
+          <AuthorItem key={index} contributor={contributor} label={t("contributorLabel")} />
+        ))}
+      </div>
     </Card>
   );
 };

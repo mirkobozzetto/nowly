@@ -1,9 +1,9 @@
 "use client";
 
 import { AppleIcon, LinuxIcon, WindowsIcon } from "@/components/icons";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { usePlatform } from "@/hooks/use-platform";
 import { CDN_INSTALLER_BASE_URL, HOST_VERSION_URL } from "@/lib/constants";
-import { Check, Code2, Feather, Monitor } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 import { useEffect, useState } from "react";
@@ -43,6 +43,7 @@ export const HostContent: FC = (): ReactElement => {
     windows: {
       icon: WindowsIcon,
       label: "Windows",
+      details: t("windowsDetails"),
       downloads: [
         { label: t("winDownloadInstaller"), url: `${CDN_INSTALLER_BASE_URL}/nowly-setup.exe` },
         { label: t("winDownloadPortable"), url: `${CDN_INSTALLER_BASE_URL}/nowly-windows.zip` },
@@ -51,6 +52,7 @@ export const HostContent: FC = (): ReactElement => {
     macos: {
       icon: AppleIcon,
       label: "macOS",
+      details: t("macosDetails"),
       downloads: [
         { label: t("downloadArchive"), url: `${CDN_INSTALLER_BASE_URL}/nowly-macos.tar.gz` },
       ],
@@ -58,6 +60,7 @@ export const HostContent: FC = (): ReactElement => {
     linux: {
       icon: LinuxIcon,
       label: "Linux",
+      details: t("linuxDetails"),
       downloads: [
         { label: t("downloadArchive"), url: `${CDN_INSTALLER_BASE_URL}/nowly-linux.tar.gz` },
       ],
@@ -66,65 +69,79 @@ export const HostContent: FC = (): ReactElement => {
 
   const activePlatform = manualPlatform ?? (detectedPlatform || "windows");
   const config = platformConfig[activePlatform];
+  const ActiveIcon = config.icon;
 
   return (
     <>
       <HostHero />
 
-      <div className="flex justify-center gap-2 mb-8">
-        {platformKeys.map((key) => {
-          const p = platformConfig[key];
-          const Icon = p.icon;
-          const isActive = key === activePlatform;
-          const isDetected = detectedPlatform !== "" && key === detectedPlatform;
+      <section className="mb-14 rounded-xl border border-border bg-card p-4 sm:p-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 flex-col gap-2 sm:items-start">
+          <Select
+            value={activePlatform}
+            onValueChange={(value) => setManualPlatform(value as (typeof platformKeys)[number])}
+          >
+            <SelectTrigger className="min-w-44" aria-label={t("platformSelectLabel")}>
+              <SelectValue />
+            </SelectTrigger>
 
-          return (
-            <button
-              key={key}
-              onClick={() => setManualPlatform(key === manualPlatform ? null : key)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-colors ${
-                isActive
-                  ? "border-accent bg-accent/10 text-accent"
-                  : "border-border bg-card text-muted-foreground hover:bg-card-hover hover:text-foreground"
-              }`}
-            >
-              <Icon className="w-5 h-5" />
-              {p.label}
-              {isDetected && (
-                <span className="flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-accent/20 text-accent">
-                  <Check className="w-2.5 h-2.5" />
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
+            <SelectContent>
+              {platformKeys.map((key) => {
+                const item = platformConfig[key];
+                const Icon = item.icon;
 
-      <div className="bg-linear-to-b from-card to-surface border border-border rounded-xl p-10 text-center mb-16">
-        <Monitor className="w-12 h-12 mx-auto mb-4 text-accent" />
+                return (
+                  <SelectItem key={key} value={key}>
+                    <Icon className="size-4" />
+                    {item.label}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
 
-        <h2 className="text-2xl font-bold tracking-tight mb-2">
-          {t("cardTitle")}
-        </h2>
-
-        <p className="text-muted-foreground text-sm mb-8 max-w-sm mx-auto">
-          {t("cardVersion", { version: version ?? "latest" })}
-        </p>
-
-        <HostDownload config={config} />
-
-        <div className="flex justify-center gap-6 flex-wrap mt-8">
-          <div className="flex items-center gap-2 text-muted-foreground text-sm">
-            <Code2 className="w-4 h-4" />
-            {t("chipOpenSource")}
+          <p className="text-sm text-muted-foreground">
+            {t("cardVersion", { version: version ?? "latest", details: config.details })}
+          </p>
           </div>
 
-          <div className="flex items-center gap-2 text-muted-foreground text-sm">
-            <Feather className="w-4 h-4" />
-            {t("chipLightweight")}
-          </div>
+          <HostDownload config={config} layout="inline" />
         </div>
+      </section>
+
+      {/*
+      <div className="mb-16 grid gap-3 sm:grid-cols-2">
+        <a
+          href={PROJECT_REPOSITORY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-left transition-colors hover:bg-card-hover"
+        >
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-background text-foreground">
+            <GitHubIcon className="size-5" />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-sm font-semibold text-foreground">{t("chipOpenSource")}</span>
+            <span className="block text-xs text-muted-foreground">{t("chipOpenSourceDesc")}</span>
+          </span>
+        </a>
+
+        <Link
+          href="#requirements"
+          className="group flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-left transition-colors hover:bg-card-hover"
+        >
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-background text-foreground">
+            <Feather className="size-5" />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-sm font-semibold text-foreground">{t("chipLightweight")}</span>
+            <span className="block text-xs text-muted-foreground">{t("chipLightweightDesc")}</span>
+          </span>
+          <LibraryBig className="ml-auto size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
+        </Link>
       </div>
+      */}
 
       <HostGuide />
       <HostRequirements platform={activePlatform} />

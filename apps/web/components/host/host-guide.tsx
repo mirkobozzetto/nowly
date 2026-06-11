@@ -1,3 +1,4 @@
+import { LibraryBig } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
@@ -32,9 +33,10 @@ export const HostGuide: FC = (): ReactElement => {
               {"link" in item && item.link ? (
                 <Link
                   href={item.link.href}
-                  className="text-accent text-sm font-medium hover:underline mt-2 inline-block"
+                  className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline"
                 >
-                  {item.link.label} &rarr;
+                  {item.link.label}
+                  <LibraryBig className="size-4" />
                 </Link>
               ) : null}
             </div>

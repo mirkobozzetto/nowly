@@ -1,25 +1,106 @@
 import { ASSET_URL } from "@/lib/assets";
+import { getLocalizedDescription } from "@/lib/data/localized";
 import type { Presence } from "@/lib/data/presences";
+import { ArrowUpRight, Download, Star, Users } from "lucide-react";
 import Link from "next/link";
-import type { FC } from "react";
+import type { FC, ReactElement } from "react";
 
 type Props = {
   presence: Presence
+  locale: string
 };
 
-export const PresenceLinkItem: FC<Props> = ({ presence }) => (
-  <Link
-    href={`/library/${presence.slug}`}
-    className="bg-card border border-border rounded-lg p-5 text-center transition-all hover:border-muted-foreground hover:bg-card-hover hover:-translate-y-0.5 cursor-pointer"
-  >
-    <div className="w-9 h-9 mx-auto mb-3 flex items-center justify-center">
-      <img
-        src={ASSET_URL(presence.slug, "icon")}
-        alt={presence.name}
-        className="w-full h-full object-contain"
-        loading="lazy"
+export const PresenceLinkItem: FC<Props> = ({ presence, locale }) => {
+  const numberFormat = new Intl.NumberFormat(locale);
+
+  return (
+    <Link
+      href={`/library/${presence.slug}`}
+      className="group relative overflow-hidden rounded-lg border border-border bg-card p-5 transition-all hover:bg-card-hover/45"
+    >
+      <div
+        className="pointer-events-none absolute -right-16 -top-16 size-52 rounded-full opacity-10 blur-3xl transition-opacity group-hover:opacity-20"
+        style={{ backgroundColor: presence.iconColor }}
       />
-    </div>
-    <span className="font-semibold text-sm text-foreground">{presence.name}</span>
-  </Link>
-);
+
+      <div
+        className="pointer-events-none absolute -right-8 -top-8 size-12 rounded-full opacity-15 blur-xl transition-opacity group-hover:opacity-25"
+        style={{ backgroundColor: presence.iconColor }}
+      />
+
+      <div className="relative flex h-full flex-col gap-5">
+        <div className="flex items-start gap-4">
+          <div
+            className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/5"
+          >
+            <div
+              className="absolute inset-0 opacity-15 transition-opacity group-hover:opacity-25"
+              style={{ backgroundColor: presence.iconColor }}
+            />
+
+            <img
+              src={ASSET_URL(presence.slug, "icon")}
+              alt={presence.name}
+              className="relative size-8 object-contain"
+              loading="lazy"
+            />
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <div className="mb-1 flex items-center justify-between gap-3">
+              <h3 className="truncate font-semibold text-foreground">{presence.name}</h3>
+              <ArrowUpRight className="size-4 shrink-0 text-dim-foreground transition-colors group-hover:text-foreground" />
+            </div>
+
+            <p className="line-clamp-2 text-sm leading-6 text-muted-foreground">
+              {getLocalizedDescription(presence, locale)}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-dim-foreground">
+          <span className="flex items-center gap-1.5">
+            <Download className="size-3.5" />
+            {numberFormat.format(presence.totalInstalls)}
+          </span>
+
+          <span className="flex items-center gap-1.5">
+            <Users className="size-3.5" />
+            {numberFormat.format(presence.activeUsers)}
+          </span>
+
+          <span className="flex items-center gap-1.5">
+            <Star className="size-3.5" color={presence.iconColor} fill={presence.iconColor} />
+            {presence.rating.toLocaleString(locale, { maximumFractionDigits: 1 })}
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+};
+
+type PresenceItemMoreProps = {
+  count: number;
+  label: string;
+};
+
+export const PresenceItemMore: FC<PresenceItemMoreProps> = ({ count, label }): ReactElement => {
+  return (
+    <Link
+      href="/library"
+      className="group relative overflow-hidden rounded-lg border border-dashed border-border bg-card p-5 transition-all hover:bg-card-hover/45"
+    >
+      <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-primary/10 opacity-0 transition-opacity group-hover:opacity-100" />
+
+      <div className="relative flex h-full flex-col items-center justify-center text-center">
+        <span className="text-5xl font-black tracking-tight text-foreground">
+          +{count}
+        </span>
+
+        <span className="mt-3 text-sm text-muted-foreground">
+          {label}
+        </span>
+      </div>
+    </Link>
+  );
+};

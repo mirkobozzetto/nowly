@@ -1,11 +1,15 @@
 import { useTranslations } from "next-intl";
-import type { FC, ReactElement } from "react";
+import type { FC, ReactElement, ReactNode } from "react";
 
-export const HostHero: FC = (): ReactElement => {
+type HostHeroProps = {
+  children?: ReactNode;
+};
+
+export const HostHero: FC<HostHeroProps> = ({ children }): ReactElement => {
   const t = useTranslations("HostPage");
 
   return (
-    <div className="text-center mb-16">
+    <div className="text-center mb-12">
       <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-accent/10 text-accent border border-accent/20 text-[11px] font-bold uppercase tracking-wider mb-4">
         {t("badge")}
       </div>
@@ -17,6 +21,12 @@ export const HostHero: FC = (): ReactElement => {
       <p className="text-muted-foreground max-w-md mx-auto">
         {t("description")}
       </p>
+
+      {children ? (
+        <div className="mt-8">
+          {children}
+        </div>
+      ) : null}
     </div>
   );
 };

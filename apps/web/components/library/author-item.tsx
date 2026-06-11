@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Contributor } from "@/lib/data/presences";
+import { cn } from "@/lib/utils";
 import type { FC, ReactElement } from "react";
 
 type Props = {
@@ -12,7 +13,9 @@ export const AuthorItem: FC<Props> = ({ contributor, label }): ReactElement => (
     href={contributor.github ? `https://github.com/${contributor.github}` : undefined}
     target="_blank"
     rel="noopener noreferrer"
-    className="flex items-center gap-3 bg-card-2 hover:bg-card-hover px-3 py-2 transition-colors first:rounded-t-lg last:rounded-b-lg"
+    className={cn(
+      "flex w-full items-center gap-3 bg-card-2 px-3 py-2 transition-colors hover:bg-card-hover first:rounded-t-lg last:rounded-b-lg",
+    )}
   >
     <Avatar className="h-8 w-8 shrink-0">
       {contributor.avatar ? (

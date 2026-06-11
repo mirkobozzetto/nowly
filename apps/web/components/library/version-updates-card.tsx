@@ -166,7 +166,7 @@ export const VersionUpdatesCard: FC<VersionUpdatesCardProps> = ({ currentVersion
             {contributors.length > 0 ? (
               <div className="rounded-md bg-card-2 px-3 py-2">
                 <div className="mb-2 text-xs text-dim-foreground">{t("contributorsLabel")}</div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {contributors.map((contributor) => (
                     contributor.github ? (
                       <a
