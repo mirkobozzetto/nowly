@@ -14,7 +14,6 @@ type Props = {
 };
 
 const AD_FREQUENCY = 6;
-const SHOW_INITIAL_TEST_AD = process.env.NODE_ENV !== "development";
 
 export const MarketplaceGrid: FC<Props> = ({ platforms, locale, onReset }) => {
   const t = useTranslations("MarketplacePage");
@@ -28,20 +27,12 @@ export const MarketplaceGrid: FC<Props> = ({ platforms, locale, onReset }) => {
             {t("reset")}
           </button>
         </div>
-
-        {SHOW_INITIAL_TEST_AD && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <MarketplaceAdCard />
-          </div>
-        )}
       </div>
     );
   }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {/* {SHOW_INITIAL_TEST_AD && <MarketplaceAdCard />} */}
-
       {platforms.map((presence, index): ReactElement => {
         const shouldShowAd = (index + 1) % AD_FREQUENCY === 0 && index < platforms.length - 1;
 
