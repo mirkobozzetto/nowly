@@ -29,6 +29,10 @@ export const AdSenseSlot: FC<Props> = ({
   minHeight = "180px",
   showLabel = true,
 }): ReactElement => {
+  if (process.env.NODE_ENV === "development") {
+    return <></>;
+  }
+
   const t = useTranslations("Ads");
   const hasPushed = useRef(false);
   const isConfigured = useMemo(() => isConfiguredSlot(slot), [slot]);

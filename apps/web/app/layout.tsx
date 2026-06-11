@@ -22,11 +22,13 @@ const Layout = async ({ children }: PropsWithChildren): Promise<ReactElement> =>
       className={`${instrumentSans.variable} ${geist.variable} bg-background scroll-smooth`}
     >
       <head>
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6330177306711077"
-          crossOrigin="anonymous"
-        />
+        {process.env.NODE_ENV !== "development" && (
+          <script
+            async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6330177306711077"
+            crossOrigin="anonymous"
+          />
+        )}
       </head>
 
       <body className="font-sans antialiased">
