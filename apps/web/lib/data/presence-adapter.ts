@@ -1,3 +1,4 @@
+import { FALLBACK_LOCALE } from "@nowly/locales";
 import type { Metadata } from "@nowly/websites/types";
 import type { Contributor, Presence, PresenceCategory } from "./presences";
 import { CATEGORIES } from "./categories";
@@ -26,7 +27,6 @@ const toContributor = (c: ContributorInput | undefined, fallbackName: string): C
   };
 };
 
-const FALLBACK_LOCALE = "en-US";
 const DEFAULT_CATEGORY: PresenceCategory = "other";
 
 const toPresenceCategory = (category: Metadata["category"] | undefined): PresenceCategory =>

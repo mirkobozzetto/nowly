@@ -1,7 +1,9 @@
+import type { LocalizedValue } from "@nowly/locales";
+
 export type DocSection = {
   slug: string;
   order: number;
-  title: Record<string, string>;
+  title: LocalizedValue<string>;
   path: string;
   children: DocSection[];
 };

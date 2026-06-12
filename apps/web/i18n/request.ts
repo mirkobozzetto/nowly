@@ -1,8 +1,6 @@
+import { SUPPORTED_LOCALES, type LocaleString as Locale } from "@nowly/locales";
 import { getRequestConfig } from "next-intl/server";
 import { cookies, headers } from "next/headers";
-
-const SUPPORTED_LOCALES = ["en-US", "fr-FR", "es-ES"] as const;
-type Locale = (typeof SUPPORTED_LOCALES)[number];
 
 const parseAcceptLanguage = (acceptLanguage: string | null): Locale | null => {
   if (!acceptLanguage) return null;

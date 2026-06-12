@@ -1,5 +1,6 @@
 "use client";
 
+import { SUPPORTED_LOCALES, type LocaleString } from "@nowly/locales";
 import { LocaleFlag } from "@/components/locale-flag";
 import {
   Select,
@@ -11,6 +12,12 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import type { FC } from "react";
+
+const localeLabelKey: Record<LocaleString, string> = {
+  "en-US": "english",
+  "fr-FR": "french",
+  "es-ES": "spanish",
+};
 
 export const LocaleSelector: FC = () => {
   const locale = useLocale();
@@ -30,9 +37,9 @@ export const LocaleSelector: FC = () => {
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="fr-FR">{t("french")}</SelectItem>
-          <SelectItem value="en-US">{t("english")}</SelectItem>
-          <SelectItem value="es-ES">{t("spanish")}</SelectItem>
+          {SUPPORTED_LOCALES.map((code) => (
+            <SelectItem key={code} value={code}>{t(localeLabelKey[code])}</SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>

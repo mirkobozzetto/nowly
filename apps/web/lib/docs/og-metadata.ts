@@ -1,3 +1,4 @@
+import { FALLBACK_LOCALE, getValidLocale } from "@nowly/locales";
 import matter from "gray-matter";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -7,12 +8,6 @@ type DocOgMetadata = {
   title: string
   description: string
   category: string
-};
-
-const SUPPORTED_LOCALES = ["en-US", "fr-FR", "es-ES"];
-
-const getValidLocale = (locale: string): string => {
-  return SUPPORTED_LOCALES.includes(locale) ? locale : "en-US";
 };
 
 const getLocalizedTitle = (title: Record<string, string>, locale: string, fallback: string): string => {

@@ -1,10 +1,10 @@
+import { FALLBACK_LOCALE, getValidLocale, SUPPORTED_LOCALES } from "@nowly/locales";
 import matter from "gray-matter";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { DocContent, DocNavigationItem, DocSection } from "./types";
 
 const DOCS_ROOT = join(process.cwd(), "content", "docs");
-const SUPPORTED_LOCALES = ["en-US", "fr-FR", "es-ES"];
 
 type FolderInfo = {
   order: number;
@@ -21,9 +21,8 @@ const parseOrderedFolder = (name: string): FolderInfo | null => {
   };
 };
 
-const getValidLocale = (locale: string): string => {
-  return SUPPORTED_LOCALES.includes(locale) ? locale : "en-US";
-};
+const isValidLocale = (locale: string): locale is string =>
+  SUPPORTED_LOCALES.includes(locale as any);
 
 const readCategoryTitle = (categoryPath: string, slug: string): Record<string, string> => {
   const metaPath = join(categoryPath, "_meta.json");

@@ -1,3 +1,4 @@
+import { SUPPORTED_LOCALES, type LocaleString } from "@nowly/locales";
 import { getDocContent, getNavigationItems } from "@/lib/docs/content";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -9,8 +10,6 @@ type SearchResult = {
   matches: number;
   matchContext?: string;
 };
-
-const SUPPORTED_LOCALES = ["en-US", "fr-FR", "es-ES"];
 
 function stripMdx(content: string): string {
   return content
@@ -54,7 +53,7 @@ export const GET = async (request: NextRequest) => {
     return NextResponse.json([]);
   }
 
-  const validLocale = SUPPORTED_LOCALES.includes(locale) ? locale : "en-US";
+  const validLocale = SUPPORTED_LOCALES.includes(locale as LocaleString) ? locale : "en-US";
   const sections = getNavigationItems(validLocale);
   const results: SearchResult[] = [];
 
