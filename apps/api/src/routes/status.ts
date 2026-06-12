@@ -22,16 +22,14 @@ export const statusRoutes = async (app: FastifyInstance): Promise<void> => {
     return getStatusReport()
   })
 
-  app.post("/status/check", { preHandler: requireCronAuth }, async (request) => {
-    const query = request.query as { force?: string }
-    const result = await runStatusCheck({ force: query.force === "1" })
+  app.post("/status/check", { preHandler: requireCronAuth }, async () => {
+    const result = await runStatusCheck()
 
     return result
   })
 
-  app.get("/status/check", { preHandler: requireCronAuth }, async (request) => {
-    const query = request.query as { force?: string }
-    const result = await runStatusCheck({ force: query.force === "1" })
+  app.get("/status/check", { preHandler: requireCronAuth }, async () => {
+    const result = await runStatusCheck()
 
     return result
   })

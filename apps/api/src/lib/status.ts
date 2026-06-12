@@ -26,10 +26,6 @@ export type StatusReport = {
   services: StatusServiceReport[]
 }
 
-export type StatusCheckOptions = {
-  force?: boolean
-}
-
 export type StatusCheckResult = {
   report: StatusReport
   skipped: boolean
@@ -121,16 +117,6 @@ const measureService = async (id: StatusServiceId, url: string): Promise<StatusS
   }
 }
 
-const shouldSkipCheck = async (): Promise<boolean> => {
-  const lastCheckedAt = await redis.get<string>(lastCheckKey())
-  if (!lastCheckedAt) return false
-
-  const last = Date.parse(lastCheckedAt)
-  if (!Number.isFinite(last)) return false
-
-  return Date.now() - last < getCheckIntervalHours() * 60 * 60 * 1000
-}
-
 export const getStatusReport = async (): Promise<StatusReport> => {
   const reports = await Promise.all(
     services.map(async (svc) => {
@@ -149,11 +135,7 @@ export const getStatusReport = async (): Promise<StatusReport> => {
   }
 }
 
-export const runStatusCheck = async (options: StatusCheckOptions = {}): Promise<StatusCheckResult> => {
-  if (!options.force && await shouldSkipCheck()) {
-    return { report: await getStatusReport(), skipped: true }
-  }
-
+export const runStatusCheck = async (): Promise<StatusCheckResult> => {
   const samples = await Promise.all(
     services.map((svc) => measureService(svc.id, svc.url)),
   )
