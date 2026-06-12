@@ -8,7 +8,6 @@
   "regExp": "^https?://(?:www\\.)?cinepulse\\.ws",
   "color": "#090201",
   "category": "streaming",
-  "tags": [],
   "description": {
     "en-US": "Watch movies and series on Cinepulse.",
     "fr-FR": "Regardez des films et séries sur Cinepulse.",

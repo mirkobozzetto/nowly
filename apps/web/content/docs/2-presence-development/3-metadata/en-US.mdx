@@ -14,8 +14,7 @@ Every presence needs:
     { name: "description", type: "object", description: "Short localized descriptions keyed by locale.", required: true },
     { name: "url", type: "string[]", description: "Supported domains or URL patterns for matching pages.", required: true },
     { name: "color", type: "string", description: "Brand color in hex format, used by UI and embeds.", required: true },
-    { name: "category", type: "string", description: "One of streaming, music, tv, anime, or other.", required: true },
-    { name: "tags", type: "string[]", description: "Search and discovery tags.", required: true }
+    { name: "category", type: "string", description: "One of streaming, music, tv, anime, or other.", required: true }
   ]}
 />
 
@@ -31,7 +30,6 @@ Every presence needs:
   "url": ["youtube.com", "www.youtube.com"],
   "color": "#FF0033",
   "category": "streaming",
-  "tags": ["video", "media", "streaming"],
   "description": {
     "en-US": "Watch and share videos on YouTube."
   }

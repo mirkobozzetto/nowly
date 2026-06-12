@@ -8,7 +8,6 @@
   "regExp": "^https?://(www\\.)?disneyplus\\.com/",
   "color": "#099DAE",
   "category": "streaming",
-  "tags": ["streaming", "movies", "disney"],
   "description": {
     "en-US": "Watch Disney, Pixar, Marvel, Star Wars, and National Geographic content in one place.",
     "fr-FR": "Retrouvez Disney, Pixar, Marvel, Star Wars et National Geographic au même endroit.",

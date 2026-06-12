@@ -8,7 +8,6 @@
   "regExp": "^https?://(www\\.)?tiktok\\.com/",
   "color": "#000000",
   "category": "other",
-  "tags": [],
   "description": {
     "en-US": "Watch and discover millions of personalized short videos on TikTok.",
     "fr-FR": "Regardez et découvrez des millions de vidéos courtes personnalisées sur TikTok.",

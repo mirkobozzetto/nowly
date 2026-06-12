@@ -47,8 +47,6 @@ describe("Metadata validation", () => {
         expect(meta.category).toBeTypeOf("string")
         expect(Array.isArray(meta.url)).toBe(true)
         expect(meta.url.length).toBeGreaterThan(0)
-        expect(Array.isArray(meta.tags)).toBe(true)
-        expect(meta.tags.length).toBeGreaterThan(0)
       })
 
       it("has valid author", () => {

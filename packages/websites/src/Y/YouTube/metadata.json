@@ -8,7 +8,6 @@
   "regExp": "^https?://(www|m)\\.youtube\\.com/",
   "color": "#FF0033",
   "category": "streaming",
-  "tags": ["video", "media", "streaming"],
   "description": {
     "en-US": "Watch and share videos on the world's largest video platform.",
     "fr-FR": "Regardez et partagez des vidéos sur la plus grande plateforme vidéo au monde.",

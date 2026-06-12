@@ -8,7 +8,6 @@
   "regExp": "^https?://(tv\\.apple\\.com|www\\.apple\\.com/tv)",
   "color": "#555555",
   "category": "streaming",
-  "tags": ["streaming", "movies", "apple"],
   "description": {
     "en-US": "Watch award-winning Apple Original series, movies, and documentaries on Apple TV+.",
     "fr-FR": "Regardez des séries, films et documentaires Apple Originals récompensés sur Apple TV+.",

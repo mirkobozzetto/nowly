@@ -30,7 +30,6 @@ export interface Metadata {
   regExp?: string;
   color: string;
   category: "streaming" | "music" | "tv" | "anime" | "other";
-  tags: string[];
   features?: Record<string, string[]>;
   settings?: Record<string, unknown>;
   assets: {

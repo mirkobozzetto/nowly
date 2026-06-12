@@ -21,7 +21,6 @@ export const metadataJson = (data: {
   category: string
   color: string
   urls: string[]
-  tags: string[]
   descriptionEn: string
   descriptionFr?: string
   descriptionEs?: string
@@ -40,7 +39,6 @@ export const metadataJson = (data: {
       url: data.urls,
       color: data.color,
       category: data.category,
-      tags: data.tags,
       description: desc,
       assets: {
         logo: "logo.png",

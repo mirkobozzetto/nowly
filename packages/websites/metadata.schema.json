@@ -10,7 +10,6 @@
     "url",
     "color",
     "category",
-    "tags",
     "assets"
   ],
   "properties": {
@@ -84,11 +83,6 @@
       "type": "string",
       "description": "Category of the platform",
       "enum": ["streaming", "music", "tv", "anime", "other"]
-    },
-    "tags": {
-      "type": "array",
-      "description": "Search tags for discovery",
-      "items": { "type": "string" }
     },
     "features": {
       "type": "object",

@@ -36,9 +36,6 @@ export const registerInit = (program: Command) => {
       const color = await input("Brand color (hex):", { initial: "#555555" })
       const urlsInput = await input("URLs (comma-separated):")
       const urls = urlsInput.split(",").map((u: string) => u.trim()).filter(Boolean)
-      const tagsInput = await input("Tags (comma-separated):")
-      const tags = tagsInput.split(",").map((t: string) => t.trim()).filter(Boolean)
-
       const author = await input("Author name:", { initial: "Nowly" })
       const github = await input("Author GitHub (optional):")
 
@@ -61,7 +58,7 @@ export const registerInit = (program: Command) => {
       mkdirSync(dir, { recursive: true })
       mkdirSync(join(dir, "assets"), { recursive: true })
 
-      writeFileSync(join(dir, "metadata.json"), metadataJson({ name, author, github, category, color, urls, tags, descriptionEn, descriptionFr, descriptionEs }))
+      writeFileSync(join(dir, "metadata.json"), metadataJson({ name, author, github, category, color, urls, descriptionEn, descriptionFr, descriptionEs }))
       writeFileSync(join(dir, "presence.ts"), presenceTs)
 
       spinner.succeed(`Presence "${name}" created at ${dir}`)

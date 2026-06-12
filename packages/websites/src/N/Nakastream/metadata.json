@@ -9,7 +9,6 @@
   "regExp": "^https?://([a-z0-9-]+\\.)?nakastream\\.tv/",
   "color": "#c8a468",
   "category": "streaming",
-  "tags": ["streaming", "anime", "movies", "series"],
   "description": {
     "en-US": "Watch anime, movies, and series on Nakastream.",
     "fr-FR": "Regardez des animes, films et séries sur Nakastream.",

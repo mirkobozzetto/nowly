@@ -8,7 +8,6 @@
   "regExp": "^https?://(www\\.)?primevideo\\.com/",
   "color": "#0779FF",
   "category": "streaming",
-  "tags": ["streaming", "movies", "amazon"],
   "description": {
     "en-US": "Watch movies, TV shows, and Amazon Originals on Prime Video.",
     "fr-FR": "Regardez des films, des séries et des Amazon Originals sur Prime Video.",
