@@ -96,5 +96,7 @@
   "onboardingAnalyticsBody": "Nowly can collect anonymous usage stats such as installs, active presences, versions, and technical errors. This helps us know what works and what needs attention.",
   "onboardingAnalyticsPrivacy": "We never collect page URLs, titles, searches, watched content, raw IP addresses, or Discord IDs for analytics. You can change this later in settings.",
   "onboardingAnalyticsAccept": "Share analytics",
-  "onboardingAnalyticsDecline": "No thanks"
+  "onboardingAnalyticsDecline": "No thanks",
+  "dataManagement": "Data & Privacy",
+  "dataManagementDescription": "View and manage your data, analytics consent, and privacy settings."
 }

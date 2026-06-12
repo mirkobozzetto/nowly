@@ -96,5 +96,7 @@
   "onboardingAnalyticsBody": "Nowly peut collecter des statistiques anonymes comme les installations, les présences actives, les versions et les erreurs techniques. Cela nous aide à comprendre ce qui fonctionne et ce qu'il faut améliorer.",
   "onboardingAnalyticsPrivacy": "Nous ne collectons jamais les URL des pages, titres, recherches, contenus regardés, adresses IP brutes ou IDs Discord pour les analytiques. Vous pourrez modifier ce choix plus tard.",
   "onboardingAnalyticsAccept": "Partager",
-  "onboardingAnalyticsDecline": "Non merci"
+  "onboardingAnalyticsDecline": "Non merci",
+  "dataManagement": "Données et confidentialité",
+  "dataManagementDescription": "Consultez et gérez vos données, votre consentement analytique et vos préférences de confidentialité."
 }
