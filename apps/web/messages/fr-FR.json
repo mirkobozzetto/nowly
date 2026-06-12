@@ -176,7 +176,7 @@
     "badge": "Statut",
     "title": "État des services Nowly",
     "description": "Suivez l'état du site, de l'API, de la bibliothèque des présences et des téléchargements de l'application hôte.",
-    "checkedHistory": "Les vérifications ont lieu toutes les {hours, plural, one {# heure} other {# heures}} et gardent les derniers points historiques.",
+    "checkedHistory": "Vérifié pour la dernière fois à {time}",
     "latestLatency": "Dernière latence",
     "lastChecked": "Dernier check",
     "recentChecks": "10 derniers checks",

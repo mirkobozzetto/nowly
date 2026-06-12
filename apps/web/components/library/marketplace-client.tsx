@@ -4,11 +4,12 @@ import { PageLayout } from "@/components/layout/page-layout";
 import { MarketplaceGridSkeleton } from "@/components/library/marketplace-grid-skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePresences } from "@/hooks/use-presences";
+import { trackPublicAnalytics } from "@/lib/analytics-client";
 import { type PresenceCategory } from "@/lib/data/presences";
 import { AlertCircle, RefreshCcw } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { MarketplaceFilters } from "./marketplace-filters";
 import { MarketplaceGrid } from "./marketplace-grid";
 import { MarketplaceSearch } from "./marketplace-search";
@@ -22,6 +23,14 @@ export const MarketplaceClient: FC = (): ReactElement => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<PresenceCategory[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>("popular");
+  const lastFilterEventRef = useRef("");
+
+  useEffect(() => {
+    trackPublicAnalytics({
+      key: "marketplace_page_view",
+      payload: { source: "library", locale },
+    });
+  }, [locale]);
 
   const filteredPresences = useMemo(() => {
     if (!presences) return [];
@@ -66,6 +75,25 @@ export const MarketplaceClient: FC = (): ReactElement => {
         : [...prev, category],
     );
   };
+
+  useEffect(() => {
+    if (!presences) return;
+    const category = selectedCategories.join(",");
+    const signature = `${category}|${sortBy}|${filteredPresences.length}|${Boolean(searchQuery)}`;
+    if (signature === lastFilterEventRef.current) return;
+    lastFilterEventRef.current = signature;
+
+    trackPublicAnalytics({
+      key: filteredPresences.length === 0 ? "marketplace_no_results" : "marketplace_filter",
+      payload: {
+        source: "library",
+        locale,
+        category,
+        sort: sortBy,
+        resultCount: filteredPresences.length,
+      },
+    });
+  }, [filteredPresences.length, locale, presences, searchQuery, selectedCategories, sortBy]);
 
   return (
     <PageLayout>

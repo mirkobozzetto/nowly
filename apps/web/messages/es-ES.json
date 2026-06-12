@@ -176,7 +176,7 @@
     "badge": "Estado",
     "title": "Estado de los servicios de Nowly",
     "description": "Consulta el estado del sitio, la API, la biblioteca de presencias y las descargas de la aplicación host.",
-    "checkedHistory": "Las comprobaciones se ejecutan cada {hours, plural, one {# hora} other {# horas}} y conservan los últimos puntos de historial.",
+    "checkedHistory": "Última comprobación: {time}",
     "latestLatency": "Última latencia",
     "lastChecked": "Última comprobación",
     "recentChecks": "Últimas 10 comprobaciones",

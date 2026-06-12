@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "@/lib/constants";
+import { trackPublicAnalytics } from "@/lib/analytics-client";
 import type { Presence } from "@/lib/data/presences";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -140,6 +141,12 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
     }
 
     setLoading(true);
+    trackPublicAnalytics({
+      key: "marketplace_install_click",
+      slug: presence.slug,
+      version: presence.version ?? undefined,
+      payload: { source: "presence-detail" },
+    });
 
     try {
       const release = await fetch(
@@ -148,7 +155,17 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
       ).then((response) => response.json());
 
       if (!isInstalled) {
-        fireAndForget(`${API_BASE_URL}/presences/${presence.slug}/installs`, { method: "POST" });
+        trackPublicAnalytics({
+          key: "marketplace_conversion",
+          slug: presence.slug,
+          version: presence.version ?? undefined,
+          payload: { source: "presence-detail" },
+        });
+        fireAndForget(`${API_BASE_URL}/presences/${presence.slug}/installs`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ deviceId, version: presence.version }),
+        });
         setTotalInstalls((current) => current + 1);
       }
 

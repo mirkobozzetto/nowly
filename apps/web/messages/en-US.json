@@ -176,7 +176,7 @@
     "badge": "Status",
     "title": "Nowly service status",
     "description": "Track the status of the website, API, presence library, and host app downloads.",
-    "checkedHistory": "Checks run every {hours, plural, one {# hour} other {# hours}} and keep the latest history points.",
+    "checkedHistory": "Checked live at {time}",
     "latestLatency": "Latest latency",
     "lastChecked": "Last checked",
     "recentChecks": "Last 10 checks",
