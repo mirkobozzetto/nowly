@@ -4,7 +4,7 @@ import { generateChangelog, translateChangelog } from "@/shared/openai.service"
 import { sha256Base64Url } from "@/shared/crypto.service"
 import { serializeJsonField, buildRelease } from "./presence.service"
 import {
-  addVersion, getPresenceMeta, getPresenceStats, getVersionHistory,
+  addVersion, getAllPresenceSlugs, getPresenceMeta, getPresenceStats, getVersionHistory,
   setAdded, setPresenceMeta, setUpdated, setVersion,
   markActiveDevice, clearActiveDevice, clearActiveDevicesForDevice,
   incrementInstalls, setActiveUsers,
@@ -17,6 +17,30 @@ type ReleasePerson = {
 }
 
 export const presenceRoutes = async (fastify: FastifyInstance) => {
+  fastify.get("", async (_request, _reply) => {
+    const slugs = await getAllPresenceSlugs()
+    const results = await Promise.all(slugs.map(async (slug) => {
+      const [meta, stats] = await Promise.all([
+        getPresenceMeta(slug),
+        getPresenceStats(slug),
+      ])
+
+      if (!meta) return null
+
+      return {
+        ...meta,
+        version: stats.version || "",
+        totalInstalls: stats.totalInstalls,
+        activeUsers: stats.activeUsers,
+        rating: stats.rating,
+        ratingCount: stats.ratingCount,
+        ratingDistribution: stats.ratingDistribution,
+      }
+    }))
+
+    return results.filter((result) => result !== null)
+  })
+
   fastify.get<{ Params: { slug: string } }>("/:slug", async (request, reply) => {
     const slug = request.params.slug.toLowerCase()
     const release = await buildRelease(slug)
