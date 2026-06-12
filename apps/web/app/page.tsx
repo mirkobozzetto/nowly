@@ -1,5 +1,6 @@
 import { AdSection } from "@/components/home/ad-section";
 import { CtaSection } from "@/components/home/cta-section";
+import { FaqSection } from "@/components/home/faq-section";
 import { HeroSection } from "@/components/home/hero-section";
 import { PresencesSection } from "@/components/home/presences-section";
 import { StepsSection } from "@/components/home/steps-section";
@@ -24,6 +25,7 @@ const Page: FC = (): ReactElement => {
       <PresencesSection />
       <AdSection />
       <StepsSection />
+      <FaqSection />
       <CtaSection />
     </main>
   );

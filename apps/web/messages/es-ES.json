@@ -54,6 +54,27 @@
     "openSource": "Código abierto",
     "free": "Gratis"
   },
+  "HomeFaqSection": {
+    "sectionLabel": "FAQ",
+    "title": "Preguntas frecuentes",
+    "description": "Respuestas rápidas a las preguntas más comunes sobre Nowly, la instalación y la privacidad.",
+    "faqCta": "Ir a la página",
+    "discordCta": "Discord comunitario",
+    "items": [
+      {
+        "question": "¿Qué es Nowly?",
+        "answer": "Nowly muestra automáticamente lo que estás viendo en tu estado de Discord mediante una extensión de navegador y una app nativa."
+      },
+      {
+        "question": "¿Mis datos pasan por vuestros servidores?",
+        "answer": "No. La actividad detectada se transmite localmente a la app nativa y luego directamente al cliente de Discord instalado en tu ordenador."
+      },
+      {
+        "question": "¿Qué plataformas son compatibles?",
+        "answer": "Nowly ya admite varias plataformas de streaming y la biblioteca permite seguir las presencias disponibles o próximas."
+      }
+    ]
+  },
   "Footer": {
     "copyright": "© 2026 Nowly.",
     "trademark": "Discord es una marca registrada de",
