@@ -12,7 +12,7 @@ import { SettingsView } from "@/features/settings/settings-view";
 import { SidepanelNav, type SidepanelView } from "@/components/sidepanel-nav";
 
 const App: FC = (): ReactElement => {
-  const { activity, checkUpdates, checkHostUpdate, connectNative, debug, entries, hostVersionInfo, isCheckingHostVersion, isCheckingUpdates, nativeStatus, presences, removePresence, togglePresence, updates, settings, setSettings } =
+  const { activity, checkUpdates, connectNative, debug, entries, hostVersionInfo, isCheckingUpdates, nativeStatus, presences, removePresence, togglePresence, updates, settings, setSettings } =
     useExtensionState();
   const { localePreference, setLocalePreference } = useLocalePreference();
   const { onboarding, setOnboarding, nativeStatus: onboardingNativeStatus, userScripts, refresh } = useOnboardingState();
@@ -25,13 +25,15 @@ const App: FC = (): ReactElement => {
   return (
     <main className="relative min-h-screen bg-background text-foreground">
       <div className="flex min-h-screen w-full min-w-0 flex-col gap-4 p-3">
-        <Header nativeStatus={nativeStatus} onConnect={connectNative} />
+        <Header nativeStatus={nativeStatus} />
         <SidepanelNav activeView={activeView} onChange={setActiveView} />
 
         {activeView === "activity" && (
           <ActivityView
             activity={activity}
+            checkUpdates={checkUpdates}
             entries={entries}
+            isCheckingUpdates={isCheckingUpdates}
             onOpenMarketplace={onOpenMarketplace}
             onRemove={removePresence}
             onToggle={togglePresence}
@@ -43,14 +45,8 @@ const App: FC = (): ReactElement => {
 
         {activeView === "settings" && (
           <SettingsView
-            checkUpdates={checkUpdates}
-            checkHostUpdate={checkHostUpdate}
             hostVersionInfo={hostVersionInfo}
-            isCheckingUpdates={isCheckingUpdates}
-            isCheckingHostVersion={isCheckingHostVersion}
             localePreference={localePreference}
-            nativeStatus={nativeStatus}
-            onConnect={connectNative}
             onLocaleChange={setLocalePreference}
             settings={settings}
             onSettingsChange={setSettings}

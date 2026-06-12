@@ -226,7 +226,7 @@ export const OnboardingOverlay: FC<Props> = ({
       <div className="pointer-events-auto absolute inset-0 flex min-h-0 flex-col p-3">
         <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-border bg-card/95 shadow-[0_18px_50px_rgba(0,0,0,.55)]">
           <div className="flex items-center border-b border-border px-4 py-3">
-            <Header nativeStatus={nativeStatus} onConnect={onConnectNative} />
+            <Header />
             <div className="relative ml-auto">
               <select
                 value={localePreference}

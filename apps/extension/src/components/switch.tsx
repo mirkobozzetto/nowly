@@ -22,10 +22,10 @@ export const Switch: FC<Props> = ({ ariaLabel, checked, id, onChange }): React.R
     }`}
   >
     <span
-      className={`absolute top-[2px] h-[14px] w-[14px] rounded-md shadow-[0_1px_4px_rgba(0,0,0,0.3)] transition-all duration-300 ${
+      className={`absolute top-0.5 h-3.25 w-3.25 rounded-md shadow-[0_1px_4px_rgba(0,0,0,0.3)] transition-all duration-300 ${
         checked
-          ? "left-[20px] bg-white"
-          : "left-[2px] bg-dim-foreground/30"
+          ? "left-5 bg-white"
+          : "left-0.5 bg-dim-foreground/30"
       }`}
     />
   </button>
