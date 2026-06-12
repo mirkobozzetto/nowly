@@ -4,6 +4,7 @@ import { imageProxyRoutes } from "@/routes/image-proxy"
 import { presenceRoutes } from "@/routes/presence"
 import { registryRoutes } from "@/routes/registry"
 import { statsRoutes } from "@/routes/stats"
+import { statusRoutes } from "@/routes/status"
 import cors from "@fastify/cors"
 import { serverEnv } from "@nowly/env/server"
 import Fastify from "fastify"
@@ -29,6 +30,7 @@ await server.register(presenceRoutes, { prefix: "/presences" })
 await server.register(assetsRoutes, { prefix: "/presences" })
 await server.register(statsRoutes, { prefix: "/presences" })
 await server.register(authRoutes, { prefix: "/auth" })
+await server.register(statusRoutes)
 await server.register(imageProxyRoutes)
 
 const port = serverEnv.PORT
