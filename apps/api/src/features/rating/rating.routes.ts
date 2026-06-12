@@ -1,71 +1,19 @@
-import { hashDiscordId, verifyToken } from "@/lib/auth"
+import { getPrisma } from "@/db/client"
+import { hashDiscordId, verifyToken } from "@/features/auth/auth.service"
 import {
-  clearActiveDevice,
-  clearActiveDevicesForDevice,
-  getComments, getPresenceStats, getUserRating,
-  hasDiscordRated,
-  incrementInstalls,
-  markActiveDevice,
-  markDiscordRated,
-  redis,
-  removeUserRating,
-  setActiveUsers,
-  setUserRating,
-  submitComment,
+  getPresenceStats, getUserRating,
+  hasDiscordRated, markDiscordRated,
+  removeUserRating, setUserRating,
   submitRating,
-} from "@/lib/redis"
+} from "@/features/presence/presence.repository"
+import { submitComment, getComments } from "@/features/rating/rating.repository"
 import type { FastifyInstance } from "fastify"
 
-export const statsRoutes = async (fastify: FastifyInstance) => {
-  fastify.post("/active", async (request, _reply) => {
-    const body = request.body as { presences?: string[]; deviceId?: string }
-    const slugs = body?.presences ?? []
-    const deviceId = body?.deviceId?.trim()
+export const register = async (app: FastifyInstance): Promise<void> => {
+  await app.register(ratingRoutes, { prefix: "/presences" })
+}
 
-    if (!deviceId) {
-      for (const slug of slugs) {
-        await setActiveUsers(slug, 1)
-      }
-
-      return {
-        ok: true,
-        count: slugs.length,
-      }
-    }
-
-    for (const slug of slugs) {
-      await markActiveDevice(slug, deviceId)
-    }
-
-    return {
-      ok: true,
-      count: slugs.length
-    }
-  })
-
-  fastify.delete<{ Params: { deviceId: string; slug?: string } }>("/active/:deviceId/:slug?", async (request, _reply) => {
-    const deviceId = request.params.deviceId.trim()
-    const slug = request.params.slug?.trim()
-
-    if (!deviceId) {
-      return { ok: false, error: "deviceId is required" }
-    }
-
-    if (slug) {
-      await clearActiveDevice(slug, deviceId)
-      return { ok: true, removed: 1 }
-    }
-
-    await clearActiveDevicesForDevice(deviceId)
-    return { ok: true, removed: null }
-  })
-
-  fastify.post<{ Params: { slug: string } }>("/:slug/installs", async (request, _reply) => {
-    const slug = request.params.slug.toLowerCase()
-    const total = await incrementInstalls(slug)
-    return { totalInstalls: total }
-  })
-
+export const ratingRoutes = async (fastify: FastifyInstance) => {
   fastify.post<{ Params: { slug: string } }>("/:slug/comments", async (request, reply) => {
     const slug = request.params.slug.toLowerCase()
     const body = request.body as { rating?: number; comment?: string; anonymous?: boolean }
@@ -198,17 +146,7 @@ export const statsRoutes = async (fastify: FastifyInstance) => {
     }
 
     if (userData.commentId) {
-      await redis.zrem(`presence:${slug}:comments`, userData.commentId)
-      await redis.del(`presence:${slug}:comment:${userData.commentId}`)
-    }
-
-    const stars = [1, 2, 3, 4, 5] as const
-    const perStar = await Promise.all(
-      stars.map((s) => redis.get<number>(`presence:${slug}:ratings:${s}`)),
-    )
-    const currentCount = perStar[stars.indexOf(userData.rating as 1 | 2 | 3 | 4 | 5)] ?? 0
-    if (currentCount > 0) {
-      await redis.decr(`presence:${slug}:ratings:${userData.rating}`)
+      await getPrisma().comment.delete({ where: { id: userData.commentId } })
     }
 
     await removeUserRating(slug, discordUser.discordId)

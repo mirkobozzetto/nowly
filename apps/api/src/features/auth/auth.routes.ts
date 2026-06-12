@@ -1,4 +1,4 @@
-import { isValidRedirect, signToken, verifyToken, type DiscordUser } from "@/lib/auth"
+import { isValidRedirect, signToken, verifyToken, type DiscordUser } from "./auth.service"
 import { serverEnv } from "@nowly/env/server"
 import "dotenv/config"
 import type { FastifyInstance } from "fastify"
@@ -94,4 +94,8 @@ export const authRoutes = async (fastify: FastifyInstance) => {
   fastify.get("/discord", discordAuth)
   fastify.get("/discord/callback", discordCallback)
   fastify.get("/me", me)
+}
+
+export const register = async (app: FastifyInstance): Promise<void> => {
+  await app.register(authRoutes, { prefix: "/auth" })
 }

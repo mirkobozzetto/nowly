@@ -1,4 +1,4 @@
-import { getStatusReport, runStatusCheck } from "@/lib/status"
+import { getStatusReport, runStatusCheck } from "./status.service"
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 
 const requireCronAuth = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
@@ -15,6 +15,10 @@ const requireCronAuth = async (request: FastifyRequest, reply: FastifyReply): Pr
   if (!auth || auth !== `Bearer ${secret}`) {
     reply.status(401).send({ error: "Unauthorized" })
   }
+}
+
+export const register = async (app: FastifyInstance): Promise<void> => {
+  await app.register(statusRoutes)
 }
 
 export const statusRoutes = async (app: FastifyInstance): Promise<void> => {

@@ -1,5 +1,3 @@
-import { redis } from "@/lib/redis"
-
 export type ServiceStatus = "operational" | "slow" | "degraded" | "down" | "unknown"
 
 export type StatusServiceId = "website" | "api" | "library" | "cdn"
@@ -36,14 +34,13 @@ type StatusService = {
   url: string
 }
 
-const STATUS_PREFIX = "nowly:status"
 const REQUEST_TIMEOUT_MS = 5000
 const RECENT_SAMPLE_COUNT = 10
 const DEFAULT_INTERVAL_HOURS = 1
 const DEFAULT_SAMPLE_LIMIT = 168
 
-const sampleKey = (serviceId: StatusServiceId): string => `${STATUS_PREFIX}:service:${serviceId}:samples`
-const lastCheckKey = (): string => `${STATUS_PREFIX}:last-check`
+const sampleStore = new Map<StatusServiceId, StatusSample[]>()
+let lastCheckTimestamp: string | null = null
 
 const services: StatusService[] = [
   { id: "website", url: process.env.NEXT_PUBLIC_BASE_URL || "https://nowly.me" },
@@ -76,13 +73,6 @@ const statusWeight: Record<ServiceStatus, number> = {
 const getWorstStatus = (statuses: ServiceStatus[]): ServiceStatus =>
   statuses.reduce<ServiceStatus>((worst, status) =>
     statusWeight[status] > statusWeight[worst] ? status : worst, "operational")
-
-const parseSample = (value: unknown): StatusSample | null => {
-  if (!value) return null
-  if (typeof value === "string") { try { return JSON.parse(value) as StatusSample } catch { return null } }
-  if (typeof value === "object") return value as StatusSample
-  return null
-}
 
 const measureService = async (id: StatusServiceId, url: string): Promise<StatusSample> => {
   const controller = new AbortController()
@@ -118,14 +108,10 @@ const measureService = async (id: StatusServiceId, url: string): Promise<StatusS
 }
 
 export const getStatusReport = async (): Promise<StatusReport> => {
-  const reports = await Promise.all(
-    services.map(async (svc) => {
-      const rawSamples = await redis.lrange<unknown>(sampleKey(svc.id), 0, RECENT_SAMPLE_COUNT - 1)
-      const samples = rawSamples.map(parseSample).filter((s): s is StatusSample => Boolean(s))
-
-      return { id: svc.id, current: samples[0] ?? null, samples }
-    }),
-  )
+  const reports = services.map((svc) => {
+    const samples = sampleStore.get(svc.id) ?? []
+    return { id: svc.id, current: samples[0] ?? null, samples: samples.slice(0, RECENT_SAMPLE_COUNT) }
+  })
 
   return {
     generatedAt: new Date().toISOString(),
@@ -141,13 +127,14 @@ export const runStatusCheck = async (): Promise<StatusCheckResult> => {
   )
 
   const sampleLimit = getSampleLimit()
-  await Promise.all([
-    redis.set(lastCheckKey(), new Date().toISOString()),
-    ...samples.flatMap((sample) => [
-      redis.lpush(sampleKey(sample.serviceId), JSON.stringify(sample)),
-      redis.ltrim(sampleKey(sample.serviceId), 0, sampleLimit - 1),
-    ]),
-  ])
+  lastCheckTimestamp = new Date().toISOString()
+
+  for (const sample of samples) {
+    const existing = sampleStore.get(sample.serviceId) ?? []
+    existing.unshift(sample)
+    if (existing.length > sampleLimit) existing.length = sampleLimit
+    sampleStore.set(sample.serviceId, existing)
+  }
 
   return {
     report: await getStatusReport(),

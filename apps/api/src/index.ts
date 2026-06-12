@@ -1,10 +1,4 @@
-import { assetsRoutes } from "@/routes/assets"
-import { authRoutes } from "@/routes/auth"
-import { imageProxyRoutes } from "@/routes/image-proxy"
-import { presenceRoutes } from "@/routes/presence"
-import { registryRoutes } from "@/routes/registry"
-import { statsRoutes } from "@/routes/stats"
-import { statusRoutes } from "@/routes/status"
+import { autoloadRoutes } from "@/lib/autoload-routes"
 import cors from "@fastify/cors"
 import { serverEnv } from "@nowly/env/server"
 import Fastify from "fastify"
@@ -25,13 +19,7 @@ server.get("/health", async () => {
   }
 })
 
-await server.register(registryRoutes, { prefix: "/presences" })
-await server.register(presenceRoutes, { prefix: "/presences" })
-await server.register(assetsRoutes, { prefix: "/presences" })
-await server.register(statsRoutes, { prefix: "/presences" })
-await server.register(authRoutes, { prefix: "/auth" })
-await server.register(statusRoutes)
-await server.register(imageProxyRoutes)
+await autoloadRoutes(server)
 
 const port = serverEnv.PORT
 

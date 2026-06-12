@@ -1,12 +1,16 @@
 import type { FastifyInstance } from "fastify"
 import { readFileSync, existsSync } from "fs"
 import { join } from "path"
-import { PRESENCES_DIR } from "@/lib/paths"
+import { PRESENCES_DIR } from "@/shared/paths"
 
 const MIME_TYPES: Record<string, string> = {
   png: "image/png",
   jpg: "image/jpeg",
   jpeg: "image/jpeg",
+}
+
+export const register = async (app: FastifyInstance): Promise<void> => {
+  await app.register(assetsRoutes, { prefix: "/presences" })
 }
 
 export const assetsRoutes = async (fastify: FastifyInstance) => {
