@@ -16,6 +16,14 @@ await server.register(cors, {
   allowedHeaders: ["Content-Type", "Authorization", "x-user-token"],
 })
 
+server.get("/health", async () => {
+  return {
+    ok: true,
+    service: "nowly-api",
+    checkedAt: new Date().toISOString(),
+  }
+})
+
 await server.register(registryRoutes, { prefix: "/presences" })
 await server.register(presenceRoutes, { prefix: "/presences" })
 await server.register(assetsRoutes, { prefix: "/presences" })
