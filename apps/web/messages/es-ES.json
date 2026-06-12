@@ -48,6 +48,7 @@
     "description": "Sin suscripción. Ligero y seguro.",
     "downloadFor": "Descargar para {browser}",
     "comingSoon": "Próximamente",
+    "firefoxStatus": "Aún no compatible",
     "extension": "Descargar extensión",
     "browser": "Navegador",
     "platforms": "Compatible con navegadores basados en Chromium",
@@ -89,6 +90,7 @@
     "spanish": "Español",
     "about": "Acerca de",
     "faq": "FAQ",
+    "status": "Estado",
     "changelog": "Registro de cambios",
     "privacy": "Política de privacidad",
     "tos": "Términos del servicio"
@@ -169,6 +171,54 @@
       }
     ],
     "analyticsNote": "* Salvo analytics opcionales, que pueden desactivarse durante la instalación. Solo miden información agregada como instalaciones, sin nombre, email ni datos personales que puedan identificarte."
+  },
+  "StatusPage": {
+    "badge": "Estado",
+    "title": "Estado de los servicios de Nowly",
+    "description": "Consulta el estado del sitio, la API, la biblioteca de presencias y las descargas de la aplicación host.",
+    "checkedHistory": "Las comprobaciones se ejecutan cada {hours, plural, one {# hora} other {# horas}} y conservan los últimos puntos de historial.",
+    "latestLatency": "Última latencia",
+    "lastChecked": "Última comprobación",
+    "recentChecks": "Últimas 10 comprobaciones",
+    "historyLabel": "Historial reciente de tiempos de respuesta",
+    "noData": "Sin datos",
+    "allOperational": "Todos los servicios están operativos",
+    "someDegraded": "Algunos servicios están degradados",
+    "checkedLive": "Estas comprobaciones se ejecutan en directo con un tiempo límite corto.",
+    "operational": "Operativo",
+    "degraded": "Degradado",
+    "overall": {
+      "operational": "Todos los servicios están operativos",
+      "slow": "Algunos servicios responden más lento de lo normal",
+      "degraded": "Algunos servicios están degradados",
+      "down": "Algunos servicios no están disponibles",
+      "unknown": "Aún no hay datos de estado"
+    },
+    "statusLabels": {
+      "operational": "Operativo",
+      "slow": "Lento",
+      "degraded": "Degradado",
+      "down": "Caído",
+      "unknown": "Sin datos"
+    },
+    "services": {
+      "website": {
+        "title": "Sitio web",
+        "description": "Interfaz pública, documentación, páginas de descarga y biblioteca."
+      },
+      "api": {
+        "title": "API de Nowly",
+        "description": "Rutas usadas para cargar presencias, estadísticas, comentarios e instalaciones."
+      },
+      "library": {
+        "title": "Biblioteca de presencias",
+        "description": "Catálogo de plataformas compatibles y sus metadatos asociados."
+      },
+      "cdn": {
+        "title": "Descargas del host",
+        "description": "Manifest y archivos usados para distribuir la aplicación nativa de Nowly."
+      }
+    }
   },
   "PrivacyPage": {
     "title": "Politica de privacidad",
@@ -394,7 +444,7 @@
     "authorLabel": "Autor de la versión",
     "contributorsLabel": "Colaboradores"
   },
-
+  "NotFound": {
     "description": "La página que buscas no existe o ha sido movida.",
     "backToHome": "Volver al inicio"
   },

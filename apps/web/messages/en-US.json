@@ -90,6 +90,7 @@
     "spanish": "Spanish",
     "about": "About",
     "faq": "FAQ",
+    "status": "Status",
     "changelog": "Changelog",
     "privacy": "Privacy Policy",
     "tos": "Terms of Service"
@@ -170,6 +171,54 @@
       }
     ],
     "analyticsNote": "* Except optional analytics, which can be disabled during installation. They only measure aggregated information such as installs, with no name, email, or personal data that could identify you."
+  },
+  "StatusPage": {
+    "badge": "Status",
+    "title": "Nowly service status",
+    "description": "Track the status of the website, API, presence library, and host app downloads.",
+    "checkedHistory": "Checks run every {hours, plural, one {# hour} other {# hours}} and keep the latest history points.",
+    "latestLatency": "Latest latency",
+    "lastChecked": "Last checked",
+    "recentChecks": "Last 10 checks",
+    "historyLabel": "Recent service response history",
+    "noData": "No data",
+    "allOperational": "All services are operational",
+    "someDegraded": "Some services are degraded",
+    "checkedLive": "These checks run live with a short timeout.",
+    "operational": "Operational",
+    "degraded": "Degraded",
+    "overall": {
+      "operational": "All services are operational",
+      "slow": "Some services are slower than usual",
+      "degraded": "Some services are degraded",
+      "down": "Some services are unavailable",
+      "unknown": "No status data yet"
+    },
+    "statusLabels": {
+      "operational": "Operational",
+      "slow": "Slow",
+      "degraded": "Degraded",
+      "down": "Down",
+      "unknown": "No data"
+    },
+    "services": {
+      "website": {
+        "title": "Website",
+        "description": "Public interface, documentation, download pages, and library."
+      },
+      "api": {
+        "title": "Nowly API",
+        "description": "Routes used to load presences, stats, comments, and installations."
+      },
+      "library": {
+        "title": "Presence library",
+        "description": "Catalog of supported platforms and their associated metadata."
+      },
+      "cdn": {
+        "title": "Host downloads",
+        "description": "Manifest and files used to distribute the Nowly native app."
+      }
+    }
   },
   "PrivacyPage": {
     "title": "Privacy Policy",

@@ -90,6 +90,7 @@
     "spanish": "Espagnol",
     "about": "À propos",
     "faq": "FAQ",
+    "status": "Statut",
     "changelog": "Notes de version",
     "privacy": "Politique de confidentialité",
     "tos": "Conditions d'utilisation"
@@ -170,6 +171,54 @@
       }
     ],
     "analyticsNote": "* Hors analytics optionnelles, désactivables à l'installation. Elles servent uniquement à mesurer des informations agrégées comme les installations, sans nom, email ou donnée personnelle permettant de vous identifier."
+  },
+  "StatusPage": {
+    "badge": "Statut",
+    "title": "État des services Nowly",
+    "description": "Suivez l'état du site, de l'API, de la bibliothèque des présences et des téléchargements de l'application hôte.",
+    "checkedHistory": "Les vérifications ont lieu toutes les {hours, plural, one {# heure} other {# heures}} et gardent les derniers points historiques.",
+    "latestLatency": "Dernière latence",
+    "lastChecked": "Dernier check",
+    "recentChecks": "10 derniers checks",
+    "historyLabel": "Historique récent des temps de réponse",
+    "noData": "Aucune donnée",
+    "allOperational": "Tous les services sont opérationnels",
+    "someDegraded": "Certains services répondent difficilement",
+    "checkedLive": "Ces vérifications sont effectuées en direct avec un délai court.",
+    "operational": "Opérationnel",
+    "degraded": "Dégradé",
+    "overall": {
+      "operational": "Tous les services sont opérationnels",
+      "slow": "Certains services répondent plus lentement",
+      "degraded": "Certains services sont dégradés",
+      "down": "Certains services sont indisponibles",
+      "unknown": "Aucune donnée de statut pour le moment"
+    },
+    "statusLabels": {
+      "operational": "Opérationnel",
+      "slow": "Lent",
+      "degraded": "Dégradé",
+      "down": "Hors ligne",
+      "unknown": "Aucune donnée"
+    },
+    "services": {
+      "website": {
+        "title": "Site web",
+        "description": "Interface publique, documentation, pages de téléchargement et bibliothèque."
+      },
+      "api": {
+        "title": "API Nowly",
+        "description": "Routes utilisées pour charger les présences, les statistiques, les commentaires et les installations."
+      },
+      "library": {
+        "title": "Bibliothèque des présences",
+        "description": "Catalogue des plateformes compatibles et métadonnées associées."
+      },
+      "cdn": {
+        "title": "Téléchargements hôte",
+        "description": "Manifest et fichiers utilisés pour distribuer l'application native Nowly."
+      }
+    }
   },
   "PrivacyPage": {
     "title": "Politique de confidentialité",

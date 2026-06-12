@@ -30,9 +30,20 @@ Typed environment access for the Nowly monorepo.
 | `NEXT_PUBLIC_API_BASE_URL` | `clientEnv` | No | `https://api.nowly.me` |
 | `NEXT_PUBLIC_BASE_URL` | `clientEnv` | No | `http://localhost:3000` |
 | `PRESENCE_API_URL` | `clientEnv` | No | `https://api.nowly.me` |
+| `STATUS_CRON_SECRET` | API status cron | Production | - |
+| `STATUS_CHECK_INTERVAL_HOURS` | API status cron | No | `1` |
+| `STATUS_SAMPLE_LIMIT` | API status cron | No | `168` |
 | `VITE_WEB_BASE_URL` | `extensionEnv` | No | `https://nowly.me` |
 | `VITE_API_BASE_URL` | `extensionEnv` | No | `https://api.nowly.me` |
 | `VITE_CDN_BASE_URL` | `extensionEnv` | No | `https://cdn.nowly.me` |
+
+Status checks live on the API (Fastify). Run any external cron against:
+
+```bash
+curl -fsS -H "Authorization: Bearer $STATUS_CRON_SECRET" https://api.nowly.me/status/check
+```
+
+The route will skip checks until `STATUS_CHECK_INTERVAL_HOURS` has elapsed, so the cron can run more often than the actual monitoring interval.
 | `API_URL` | `cliEnv` | No | `https://api.nowly.me` |
 | `R2_BUCKET` | `cliEnv` | No | `nowly` |
 | `R2_ACCESS_KEY_ID` | `cliEnv` | For R2 sync | - |
