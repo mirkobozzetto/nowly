@@ -3,7 +3,7 @@ import cors from "@fastify/cors"
 import { serverEnv } from "@nowly/env/server"
 import Fastify from "fastify"
 
-const server = Fastify({ logger: true })
+const server = Fastify({ logger: true, ignoreTrailingSlash: true })
 
 await server.register(cors, {
   origin: true,
