@@ -1,0 +1,53 @@
+---
+title: 1.2.0
+date: Por determinar
+description: Renovación de la UI/UX de la extensión con nuevo reproductor, componentes nativos, insignia de actividad y reorganización de ajustes.
+---
+
+`1.2.0` es una release visual y funcional. Introduce un nuevo reproductor con animación de vinilo, un componente Sheet hecho a mano, una insignia de icono de extensión, un interruptor personalizado con la marca Nowly, y una interacción rediseñada para los ajustes de presencia.
+
+<ReleaseTable
+  headers={["Zona", "Qué cambia", "Por qué es útil"]}
+  rows={[
+    ["Reproductor", "Nuevo diseño con animación de vinilo giratorio (inactivo) y fondo borroso con carátula grande (activo). La barra de progreso se actualiza en tiempo real.", "El estado inactivo ya no es texto plano — la animación del vinilo da una identidad visual fuerte. El estado activo muestra las carátulas mucho más grandes y el tiempo restante es fluido."],
+    ["Sheet", "Nuevo componente Sheet nativo en Tailwind v4 (sin Radix), que se desliza desde abajo. Integrado en los ajustes de presencia.", "Sin dependencia de Radix, animación fluida, apto para móviles y focus trap integrado."],
+    ["Insignia de extensión", "Un indicador • aparece en el icono de la extensión cuando hay una presencia activa.", "El usuario sabe de un vistazo si hay actividad de Discord en curso sin abrir el panel."],
+    ["Interruptor", "Nuevo Switch cuadrado personalizado con esquinas redondeadas, con un diseño distintivo: fondo con borde (off), fondo violeta con botón blanco (on).", "El interruptor se alinea con la identidad visual de Nowly en lugar de usar el switch estándar del navegador."],
+    ["Ajustes de presencia", "Los ajustes se abren ahora en un Sheet desde abajo, con configuración y un botón de Desinstalar. Las etiquetas están vinculadas al switch mediante htmlFor.", "La interfaz es más limpia, más accesible (clic en la etiqueta = toggle), y la opción de desinstalación sigue disponible incluso sin ajustes."],
+    ["Presencia inactiva", "Cuando una presencia está desactivada, su icono se vuelve gris/desaturado y su nombre se atenúa.", "El contraste visual entre presencia activa e inactiva se entiende de inmediato."],
+  ]}
+/>
+
+## Reproductor
+
+El componente `CurrentActivityCard` ha sido rediseñado por completo. El estado inactivo muestra un vinilo SVG animado en rotación continua, reemplazando el antiguo icono `CirclePlay` estático por círculos concéntricos con un reflejo de luz.
+
+El estado activo mantiene el fondo borroso del póster, pero la carátula ahora es de 80×80px (antes 64×64). El título y subtítulo son más grandes y la barra de progreso es más gruesa. Un `useEffect` con intervalo de 1 segundo recalcula el tiempo transcurrido mediante `Date.now()`, haciendo la progresión fluida. Una fila de botones de control (anterior, reproducir/pausa, siguiente) aparece debajo de la barra de progreso.
+
+## Sheet
+
+Se creó un componente `Sheet` nativo desde cero en Tailwind v4, sin Radix UI. Soporta dos posiciones: un panel lateral desde la derecha (uso futuro) y un panel desde abajo con bordes superiores redondeados, usado para los ajustes de presencia.
+
+El componente maneja un fondo oscuro con `backdrop-blur`, cierre al hacer clic en el fondo o con Escape, focus trap cíclico para navegación por teclado, y guardado y restauración del foco anterior con una animación CSS de entrada.
+
+## Insignia de extensión
+
+El service worker ahora establece una insignia `•` en el icono de la extensión cuando una presencia envía actividad a Discord. `setActivityBadge(slug)` se llama en `handleActivityUpdate` y `clearActivityBadge()` en `handleClearActivity`. El color de la insignia usa el acento Nowly (`#5865F2`).
+
+## Interruptor personalizado
+
+Se creó un componente `Switch` para reemplazar todos los toggles nativos del navegador por un diseño propio de Nowly. El track es cuadrado con esquinas redondeadas (`rounded-lg`) en lugar de una píldora estándar.
+
+El estado OFF muestra un fondo `bg-card-2` con borde y un botón gris. El estado ON cambia a `bg-accent` (púrpura Nowly) con un botón blanco. Una animación suave con `transition-all duration-300` y un anillo de foco púrpura aseguran la accesibilidad.
+
+## Ajustes de presencia
+
+El panel de ajustes se ha modernizado. Los ajustes se abren en un Sheet desde abajo en lugar de un expand inline. Un botón rojo "Desinstalar" es accesible en el Sheet, incluso para presencias sin ajustes, mediante un icono de engranaje siempre visible.
+
+Las etiquetas están vinculadas al Switch mediante `htmlFor`, permitiendo hacer clic en el texto para alternar el ajuste sin apuntar precisamente al interruptor.
+
+## Presencia inactiva
+
+Cuando una presencia está desactivada, su icono y fondo se vuelven grises y desaturados (`opacity-40 saturate-0`), y el nombre de la presencia se atenúa a `text-muted-foreground/60`. Una transición suave facilita el cambio de estado.
+
+> Esta release sienta las bases visuales de Nowly — hace que la extensión sea identificable, coherente y más agradable de usar en el día a día.

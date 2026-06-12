@@ -1,0 +1,53 @@
+---
+title: 1.2.0
+date: To be determined
+description: UI/UX overhaul of the extension with a new player, native components, activity badge, and settings reorganization.
+---
+
+`1.2.0` is a visual and functional release. It introduces a new player with vinyl animation, a handcrafted Sheet component, an extension icon badge, a Nowly-branded custom toggle switch, and a redesigned presence settings interaction.
+
+<ReleaseTable
+  headers={["Area", "What changed", "Why it matters"]}
+  rows={[
+    ["Player", "New design with a spinning vinyl animation (idle) and a blurred poster background with large artwork (active). The progress bar updates in real time.", "The idle state is no longer plain text — the vinyl animation gives a strong visual identity. The active state shows covers much larger and the remaining time is fluid."],
+    ["Sheet", "New native Sheet component built with Tailwind v4 (no Radix), sliding from the bottom. Integrated into presence settings.", "No more Radix dependency, smooth animation, mobile-friendly, and built-in focus trap."],
+    ["Extension badge", "A • indicator appears on the extension icon when a presence is active.", "Users can tell at a glance whether Discord activity is running without opening the panel."],
+    ["Toggle switch", "New custom square switch with rounded corners, featuring a distinct design: bordered background (off), purple fill with white knob (on).", "The switch aligns with the Nowly brand identity instead of using the standard browser toggle."],
+    ["Presence settings", "Settings now open in a bottom Sheet with configuration options and an Uninstall button. Labels are linked to switches via htmlFor.", "The interface is cleaner, more accessible (clicking the label toggles the switch), and the uninstall option stays available even without settings."],
+    ["Inactive presence", "When a presence is disabled, its icon becomes grayed/desaturated and its name fades.", "The visual contrast between active and inactive presences is immediately understandable."],
+  ]}
+/>
+
+## Player
+
+The `CurrentActivityCard` component has been fully redesigned. The idle state displays an animated spinning vinyl SVG, replacing the static `CirclePlay` icon with concentric circles and a light reflection.
+
+The active state keeps the blurred poster background, but the artwork is now 80×80px (was 64×64). Title and subtitle are larger, and the progress bar is thicker. A `useEffect` with a 1-second interval recalculates elapsed time via `Date.now()`, making the progress fluid. A row of media controls (previous, play/pause, next) sits below the progress bar.
+
+## Sheet
+
+A native `Sheet` component was built from scratch in Tailwind v4, without Radix UI. It supports two positions: a side panel sliding from the right (future use), and a bottom panel with rounded top corners used for presence settings.
+
+The component handles a dark overlay with `backdrop-blur`, close on overlay click or Escape, cyclic focus trap for keyboard navigation, and previous focus save and restore with a CSS keyframe enter animation.
+
+## Extension badge
+
+The service worker now sets a `•` badge on the extension icon when a presence sends activity to Discord. `setActivityBadge(slug)` is called in `handleActivityUpdate` and `clearActivityBadge()` in `handleClearActivity`. The badge color uses the Nowly accent (`#5865F2`).
+
+## Custom switch
+
+A `Switch` component was created to replace all browser-native toggles with a Nowly-branded design. The track is square with rounded corners (`rounded-lg`) instead of a standard pill.
+
+The OFF state shows a `bg-card-2` background with a border and a gray knob. The ON state switches to `bg-accent` (Nowly purple) with a white knob. Smooth `transition-all duration-300` animation and a purple focus ring ensure accessibility.
+
+## Presence settings
+
+The settings panel has been modernized. Settings now open in a bottom Sheet instead of an inline expand. A red "Uninstall" button is accessible in the Sheet, even for presences without settings, via an always-visible gear icon.
+
+Setting labels are linked to the Switch via `htmlFor`, allowing clicks on the label text to toggle the setting without precisely aiming for the switch.
+
+## Inactive presence
+
+When a presence is disabled, its icon and background become grayed and desaturated (`opacity-40 saturate-0`), and the presence name fades to `text-muted-foreground/60`. A smooth transition eases the state change.
+
+> This release lays the visual foundation of Nowly — it makes the extension identifiable, consistent, and more pleasant to use every day.
