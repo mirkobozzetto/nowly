@@ -1,3 +1,4 @@
+import type { LocalizedValue } from "@nowly/locales";
 export type { PresenceData } from "@nowly/presence";
 export { PresenceType } from "@nowly/presence";
 
@@ -24,13 +25,13 @@ export interface Metadata {
   version?: string;
   author: { name: string; github?: string };
   contributors?: { name: string; github?: string }[];
-  description: Record<string, string>;
-  longDescription?: Record<string, string>;
+  description: LocalizedValue<string>;
+  longDescription?: LocalizedValue<string>;
   url: string[];
   regExp?: string;
   color: string;
   category: "streaming" | "music" | "tv" | "anime" | "other";
-  features?: Record<string, string[]>;
+  features?: LocalizedValue<string[]>;
   settings?: Record<string, unknown>;
   assets: {
     logo: string;

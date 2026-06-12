@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@nowly/env": "workspace:*",
+    "@nowly/locales": "workspace:*",
     "@nowly/presence": "workspace:*",
     "typescript": "5.7.3"
   },

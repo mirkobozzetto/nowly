@@ -1,8 +1,5 @@
-export type LocaleString = {
-  "fr-FR"?: string;
-  "en-US"?: string;
-  "es-ES"?: string;
-};
+import type { LocalizedValue } from "@nowly/locales"
+export type LocaleString = LocalizedValue<string>
 
 export type BooleanSetting = {
   type: "boolean";
