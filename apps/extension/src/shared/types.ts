@@ -1,4 +1,4 @@
-export type Locale = "fr" | "en" | "es";
+export type { LocaleShort as Locale } from "@nowly/locales";
 
 export type NativeMessage =
   | { type: "PING" }
@@ -65,7 +65,6 @@ export type PresenceMetadata = {
   regExp?: string;
   color: string;
   category: "streaming" | "music" | "tv" | "anime" | "other";
-  tags: string[];
   features?: Record<string, string[]>;
   version?: string | null;
   settings?: Record<string, unknown>;
@@ -123,6 +122,7 @@ export type PresenceDisplayMode = "category" | "alphabetical";
 export type ExtensionSettings = {
   presenceDisplayMode: PresenceDisplayMode;
   separateActivePresence: boolean;
+  analyticsConsent?: boolean;
   customApiBaseUrl?: string;
 };
 
