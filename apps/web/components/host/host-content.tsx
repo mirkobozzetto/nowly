@@ -11,6 +11,7 @@ import { HostDownload } from "./host-download";
 import { HostGuide } from "./host-guide";
 import { HostHero } from "./host-hero";
 import { HostRequirements } from "./host-requirements";
+import { HostTrust } from "./host-trust";
 
 const platformKeys = ["windows", "macos", "linux"] as const;
 
@@ -69,7 +70,6 @@ export const HostContent: FC = (): ReactElement => {
 
   const activePlatform = manualPlatform ?? (detectedPlatform || "windows");
   const config = platformConfig[activePlatform];
-  const ActiveIcon = config.icon;
 
   return (
     <>
@@ -143,6 +143,7 @@ export const HostContent: FC = (): ReactElement => {
       </div>
       */}
 
+      <HostTrust />
       <HostGuide />
       <HostRequirements platform={activePlatform} />
     </>

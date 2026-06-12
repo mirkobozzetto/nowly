@@ -7,11 +7,11 @@ import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 
 export const MarketplaceAdCard: FC = (): ReactElement | null => {
+  const t = useTranslations("Ads");
+
   if (!ADSENSE_ENABLED || process.env.NODE_ENV === "development") {
     return null;
   }
-
-  const t = useTranslations("Ads");
 
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden">

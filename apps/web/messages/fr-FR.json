@@ -356,6 +356,23 @@
     "chipLightweight": "Faible empreinte",
     "chipOpenSourceDesc": "Code source et historique du projet sur GitHub.",
     "chipLightweightDesc": "Petit, silencieux et conçu pour se faire oublier.",
+    "trustBadge": "Confiance",
+    "trustTitle": "Qu'est-ce que l'application hôte fait exactement ?",
+    "trustDescription": "Elle sert uniquement de pont local entre votre navigateur et Discord. Elle permet à Nowly de mettre à jour votre Rich Presence sans envoyer votre activité à nos serveurs.",
+    "trustItems": [
+      {
+        "title": "Traitement local",
+        "description": "L'extension détecte l'activité dans votre navigateur et l'application hôte la traite directement sur votre machine."
+      },
+      {
+        "title": "Connexion directe à Discord",
+        "description": "L'application communique avec le client Discord installé sur votre ordinateur via une connexion locale."
+      },
+      {
+        "title": "Pas de collecte cachée",
+        "description": "Vos titres, plateformes et informations de lecture ne sont pas envoyés à nos serveurs."
+      }
+    ],
     "guideTitle": "Guide d'installation",
     "step1Title": "Téléchargez l'installateur",
     "step1Desc": "Cliquez sur le bouton de téléchargement ci-dessus pour obtenir la dernière version de l'application hôte Nowly.",

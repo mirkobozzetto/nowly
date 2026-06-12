@@ -358,6 +358,23 @@
     "chipLightweight": "Low footprint",
     "chipOpenSourceDesc": "Source code and project history on GitHub.",
     "chipLightweightDesc": "Small, quiet, and built to stay out of the way.",
+    "trustBadge": "Trust",
+    "trustTitle": "What does the host app actually do?",
+    "trustDescription": "It only acts as a local bridge between your browser and Discord. It lets Nowly update your Rich Presence without sending your activity to our servers.",
+    "trustItems": [
+      {
+        "title": "Local processing",
+        "description": "The extension detects activity in your browser and the host app handles it directly on your machine."
+      },
+      {
+        "title": "Direct Discord connection",
+        "description": "The app communicates with the Discord client installed on your computer through a local connection."
+      },
+      {
+        "title": "No hidden collection",
+        "description": "Your titles, platforms, and playback information are not sent to our servers."
+      }
+    ],
     "guideTitle": "Installation Guide",
     "step1Title": "Download the installer",
     "step1Desc": "Click the download button above to get the latest version of the Nowly Host application.",
