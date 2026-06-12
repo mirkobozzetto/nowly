@@ -175,7 +175,7 @@
   "StatusPage": {
     "badge": "Status",
     "title": "Nowly service status",
-    "description": "Track the status of the website, API, presence library, and host app downloads.",
+    "description": "Everything running smoothly? Check at a glance.",
     "checkedHistory": "Checked live at {time}",
     "latestLatency": "Latest latency",
     "lastChecked": "Last checked",

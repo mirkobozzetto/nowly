@@ -175,7 +175,7 @@
   "StatusPage": {
     "badge": "Estado",
     "title": "Estado de los servicios de Nowly",
-    "description": "Consulta el estado del sitio, la API, la biblioteca de presencias y las descargas de la aplicación host.",
+    "description": "¿Todo funciona bien? Compruébelo de un vistazo.",
     "checkedHistory": "Última comprobación: {time}",
     "latestLatency": "Última latencia",
     "lastChecked": "Última comprobación",

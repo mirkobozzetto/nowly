@@ -24,6 +24,21 @@ const serviceIconMap: Record<StatusServiceId, LucideIcon> = {
   cdn: HardDriveDownload,
 };
 
+function formatRelativeTime(locale: string, generatedAt: string): string {
+  const diffMs = Date.now() - new Date(generatedAt).getTime();
+  const diffSeconds = Math.floor(diffMs / 1000);
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+
+  if (diffDays > 0) return rtf.format(-diffDays, "day");
+  if (diffHours > 0) return rtf.format(-diffHours, "hour");
+  if (diffMinutes > 0) return rtf.format(-diffMinutes, "minute");
+  return rtf.format(-diffSeconds, "second");
+}
+
 export default async function StatusPage(): Promise<ReactElement> {
   const t = await getTranslations("StatusPage");
   const locale = await getLocale();
@@ -56,7 +71,7 @@ export default async function StatusPage(): Promise<ReactElement> {
       <section className="overflow-hidden rounded-2xl border border-border bg-card">
         <div className="border-b border-border px-5 py-4">
           <h2 className="font-semibold text-foreground">
-            {t("checkedHistory", { time: new Intl.RelativeTimeFormat(locale, { numeric: "auto" }).format(-1, "hour") })}
+            {t("checkedHistory", { time: formatRelativeTime(locale, report.generatedAt) })}
           </h2>
         </div>
 

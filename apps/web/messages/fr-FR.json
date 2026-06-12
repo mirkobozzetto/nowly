@@ -175,7 +175,7 @@
   "StatusPage": {
     "badge": "Statut",
     "title": "État des services Nowly",
-    "description": "Suivez l'état du site, de l'API, de la bibliothèque des présences et des téléchargements de l'application hôte.",
+    "description": "Tout est opérationnel ? Vérifiez en un coup d'œil.",
     "checkedHistory": "Vérifié pour la dernière fois à {time}",
     "latestLatency": "Dernière latence",
     "lastChecked": "Dernier check",
