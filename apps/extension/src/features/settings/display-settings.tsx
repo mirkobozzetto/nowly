@@ -1,3 +1,4 @@
+import { Switch } from "@/components/switch";
 import { t } from "@/shared/i18n";
 import type { ExtensionSettings, PresenceDisplayMode } from "@/shared/types";
 import { LayoutGrid, List } from "lucide-react";
@@ -45,22 +46,11 @@ export const DisplaySettings: FC<Props> = ({ settings, onSettingsChange }): Reac
         <p className="text-xs font-medium text-foreground">{t("separateActive")}</p>
         <p className="mt-0.5 text-[11px] text-muted-foreground">{t("separateActiveDescription")}</p>
       </div>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={settings.separateActivePresence}
-        aria-label={t("separateActive")}
-        onClick={() => onSettingsChange({ separateActivePresence: !settings.separateActivePresence })}
-        className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${
-          settings.separateActivePresence ? "bg-accent" : "bg-dim-foreground/30"
-        }`}
-      >
-        <span
-          className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${
-            settings.separateActivePresence ? "translate-x-4.5" : "translate-x-0.75"
-          }`}
-        />
-      </button>
+      <Switch
+        checked={settings.separateActivePresence}
+        onChange={(checked) => onSettingsChange({ separateActivePresence: checked })}
+        ariaLabel={t("separateActive")}
+      />
     </label>
   </section>
 );

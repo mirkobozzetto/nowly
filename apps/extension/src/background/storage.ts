@@ -11,6 +11,7 @@ const DEVICE_ID_KEY = "deviceId";
 export const DEFAULT_SETTINGS: ExtensionSettings = {
   presenceDisplayMode: "category" as PresenceDisplayMode,
   separateActivePresence: false,
+  showPlayer: true,
 };
 
 export const getPresences = (): Promise<InstalledPresences> =>

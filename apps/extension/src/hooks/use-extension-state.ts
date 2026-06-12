@@ -37,6 +37,7 @@ const FALLBACK_NATIVE_STATUS: NativeStatus = {
 const FALLBACK_SETTINGS: ExtensionSettings = {
   presenceDisplayMode: "category",
   separateActivePresence: false,
+  showPlayer: true,
 };
 
 export const useExtensionState = (): ExtensionState => {

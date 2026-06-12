@@ -375,6 +375,28 @@ const normalizeImage = (value: string | undefined): string | undefined => {
   return undefined;
 };
 
+const setActivityBadge = (slug?: string): void => {
+  if (!slug) {
+    chrome.action.setBadgeText({ text: "" }).catch(() => {});
+    return;
+  }
+  chrome.action.setBadgeText({ text: "•" }).catch(() => {});
+  chrome.action.setBadgeBackgroundColor({ color: "#5865F2" }).catch(() => {});
+};
+
+const clearActivityBadge = (): void => {
+  chrome.action.setBadgeText({ text: "" }).catch(() => {});
+};
+
+const restoreActivityBadge = async (): Promise<void> => {
+  const activity = await getCurrentActivity();
+  if (activity) {
+    setActivityBadge(activity.slug);
+  } else {
+    clearActivityBadge();
+  }
+};
+
 const normalizeActivity = (activity: PresenceData, fallbackName: string): PresenceData => {
   const allowedTypes = new Set([0, 1, 2, 3, 5]);
   return {
@@ -424,6 +446,7 @@ const handleActivityUpdate = async (
 
   if (tabId) activeTabId = tabId;
   await addActiveSlug(slug);
+  setActivityBadge(slug);
 
   postNative({ type: "SET_ACTIVITY", presence });
 
@@ -447,6 +470,7 @@ const handleClearActivity = async (slug?: string): Promise<{ ok: boolean }> => {
     await clearActiveSlugs("clear");
   }
   postNative({ type: "CLEAR_ACTIVITY" });
+  clearActivityBadge();
 
   await Promise.all([
     setCurrentActivity(null),
@@ -608,11 +632,12 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
             payload: { enabled: partial.analyticsConsent, source },
           });
         }
-        if (partial.presenceDisplayMode || typeof partial.separateActivePresence === "boolean") {
+        if (partial.presenceDisplayMode || typeof partial.separateActivePresence === "boolean" || typeof partial.showPlayer === "boolean") {
           void trackAnalytics("settings_display_changed", {
             payload: {
               displayMode: settings.presenceDisplayMode,
               separateActivePresence: settings.separateActivePresence,
+              showPlayer: settings.showPlayer,
             },
           });
         }
@@ -812,6 +837,7 @@ chrome.runtime.onStartup.addListener(async () => {
   await installBundledPresences();
   const presences = await getPresences();
   await syncDeviceState();
+  await restoreActivityBadge();
   await syncPresenceScripts(presences);
 });
 

@@ -122,6 +122,7 @@ export type PresenceDisplayMode = "category" | "alphabetical";
 export type ExtensionSettings = {
   presenceDisplayMode: PresenceDisplayMode;
   separateActivePresence: boolean;
+  showPlayer: boolean;
   analyticsConsent?: boolean;
   customApiBaseUrl?: string;
 };
