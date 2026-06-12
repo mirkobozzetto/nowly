@@ -3,7 +3,7 @@ import { buildPresenceSeoPath, parsePresenceSeoSlug } from "@/lib/seo-presence";
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import type { ReactElement } from "react";
-import type { PresenceRelease } from "../library/[item]/fetch-presence";
+import { PresenceRelease } from "../library/[item]/fetch-presence";
 import { createPresenceMetadata, renderPresencePage } from "../library/[item]/presence-page";
 
 type Props = {
