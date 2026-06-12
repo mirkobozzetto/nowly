@@ -107,26 +107,44 @@
   },
   "FaqPage": {
     "title": "FAQ",
-    "q1": "What is Nowly?",
-    "a1": "Nowly is a browser extension that automatically updates your <strong>Discord status (Rich Presence)</strong> with what you are watching on your favorite streaming platforms. It consists of a Chromium extension, a Windows native messaging host, and a website. The entire project is <strong>open source</strong> and <strong>free</strong>.",
-    "q2": "Is Nowly free?",
-    "a2": "Yes, Nowly is <strong>completely free</strong>. The project is developed by <strong>two people</strong> in their spare time. If you wish to support the project, you can make a donation via <a href='https://ko-fi.com/qkimi_'>Ko-fi</a>, but this is entirely optional — all features are and will remain free.",
-
-    "q3": "How do I install Nowly?",
-    "a3": "Installation is a two-step process:<br /><strong>Step 1:</strong> install the extension from the <a href='https://chromewebstore.google.com/detail/nowly/kmnlnfldimgneaopdihkplkebobckcjpf'>Chrome Web Store</a>.<br /><strong>Step 2:</strong> download and run the <strong>Windows installer</strong> (the native application that communicates with Discord).<br />Once both are installed, Nowly runs automatically in the background. No further configuration is needed.",
-
-    "q4": "Which platforms are supported?",
-    "a4": "Nowly currently supports <strong>YouTube</strong>, <strong>Twitch</strong>, <strong>Disney+</strong>, <strong>Apple TV+</strong>, and <strong>Prime Video</strong>.<br /><br />New platforms are regularly added through extension updates. These presences are built by both the <strong>core team</strong> and <strong>community contributors</strong>. Anyone can propose or create a new presence — check the <a href='https://github.com/q-kimi/nowly'>GitHub</a> repository to get involved.<br /><br />Head over to the <strong>library</strong> for the full list and the development status of each presence.",
-    "q5": "How does the Discord connection work?",
-    "a5": "The <strong>native application</strong> communicates directly with the <a href='https://discord.com'>Discord</a> client on your computer via a Windows named pipe (IPC). <strong>No data passes through our servers.</strong> Nowly simply sends your current activity information (title, platform, duration) to Discord, which displays it on your profile.",
-    "q6": "Are my data shared with third-party servers?",
-    "a6": "<strong>No.</strong> Everything is processed locally on your machine. The extension detects content in your browser and passes it to the native application, which sends it directly to <a href='https://discord.com'>Discord</a> via local communication. <strong>None of your personal data or activity is sent to our servers.</strong> Only aggregated statistics (installation count, rating) are stored for each presence.",
-    "q7": "Why is my Discord status not updating?",
-    "a7": "Several possible reasons:<br /><br /><strong>•</strong> Is <a href='https://discord.com'>Discord</a> running on your computer?<br /><strong>•</strong> Is the Nowly native application installed and running?<br /><strong>•</strong> Is the extension enabled in your browser?<br /><strong>•</strong> Is the presence for your platform installed from the library?<br /><br />You can also open the extension's <strong>side panel</strong> to view debug messages.",
-    "q8": "How do I uninstall Nowly?",
-    "a8": "To uninstall the extension, right-click the Nowly icon in your browser and select 'Remove from Chrome'. To uninstall the native application, run the uninstaller program available in the installation folder or use the Windows Control Panel.",
-    "q9": "Is Nowly open source?",
-    "a9": "Yes, the <strong>complete source code</strong> of Nowly is available on <a href='https://github.com/q-kimi/nowly'>GitHub</a>. You can browse the code, suggest improvements, report bugs, or contribute to the project's development."
+    "items": [
+      {
+        "question": "What is Nowly?",
+        "answer": "Nowly is a browser extension that automatically updates your <strong>Discord status (Rich Presence)</strong> with what you are watching on your favorite streaming platforms. It consists of a Chromium extension, a Windows native messaging host, and a website. The entire project is <strong>open source</strong> and <strong>free</strong>."
+      },
+      {
+        "question": "Is Nowly free?",
+        "answer": "Yes, Nowly is <strong>completely free</strong>. The project is developed by <strong>two people</strong> in their spare time. If you wish to support the project, you can make a donation via <a href='https://ko-fi.com/qkimi_'>Ko-fi</a>, but this is entirely optional — all features are and will remain free."
+      },
+      {
+        "question": "How do I install Nowly?",
+        "answer": "Installation is a two-step process:<br /><strong>Step 1:</strong> install the extension from the <a href='https://chromewebstore.google.com/detail/nowly/kmnlnfldimgneaopdihkplkebobckcjpf'>Chrome Web Store</a>.<br /><strong>Step 2:</strong> download and run the <strong>Windows installer</strong> (the native application that communicates with Discord).<br />Once both are installed, Nowly runs automatically in the background. No further configuration is needed."
+      },
+      {
+        "question": "Which platforms are supported?",
+        "answer": "Nowly currently supports <strong>YouTube</strong>, <strong>Twitch</strong>, <strong>Disney+</strong>, <strong>Apple TV+</strong>, and <strong>Prime Video</strong>.<br /><br />New platforms are regularly added through extension updates. These presences are built by both the <strong>core team</strong> and <strong>community contributors</strong>. Anyone can propose or create a new presence — check the <a href='https://github.com/q-kimi/nowly'>GitHub</a> repository to get involved.<br /><br />Head over to the <strong>library</strong> for the full list and the development status of each presence."
+      },
+      {
+        "question": "How does the Discord connection work?",
+        "answer": "The <strong>native application</strong> communicates directly with the <a href='https://discord.com'>Discord</a> client on your computer via a Windows named pipe (IPC). <strong>No data passes through our servers.</strong> Nowly simply sends your current activity information (title, platform, duration) to Discord, which displays it on your profile."
+      },
+      {
+        "question": "Are my data shared with third-party servers?",
+        "answer": "<strong>No.</strong> Everything is processed locally on your machine. The extension detects content in your browser and passes it to the native application, which sends it directly to <a href='https://discord.com'>Discord</a> via local communication. <strong>None of your personal data or activity is sent to our servers.</strong> Only aggregated statistics (installation count, rating) are stored for each presence."
+      },
+      {
+        "question": "Why is my Discord status not updating?",
+        "answer": "Several possible reasons:<ul><li>Is <a href='https://discord.com'>Discord</a> running on your computer?</li><li>Is the Nowly native application installed and running?</li><li>Is the extension enabled in your browser?</li><li>Is the presence for your platform installed from the library?</li></ul><br /><br />You can also open the extension's <strong>side panel</strong> to view debug messages."
+      },
+      {
+        "question": "How do I uninstall Nowly?",
+        "answer": "To uninstall the extension, right-click the Nowly icon in your browser and select 'Remove from Chrome'. To uninstall the native application, run the uninstaller program available in the installation folder or use the Windows Control Panel."
+      },
+      {
+        "question": "Is Nowly open source?",
+        "answer": "Yes, the <strong>complete source code</strong> of Nowly is available on <a href='https://github.com/q-kimi/nowly'>GitHub</a>. You can browse the code, suggest improvements, report bugs, or contribute to the project's development."
+      }
+    ]
   },
   "AboutPage": {
     "badge": "About",
@@ -156,50 +174,94 @@
     "title": "Privacy Policy",
     "lastUpdated": "Last updated: June 2026.",
     "intro": "Nowly is designed with your privacy as a priority. The application runs <strong>almost entirely locally</strong> on your machine — no personal data about you is collected, stored, or shared with our servers. This policy explains what information is processed, where, and why.",
-    "s01title": "General Operation",
-    "s01body": "Nowly consists of three parts: a <strong>browser extension</strong>, a <strong>Windows native application</strong>, and a <strong>website</strong> (marketplace). The extension detects media content in your browser and passes it to the native app, which sends it directly to the Discord client on your machine via a local Windows named pipe (IPC). None of this data ever touches our servers.",
-    "s02title": "Data Processed by the Extension",
-    "s02body": "The browser extension stores the following data locally in <code>chrome.storage.local</code> — it never leaves your machine:<br /><br /><strong>•</strong> Installed presences (metadata, signed bundles, activation state).<br /><strong>•</strong> Current activity (content title, platform, duration, thumbnail).<br /><strong>•</strong> A debug log (timestamps, actions, visited URLs).<br /><strong>•</strong> Onboarding state and a <strong>local snapshot</strong> of your Discord profile (ID, username, avatar) used solely for UI display.<br /><strong>•</strong> Display preferences and per-presence settings.<br /><br />This data stays on your device and can be erased by uninstalling the extension or by using the reset option in the extension settings.",
-    "s03title": "Data Processed by the Native Application",
-    "s03body": "The native Nowly application writes a log file to <code>%LOCALAPPDATA%\\NowlyClient\\nowly-host.log</code> containing timestamps and activity information sent to Discord. This file is stored locally, can be deleted at any time, and is <strong>never</strong> sent to our servers.",
-    "s04title": "Data Collected by the Website",
-    "s04body": "The Nowly website uses <strong>Vercel Analytics</strong> for anonymous audience measurement. No third-party cookies, cross-site trackers, or profiling tools are used. Collected data is limited to:<br /><br /><strong>•</strong> Pages visited and visit duration.<br /><strong>•</strong> Device type and browser (non-identifying information).<br /><strong>•</strong> Approximate country (inferred from IP, which is not stored).<br /><br /><strong>No personally identifiable information</strong> is collected through the website.",
-    "s05title": "Presence Statistics (Redis)",
-    "s05body": "A Redis database (hosted on <strong>Upstash</strong>) stores <strong>aggregated, anonymous</strong> statistics for each presence:<br /><br /><strong>•</strong> Total installation count.<br /><strong>•</strong> Active user count.<br /><strong>•</strong> Average rating (rating sum and vote count).<br /><strong>•</strong> Current version, creation date, and last update date.<br /><br />These statistics cannot identify any individual user. They exist solely to inform you about each presence&apos;s popularity and status.",
-    "s06title": "Discord Communication",
-    "s06body": "Nowly communicates with the Discord client via a <strong>local IPC interface</strong>. The following information may be transmitted to Discord solely for displaying your Rich Presence:<br /><br /><strong>•</strong> The platform name (e.g. YouTube).<br /><strong>•</strong> The content title you are watching.<br /><strong>•</strong> The channel or author name.<br /><strong>•</strong> Playback state (playing / paused).<br /><strong>•</strong> Duration and elapsed time.<br /><br />This information is visible to anyone who can see your Discord profile. Nowly has no control over how Discord processes this data once received. Please refer to <a href='https://discord.com/privacy'>Discord&apos;s Privacy Policy</a> for more details.",
-    "s07title": "Third-Party Services",
-    "s07body": "Nowly uses the following third-party services:<br /><br /><strong>•</strong> <strong>Vercel</strong> — website hosting and anonymous analytics.<br /><strong>•</strong> <strong>Upstash</strong> — Redis database hosting (aggregated statistics).<br /><strong>•</strong> <strong>Chrome Web Store</strong> — browser extension distribution.<br /><strong>•</strong> <strong>Ko-fi</strong> — donation platform (no personal data is shared with Ko-fi by Nowly).<br /><strong>•</strong> <strong>Discord</strong> — Rich Presence display (local communication only).",
-    "s08title": "Cookies",
-    "s08body": "The Nowly website does <strong>not</strong> use any cookies for tracking or profiling purposes. No third-party cookies are set. Language preference is preserved through Next.js routing (no persistent cookies).",
-    "s09title": "Security",
-    "s09body": "Presence packages are <strong>cryptographically signed</strong> (ECDSA P-256) before distribution. The extension <strong>verifies the signature</strong> before installing or running any presence, ensuring only authorized code executes on your machine.",
-    "s10title": "Your Rights (GDPR)",
-    "s10body": "Under the General Data Protection Regulation (GDPR), you have the right to <strong>access, rectify, and delete</strong> your personal data. Since no personal data is collected on our servers, these rights are exercised locally by uninstalling the extension or deleting the native application log files.",
-    "s11title": "Contact",
-    "s11body": "For any questions regarding this Privacy Policy, please reach out via the <a href='https://github.com/q-kimi/nowly'>GitHub repository</a> or on <a href='https://ko-fi.com/qkimi_'>Ko-fi</a>."
+    "sections": [
+      {
+        "title": "General Operation",
+        "body": "Nowly consists of three parts: a <strong>browser extension</strong>, a <strong>Windows native application</strong>, and a <strong>website</strong> (marketplace). The extension detects media content in your browser and passes it to the native app, which sends it directly to the Discord client on your machine via a local Windows named pipe (IPC). None of this data ever touches our servers."
+      },
+      {
+        "title": "Data Processed by the Extension",
+        "body": "The browser extension stores the following data locally in <code>chrome.storage.local</code> — it never leaves your machine:<ul><li>Installed presences (metadata, signed bundles, activation state).</li><li>Current activity (content title, platform, duration, thumbnail).</li><li>A debug log (timestamps, actions, visited URLs).</li><li>Onboarding state and a <strong>local snapshot</strong> of your Discord profile (ID, username, avatar) used solely for UI display.</li><li>Display preferences and per-presence settings.</li></ul><br /><br />This data stays on your device and can be erased by uninstalling the extension or by using the reset option in the extension settings."
+      },
+      {
+        "title": "Data Processed by the Native Application",
+        "body": "The native Nowly application writes a log file to <code>%LOCALAPPDATA%\\NowlyClient\\nowly-host.log</code> containing timestamps and activity information sent to Discord. This file is stored locally, can be deleted at any time, and is <strong>never</strong> sent to our servers."
+      },
+      {
+        "title": "Data Collected by the Website",
+        "body": "The Nowly website uses <strong>Vercel Analytics</strong> for anonymous audience measurement. No third-party cookies, cross-site trackers, or profiling tools are used. Collected data is limited to:<ul><li>Pages visited and visit duration.</li><li>Device type and browser (non-identifying information).</li><li>Approximate country (inferred from IP, which is not stored).</li></ul><br /><br /><strong>No personally identifiable information</strong> is collected through the website."
+      },
+      {
+        "title": "Presence Statistics (Redis)",
+        "body": "A Redis database (hosted on <strong>Upstash</strong>) stores <strong>aggregated, anonymous</strong> statistics for each presence:<ul><li>Total installation count.</li><li>Active user count.</li><li>Average rating (rating sum and vote count).</li><li>Current version, creation date, and last update date.</li></ul><br /><br />These statistics cannot identify any individual user. They exist solely to inform you about each presence&apos;s popularity and status."
+      },
+      {
+        "title": "Discord Communication",
+        "body": "Nowly communicates with the Discord client via a <strong>local IPC interface</strong>. The following information may be transmitted to Discord solely for displaying your Rich Presence:<ul><li>The platform name (e.g. YouTube).</li><li>The content title you are watching.</li><li>The channel or author name.</li><li>Playback state (playing / paused).</li><li>Duration and elapsed time.</li></ul><br /><br />This information is visible to anyone who can see your Discord profile. Nowly has no control over how Discord processes this data once received. Please refer to <a href='https://discord.com/privacy'>Discord&apos;s Privacy Policy</a> for more details."
+      },
+      {
+        "title": "Third-Party Services",
+        "body": "Nowly uses the following third-party services:<ul><li><strong>Vercel</strong> — website hosting and anonymous analytics.</li><li><strong>Upstash</strong> — Redis database hosting (aggregated statistics).</li><li><strong>Chrome Web Store</strong> — browser extension distribution.</li><li><strong>Ko-fi</strong> — donation platform (no personal data is shared with Ko-fi by Nowly).</li><li><strong>Discord</strong> — Rich Presence display (local communication only).</li></ul>"
+      },
+      {
+        "title": "Cookies",
+        "body": "The Nowly website does <strong>not</strong> use any cookies for tracking or profiling purposes. No third-party cookies are set. Language preference is preserved through Next.js routing (no persistent cookies)."
+      },
+      {
+        "title": "Security",
+        "body": "Presence packages are <strong>cryptographically signed</strong> (ECDSA P-256) before distribution. The extension <strong>verifies the signature</strong> before installing or running any presence, ensuring only authorized code executes on your machine."
+      },
+      {
+        "title": "Your Rights (GDPR)",
+        "body": "Under the General Data Protection Regulation (GDPR), you have the right to <strong>access, rectify, and delete</strong> your personal data. Since no personal data is collected on our servers, these rights are exercised locally by uninstalling the extension or deleting the native application log files."
+      },
+      {
+        "title": "Contact",
+        "body": "For any questions regarding this Privacy Policy, please reach out via the <a href='https://github.com/q-kimi/nowly'>GitHub repository</a> or on <a href='https://ko-fi.com/qkimi_'>Ko-fi</a>."
+      }
+    ]
   },
   "TosPage": {
     "title": "Terms of Service",
     "lastUpdated": "Last updated: June 2026.",
-    "s01title": "Acceptance of Terms",
-    "s01body": "By downloading, installing, or using Nowly (the browser extension, native application, website, and any associated software), you agree to these Terms of Service. If you <strong>do not agree</strong>, please do not use the software.",
-    "s02title": "Service Description",
-    "s02body": "Nowly is an <strong>open-source</strong> tool that detects media content in your browser and automatically updates your Discord status (Rich Presence) via local communication with the Discord client. The service consists of:<br /><br /><strong>•</strong> A <strong>Chromium browser extension</strong> that detects and reports your activity.<br /><strong>•</strong> A <strong>Windows native application</strong> that acts as a gateway to Discord.<br /><strong>•</strong> A <strong>website</strong> (marketplace) for discovering and installing presences.<br /><strong>•</strong> A <strong>developer SDK</strong> and tooling for creating custom presences.",
-    "s03title": "License",
-    "s03body": "Nowly is distributed as <strong>open-source software</strong>. You are permitted to use, copy, modify, and redistribute it in accordance with the applicable license (available in the <a href='https://github.com/q-kimi/nowly'>GitHub repository</a>). This license does <strong>not</strong> apply to content from third-party platforms (YouTube, Twitch, etc.) that you choose to display via Nowly.",
-    "s04title": "Responsible Use",
-    "s04body": "You agree to use Nowly in compliance with applicable laws and <a href='https://discord.com/terms'>Discord&apos;s Terms of Service</a>. Specifically, you must <strong>not</strong>:<br /><br /><strong>•</strong> Use Nowly to display illegal, hateful, or inappropriate content.<br /><strong>•</strong> Attempt to bypass the security mechanisms of the extension or native application.<br /><strong>•</strong> Distribute modified or unsigned presences through the official infrastructure.<br /><strong>•</strong> Use Nowly in a way that violates the terms of service of Discord or any streaming platform you access.",
-    "s05title": "Intellectual Property",
-    "s05body": "The Nowly source code is subject to its applicable open-source license. All third-party trademarks, logos, and platform names (YouTube, Twitch, Disney+, Apple TV+, Prime Video, Discord) remain the property of their respective owners. Nowly is <strong>not affiliated with, endorsed, or sponsored</strong> by Discord Inc. or any of the supported streaming platforms.",
-    "s06title": "Limitation of Liability",
-    "s06body": "Nowly is provided <strong>&quot;as is&quot;</strong>, without any warranty, express or implied. The author shall not be held liable for any direct or indirect damages arising from the use or inability to use the software, including but not limited to:<br /><br /><strong>•</strong> Malfunction of Discord or your status display.<br /><strong>•</strong> Suspension or restriction of your Discord account by Discord Inc.<br /><strong>•</strong> Loss of data stored locally by the extension.<br /><strong>•</strong> Any indirect damage related to the use of the native application.",
-    "s07title": "Privacy",
-    "s07body": "Your use of Nowly is governed by our <a href='./privacy'>Privacy Policy</a>, which is incorporated into these Terms of Service. We encourage you to read it carefully before using the service.",
-    "s08title": "Changes to Terms",
-    "s08body": "We reserve the right to modify these Terms of Service at any time. Changes take effect immediately upon publication on this page. It is your responsibility to review this page periodically. <strong>Continued use</strong> of Nowly after changes are posted constitutes your acceptance of the new terms.",
-    "s09title": "Contact",
-    "s09body": "For any questions regarding these Terms of Service, please reach out via the <a href='https://github.com/q-kimi/nowly'>GitHub repository</a> or on <a href='https://ko-fi.com/qkimi_'>Ko-fi</a>."
+    "sections": [
+      {
+        "title": "Acceptance of Terms",
+        "body": "By downloading, installing, or using Nowly (the browser extension, native application, website, and any associated software), you agree to these Terms of Service. If you <strong>do not agree</strong>, please do not use the software."
+      },
+      {
+        "title": "Service Description",
+        "body": "Nowly is an <strong>open-source</strong> tool that detects media content in your browser and automatically updates your Discord status (Rich Presence) via local communication with the Discord client. The service consists of:<ul><li>A <strong>Chromium browser extension</strong> that detects and reports your activity.</li><li>A <strong>Windows native application</strong> that acts as a gateway to Discord.</li><li>A <strong>website</strong> (marketplace) for discovering and installing presences.</li><li>A <strong>developer SDK</strong> and tooling for creating custom presences.</li></ul>"
+      },
+      {
+        "title": "License",
+        "body": "Nowly is distributed as <strong>open-source software</strong>. You are permitted to use, copy, modify, and redistribute it in accordance with the applicable license (available in the <a href='https://github.com/q-kimi/nowly'>GitHub repository</a>). This license does <strong>not</strong> apply to content from third-party platforms (YouTube, Twitch, etc.) that you choose to display via Nowly."
+      },
+      {
+        "title": "Responsible Use",
+        "body": "You agree to use Nowly in compliance with applicable laws and <a href='https://discord.com/terms'>Discord&apos;s Terms of Service</a>. Specifically, you must <strong>not</strong>:<ul><li>Use Nowly to display illegal, hateful, or inappropriate content.</li><li>Attempt to bypass the security mechanisms of the extension or native application.</li><li>Distribute modified or unsigned presences through the official infrastructure.</li><li>Use Nowly in a way that violates the terms of service of Discord or any streaming platform you access.</li></ul>"
+      },
+      {
+        "title": "Intellectual Property",
+        "body": "The Nowly source code is subject to its applicable open-source license. All third-party trademarks, logos, and platform names (YouTube, Twitch, Disney+, Apple TV+, Prime Video, Discord) remain the property of their respective owners. Nowly is <strong>not affiliated with, endorsed, or sponsored</strong> by Discord Inc. or any of the supported streaming platforms."
+      },
+      {
+        "title": "Limitation of Liability",
+        "body": "Nowly is provided <strong>&quot;as is&quot;</strong>, without any warranty, express or implied. The author shall not be held liable for any direct or indirect damages arising from the use or inability to use the software, including but not limited to:<ul><li>Malfunction of Discord or your status display.</li><li>Suspension or restriction of your Discord account by Discord Inc.</li><li>Loss of data stored locally by the extension.</li><li>Any indirect damage related to the use of the native application.</li></ul>"
+      },
+      {
+        "title": "Privacy",
+        "body": "Your use of Nowly is governed by our <a href='./privacy'>Privacy Policy</a>, which is incorporated into these Terms of Service. We encourage you to read it carefully before using the service."
+      },
+      {
+        "title": "Changes to Terms",
+        "body": "We reserve the right to modify these Terms of Service at any time. Changes take effect immediately upon publication on this page. It is your responsibility to review this page periodically. <strong>Continued use</strong> of Nowly after changes are posted constitutes your acceptance of the new terms."
+      },
+      {
+        "title": "Contact",
+        "body": "For any questions regarding these Terms of Service, please reach out via the <a href='https://github.com/q-kimi/nowly'>GitHub repository</a> or on <a href='https://ko-fi.com/qkimi_'>Ko-fi</a>."
+      }
+    ]
   },
   "MarketplacePage": {
     "badge": "Library",
