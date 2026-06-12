@@ -84,5 +84,13 @@
   "hostUpdateAvailable": "Actualización disponible: v{latestVersion}",
   "hostUpToDate": "Actualizado",
   "checkHostUpdate": "Buscar actualización",
-  "hostDownloadUpdate": "Descargar actualización"
+  "hostDownloadUpdate": "Descargar actualización",
+  "analytics": "Analíticas",
+  "analyticsDescription": "Comparte estadísticas técnicas anónimas para mejorar presencias, fiabilidad e instalación. Nunca se envían títulos, URLs, búsquedas, contenido visto ni IDs de Discord.",
+  "analyticsConsent": "Compartir analíticas anónimas",
+  "onboardingAnalyticsTitle": "Analíticas anónimas",
+  "onboardingAnalyticsBody": "Nowly puede recopilar estadísticas anónimas como instalaciones, presencias activas, versiones y errores técnicos. Esto nos ayuda a saber qué funciona y qué mejorar.",
+  "onboardingAnalyticsPrivacy": "Nunca recopilamos URLs de páginas, títulos, búsquedas, contenido visto, IPs brutas ni IDs de Discord para analíticas. Puedes cambiarlo luego en ajustes.",
+  "onboardingAnalyticsAccept": "Compartir",
+  "onboardingAnalyticsDecline": "No gracias"
 }

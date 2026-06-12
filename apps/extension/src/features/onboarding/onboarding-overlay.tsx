@@ -1,11 +1,11 @@
-import { CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Lock, MonitorDown, PlugZap, Settings, ShoppingBag, Sparkles } from "lucide-react";
+import { BarChart3, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Lock, MonitorDown, PlugZap, Settings, ShoppingBag, Sparkles } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useMemo, useState } from "react";
 import { Header } from "@/components/header";
 import { LocaleFlag } from "@/components/locale-flag";
 import { platforms } from "@/lib/platforms";
 import type { NativeStatus } from "@/lib/messages";
-import type { UserScriptsStatus } from "@/shared/types";
+import type { ExtensionSettings, UserScriptsStatus } from "@/shared/types";
 import { resolveLocale, t } from "@/shared/i18n";
 import type { LocalePreference } from "@/shared/i18n";
 
@@ -18,6 +18,8 @@ type Props = {
   onConnectNative: () => void;
   onComplete: () => void;
   onSkipTour: () => void;
+  settings: ExtensionSettings;
+  onSettingsChange: (partial: Partial<ExtensionSettings>) => void;
 };
 
 const localeOptions: Array<{ label: string; value: LocalePreference }> = [
@@ -134,6 +136,35 @@ const NativeClientGate: FC<{ nativeStatus: NativeStatus; onConnectNative: () => 
   );
 };
 
+const AnalyticsConsentGate: FC<{ onAccept: () => void; onDecline: () => void }> = ({ onAccept, onDecline }) => (
+  <PanelShell>
+    <div className="text-center">
+      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent">
+        <BarChart3 className="h-6 w-6" />
+      </div>
+      <h1 className="mt-4 text-lg font-semibold text-foreground">{t("onboardingAnalyticsTitle")}</h1>
+      <p className="mt-3 text-sm leading-6 text-muted-foreground">{t("onboardingAnalyticsBody")}</p>
+      <p className="mt-3 text-xs leading-5 text-muted-foreground">{t("onboardingAnalyticsPrivacy")}</p>
+      <div className="mt-5 flex items-center justify-center gap-2">
+        <button
+          type="button"
+          onClick={onDecline}
+          className="inline-flex h-10 items-center rounded-lg border border-border bg-card-2 px-4 text-sm font-semibold text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
+        >
+          {t("onboardingAnalyticsDecline")}
+        </button>
+        <button
+          type="button"
+          onClick={onAccept}
+          className="inline-flex h-10 items-center rounded-lg bg-accent px-4 text-sm font-semibold text-background transition-opacity hover:opacity-90"
+        >
+          {t("onboardingAnalyticsAccept")}
+        </button>
+      </div>
+    </div>
+  </PanelShell>
+);
+
 const tourSteps = [
   {
     icon: Sparkles,
@@ -166,6 +197,8 @@ export const OnboardingOverlay: FC<Props> = ({
   onConnectNative,
   onComplete,
   onSkipTour,
+  settings,
+  onSettingsChange,
 }): ReactElement | null => {
   const [index, setIndex] = useState(0);
   const nativeReady = isNativeReady(nativeStatus);
@@ -177,6 +210,14 @@ export const OnboardingOverlay: FC<Props> = ({
 
   if (!userScripts.enabled) return <UserScriptsGate />;
   if (!nativeReady) return <NativeClientGate nativeStatus={nativeStatus} onConnectNative={onConnectNative} />;
+  if (settings.analyticsConsent === undefined) {
+    return (
+      <AnalyticsConsentGate
+        onAccept={() => onSettingsChange({ analyticsConsent: true })}
+        onDecline={() => onSettingsChange({ analyticsConsent: false })}
+      />
+    );
+  }
   if (onboardingCompleted) return null;
 
   return (

@@ -134,6 +134,20 @@ export const SettingsView: FC<Props> = ({
     <DisplaySettings settings={settings} onSettingsChange={onSettingsChange} />
 
     <section className="rounded-lg border border-border bg-card p-4">
+      <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("analytics")}</h2>
+      <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("analyticsDescription")}</p>
+      <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card-2 px-3 py-2">
+        <span className="text-xs font-medium text-foreground">{t("analyticsConsent")}</span>
+        <input
+          type="checkbox"
+          checked={settings.analyticsConsent === true}
+          onChange={(event) => onSettingsChange({ analyticsConsent: event.target.checked })}
+          className="h-4 w-4 accent-accent"
+        />
+      </label>
+    </section>
+
+    <section className="rounded-lg border border-border bg-card p-4">
       <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("marketplace")}</h2>
       <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("marketplaceDescription")}</p>
       <div className="flex items-center gap-2">

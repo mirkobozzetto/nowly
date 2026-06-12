@@ -72,6 +72,8 @@ const App: FC = (): ReactElement => {
         }}
         onComplete={() => setOnboarding({ onboardingCompleted: true })}
         onSkipTour={() => setOnboarding({ onboardingCompleted: true })}
+        settings={settings}
+        onSettingsChange={setSettings}
       />
     </main>
   );

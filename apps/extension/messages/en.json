@@ -84,5 +84,13 @@
   "hostUpdateAvailable": "Update available: v{latestVersion}",
   "hostUpToDate": "Up to date",
   "checkHostUpdate": "Check for Update",
-  "hostDownloadUpdate": "Download Update"
+  "hostDownloadUpdate": "Download Update",
+  "analytics": "Analytics",
+  "analyticsDescription": "Share anonymous technical stats to help improve presences, reliability, and install flows. Titles, URLs, searches, watched content, and Discord IDs are never sent.",
+  "analyticsConsent": "Share anonymous analytics",
+  "onboardingAnalyticsTitle": "Anonymous analytics",
+  "onboardingAnalyticsBody": "Nowly can collect anonymous usage stats such as installs, active presences, versions, and technical errors. This helps us know what works and what needs attention.",
+  "onboardingAnalyticsPrivacy": "We never collect page URLs, titles, searches, watched content, raw IP addresses, or Discord IDs for analytics. You can change this later in settings.",
+  "onboardingAnalyticsAccept": "Share analytics",
+  "onboardingAnalyticsDecline": "No thanks"
 }

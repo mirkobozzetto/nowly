@@ -8,6 +8,9 @@ import { BUNDLED_PRESENCES } from "@/generated/bundled-presences";
 
 let customApiUrl: string | undefined;
 let cachedDeviceId: string | null = null;
+let analyticsQueue: Array<{ key: string; slug?: string; version?: string; payload?: Record<string, unknown> }> = [];
+const activeSessions = new Map<string, number>();
+let lastExtensionOpenTrackedAt = 0;
 
 const getEffectiveApiUrl = (): string => customApiUrl?.replace(/\/$/, "") || API_BASE_URL;
 const getEffectiveWebUrl = (): string => WEB_BASE_URL;
@@ -35,6 +38,93 @@ const syncUninstallUrl = async (): Promise<void> => {
   } catch {
     // Best effort only.
   }
+};
+
+const browserName = (): string => {
+  const ua = navigator.userAgent;
+  if (ua.includes("Edg/")) return "edge";
+  if (ua.includes("OPR/")) return "opera";
+  return "chromium";
+};
+
+const osName = (): string => {
+  const platform = navigator.platform.toLowerCase();
+  if (platform.includes("win")) return "windows";
+  if (platform.includes("mac")) return "macos";
+  if (platform.includes("linux")) return "linux";
+  return "unknown";
+};
+
+const syncDeviceState = async (): Promise<void> => {
+  const [deviceId, presences, settings] = await Promise.all([
+    getActiveDeviceId(),
+    getPresences(),
+    getSettings(),
+  ]);
+
+  await fetch(`${getEffectiveApiUrl()}/devices/sync`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      deviceId,
+      analyticsConsent: settings.analyticsConsent === true,
+      extensionVersion: chrome.runtime.getManifest().version,
+      browser: browserName(),
+      os: osName(),
+      presences: Object.entries(presences).map(([slug, presence]) => ({
+        slug,
+        version: presence.release?.version ?? presence.metadata?.version ?? undefined,
+        enabled: presence.enabled,
+        installed: true,
+      })),
+    }),
+  }).catch(() => {});
+};
+
+const flushAnalytics = async (): Promise<void> => {
+  if (!analyticsQueue.length) return;
+  const settings = await getSettings();
+  if (settings.analyticsConsent !== true) {
+    analyticsQueue = [];
+    return;
+  }
+
+  const deviceId = await getActiveDeviceId();
+  const events = analyticsQueue.splice(0, analyticsQueue.length).map((event) => ({
+    ...event,
+    deviceId,
+    payload: {
+      extensionVersion: chrome.runtime.getManifest().version,
+      browser: browserName(),
+      os: osName(),
+      ...(event.payload ?? {}),
+    },
+  }));
+
+  await fetch(`${getEffectiveApiUrl()}/analytics/events`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ events }),
+  }).catch(() => {
+    analyticsQueue.unshift(...events.map(({ deviceId: _deviceId, ...event }) => event));
+  });
+};
+
+const trackAnalytics = async (
+  key: string,
+  event: { slug?: string; version?: string; payload?: Record<string, unknown> } = {},
+): Promise<void> => {
+  const settings = await getSettings();
+  if (settings.analyticsConsent !== true) return;
+  analyticsQueue.push({ key, ...event });
+  if (analyticsQueue.length >= 10) await flushAnalytics();
+};
+
+const trackExtensionOpen = (): void => {
+  const now = Date.now();
+  if (now - lastExtensionOpenTrackedAt < 60_000) return;
+  lastExtensionOpenTrackedAt = now;
+  void trackAnalytics("extension_open", { payload: { surface: "extension" } });
 };
 
 let activeTabId: number | null = null;
@@ -83,7 +173,21 @@ onNativeResponse((message) => {
       message: message.error,
       updatedAt: Date.now(),
     });
+    void trackAnalytics("native_heartbeat_failed", { payload: { reason: "native-error" } });
     return;
+  }
+
+  if (message.type === "CONNECTED") {
+    void trackAnalytics("native_connected", { payload: { nativeVersion: message.version } });
+  }
+
+  if (message.type === "PONG") {
+    void trackAnalytics(message.connected ? "native_heartbeat_ok" : "native_heartbeat_failed", {
+      payload: {
+        nativeVersion: message.version,
+        reason: message.connected ? undefined : "not-connected",
+      },
+    });
   }
 
   if (message.type === "OK") {
@@ -212,6 +316,7 @@ const syncPresenceScripts = async (presences: InstalledPresences): Promise<void>
         message: `[${slug}] ${result.error ?? "failed to register presence"}`,
         updatedAt: Date.now(),
       });
+      void trackAnalytics("presence_error", { slug, payload: { stage: "userScripts" } });
     }
   }
 };
@@ -228,16 +333,23 @@ const installPresence = async (payload: unknown): Promise<{ ok: boolean; error?:
   if (!verified.ok) return verified;
 
   const presences = await getPresences();
+  const existing = presences[presence.slug];
 
   presences[presence.slug] = {
     metadata: presence.release.metadata,
     release: presence.release,
-    enabled: true,
-    installedAt: presences[presence.slug]?.installedAt ?? Date.now(),
+    enabled: existing?.enabled ?? true,
+    installedAt: existing?.installedAt ?? Date.now(),
     updatedAt: Date.now(),
   };
 
   await setPresences(presences);
+  await syncDeviceState();
+  void trackAnalytics(existing ? "presence_update" : "presence_install", {
+    slug: presence.slug,
+    version: presence.release.version,
+    payload: { source: "extension" },
+  });
   broadcastPresencesChanged();
   return registerPresenceScript(presence.slug, presences[presence.slug]);
 };
@@ -302,6 +414,7 @@ const handleActivityUpdate = async (
       message: `[${slug}] ${verified.error ?? "release verification failed"}`,
       updatedAt: Date.now(),
     });
+    void trackAnalytics("presence_error", { slug, payload: { stage: "security" } });
     return { ok: false };
   }
 
@@ -310,7 +423,7 @@ const handleActivityUpdate = async (
   const presence = mapPresenceData(normalizedActivity);
 
   if (tabId) activeTabId = tabId;
-  addActiveSlug(slug);
+  await addActiveSlug(slug);
 
   postNative({ type: "SET_ACTIVITY", presence });
 
@@ -329,9 +442,9 @@ const handleActivityUpdate = async (
 const handleClearActivity = async (slug?: string): Promise<{ ok: boolean }> => {
   activeTabId = null;
   if (slug) {
-    removeActiveSlug(slug);
+    await removeActiveSlug(slug, "clear");
   } else {
-    activeSlugs.clear();
+    await clearActiveSlugs("clear");
   }
   postNative({ type: "CLEAR_ACTIVITY" });
 
@@ -349,6 +462,7 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
   switch (message.type) {
     case "GET_PRESENCES":
     case "GET_INSTALLED":
+      trackExtensionOpen();
       getPresences().then((presences) => respond(sendResponse, visiblePresences(presences)));
       return true;
 
@@ -367,6 +481,7 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
       return false;
 
     case "CONNECT_NATIVE":
+      void trackAnalytics("native_reconnect", { payload: { source: "extension" } });
       respond(sendResponse, reconnectNative());
       return false;
 
@@ -395,9 +510,11 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
         delete presences[slug];
 
         await setPresences(presences);
+        await syncDeviceState();
+        void trackAnalytics("presence_uninstall", { slug, payload: { source: "extension" } });
         broadcastPresencesChanged();
         await unregisterPresenceScript(slug);
-        removeActiveSlug(slug);
+        await removeActiveSlug(slug, "uninstall");
         await fetch(`${getEffectiveApiUrl()}/presences/active/${encodeURIComponent(deviceId)}/${encodeURIComponent(slug)}`, {
           method: "DELETE",
         }).catch(() => {});
@@ -420,6 +537,8 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
 
         presences[slug].enabled = enabled;
         await setPresences(presences);
+        await syncDeviceState();
+        void trackAnalytics("presence_toggle", { slug, payload: { enabled } });
         broadcastPresencesChanged();
         if (enabled) {
           const result = await registerPresenceScript(slug, presences[slug]);
@@ -428,7 +547,7 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
         }
 
         await unregisterPresenceScript(slug);
-        removeActiveSlug(slug);
+        await removeActiveSlug(slug, "disabled");
         await fetch(`${getEffectiveApiUrl()}/presences/active/${encodeURIComponent(deviceId)}/${encodeURIComponent(slug)}`, {
           method: "DELETE",
         }).catch(() => {});
@@ -471,14 +590,39 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
       return true;
 
     case "GET_SETTINGS":
+      trackExtensionOpen();
       getSettings().then((settings) => respond(sendResponse, settings));
       return true;
 
     case "SET_SETTINGS":
-      setSettings(message.payload as Partial<ExtensionSettings>).then((settings) => {
+      getSettings().then((previousSettings) => setSettings(message.payload as Partial<ExtensionSettings>).then((settings) => {
         customApiUrl = settings.customApiBaseUrl;
+        void syncDeviceState();
+        const partial = message.payload as Partial<ExtensionSettings>;
+        const source = previousSettings.analyticsConsent === undefined ? "onboarding" : "settings";
+        if (typeof partial.analyticsConsent === "boolean" && partial.analyticsConsent !== previousSettings.analyticsConsent) {
+          void trackAnalytics(partial.analyticsConsent ? "analytics_consent_accepted" : "analytics_consent_declined", {
+            payload: { source },
+          });
+          void trackAnalytics("analytics_consent_changed", {
+            payload: { enabled: partial.analyticsConsent, source },
+          });
+        }
+        if (partial.presenceDisplayMode || typeof partial.separateActivePresence === "boolean") {
+          void trackAnalytics("settings_display_changed", {
+            payload: {
+              displayMode: settings.presenceDisplayMode,
+              separateActivePresence: settings.separateActivePresence,
+            },
+          });
+        }
+        if ("customApiBaseUrl" in partial) {
+          void trackAnalytics("settings_custom_api_changed", {
+            payload: { enabled: Boolean(partial.customApiBaseUrl) },
+          });
+        }
         respond(sendResponse, settings);
-      });
+      }));
       return true;
 
     case "GET_PRESENCE_SETTINGS":
@@ -489,6 +633,10 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
       const { slug, partial } = message.payload as { slug: string; partial: Record<string, unknown> };
       void setPresenceSettings(slug, partial).then((settings) => {
         respond(sendResponse, settings);
+        void trackAnalytics("settings_presence_changed", {
+          slug,
+          payload: { settingCount: Object.keys(settings).length },
+        });
         getPresences().then(async (presences) => {
           const stored = presences[slug];
           if (stored?.enabled && stored.release?.bundle) {
@@ -540,6 +688,7 @@ chrome.runtime.onMessage.addListener((message, sender) => {
       url: sender.tab?.url,
       updatedAt: Date.now(),
     });
+    void trackAnalytics("presence_error", { slug, payload: { stage: payload.stage ?? "presence" } });
   }
 
   return false;
@@ -547,11 +696,45 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 
 const activeSlugs = new Set<string>();
 
-const addActiveSlug = (slug: string) => activeSlugs.add(slug);
-const removeActiveSlug = (slug: string) => activeSlugs.delete(slug);
+const getPresenceVersion = async (slug: string): Promise<string | undefined> => {
+  const presences = await getPresences();
+  return presences[slug]?.release?.version ?? presences[slug]?.metadata?.version ?? undefined;
+};
+
+const addActiveSlug = async (slug: string): Promise<void> => {
+  activeSlugs.add(slug);
+  if (activeSessions.has(slug)) return;
+  activeSessions.set(slug, Date.now());
+  void trackAnalytics("presence_session_start", {
+    slug,
+    version: await getPresenceVersion(slug),
+  });
+};
+
+const removeActiveSlug = async (slug: string, reason: string): Promise<void> => {
+  activeSlugs.delete(slug);
+  const startedAt = activeSessions.get(slug);
+  activeSessions.delete(slug);
+  if (!startedAt) return;
+  void trackAnalytics("presence_session_end", {
+    slug,
+    version: await getPresenceVersion(slug),
+    payload: {
+      durationMs: Math.max(0, Date.now() - startedAt),
+      reason,
+    },
+  });
+};
+
+const clearActiveSlugs = async (reason: string): Promise<void> => {
+  const slugs = [...activeSlugs];
+  await Promise.all(slugs.map((slug) => removeActiveSlug(slug, reason)));
+  activeSlugs.clear();
+};
 
 chrome.alarms.create("native-heartbeat", { periodInMinutes: 1 });
 chrome.alarms.create("api-heartbeat", { periodInMinutes: 5 });
+chrome.alarms.create("analytics-flush", { periodInMinutes: 2 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === "native-heartbeat") postNative({ type: "PING" });
@@ -564,8 +747,17 @@ chrome.alarms.onAlarm.addListener((alarm) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ presences: slugs, deviceId }),
       }).catch(() => {});
+      void syncDeviceState();
+      for (const slug of slugs) {
+          void trackAnalytics("presence_active_heartbeat", {
+            slug,
+            version: await getPresenceVersion(slug),
+            payload: { source: "heartbeat" },
+          });
+      }
     })();
   }
+  if (alarm.name === "analytics-flush") void flushAnalytics();
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
@@ -606,6 +798,7 @@ const installBundledPresences = async (): Promise<void> => {
 
   if (changed) {
     await setPresences(presences);
+    await syncDeviceState();
     broadcastPresencesChanged();
   }
 };
@@ -618,10 +811,11 @@ chrome.runtime.onStartup.addListener(async () => {
   await syncUninstallUrl();
   await installBundledPresences();
   const presences = await getPresences();
+  await syncDeviceState();
   await syncPresenceScripts(presences);
 });
 
-chrome.runtime.onInstalled.addListener(async () => {
+chrome.runtime.onInstalled.addListener(async (details) => {
   enableSidePanelAction();
   await handleClearActivity();
   connectNative();
@@ -629,6 +823,10 @@ chrome.runtime.onInstalled.addListener(async () => {
   await syncUninstallUrl();
   await installBundledPresences();
   const presences = await getPresences();
+  await syncDeviceState();
+  void trackAnalytics(details.reason === "update" ? "extension_update" : "extension_install", {
+    payload: { source: "onInstalled", previousVersion: details.previousVersion },
+  });
   await syncPresenceScripts(presences);
 });
 
@@ -640,5 +838,6 @@ void (async () => {
   await syncUninstallUrl();
   await installBundledPresences();
   const presences = await getPresences();
+  await syncDeviceState();
   await syncPresenceScripts(presences);
 })();
