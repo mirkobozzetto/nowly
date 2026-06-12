@@ -25,7 +25,7 @@ export const ActivityView: FC<Props> = ({
   updates,
 }): ReactElement => (
   <section className="flex min-h-0 flex-1 flex-col gap-3">
-    <CurrentActivityCard activity={activity} presences={presences} />
+    {settings.showPlayer ? <CurrentActivityCard activity={activity} presences={presences} /> : null}
     <PresenceList
       activeSlug={activity?.slug ?? null}
       displayMode={settings.presenceDisplayMode}
