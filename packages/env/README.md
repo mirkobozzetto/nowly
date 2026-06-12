@@ -17,8 +17,6 @@ Typed environment access for the Nowly monorepo.
 | --- | --- | --- | --- |
 | `PORT` | `serverEnv` | No | `3001` |
 | `FRONTEND_URL` | `serverEnv` | No | `http://localhost:3000` |
-| `UPSTASH_REDIS_REST_URL` | `serverEnv` | Yes | - |
-| `UPSTASH_REDIS_REST_TOKEN` | `serverEnv` | Yes | - |
 | `JWT_SECRET` | `serverEnv` | Yes | - |
 | `ANONYMOUS_HASH_SECRET` | `serverEnv` | Yes | - |
 | `DISCORD_CLIENT_ID` | `serverEnv` | Yes | - |

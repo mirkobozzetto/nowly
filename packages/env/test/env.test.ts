@@ -25,6 +25,5 @@ describe("@nowly/env", () => {
 
   it("does not expose server secrets from client env", () => {
     expect("JWT_SECRET" in clientEnv).toBe(false)
-    expect("UPSTASH_REDIS_REST_TOKEN" in clientEnv).toBe(false)
   })
 })
