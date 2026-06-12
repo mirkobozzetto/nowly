@@ -19,18 +19,18 @@ export const CtaSection: FC = (): ReactElement => {
   return (
     <>
       <section id="download" className="py-24">
-        <div className="max-w-300 mx-auto px-6 relative z-2">
+        <div className="relative z-2 mx-auto w-full max-w-300 min-w-0 px-6">
           {/* Desktop CTA */}
-          <div className="hidden md:block bg-linear-to-b from-card to-surface border border-border rounded-xl p-8 md:p-16 text-center">
-            <h2 className="text-[2rem] md:text-[2.5rem] font-extrabold tracking-tight mb-4">
+          <div className="hidden min-w-0 rounded-xl border border-border bg-linear-to-b from-card to-surface p-8 text-center md:block md:p-16">
+            <h2 className="mb-4 text-balance text-[2rem] font-extrabold tracking-tight md:text-[2.5rem]">
               {t("title")}
             </h2>
 
-            <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+            <p className="mx-auto mb-8 max-w-md text-balance text-muted-foreground">
               {t("description")}
             </p>
             
-            <div className="flex gap-4 justify-center flex-wrap items-stretch">
+            <div className="flex min-w-0 flex-wrap items-stretch justify-center gap-4">
               <Button onClick={handleDownload} variant="primary" size="lg">
                 <Download className="w-5 h-5" />
                 {t("downloadFor", { browser: "Chrome" })}
@@ -51,7 +51,7 @@ export const CtaSection: FC = (): ReactElement => {
               </Button>
             </div>
 
-            <div className="flex justify-center gap-6 flex-wrap mt-8">
+            <div className="mt-8 flex min-w-0 flex-wrap justify-center gap-6">
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
                 <img
                   src="https://thesvg.org/icons/chromium/default.svg"

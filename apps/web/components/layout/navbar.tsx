@@ -20,9 +20,9 @@ export const Navbar: FC = (): ReactElement => {
         "bg-background/35 backdrop-blur-xl"
       )}
     >
-      <div className="max-w-300 mx-auto px-6">
-        <div className="flex items-center justify-between">
-          <Link href="/">
+      <div className="mx-auto w-full max-w-300 min-w-0 px-6">
+        <div className="flex min-w-0 items-center justify-between">
+          <Link href="/" className="min-w-0 shrink-0">
             <img src="/app_title_white.png" alt="Nowly" className="h-8 w-auto" />
           </Link>
 
@@ -64,7 +64,7 @@ export const Navbar: FC = (): ReactElement => {
           </div>
 
           {/* Desktop: nav links + download button */}
-          <div className="hidden lg:flex items-center gap-2">
+          <div className="hidden min-w-0 items-center gap-2 lg:flex">
             <Link href="/docs"
               className={buttonVariants({ size: "md", variant: "ghost" })}
             >

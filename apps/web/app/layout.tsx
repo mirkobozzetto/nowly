@@ -35,9 +35,9 @@ const Layout = async ({ children }: PropsWithChildren): Promise<ReactElement> =>
       <body className="font-sans antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>
-            <div className="flex min-h-screen flex-col">
+            <div className="flex min-h-screen min-w-0 flex-col">
               <Navbar />
-              <main className="flex flex-1 flex-col">{children}</main>
+              <main className="flex min-w-0 flex-1 flex-col">{children}</main>
               <Footer />
             </div>
 

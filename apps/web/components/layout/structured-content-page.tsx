@@ -27,14 +27,14 @@ export const StructuredContentPage: FC<Props> = ({
   children,
 }): ReactElement => {
   return (
-    <main className="max-w-3xl mx-auto px-6 py-24">
+    <main className="mx-auto w-full max-w-3xl min-w-0 px-6 py-24">
       {children}
 
-      <h1 className="text-3xl font-bold tracking-tight mb-12">
+      <h1 className="mb-12 wrap-break-word text-3xl font-bold tracking-tight">
         {title}
       </h1>
 
-      <div className="space-y-12 text-muted-foreground">
+      <div className="min-w-0 space-y-12 text-muted-foreground">
         {lastUpdated ? (
           <p className="text-sm text-dim-foreground">{lastUpdated}</p>
         ) : null}
@@ -50,11 +50,11 @@ export const StructuredContentPage: FC<Props> = ({
           const num = String(i + 1).padStart(2, "0");
 
           return (
-            <section key={item.title}>
+            <section key={item.title} className="min-w-0">
               <span className="text-accent font-mono text-sm font-bold block mb-3">
                 {num}
               </span>
-              <h2 className="text-xl font-semibold text-foreground mb-4">
+              <h2 className="mb-4 wrap-break-word text-xl font-semibold text-foreground">
                 {item.title}
               </h2>
               <div

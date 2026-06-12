@@ -75,8 +75,8 @@ export const HostContent: FC = (): ReactElement => {
     <>
       <HostHero />
 
-      <section className="mb-14 rounded-xl border border-border bg-card p-4 sm:p-5">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <section className="mb-14 min-w-0 rounded-xl border border-border bg-card p-4 sm:p-5">
+        <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 flex-col gap-2 sm:items-start">
           <Select
             value={activePlatform}
@@ -101,7 +101,7 @@ export const HostContent: FC = (): ReactElement => {
             </SelectContent>
           </Select>
 
-          <p className="text-sm text-muted-foreground">
+          <p className="wrap-break-word text-sm text-muted-foreground">
             {t("cardVersion", { version: version ?? "latest", details: config.details })}
           </p>
           </div>

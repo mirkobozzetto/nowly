@@ -26,15 +26,15 @@ export const HeroSection: FC = (): ReactElement => {
           }}
         /> */}
 
-        <div className="max-w-300 mx-auto px-6 relative z-2">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_480px] gap-12 items-center">
+        <div className="relative z-2 mx-auto w-full max-w-300 min-w-0 px-6">
+          <div className="grid min-w-0 grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_480px]">
             {/* Content */}
-            <div className="max-w-135 lg:max-w-none">
+            <div className="min-w-0 max-w-135 lg:max-w-none">
               <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-accent/10 text-accent border border-accent/20 text-[11px] font-bold uppercase tracking-wider mb-4">
                 {t("badge")}
               </div>
 
-              <h1 className="text-[clamp(3rem,5vw,4.5rem)] font-extrabold leading-[1.1] tracking-tight mb-6 bg-linear-to-br from-white to-muted-foreground bg-clip-text text-transparent">
+              <h1 className="mb-6 text-balance text-[clamp(2.75rem,5vw,4.5rem)] font-extrabold leading-[1.1] tracking-tight bg-linear-to-br from-white to-muted-foreground bg-clip-text text-transparent">
                 {t("title")}
                 <br />
                 <HighlightedText from="left" delay={0}>
@@ -42,7 +42,7 @@ export const HeroSection: FC = (): ReactElement => {
                 </HighlightedText>
               </h1>
 
-              <p className="text-lg text-muted-foreground mb-8 max-w-[90%]">
+              <p className="mb-8 max-w-2xl text-balance text-lg text-muted-foreground">
                 {t("description")}
               </p>
 
@@ -55,7 +55,7 @@ export const HeroSection: FC = (): ReactElement => {
             </div>
 
             {/* Visual */}
-            <div className="hidden lg:block">
+            <div className="hidden min-w-0 lg:block">
               <CompanionWindow />
             </div>
           </div>
