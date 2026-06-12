@@ -1,9 +1,15 @@
-import { autoloadRoutes } from "@/lib/autoload-routes"
+import { analyticsRoutes, deviceRoutes } from "@/features/analytics/analytics.routes"
+import { assetsRoutes } from "@/features/assets/assets.routes"
+import { authRoutes } from "@/features/auth/auth.routes"
+import { imageProxyRoutes } from "@/features/image-proxy/image-proxy.routes"
+import { presenceRoutes } from "@/features/presence/presence.routes"
+import { ratingRoutes } from "@/features/rating/rating.routes"
+import { statusRoutes } from "@/features/status/status.routes"
 import cors from "@fastify/cors"
 import { serverEnv } from "@nowly/env/server"
 import Fastify from "fastify"
 
-const server = Fastify({ logger: true, ignoreTrailingSlash: true })
+const server = Fastify({ logger: true })
 
 await server.register(cors, {
   origin: true,
@@ -19,7 +25,14 @@ server.get("/health", async () => {
   }
 })
 
-await autoloadRoutes(server)
+await server.register(analyticsRoutes, { prefix: "/analytics" })
+await server.register(deviceRoutes, { prefix: "/devices" })
+await server.register(authRoutes, { prefix: "/auth" })
+await server.register(statusRoutes)
+await server.register(imageProxyRoutes)
+await server.register(assetsRoutes, { prefix: "/presences" })
+await server.register(presenceRoutes, { prefix: "/presences" })
+await server.register(ratingRoutes, { prefix: "/presences" })
 
 const port = serverEnv.PORT
 

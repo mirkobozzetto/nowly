@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "postinstall": "prisma generate --schema=prisma/schema/",
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
     "lint": "pnpm run typecheck && pnpm run lint:test",
