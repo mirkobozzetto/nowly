@@ -48,6 +48,7 @@
     "description": "No subscription required. Lightweight and secure.",
     "downloadFor": "Download for {browser}",
     "comingSoon": "Coming Soon",
+    "firefoxStatus": "Not supported yet",
     "extension": "Download Extension",
     "browser": "Browser",
     "platforms": "Compatible with Chromium-based browsers",
@@ -382,7 +383,6 @@
     "rateLoginButton": "Sign in with Discord",
     "rateReviewDesc": "Share your experience and help others choose better presences."
   },
-
   "VersionUpdatesCard": {
     "versionTitle": "Version {version}",
     "currentBadge": "Current",
@@ -395,12 +395,10 @@
     "authorLabel": "Release author",
     "contributorsLabel": "Contributors"
   },
-
   "NotFound": {
     "description": "The page you're looking for doesn't exist or has been moved.",
     "backToHome": "Back to Home"
   },
-
   "HostPage": {
     "badge": "Native App",
     "title": "Download the Host App",

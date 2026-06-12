@@ -46,7 +46,7 @@ export const CtaSection: FC = (): ReactElement => {
                 Firefox
 
                 <span className="ml-2 text-xs text-muted rounded-sm px-1.5 py-0.5 bg-muted-foreground border border-muted">
-                  {t("comingSoon")}
+                  {t("firefoxStatus")}
                 </span>
               </Button>
             </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { Spinner } from "@/components/ui/spinner";
+import { useOs } from "@/hooks/use-os";
 import { cn } from "@/lib/utils";
 import { Download, Trash2, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -29,20 +30,23 @@ export const PresenceHeaderActions: FC<Props> = ({
   onUninstall,
 }) => {
   const t = useTranslations("MarketplaceDetail");
+  const os = useOs();
+  const isMobileOs = os === "android" || os === "ios";
 
   const hasInstall = !isInstalled || needsUpdate;
   const hasUninstall = isInstalled && isExtDetected && !loading;
+  const isInstallDisabled = loading || isMobileOs;
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
-      <div className="hidden md:flex items-center gap-2 flex-1 min-w-0">
+    <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
+      <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
         {hasInstall && (
           <button
             onClick={onInstall}
-            disabled={!isExtDetected || loading}
+            disabled={isInstallDisabled}
             className={cn(
-              "inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-lg font-semibold text-sm transition-all",
-              !isExtDetected || loading
+              "inline-flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2 font-semibold text-sm transition-all sm:w-auto sm:py-1.5",
+              isInstallDisabled
                 ? "bg-card-2 text-muted-foreground border border-border cursor-not-allowed opacity-60"
                 : isExtDetected && needsUpdate && !loading
                   ? "bg-warning/10 text-warning border border-warning/20 hover:bg-warning/20"
@@ -57,7 +61,7 @@ export const PresenceHeaderActions: FC<Props> = ({
         {hasUninstall && (
           <button
             onClick={onUninstall}
-            className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-lg font-semibold text-sm transition-all bg-destructive/10 text-destructive border border-destructive/20 hover:bg-destructive/20"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-destructive/10 px-4 py-2 text-sm font-semibold text-destructive transition-all border border-destructive/20 hover:bg-destructive/20 sm:w-auto sm:py-1.5"
           >
             <Trash2 className="w-4 h-4" />
             {t("uninstallAction")}
@@ -67,7 +71,7 @@ export const PresenceHeaderActions: FC<Props> = ({
 
       <Link
         href={`/library/${slug}/comments`}
-        className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-lg font-semibold text-sm transition-all border border-border bg-transparent text-muted-foreground hover:border-border-light hover:bg-card-2 hover:text-foreground"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-transparent px-4 py-2 text-sm font-semibold text-muted-foreground transition-all hover:border-border-light hover:bg-card-2 hover:text-foreground sm:w-auto sm:py-1.5"
       >
         <Users className="w-4 h-4" />
         {t("community")} ({commentCount})

@@ -48,6 +48,7 @@
     "description": "Aucun abonnement requis. Léger et sécurisé.",
     "downloadFor": "Télécharger pour {browser}",
     "comingSoon": "Bientôt disponible",
+    "firefoxStatus": "Pas encore pris en charge",
     "extension": "Télécharger l'extension",
     "browser": "Navigateur",
     "platforms": "Compatible avec les navigateurs basés sur Chromium",
@@ -382,7 +383,6 @@
     "rateLoginButton": "Se connecter avec Discord",
     "rateReviewDesc": "Partage ton expérience et aide les autres à choisir."
   },
-
   "VersionUpdatesCard": {
     "versionTitle": "Version {version}",
     "currentBadge": "Actuelle",
@@ -395,12 +395,10 @@
     "authorLabel": "Auteur de la version",
     "contributorsLabel": "Contributeurs"
   },
-
   "NotFound": {
     "description": "La page que vous recherchez n'existe pas ou a été déplacée.",
     "backToHome": "Retour à l'accueil"
   },
-
   "HostPage": {
     "badge": "Application native",
     "title": "Télécharger l'application hôte",

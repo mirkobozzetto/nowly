@@ -1,21 +1,9 @@
-import { useEffect, useState } from "react";
+import { useOs, type Os } from "./use-os";
 
-export type Platform = "windows" | "macos" | "linux" | "";
-
-const detect = (): Platform => {
-  const ua = navigator.userAgent.toLowerCase();
-  if (ua.includes("win")) return "windows";
-  if (ua.includes("mac")) return "macos";
-  if (ua.includes("linux")) return "linux";
-  return "";
-};
+export type Platform = Extract<Os, "windows" | "macos" | "linux"> | "";
 
 export const usePlatform = (): Platform => {
-  const [platform, setPlatform] = useState<Platform>("");
+  const os = useOs();
 
-  useEffect(() => {
-    setPlatform(detect());
-  }, []);
-
-  return platform;
+  return os === "windows" || os === "macos" || os === "linux" ? os : "";
 };

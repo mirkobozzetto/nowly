@@ -382,7 +382,6 @@
     "rateLoginButton": "Iniciar sesión con Discord",
     "rateReviewDesc": "Comparte tu experiencia y ayuda a otros a elegir mejores presencias."
   },
-
   "VersionUpdatesCard": {
     "versionTitle": "Versión {version}",
     "currentBadge": "Actual",
@@ -396,11 +395,9 @@
     "contributorsLabel": "Colaboradores"
   },
 
-  "NotFound": {
     "description": "La página que buscas no existe o ha sido movida.",
     "backToHome": "Volver al inicio"
   },
-
   "HostPage": {
     "badge": "Aplicación nativa",
     "title": "Descargar la aplicación host",
