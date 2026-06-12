@@ -56,7 +56,8 @@ export const StatusHistory = ({
   noData: string;
   historyLabel: string;
 }): ReactElement => {
-  const samples = Array.from({ length: 10 }, (_, index) => service.samples[index] ?? null);
+  const reversed = service.samples.slice(0, 10).reverse();
+  const samples = Array.from({ length: 10 }, (_, index) => reversed[index] ?? null);
 
   return (
     <div className="mt-4">
