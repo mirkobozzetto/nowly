@@ -1,0 +1,63 @@
+model Device {
+  deviceId         String   @id @map("device_id")
+  analyticsConsent Boolean  @default(false) @map("analytics_consent")
+  extensionVersion String?  @map("extension_version")
+  nativeVersion    String?  @map("native_version")
+  browser          String?
+  os               String?
+  locale           String?
+  firstSeenAt      DateTime @default(now()) @map("first_seen_at") @db.Timestamptz(6)
+  lastSeenAt       DateTime @default(now()) @map("last_seen_at") @db.Timestamptz(6)
+
+  presences DevicePresence[]
+  events    AnalyticsEvent[]
+  sessions  PresenceActiveSession[]
+
+  @@map("devices")
+}
+
+model DevicePresence {
+  deviceId         String    @map("device_id")
+  slug             String
+  installedVersion String?   @map("installed_version")
+  installed        Boolean   @default(true)
+  enabled          Boolean   @default(true)
+  installedAt      DateTime  @default(now()) @map("installed_at") @db.Timestamptz(6)
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  uninstalledAt    DateTime? @map("uninstalled_at") @db.Timestamptz(6)
+
+  device Device @relation(fields: [deviceId], references: [deviceId], onDelete: Cascade)
+
+  @@id([deviceId, slug])
+  @@index([slug])
+  @@map("device_presences")
+}
+
+model PresenceActiveDevice {
+  slug       String
+  deviceId   String   @map("device_id")
+  lastSeenAt DateTime @default(now()) @map("last_seen_at") @db.Timestamptz(6)
+
+  @@id([slug, deviceId])
+  @@index([deviceId])
+  @@map("presence_active_devices")
+}
+
+model PresenceActiveSession {
+  id            String    @id
+  slug          String
+  deviceId      String    @map("device_id")
+  version       String?
+  startedAt     DateTime  @default(now()) @map("started_at") @db.Timestamptz(6)
+  endedAt       DateTime? @map("ended_at") @db.Timestamptz(6)
+  durationMs    Int?      @map("duration_ms")
+  endReason     String?   @map("end_reason")
+  lastHeartbeat DateTime  @default(now()) @map("last_heartbeat") @db.Timestamptz(6)
+
+  device Device @relation(fields: [deviceId], references: [deviceId], onDelete: Cascade)
+
+  @@index([slug])
+  @@index([deviceId])
+  @@index([startedAt])
+  @@map("presence_active_sessions")
+}

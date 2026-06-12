@@ -1,0 +1,28 @@
+model Rating {
+  slug          String
+  discordUserId String   @map("discord_user_id")
+  rating        Int
+  hasComment    Boolean  @default(false) @map("has_comment")
+  commentId     String?  @map("comment_id")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@id([slug, discordUserId])
+  @@index([slug])
+  @@map("ratings")
+}
+
+model Comment {
+  id           String   @id
+  slug         String
+  rating       Int
+  comment      String?
+  authorId     String?  @map("author_id")
+  authorName   String?  @map("author_name")
+  authorAvatar String?  @map("author_avatar")
+  anonymous    Boolean  @default(false)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([slug])
+  @@map("comments")
+}
