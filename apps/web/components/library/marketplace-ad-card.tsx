@@ -1,12 +1,16 @@
 "use client";
 
 import { AdSenseSlot } from "@/components/ads/adsense-slot";
-import { LIBRARY_AD_SLOT } from "@/lib/constants";
+import { ADSENSE_ENABLED, LIBRARY_AD_SLOT } from "@/lib/constants";
 import { Megaphone } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 
-export const MarketplaceAdCard: FC = (): ReactElement => {
+export const MarketplaceAdCard: FC = (): ReactElement | null => {
+  if (!ADSENSE_ENABLED || process.env.NODE_ENV === "development") {
+    return null;
+  }
+
   const t = useTranslations("Ads");
 
   return (

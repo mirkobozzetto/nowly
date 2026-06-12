@@ -1,6 +1,7 @@
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { Toaster } from "@/components/ui/sonner";
+import { ADSENSE_CLIENT_ID, ADSENSE_ENABLED } from "@/lib/constants";
 import { Providers } from "@/providers/providers";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -22,10 +23,10 @@ const Layout = async ({ children }: PropsWithChildren): Promise<ReactElement> =>
       className={`${instrumentSans.variable} ${geist.variable} bg-background scroll-smooth`}
     >
       <head>
-        {process.env.NODE_ENV !== "development" && (
+        {ADSENSE_ENABLED && process.env.NODE_ENV !== "development" && (
           <script
             async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6330177306711077"
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
             crossOrigin="anonymous"
           />
         )}

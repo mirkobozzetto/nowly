@@ -1,9 +1,9 @@
 import { AdSenseSlot } from "@/components/ads/adsense-slot";
-import { LANDING_AD_SLOT } from "@/lib/constants";
+import { ADSENSE_ENABLED, LANDING_AD_SLOT } from "@/lib/constants";
 import type { FC, ReactElement } from "react";
 
 export const AdSection: FC = (): ReactElement | null => {
-  if (process.env.NODE_ENV === "development") {
+  if (!ADSENSE_ENABLED || process.env.NODE_ENV === "development") {
     return null;
   }
 

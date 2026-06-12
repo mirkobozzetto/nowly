@@ -1,6 +1,7 @@
 "use client";
 
 import { PresenceCard } from "@/components/library/presence-card";
+import { ADSENSE_ENABLED } from "@/lib/constants";
 import type { Presence } from "@/lib/data/presences";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
@@ -34,7 +35,7 @@ export const MarketplaceGrid: FC<Props> = ({ platforms, locale, onReset }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {platforms.map((presence, index): ReactElement => {
-        const shouldShowAd = (index + 1) % AD_FREQUENCY === 0 && index < platforms.length - 1;
+        const shouldShowAd = ADSENSE_ENABLED && (index + 1) % AD_FREQUENCY === 0 && index < platforms.length - 1;
 
         return (
           <Fragment key={presence.id}>

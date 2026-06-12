@@ -11,6 +11,7 @@ export const PROJECT_EXTENSION_DOWNLOAD_URL = `https://chromewebstore.google.com
 export const PROJECT_EXTENSION_FILENAME = "Nowly-Extension.zip";
 
 export const ADSENSE_CLIENT_ID = "ca-pub-6330177306711077";
+export const ADSENSE_ENABLED = false;
 export const LANDING_AD_SLOT = "4584618586";
 export const LIBRARY_AD_SLOT = "8815663161";
 

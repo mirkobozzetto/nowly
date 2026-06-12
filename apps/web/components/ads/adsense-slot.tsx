@@ -1,6 +1,6 @@
 "use client";
 
-import { ADSENSE_CLIENT_ID } from "@/lib/constants";
+import { ADSENSE_CLIENT_ID, ADSENSE_ENABLED } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
@@ -29,7 +29,7 @@ export const AdSenseSlot: FC<Props> = ({
   minHeight = "180px",
   showLabel = true,
 }): ReactElement => {
-  if (process.env.NODE_ENV === "development") {
+  if (!ADSENSE_ENABLED || process.env.NODE_ENV === "development") {
     return <></>;
   }
 
