@@ -96,6 +96,12 @@ const sitemap = async (): Promise<MetadataRoute.Sitemap> => {
       priority: 0.8,
     },
     {
+      url: `${SITE_URL}/about`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.75,
+    },
+    {
       url: `${SITE_URL}/faq`,
       lastModified: new Date(),
       changeFrequency: "monthly",

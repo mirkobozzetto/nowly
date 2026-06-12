@@ -66,6 +66,7 @@
     "french": "French",
     "english": "English",
     "spanish": "Spanish",
+    "about": "About",
     "faq": "FAQ",
     "changelog": "Changelog",
     "privacy": "Privacy Policy",
@@ -105,6 +106,30 @@
     "a8": "To uninstall the extension, right-click the Nowly icon in your browser and select 'Remove from Chrome'. To uninstall the native application, run the uninstaller program available in the installation folder or use the Windows Control Panel.",
     "q9": "Is Nowly open source?",
     "a9": "Yes, the <strong>complete source code</strong> of Nowly is available on <a href='https://github.com/q-kimi/nowly'>GitHub</a>. You can browse the code, suggest improvements, report bugs, or contribute to the project's development."
+  },
+  "AboutPage": {
+    "badge": "About",
+    "title": "A modern take on Discord activity",
+    "intro": "Nowly builds on the idea behind community Rich Presence tools and pushes it further: a cleaner, more current experience that is easier to use and shaped by a coherent visual direction.",
+    "sections": [
+      {
+        "title": "Our goal",
+        "body": "We are building a lightweight, open, and understandable alternative for syncing streaming platforms with Discord Rich Presence."
+      },
+      {
+        "title": "A local-first approach",
+        "body": "The local flow stays constant: your browser detects activity, the native app sends it to Discord, without going through our servers*."
+      },
+      {
+        "title": "A community project",
+        "body": "Nowly is open source. The presence library can grow through feedback, ideas, and contributions from the community."
+      },
+      {
+        "title": "What we want to improve",
+        "body": "We are progressively adding new platforms, a smoother installation experience, and simpler tools for creating reliable presences."
+      }
+    ],
+    "analyticsNote": "* Except optional analytics, which can be disabled during installation. They only measure aggregated information such as installs, with no name, email, or personal data that could identify you."
   },
   "PrivacyPage": {
     "title": "Privacy Policy",

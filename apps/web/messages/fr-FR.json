@@ -66,6 +66,7 @@
     "french": "Français",
     "english": "Anglais",
     "spanish": "Espagnol",
+    "about": "À propos",
     "faq": "FAQ",
     "changelog": "Notes de version",
     "privacy": "Politique de confidentialité",
@@ -103,6 +104,30 @@
     "a8": "Pour désinstaller l'extension, faites un clic droit sur l'icône Nowly dans votre navigateur puis sélectionnez « Supprimer de Chrome ». Pour désinstaller l'application native, exécutez le programme de désinstallation disponible dans le dossier d'installation ou utilisez le Panneau de configuration Windows.",
     "q9": "Est-ce que Nowly est open source ?",
     "a9": "Oui, le <strong>code source complet</strong> de Nowly est disponible sur <a href='https://github.com/q-kimi/nowly'>GitHub</a>. Vous pouvez consulter le code, suggérer des améliorations, signaler des bogues ou contribuer au développement du projet."
+  },
+  "AboutPage": {
+    "badge": "À propos",
+    "title": "Une vision moderne de l'activité Discord",
+    "intro": "Nowly remet le Rich Presence communautaire au goût du jour : plus propre, plus simple, plus moderne.",
+    "sections": [
+      {
+        "title": "Notre objectif",
+        "body": "Nous construisons une alternative légère, ouverte et compréhensible pour synchroniser les plateformes de streaming avec Discord Rich Presence."
+      },
+      {
+        "title": "Une approche locale",
+        "body": "Le flux local est constant, votre navigateur détecte l'activité, l'application native la transmet à Discord, sans passage par nos serveurs*."
+      },
+      {
+        "title": "Un projet communautaire",
+        "body": "Nowly est open source. La bibliothèque de présences peut évoluer grâce aux retours, aux idées et aux contributions de la communauté."
+      },
+      {
+        "title": "Ce que nous voulons améliorer",
+        "body": "Nous ajoutons progressivement de nouvelles plateformes, une meilleure expérience d'installation et des outils plus simples pour créer des présences fiables."
+      }
+    ],
+    "analyticsNote": "* Hors analytics optionnelles, désactivables à l'installation. Elles servent uniquement à mesurer des informations agrégées comme les installations, sans nom, email ou donnée personnelle permettant de vous identifier."
   },
   "PrivacyPage": {
     "title": "Privacy Policy",

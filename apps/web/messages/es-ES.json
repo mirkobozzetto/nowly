@@ -66,6 +66,7 @@
     "french": "Francés",
     "english": "Inglés",
     "spanish": "Español",
+    "about": "Acerca de",
     "faq": "FAQ",
     "changelog": "Registro de cambios",
     "privacy": "Política de privacidad",
@@ -103,6 +104,30 @@
     "a8": "Para desinstalar la extensión, haz clic derecho en el icono de Nowly en tu navegador y selecciona 'Eliminar de Chrome'. Para desinstalar la aplicación nativa, ejecuta el programa desinstalador disponible en la carpeta de instalación o usa el Panel de control de Windows.",
     "q9": "¿Nowly es de código abierto?",
     "a9": "Sí, el <strong>código fuente completo</strong> de Nowly está disponible en <a href='https://github.com/q-kimi/nowly'>GitHub</a>. Puedes explorar el código, sugerir mejoras, reportar errores o contribuir al desarrollo del proyecto."
+  },
+  "AboutPage": {
+    "badge": "Acerca de",
+    "title": "Una visión moderna de la actividad en Discord",
+    "intro": "Nowly parte de la idea de las herramientas comunitarias de Rich Presence y la lleva más lejos: una experiencia más limpia, más actual, más fácil de usar y con una dirección visual coherente.",
+    "sections": [
+      {
+        "title": "Nuestro objetivo",
+        "body": "Construimos una alternativa ligera, abierta y comprensible para sincronizar plataformas de streaming con Discord Rich Presence."
+      },
+      {
+        "title": "Un enfoque local",
+        "body": "El flujo local se mantiene constante: tu navegador detecta la actividad, la app nativa la envía a Discord, sin pasar por nuestros servidores*."
+      },
+      {
+        "title": "Un proyecto comunitario",
+        "body": "Nowly es de código abierto. La biblioteca de presencias puede crecer gracias a comentarios, ideas y contribuciones de la comunidad."
+      },
+      {
+        "title": "Lo que queremos mejorar",
+        "body": "Estamos añadiendo progresivamente nuevas plataformas, una instalación más cómoda y herramientas más simples para crear presencias fiables."
+      }
+    ],
+    "analyticsNote": "* Salvo analytics opcionales, que pueden desactivarse durante la instalación. Solo miden información agregada como instalaciones, sin nombre, email ni datos personales que puedan identificarte."
   },
   "PrivacyPage": {
     "title": "Privacy Policy",

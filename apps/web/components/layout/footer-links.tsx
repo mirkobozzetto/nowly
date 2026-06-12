@@ -7,6 +7,10 @@ export const FooterLinks: FC = () => {
 
   return (
     <div className="flex flex-wrap items-center gap-3 mt-2">
+      <Link href="/about" className="hover:text-foreground transition-colors">
+        {t("about")}
+      </Link>
+
       <Link href="/faq" className="hover:text-foreground transition-colors">
         {t("faq")}
       </Link>
