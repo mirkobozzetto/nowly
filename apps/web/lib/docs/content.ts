@@ -1,4 +1,4 @@
-import { FALLBACK_LOCALE, getValidLocale, SUPPORTED_LOCALES } from "@nowly/locales";
+import { getValidLocale } from "@nowly/locales";
 import matter from "gray-matter";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -20,9 +20,6 @@ const parseOrderedFolder = (name: string): FolderInfo | null => {
     slug: match[2],
   };
 };
-
-const isValidLocale = (locale: string): locale is string =>
-  SUPPORTED_LOCALES.includes(locale as any);
 
 const readCategoryTitle = (categoryPath: string, slug: string): Record<string, string> => {
   const metaPath = join(categoryPath, "_meta.json");

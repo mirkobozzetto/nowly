@@ -1,4 +1,4 @@
-import { FALLBACK_LOCALE, getValidLocale } from "@nowly/locales";
+import { getValidLocale } from "@nowly/locales";
 import matter from "gray-matter";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";

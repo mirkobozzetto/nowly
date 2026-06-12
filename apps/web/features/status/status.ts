@@ -46,7 +46,7 @@ export const getFallbackStatusReport = (): StatusReport => ({
 });
 
 const isValidStatusReport = (data: unknown): data is StatusReport =>
-  typeof data === "object" && data !== null && "services" in data && Array.isArray((data as Record<string, unknown>).services)
+  typeof data === "object" && data !== null && "services" in data && Array.isArray((data as Record<string, unknown>).services);
 
 export const fetchStatusReport = async (): Promise<StatusReport> => {
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.nowly.me";
