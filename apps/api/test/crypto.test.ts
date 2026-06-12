@@ -1,5 +1,5 @@
-import { canonicalJson, sha256Base64Url, signedPayload, signPresenceRelease } from "@/lib/crypto"
-import { describe, expect, it } from "vitest"
+import { canonicalJson, sha256Base64Url, signedPayload } from "@/shared/crypto.service"
+import { describe, expect, it, vi } from "vitest"
 
 describe("canonicalJson", () => {
   it("serializes null and primitives", () => {
@@ -93,7 +93,12 @@ describe("signedPayload", () => {
 })
 
 describe("signPresenceRelease", () => {
-  it("throws when PRESENCE_SIGNING_PRIVATE_KEY is missing", () => {
+  it("throws when PRESENCE_SIGNING_PRIVATE_KEY is missing", async () => {
+    vi.stubEnv("PRESENCE_SIGNING_PRIVATE_KEY", "")
+    vi.resetModules()
+    const { signPresenceRelease } = await import("@/shared/crypto.service")
+
     expect(() => signPresenceRelease("{}")).toThrow("PRESENCE_SIGNING_PRIVATE_KEY is missing")
+    vi.unstubAllEnvs()
   })
 })

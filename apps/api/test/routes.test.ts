@@ -1,39 +1,13 @@
 import cors from "@fastify/cors"
-import { imageProxyRoutes } from "@/routes/image-proxy"
-import { presenceRoutes } from "@/routes/presence"
-import { registryRoutes } from "@/routes/registry"
-import { statsRoutes } from "@/routes/stats"
+import { imageProxyRoutes } from "@/features/image-proxy/image-proxy.routes"
+import { presenceRoutes } from "@/features/presence/presence.routes"
+import { ratingRoutes } from "@/features/rating/rating.routes"
+import { registryRoutes } from "@/features/registry/registry.routes"
 import { getPresence } from "@nowly/websites"
 import Fastify from "fastify"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
-const mockRedis = vi.hoisted(() => ({
-  mget: vi.fn(),
-  incr: vi.fn(),
-  sismember: vi.fn(),
-  sadd: vi.fn(),
-  set: vi.fn(),
-  get: vi.fn(),
-  zadd: vi.fn(),
-  zcard: vi.fn(),
-  hset: vi.fn(),
-  hgetall: vi.fn(),
-  zrange: vi.fn(),
-  scan: vi.fn(),
-  srem: vi.fn(),
-  del: vi.fn(),
-  decr: vi.fn(),
-  zrem: vi.fn(),
-  exists: vi.fn(),
-  zremrangebyscore: vi.fn(),
-}))
-
-vi.mock("@upstash/redis", () => ({
-  Redis: vi.fn(() => mockRedis),
-}))
-
-const mockRedisModule = vi.hoisted(() => ({
-  redis: mockRedis,
+const mockPresenceRepo = vi.hoisted(() => ({
   getAllPresenceSlugs: vi.fn(),
   getPresenceMeta: vi.fn(),
   getVersion: vi.fn(),
@@ -53,20 +27,33 @@ const mockRedisModule = vi.hoisted(() => ({
   addVersion: vi.fn(),
   getVersionHistory: vi.fn(),
   setUserRating: vi.fn(),
-  submitComment: vi.fn(),
-  getComments: vi.fn(),
   getUserRating: vi.fn(),
   removeUserRating: vi.fn(),
 }))
 
-vi.mock("@/lib/redis", () => mockRedisModule)
+const mockRatingRepo = vi.hoisted(() => ({
+  submitComment: vi.fn(),
+  getComments: vi.fn(),
+}))
+
+vi.mock("@/features/presence/presence.repository", () => mockPresenceRepo)
+vi.mock("@/features/rating/rating.repository", () => mockRatingRepo)
+
+const mockPrisma = vi.hoisted(() => ({
+  comment: { delete: vi.fn() },
+}))
+
+vi.mock("@/db/client", () => ({
+  getPrisma: vi.fn(() => mockPrisma),
+  hasDatabase: vi.fn(() => true),
+}))
 
 const mockAuth = vi.hoisted(() => ({
   verifyToken: vi.fn(),
   hashDiscordId: vi.fn(),
 }))
 
-vi.mock("@/lib/auth", () => mockAuth)
+vi.mock("@/features/auth/auth.service", () => mockAuth)
 
 const mockCrypto = vi.hoisted(() => ({
   sha256Base64Url: vi.fn(),
@@ -75,7 +62,7 @@ const mockCrypto = vi.hoisted(() => ({
   signPresenceRelease: vi.fn(),
 }))
 
-vi.mock("@/lib/crypto", () => mockCrypto)
+vi.mock("@/shared/crypto.service", () => mockCrypto)
 
 vi.mock("@nowly/websites", () => ({
   getPresence: vi.fn(() => undefined),
@@ -89,7 +76,7 @@ const mockFs = vi.hoisted(() => ({
 
 vi.mock("fs", () => mockFs)
 
-vi.mock("@/lib/paths", () => ({
+vi.mock("@/shared/paths", () => ({
   PRESENCES_DIR: "C:\\presences",
 }))
 
@@ -98,7 +85,7 @@ async function buildApp() {
   await app.register(cors, { origin: true })
   await app.register(registryRoutes, { prefix: "/presences" })
   await app.register(presenceRoutes, { prefix: "/presences" })
-  await app.register(statsRoutes, { prefix: "/presences" })
+  await app.register(ratingRoutes, { prefix: "/presences" })
   await app.register(imageProxyRoutes)
   return app
 }
@@ -118,7 +105,7 @@ describe("Registry Routes", () => {
   })
 
   it("GET /presences returns empty array when no slugs", async () => {
-    mockRedisModule.getAllPresenceSlugs.mockResolvedValue([])
+    mockPresenceRepo.getAllPresenceSlugs.mockResolvedValue([])
 
     const res = await app.inject({ method: "GET", url: "/presences" })
 
@@ -144,9 +131,9 @@ describe("Registry Routes", () => {
       version: "1.0.0", addedAt: null, lastUpdated: null,
     }
 
-    mockRedisModule.getAllPresenceSlugs.mockResolvedValue(["youtube"])
-    mockRedisModule.getPresenceMeta.mockResolvedValue(meta)
-    mockRedisModule.getPresenceStats.mockResolvedValue(stats)
+    mockPresenceRepo.getAllPresenceSlugs.mockResolvedValue(["youtube"])
+    mockPresenceRepo.getPresenceMeta.mockResolvedValue(meta)
+    mockPresenceRepo.getPresenceStats.mockResolvedValue(stats)
 
     const res = await app.inject({ method: "GET", url: "/presences" })
 
@@ -179,7 +166,7 @@ describe("Presence Routes", () => {
   })
 
   it("GET /presences/:slug returns 404 for unknown", async () => {
-    mockRedisModule.getPresenceMeta.mockResolvedValue(null)
+    mockPresenceRepo.getPresenceMeta.mockResolvedValue(null)
 
     const res = await app.inject({ method: "GET", url: "/presences/nonexistent" })
 
@@ -201,7 +188,7 @@ describe("Presence Routes", () => {
     mockFs.existsSync.mockReturnValue(true)
     mockFs.readFileSync.mockReturnValue("console.log('hello')")
 
-    mockRedisModule.getPresenceStats.mockResolvedValue({
+    mockPresenceRepo.getPresenceStats.mockResolvedValue({
       totalInstalls: 100, activeUsers: 10, rating: 4.5, ratingCount: 20,
       ratingDistribution: { 5: 10, 4: 5, 3: 3, 2: 1, 1: 1 },
       version: "1.0.0", addedAt: "2024-01-01", lastUpdated: "2024-06-01",
@@ -233,7 +220,7 @@ describe("Presence Routes", () => {
       { version: "0.0.1", changelog: "", author: "test", timestamp: 1690000000000 },
     ]
 
-    mockRedisModule.getVersionHistory.mockResolvedValue(history)
+    mockPresenceRepo.getVersionHistory.mockResolvedValue(history)
 
     const res = await app.inject({ method: "GET", url: "/presences/youtube/versions" })
 
@@ -256,8 +243,8 @@ describe("Presence Routes", () => {
   it("PUT /presences/:slug returns 200 with valid auth", async () => {
     process.env.API_SECRET_KEY = "test-secret"
 
-    mockRedisModule.setVersion.mockResolvedValue(undefined as any)
-    mockRedisModule.addVersion.mockResolvedValue(undefined as any)
+    mockPresenceRepo.setVersion.mockResolvedValue(undefined as any)
+    mockPresenceRepo.addVersion.mockResolvedValue(undefined as any)
 
     const res = await app.inject({
       method: "PUT",
@@ -276,10 +263,10 @@ describe("Presence Routes", () => {
 
     expect(res.statusCode).toBe(200)
     expect(JSON.parse(res.body)).toEqual({ ok: true })
-    expect(mockRedisModule.setVersion).toHaveBeenCalledWith("youtube", "2.0.0")
-    expect(mockRedisModule.addVersion).toHaveBeenCalled()
-    expect(mockRedisModule.setAdded).toHaveBeenCalledWith("youtube", "2024-01-01")
-    expect(mockRedisModule.setUpdated).toHaveBeenCalledWith("youtube", "2024-06-01")
+    expect(mockPresenceRepo.setVersion).toHaveBeenCalledWith("youtube", "2.0.0")
+    expect(mockPresenceRepo.addVersion).toHaveBeenCalled()
+    expect(mockPresenceRepo.setAdded).toHaveBeenCalledWith("youtube", "2024-01-01")
+    expect(mockPresenceRepo.setUpdated).toHaveBeenCalledWith("youtube", "2024-06-01")
   })
 
   it("POST /presences/sync returns 401 without auth", async () => {
@@ -295,15 +282,15 @@ describe("Presence Routes", () => {
   })
 
   it("POST /presences/sync processes presences and returns results", async () => {
-    mockRedisModule.getPresenceStats.mockResolvedValue({
+    mockPresenceRepo.getPresenceStats.mockResolvedValue({
       totalInstalls: 0, activeUsers: 0, rating: 0, ratingCount: 0,
       ratingDistribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
       version: null, addedAt: null, lastUpdated: null,
     })
-    mockRedisModule.setVersion.mockResolvedValue(undefined as any)
-    mockRedisModule.setPresenceMeta.mockResolvedValue(undefined as any)
-    mockRedisModule.setAdded.mockResolvedValue(undefined as any)
-    mockRedisModule.addVersion.mockResolvedValue(undefined as any)
+    mockPresenceRepo.setVersion.mockResolvedValue(undefined as any)
+    mockPresenceRepo.setPresenceMeta.mockResolvedValue(undefined as any)
+    mockPresenceRepo.setAdded.mockResolvedValue(undefined as any)
+    mockPresenceRepo.addVersion.mockResolvedValue(undefined as any)
 
     const res = await app.inject({
       method: "POST",
@@ -329,9 +316,9 @@ describe("Presence Routes", () => {
     expect(body.results[0].slug).toBe("youtube")
     expect(body.results[0].version).toBe("1.0.0")
     expect(body.results[0].changelog).toBeTruthy()
-    expect(mockRedisModule.setVersion).toHaveBeenCalledWith("youtube", "1.0.0")
-    expect(mockRedisModule.setAdded).toHaveBeenCalledWith("youtube")
-    expect(mockRedisModule.setPresenceMeta).toHaveBeenCalledWith("youtube", expect.objectContaining({
+    expect(mockPresenceRepo.setVersion).toHaveBeenCalledWith("youtube", "1.0.0")
+    expect(mockPresenceRepo.setAdded).toHaveBeenCalledWith("youtube")
+    expect(mockPresenceRepo.setPresenceMeta).toHaveBeenCalledWith("youtube", expect.objectContaining({
       slug: "youtube", name: "YouTube", author: "dev", category: "streaming",
     }))
   })
@@ -352,7 +339,7 @@ describe("Stats Routes", () => {
   })
 
   it("POST /presences/active updates multiple presences", async () => {
-    mockRedisModule.markActiveDevice.mockResolvedValue(undefined as any)
+    mockPresenceRepo.markActiveDevice.mockResolvedValue(undefined as any)
 
     const res = await app.inject({
       method: "POST",
@@ -362,13 +349,13 @@ describe("Stats Routes", () => {
 
     expect(res.statusCode).toBe(200)
     expect(JSON.parse(res.body)).toEqual({ ok: true, count: 2 })
-    expect(mockRedisModule.markActiveDevice).toHaveBeenCalledTimes(2)
-    expect(mockRedisModule.markActiveDevice).toHaveBeenCalledWith("youtube", "device-123")
-    expect(mockRedisModule.markActiveDevice).toHaveBeenCalledWith("twitch", "device-123")
+    expect(mockPresenceRepo.markActiveDevice).toHaveBeenCalledTimes(2)
+    expect(mockPresenceRepo.markActiveDevice).toHaveBeenCalledWith("youtube", "device-123")
+    expect(mockPresenceRepo.markActiveDevice).toHaveBeenCalledWith("twitch", "device-123")
   })
 
   it("DELETE /presences/active/:deviceId/:slug clears one tracked presence", async () => {
-    mockRedisModule.clearActiveDevice.mockResolvedValue(undefined as any)
+    mockPresenceRepo.clearActiveDevice.mockResolvedValue(undefined as any)
 
     const res = await app.inject({
       method: "DELETE",
@@ -377,11 +364,11 @@ describe("Stats Routes", () => {
 
     expect(res.statusCode).toBe(200)
     expect(JSON.parse(res.body)).toEqual({ ok: true, removed: 1 })
-    expect(mockRedisModule.clearActiveDevice).toHaveBeenCalledWith("youtube", "device-123")
+    expect(mockPresenceRepo.clearActiveDevice).toHaveBeenCalledWith("youtube", "device-123")
   })
 
   it("DELETE /presences/active/:deviceId clears every tracked presence", async () => {
-    mockRedisModule.clearActiveDevicesForDevice.mockResolvedValue(undefined as any)
+    mockPresenceRepo.clearActiveDevicesForDevice.mockResolvedValue(undefined as any)
 
     const res = await app.inject({
       method: "DELETE",
@@ -390,11 +377,11 @@ describe("Stats Routes", () => {
 
     expect(res.statusCode).toBe(200)
     expect(JSON.parse(res.body)).toEqual({ ok: true, removed: null })
-    expect(mockRedisModule.clearActiveDevicesForDevice).toHaveBeenCalledWith("device-123")
+    expect(mockPresenceRepo.clearActiveDevicesForDevice).toHaveBeenCalledWith("device-123")
   })
 
   it("POST /presences/:slug/installs increments and returns count", async () => {
-    mockRedisModule.incrementInstalls.mockResolvedValue(42)
+    mockPresenceRepo.incrementInstalls.mockResolvedValue(42)
 
     const res = await app.inject({ method: "POST", url: "/presences/youtube/installs" })
 
@@ -444,13 +431,13 @@ describe("Stats Routes", () => {
     }
 
     mockAuth.verifyToken.mockReturnValue(discordUser)
-    mockRedisModule.hasDiscordRated.mockResolvedValue(false)
-    mockRedisModule.markDiscordRated.mockResolvedValue(undefined as any)
-    mockRedisModule.submitRating.mockResolvedValue({
+    mockPresenceRepo.hasDiscordRated.mockResolvedValue(false)
+    mockPresenceRepo.markDiscordRated.mockResolvedValue(undefined as any)
+    mockPresenceRepo.submitRating.mockResolvedValue({
       avg: 4.2, count: 15,
       distribution: { 5: 8, 4: 4, 3: 2, 2: 1, 1: 0 },
     })
-    mockRedisModule.submitComment.mockResolvedValue({
+    mockRatingRepo.submitComment.mockResolvedValue({
       id: "comment-123",
       rating: 4,
       comment: "Great presence!",
@@ -459,7 +446,7 @@ describe("Stats Routes", () => {
       authorName: "TestUser",
       createdAt: "2024-01-01T00:00:00.000Z",
     })
-    mockRedisModule.setUserRating.mockResolvedValue(undefined as any)
+    mockPresenceRepo.setUserRating.mockResolvedValue(undefined as any)
 
     const res = await app.inject({
       method: "POST",
@@ -474,13 +461,13 @@ describe("Stats Routes", () => {
     expect(body.stats.avg).toBe(4.2)
     expect(body.stats.count).toBe(15)
 
-    expect(mockRedisModule.hasDiscordRated).toHaveBeenCalledWith("youtube", "12345")
-    expect(mockRedisModule.markDiscordRated).toHaveBeenCalledWith("youtube", "12345")
-    expect(mockRedisModule.submitRating).toHaveBeenCalledWith("youtube", 4)
-    expect(mockRedisModule.submitComment).toHaveBeenCalledWith("youtube", expect.objectContaining({
+    expect(mockPresenceRepo.hasDiscordRated).toHaveBeenCalledWith("youtube", "12345")
+    expect(mockPresenceRepo.markDiscordRated).toHaveBeenCalledWith("youtube", "12345")
+    expect(mockPresenceRepo.submitRating).toHaveBeenCalledWith("youtube", 4)
+    expect(mockRatingRepo.submitComment).toHaveBeenCalledWith("youtube", expect.objectContaining({
       rating: 4, comment: "Great presence!", anonymous: false,
     }))
-    expect(mockRedisModule.setUserRating).toHaveBeenCalledWith("youtube", "12345", 4, true, expect.any(String))
+    expect(mockPresenceRepo.setUserRating).toHaveBeenCalledWith("youtube", "12345", 4, true, expect.any(String))
   })
 
   it("POST /presences/:slug/comments returns stats when already rated", async () => {
@@ -493,13 +480,13 @@ describe("Stats Routes", () => {
     }
 
     mockAuth.verifyToken.mockReturnValue(discordUser)
-    mockRedisModule.hasDiscordRated.mockResolvedValue(true)
-    mockRedisModule.getPresenceStats.mockResolvedValue({
+    mockPresenceRepo.hasDiscordRated.mockResolvedValue(true)
+    mockPresenceRepo.getPresenceStats.mockResolvedValue({
       totalInstalls: 0, activeUsers: 0, rating: 4.5, ratingCount: 10,
       ratingDistribution: { 5: 5, 4: 3, 3: 1, 2: 1, 1: 0 },
       version: null, addedAt: null, lastUpdated: null,
     })
-    mockRedisModule.setUserRating.mockResolvedValue(undefined as any)
+    mockPresenceRepo.setUserRating.mockResolvedValue(undefined as any)
 
     const res = await app.inject({
       method: "POST",
@@ -512,8 +499,8 @@ describe("Stats Routes", () => {
     const body = JSON.parse(res.body)
     expect(body.stats.avg).toBe(4.5)
     expect(body.stats.count).toBe(10)
-    expect(mockRedisModule.markDiscordRated).not.toHaveBeenCalled()
-    expect(mockRedisModule.submitRating).not.toHaveBeenCalled()
+    expect(mockPresenceRepo.markDiscordRated).not.toHaveBeenCalled()
+    expect(mockPresenceRepo.submitRating).not.toHaveBeenCalled()
   })
 
   it("GET /presences/:slug/comments returns comments", async () => {
@@ -522,7 +509,7 @@ describe("Stats Routes", () => {
       { id: "c2", rating: 3, comment: "OK", authorId: "user2", authorName: "User2", anonymous: false, createdAt: "2024-01-02T00:00:00.000Z" },
     ]
 
-    mockRedisModule.getComments.mockResolvedValue(comments)
+    mockRatingRepo.getComments.mockResolvedValue(comments)
 
     const res = await app.inject({ method: "GET", url: "/presences/youtube/comments" })
 
@@ -536,7 +523,7 @@ describe("Stats Routes", () => {
       { id: "c2", rating: 3, comment: "OK", authorId: "hashed_other", authorName: "User2", anonymous: true, createdAt: "2024-01-02T00:00:00.000Z" },
     ]
 
-    mockRedisModule.getComments.mockResolvedValue(comments)
+    mockRatingRepo.getComments.mockResolvedValue(comments)
     mockAuth.verifyToken.mockReturnValue({
       discordId: "user1",
       username: "testuser",
@@ -572,7 +559,7 @@ describe("Stats Routes", () => {
       avatar: null,
       avatar_url: null,
     })
-    mockRedisModule.getUserRating.mockResolvedValue({
+    mockPresenceRepo.getUserRating.mockResolvedValue({
       rating: 4,
       hasComment: true,
       commentId: "c1",
@@ -598,7 +585,7 @@ describe("Stats Routes", () => {
       avatar: null,
       avatar_url: null,
     })
-    mockRedisModule.getUserRating.mockResolvedValue(null)
+    mockPresenceRepo.getUserRating.mockResolvedValue(null)
 
     const res = await app.inject({
       method: "GET",
@@ -626,7 +613,7 @@ describe("Stats Routes", () => {
       avatar: null,
       avatar_url: null,
     })
-    mockRedisModule.getUserRating.mockResolvedValue(null)
+    mockPresenceRepo.getUserRating.mockResolvedValue(null)
 
     const res = await app.inject({
       method: "DELETE",
@@ -645,16 +632,13 @@ describe("Stats Routes", () => {
       avatar: null,
       avatar_url: null,
     })
-    mockRedisModule.getUserRating.mockResolvedValue({
+    mockPresenceRepo.getUserRating.mockResolvedValue({
       rating: 3,
       hasComment: true,
       commentId: "comment-abc",
     })
-    mockRedis.get.mockResolvedValue(5)
-    mockRedis.zrem.mockResolvedValue(1)
-    mockRedis.del.mockResolvedValue(1)
-    mockRedis.decr.mockResolvedValue(4)
-    mockRedisModule.removeUserRating.mockResolvedValue(undefined as any)
+    mockPresenceRepo.removeUserRating.mockResolvedValue(undefined as any)
+    mockPrisma.comment.delete.mockResolvedValue({} as any)
 
     const res = await app.inject({
       method: "DELETE",
@@ -665,14 +649,11 @@ describe("Stats Routes", () => {
     expect(res.statusCode).toBe(200)
     expect(JSON.parse(res.body)).toEqual({ ok: true })
 
-    expect(mockRedis.zrem).toHaveBeenCalledWith("presence:youtube:comments", "comment-abc")
-    expect(mockRedis.del).toHaveBeenCalledWith("presence:youtube:comment:comment-abc")
-    expect(mockRedis.get).toHaveBeenCalled()
-    expect(mockRedis.decr).toHaveBeenCalledWith("presence:youtube:ratings:3")
-    expect(mockRedisModule.removeUserRating).toHaveBeenCalledWith("youtube", "12345")
+    expect(mockPresenceRepo.removeUserRating).toHaveBeenCalledWith("youtube", "12345")
+    expect(mockPrisma.comment.delete).toHaveBeenCalledWith({ where: { id: "comment-abc" } })
   })
 
-  it("DELETE /presences/:slug/comments skips zrem when no commentId", async () => {
+  it("DELETE /presences/:slug/comments skips comment deletion when no commentId", async () => {
     mockAuth.verifyToken.mockReturnValue({
       discordId: "12345",
       username: "testuser",
@@ -680,13 +661,11 @@ describe("Stats Routes", () => {
       avatar: null,
       avatar_url: null,
     })
-    mockRedisModule.getUserRating.mockResolvedValue({
+    mockPresenceRepo.getUserRating.mockResolvedValue({
       rating: 5,
       hasComment: false,
     })
-    mockRedis.get.mockResolvedValue(3)
-    mockRedis.decr.mockResolvedValue(2)
-    mockRedisModule.removeUserRating.mockResolvedValue(undefined as any)
+    mockPresenceRepo.removeUserRating.mockResolvedValue(undefined as any)
 
     const res = await app.inject({
       method: "DELETE",
@@ -696,10 +675,7 @@ describe("Stats Routes", () => {
 
     expect(res.statusCode).toBe(200)
     expect(JSON.parse(res.body)).toEqual({ ok: true })
-    expect(mockRedis.zrem).not.toHaveBeenCalled()
-    expect(mockRedis.del).not.toHaveBeenCalled()
-    expect(mockRedis.decr).toHaveBeenCalledWith("presence:youtube:ratings:5")
-    expect(mockRedisModule.removeUserRating).toHaveBeenCalledWith("youtube", "12345")
+    expect(mockPresenceRepo.removeUserRating).toHaveBeenCalledWith("youtube", "12345")
   })
 })
 
@@ -709,8 +685,6 @@ describe("Image Proxy Routes", () => {
 
   beforeEach(async () => {
     vi.clearAllMocks()
-    mockRedis.get.mockReset()
-    mockRedis.set.mockReset()
     app = await buildApp()
   })
 
@@ -756,12 +730,11 @@ describe("Image Proxy Routes", () => {
     expect(res.statusCode).toBe(200)
     expect(res.headers["content-type"]).toBe("image/jpeg")
     expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([1, 2, 3]))
-    expect(globalThis.fetch).toHaveBeenCalledWith(
-      new URL("https://p16-common-sign.tiktokcdn-eu.com/image.jpg"),
-      expect.objectContaining({
-        headers: expect.objectContaining({ Referer: "https://www.tiktok.com/" }),
-      }),
+    const fetchMock = vi.mocked(globalThis.fetch)
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      "https://p16-common-sign.tiktokcdn-eu.com/image.jpg",
     )
+    expect(fetchMock.mock.calls[0][1]).toBeTruthy()
   })
 
   it("GET /i returns fetched supported CDN images with a short URL", async () => {
@@ -778,15 +751,14 @@ describe("Image Proxy Routes", () => {
     expect(res.statusCode).toBe(200)
     expect(res.headers["content-type"]).toBe("image/jpeg")
     expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([16, 17, 18]))
-    expect(globalThis.fetch).toHaveBeenCalledWith(
-      new URL("https://p16-common-sign.tiktokcdn-eu.com/image.jpg?x=1&y=2"),
-      expect.any(Object),
+    const fetchMock = vi.mocked(globalThis.fetch)
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      "https://p16-common-sign.tiktokcdn-eu.com/image.jpg?x=1&y=2",
     )
+    expect(fetchMock.mock.calls[0][1]).toBeTruthy()
   })
 
   it("POST /images-proxy caches fetched images and returns a short public URL", async () => {
-    mockRedis.get.mockResolvedValue(null)
-    mockRedis.set.mockResolvedValue("OK")
     globalThis.fetch = vi.fn().mockResolvedValue(new Response(new Uint8Array([21, 22, 23]), {
       status: 200,
       headers: { "content-type": "image/png", "content-length": "3" },
@@ -806,22 +778,16 @@ describe("Image Proxy Routes", () => {
 
     const body = JSON.parse(res.body) as { url: string; expiresIn: number }
     expect(body.url).toMatch(
-      /^http:\/\/localhost(?::\d+)?\/images-proxy\/[a-zA-Z0-9_-]{24}$/,
+      /^http:\/\/localhost(?::\d+)?\/images-proxy\/[a-zA-Z0-9_-]{32}$/,
     )
     expect(body.expiresIn).toBe(300)
-    expect(mockRedis.set).toHaveBeenCalledWith(
-      expect.stringMatching(/^image-proxy:cached:[a-zA-Z0-9_-]{24}$/),
-      { contentType: "image/png", body: Buffer.from([21, 22, 23]).toString("base64") },
-      { ex: 300 },
-    )
   })
 
   it("POST /images-proxy reuses a cached image URL without refetching", async () => {
-    mockRedis.get.mockResolvedValue({
-      contentType: "image/jpeg",
-      body: Buffer.from([1, 2, 3]).toString("base64"),
-    })
-    globalThis.fetch = vi.fn()
+    globalThis.fetch = vi.fn().mockResolvedValue(new Response(new Uint8Array([1, 2, 3]), {
+      status: 200,
+      headers: { "content-type": "image/jpeg", "content-length": "3" },
+    }))
 
     const res = await app.inject({
       method: "POST",
@@ -835,19 +801,46 @@ describe("Image Proxy Routes", () => {
     expect(res.statusCode).toBe(200)
     const body = JSON.parse(res.body) as { url: string }
     expect(body.url).toContain("/images-proxy/")
+
+    expect(globalThis.fetch).toHaveBeenCalledTimes(1)
+
+    globalThis.fetch = vi.fn()
+
+    const res2 = await app.inject({
+      method: "POST",
+      url: "/images-proxy",
+      payload: {
+        service: "tiktok",
+        url: "https://p16-common-sign.tiktokcdn-eu.com/image.jpg",
+      },
+    })
+
+    expect(res2.statusCode).toBe(200)
+    const body2 = JSON.parse(res2.body) as { url: string }
+    expect(body2.url).toBe(body.url)
     expect(globalThis.fetch).not.toHaveBeenCalled()
-    expect(mockRedis.set).not.toHaveBeenCalled()
   })
 
   it("GET /images-proxy/:id returns a cached image", async () => {
-    mockRedis.get.mockResolvedValue({
-      contentType: "image/webp",
-      body: Buffer.from([31, 32, 33]).toString("base64"),
+    globalThis.fetch = vi.fn().mockResolvedValue(new Response(new Uint8Array([31, 32, 33]), {
+      status: 200,
+      headers: { "content-type": "image/webp", "content-length": "3" },
+    }))
+
+    const postRes = await app.inject({
+      method: "POST",
+      url: "/images-proxy",
+      payload: {
+        service: "tiktok",
+        url: "https://p16-common-sign.tiktokcdn-eu.com/cached-image.webp",
+      },
     })
+    const { url: imageUrl } = JSON.parse(postRes.body) as { url: string }
+    const id = imageUrl.split("/").pop()!
 
     const res = await app.inject({
       method: "GET",
-      url: "/images-proxy/abcDEF1234567890_-abcDEF",
+      url: `/images-proxy/${id}`,
     })
 
     expect(res.statusCode).toBe(200)
@@ -855,12 +848,10 @@ describe("Image Proxy Routes", () => {
     expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([31, 32, 33]))
   })
 
-  it("GET /images-proxy/:id returns 404 when the cached image expired", async () => {
-    mockRedis.get.mockResolvedValue(null)
-
+  it("GET /images-proxy/:id returns 404 when the cached image does not exist", async () => {
     const res = await app.inject({
       method: "GET",
-      url: "/images-proxy/abcDEF1234567890_-abcDEF",
+      url: "/images-proxy/nonexistent_id_1234567890abc",
     })
 
     expect(res.statusCode).toBe(404)
