@@ -1,6 +1,8 @@
-import { ChevronDown } from "lucide-react";
+import { Settings, Trash2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Sheet } from "@/components/sheet";
+import { Switch } from "@/components/switch";
 import { getLocale, t } from "@/shared/i18n";
 import { sendMessage } from "@/lib/messages";
 
@@ -24,6 +26,7 @@ const resolveLocaleString = (value: unknown): string | undefined => {
 
 type Props = {
   definitions: Record<string, unknown>;
+  onRemove?: () => void;
   slug: string;
 };
 
@@ -34,7 +37,7 @@ const inferType = (value: unknown): string => {
   return "unknown";
 };
 
-export const PresenceSettingsPanel: FC<Props> = ({ definitions, slug }): ReactElement | null => {
+export const PresenceSettingsPanel: FC<Props> = ({ definitions, onRemove, slug }): ReactElement | null => {
   const [values, setValues] = useState<Record<string, unknown>>({});
   const [loaded, setLoaded] = useState(false);
   const [open, setOpen] = useState(false);
@@ -64,101 +67,109 @@ export const PresenceSettingsPanel: FC<Props> = ({ definitions, slug }): ReactEl
     void sendMessage("SET_PRESENCE_SETTINGS", { slug, partial: { [key]: value } });
   }, [slug]);
 
-  if (!loaded || Object.keys(definitions).length === 0) return null;
+  if (!loaded) return null;
 
   const settingKeys = Object.entries(definitions);
 
   return (
-    <div className="border-b border-border">
+    <>
       <button
         type="button"
-        onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between px-3 py-2 text-xs text-muted-foreground transition-colors hover:text-foreground"
+        aria-label={t("settings")}
+        title={t("settings")}
+        onClick={() => setOpen(true)}
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
       >
-        <span>{t("settings")}</span>
-        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
+        <Settings className="h-4 w-4" />
       </button>
 
       {open && (
-        <div className="flex flex-col gap-2 px-3 pb-2">
-          {settingKeys.map(([key, def]) => {
-            const defObj = typeof def === "object" && def !== null ? (def as SettingDefinition) : null;
-            const type = defObj?.type ?? inferType(def);
-            const label = defObj?.label
-              ? (resolveLocaleString(defObj.label) ?? key)
-              : key;
-            const placeholder = resolveLocaleString(defObj?.placeholder);
-            const value = values[key];
+          <Sheet title={t("settings")} open={open} onClose={() => setOpen(false)} position="bottom">
+          <div className="flex flex-col gap-4">
+            {settingKeys.map(([key, def]) => {
+              const defObj = typeof def === "object" && def !== null ? (def as SettingDefinition) : null;
+              const type = defObj?.type ?? inferType(def);
+              const label = defObj?.label
+                ? (resolveLocaleString(defObj.label) ?? key)
+                : key;
+              const placeholder = resolveLocaleString(defObj?.placeholder);
+              const value = values[key];
 
-            return (
-              <div key={key} className="flex items-center justify-between gap-3">
-                <span className="text-xs text-foreground">{label}</span>
+              const switchId = `switch-${slug}-${key}`;
 
-                {type === "boolean" && (
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={Boolean(value)}
-                    onClick={() => handleChange(key, !value)}
-                    className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${
-                      value ? "bg-accent" : "bg-dim-foreground"
-                    }`}
-                  >
-                    <span
-                      className={`absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
-                        value ? "translate-x-4" : "translate-x-0"
-                      }`}
+              return (
+                <div key={key} className="flex items-center justify-between gap-3">
+                  <label htmlFor={switchId} className="text-sm text-foreground cursor-pointer">{label}</label>
+
+                  {type === "boolean" && (
+                    <Switch
+                      id={switchId}
+                      checked={Boolean(value)}
+                      onChange={(v) => handleChange(key, v)}
                     />
-                  </button>
-                )}
+                  )}
 
-                {type === "input" && (
-                  <input
-                    type="text"
-                    value={String(value ?? "")}
-                    placeholder={placeholder ?? ""}
-                    onChange={(e) => handleChange(key, e.target.value)}
-                    className="h-7 w-40 rounded-md border border-border bg-card-2 px-2 text-xs text-foreground outline-none transition-colors focus:border-border-light"
-                  />
-                )}
-
-                {type === "select" && (
-                  <select
-                    value={String(value ?? "")}
-                    onChange={(e) => handleChange(key, e.target.value)}
-                    className="h-7 w-40 rounded-md border border-border bg-card-2 px-2 text-xs text-foreground outline-none transition-colors focus:border-border-light"
-                  >
-                  {(defObj?.options as Array<Record<string, unknown>> | undefined)?.map((opt) => {
-                    const optValue = String(opt?.value ?? "");
-                    const optionLabel = resolveLocaleString(opt?.label) ?? (opt?.label != null ? String(opt.label) : optValue);
-                    return (
-                      <option key={optValue} value={optValue}>
-                        {optionLabel}
-                      </option>
-                    );
-                  })}
-                  </select>
-                )}
-
-                {type === "slider" && (
-                  <div className="flex items-center gap-2">
+                  {type === "input" && (
                     <input
-                      type="range"
-                      min={defObj?.min !== undefined ? Number(defObj.min) : 0}
-                      max={defObj?.max !== undefined ? Number(defObj.max) : 100}
-                      step={defObj?.step !== undefined ? Number(defObj.step) : 1}
-                      value={Number(value ?? 0)}
-                      onChange={(e) => handleChange(key, Number(e.target.value))}
-                      className="h-1 w-24 cursor-pointer accent-accent"
+                      type="text"
+                      value={String(value ?? "")}
+                      placeholder={placeholder ?? ""}
+                      onChange={(e) => handleChange(key, e.target.value)}
+                      className="h-8 w-44 rounded-lg border border-border bg-card-2 px-3 text-sm text-foreground outline-none transition-colors focus:border-border-light"
                     />
-                    <span className="w-6 text-right text-xs text-muted-foreground">{String(value ?? 0)}</span>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                  )}
+
+                  {type === "select" && (
+                    <select
+                      value={String(value ?? "")}
+                      onChange={(e) => handleChange(key, e.target.value)}
+                      className="h-8 w-44 rounded-lg border border-border bg-card-2 px-3 text-sm text-foreground outline-none transition-colors focus:border-border-light"
+                    >
+                    {(defObj?.options as Array<Record<string, unknown>> | undefined)?.map((opt) => {
+                      const optValue = String(opt?.value ?? "");
+                      const optionLabel = resolveLocaleString(opt?.label) ?? (opt?.label != null ? String(opt.label) : optValue);
+                      return (
+                        <option key={optValue} value={optValue}>
+                          {optionLabel}
+                        </option>
+                      );
+                    })}
+                    </select>
+                  )}
+
+                  {type === "slider" && (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="range"
+                        min={defObj?.min !== undefined ? Number(defObj.min) : 0}
+                        max={defObj?.max !== undefined ? Number(defObj.max) : 100}
+                        step={defObj?.step !== undefined ? Number(defObj.step) : 1}
+                        value={Number(value ?? 0)}
+                        onChange={(e) => handleChange(key, Number(e.target.value))}
+                        className="h-1 w-24 cursor-pointer accent-accent"
+                      />
+                      <span className="w-6 text-right text-xs text-muted-foreground">{String(value ?? 0)}</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {onRemove && (
+            <div className="mt-6">
+              <button
+                type="button"
+                onClick={onRemove}
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/15"
+              >
+                <Trash2 className="h-4 w-4" />
+                {t("uninstall")}
+              </button>
+            </div>
+          )}
+        </Sheet>
       )}
-    </div>
+    </>
   );
 };
