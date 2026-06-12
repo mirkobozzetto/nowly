@@ -141,12 +141,12 @@ describe("Registry Routes", () => {
     const stats = {
       totalInstalls: 500, activeUsers: 42, rating: 4.5, ratingCount: 100,
       ratingDistribution: { 5: 60, 4: 25, 3: 10, 2: 3, 1: 2 },
+      version: "1.0.0", addedAt: null, lastUpdated: null,
     }
 
     mockRedisModule.getAllPresenceSlugs.mockResolvedValue(["youtube"])
     mockRedisModule.getPresenceMeta.mockResolvedValue(meta)
     mockRedisModule.getPresenceStats.mockResolvedValue(stats)
-    mockRedisModule.getVersion.mockResolvedValue("1.0.0")
 
     const res = await app.inject({ method: "GET", url: "/presences" })
 
@@ -194,7 +194,6 @@ describe("Presence Routes", () => {
       description: { "en-US": "Watch videos" },
       url: ["youtube.com"],
       color: "#FF0033",
-      tags: ["video"],
       assets: { logo: "logo.png", icon: "icon.png", thumbnail: "thumbnail.jpg" },
       settings: {},
     })

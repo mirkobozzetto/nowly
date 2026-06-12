@@ -1,29 +1,28 @@
-import { getAllPresenceSlugs, getPresenceMeta, getPresenceStats, getVersion } from "@/lib/redis"
+import { getAllPresenceSlugs, getPresenceMeta, getPresenceStats } from "@/lib/redis"
 import type { FastifyInstance } from "fastify"
 
 export const registryRoutes = async (fastify: FastifyInstance) => {
   fastify.get("/", async (_request, _reply) => {
     const slugs = await getAllPresenceSlugs()
-    const results = []
-    for (const slug of slugs) {
-      const [meta, stats, version] = await Promise.all([
+    const results = await Promise.all(slugs.map(async (slug) => {
+      const [meta, stats] = await Promise.all([
         getPresenceMeta(slug),
         getPresenceStats(slug),
-        getVersion(slug),
       ])
 
-      if (meta) {
-        results.push({
-          ...meta,
-          version: version || "",
-          totalInstalls: stats.totalInstalls,
-          activeUsers: stats.activeUsers,
-          rating: stats.rating,
-          ratingCount: stats.ratingCount,
-          ratingDistribution: stats.ratingDistribution,
-        })
+      if (!meta) return null
+
+      return {
+        ...meta,
+        version: stats.version || "",
+        totalInstalls: stats.totalInstalls,
+        activeUsers: stats.activeUsers,
+        rating: stats.rating,
+        ratingCount: stats.ratingCount,
+        ratingDistribution: stats.ratingDistribution,
       }
-    }
-    return results
+    }))
+
+    return results.filter((result) => result !== null)
   })
 }
