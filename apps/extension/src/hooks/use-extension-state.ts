@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import type { CurrentActivity, ExtensionSettings, InstalledPresences, PresenceDebug } from "@/shared/types";
-import { WEB_BASE_URL } from "@/shared/constants";
 import { sendMessage, type NativeStatus } from "@/lib/messages";
+import { WEB_BASE_URL } from "@/shared/constants";
+import type { CurrentActivity, ExtensionSettings, InstalledPresences, PresenceDebug } from "@/shared/types";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type HostVersionInfo = {
   currentVersion?: string;
@@ -47,6 +47,19 @@ export const useExtensionState = (): ExtensionState => {
   const [debug, setDebug] = useState<PresenceDebug | null>(null);
   const [updates, setUpdates] = useState<Record<string, string>>({});
   const [isCheckingUpdates, setIsCheckingUpdates] = useState(false);
+  const [isUnpacked, setIsUnpacked] = useState(false);
+  const isUnpackedRef = useRef(false);
+
+  useEffect(() => {
+    try {
+      const unpacked = !chrome.runtime.getManifest().update_url;
+      setIsUnpacked(unpacked);
+      isUnpackedRef.current = unpacked;
+    } catch {
+      setIsUnpacked(false);
+    }
+  }, []);
+
   const [isCheckingHostVersion, setIsCheckingHostVersion] = useState(false);
   const [hostVersionInfo, setHostVersionInfo] = useState<HostVersionInfo | null>(null);
   const [settings, setSettingsState] = useState<ExtensionSettings>(FALLBACK_SETTINGS);
@@ -98,6 +111,7 @@ export const useExtensionState = (): ExtensionState => {
   }, []);
 
   const refreshUpdates = useCallback((): void => {
+    if (isUnpackedRef.current) return;
     setIsCheckingUpdates(true);
     void sendMessage<Record<string, string>>("CHECK_UPDATES")
       .then((nextUpdates) => {
