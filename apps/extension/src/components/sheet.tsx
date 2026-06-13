@@ -7,10 +7,11 @@ type Props = {
   onClose: () => void;
   open: boolean;
   position?: "right" | "bottom";
+  subtitle?: string;
   title: string;
 };
 
-export const Sheet: FC<Props> = ({ children, onClose, open, position = "right", title }): ReactElement | null => {
+export const Sheet: FC<Props> = ({ children, onClose, open, position = "right", subtitle, title }): ReactElement | null => {
   const panelRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const isBottom = position === "bottom";
@@ -110,12 +111,17 @@ export const Sheet: FC<Props> = ({ children, onClose, open, position = "right", 
           maxHeight: isBottom ? "85vh" : undefined,
         }}
       >
-        <div className={`flex items-center justify-between border-border px-4 py-3 ${
+        <div className={`flex items-start justify-between gap-2 border-border px-4 py-3 ${
           isBottom ? "border-b" : "border-b"
         }`}>
-          <h2 id={id} className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-            {title}
-          </h2>
+          <div className="flex flex-col gap-0.5">
+            <h2 id={id} className="text-[11px] font-bold uppercase tracking-widest text-foreground">
+              {title}
+            </h2>
+            {subtitle ? (
+              <p className="text-xs text-muted-foreground">{subtitle}</p>
+            ) : null}
+          </div>
           <button
             type="button"
             onClick={onClose}

@@ -1,4 +1,4 @@
-import { Disc3 } from "lucide-react";
+import { Disc3, Snowflake } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useEffect, useState } from "react";
 import { assetUrl } from "@/shared/api";
@@ -66,6 +66,7 @@ export const CurrentActivityCard: FC<Props> = ({ activity, presences }): ReactEl
   );
 
   const showProgressBar = hasProgress(category) && progress;
+  const isSnoozed = activity ? Boolean(presences[activity.slug]?.snoozeUntil && presences[activity.slug].snoozeUntil! > Date.now()) : false;
 
   if (!hasActivity) {
     return (
@@ -117,6 +118,12 @@ export const CurrentActivityCard: FC<Props> = ({ activity, presences }): ReactEl
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-foreground">{title}</p>
           <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
+          {isSnoozed ? (
+            <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-card-2 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+              <Snowflake className="h-3 w-3" />
+              {t("snoozed")}
+            </span>
+          ) : null}
         </div>
       </div>
 
