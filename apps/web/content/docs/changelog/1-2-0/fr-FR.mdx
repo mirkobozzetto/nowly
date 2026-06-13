@@ -1,53 +1,85 @@
 ---
 title: 1.2.0
 date: À déterminer
-description: Refonte UI/UX de l'extension avec nouveau lecteur, composants natifs, badge d'activité et réorganisation des paramètres.
+description: Refonte UI/UX de l'extension avec nouveau lecteur, composants natifs, badge d'activité, snooze & planning, panneau de debug conditionnel et réorganisation des paramètres.
 ---
 
-`1.2.0` est une release visuelle et fonctionnelle. Elle introduit un nouveau lecteur avec animation vinyle, un composant Sheet fait maison, un badge d'icône d'extension, un interrupteur custom à la marque Nowly, et une refonte de l'interaction avec les paramètres de présence.
+`1.2.0` est une release visuelle et fonctionnelle majeure. Elle introduit un lecteur repensé avec animation vinyle, un composant Sheet fait maison, un badge d'icône d'extension, des composants Switch et Checkbox personnalisés, les fonctionnalités snooze et planning, un panneau de debug conditionnel, et des paramètres entièrement réorganisés.
 
 <ReleaseTable
   headers={["Zone", "Ce qui change", "Pourquoi c'est utile"]}
   rows={[
-    ["Lecteur", "Nouveau design avec animation vinyle tournante (idle) et fond flou avec artwork large (actif). La barre de progression se met à jour en temps réel.", "L'état inactif n'est plus un simple texte — l'animation vinyle donne une identité visuelle forte. L'état actif affiche les covers bien plus grand et le temps restant est fluide."],
-    ["Sheet", "Nouveau composant Sheet natif en Tailwind v4 (sans Radix), qui glisse depuis le bas. Intégré aux paramètres de présence.", "Plus de dépendance à Radix, animation fluide, mobile-friendly, et focus trap intégré."],
+    ["Lecteur", "Nouveau layout Bar avec artwork 48×48 (idle : vinyle tournant), barre de progression optionnelle (music/streaming/tv/anime uniquement), et toggle showPlayer pour masquer la carte. Contrôles supprimés.", "Design compact et épuré. Les utilisateurs peuvent masquer le lecteur s'ils préfèrent une interface plus simple."],
+    ["Sheet", "Nouveau composant Sheet natif en Tailwind v4 (sans Radix), glissant depuis le bas ou la droite. Intégré aux paramètres de présence, snooze et planning.", "Plus de dépendance à Radix, animation fluide, mobile-friendly, et focus trap intégré."],
     ["Badge d'extension", "Un indicateur • apparaît sur l'icône de l'extension quand une présence est active.", "L'utilisateur sait d'un coup d'œil si une activité Discord est en cours, sans ouvrir le panneau."],
-    ["Interrupteur", "Nouveau Switch custom carré aux coins arrondis, avec design distinctif : fond avec bordure (off), fond violet avec bouton blanc (on).", "L'interrupteur s'aligne avec l'identité visuelle Nowly au lieu d'utiliser le switch navigateur standard."],
-    ["Paramètres présence", "Les paramètres s'ouvrent maintenant dans un Sheet depuis le bas, avec les réglages et le bouton Désinstaller accessible. Les labels sont liés au switch via htmlFor.", "L'interface est plus propre, plus accessible (click sur le label = toggle), et l'option de désinstallation reste disponible même sans paramètres."],
-    ["Présence inactive", "Quand une présence est désactivée, son icône devient grisée/désaturée et son nom s'estompe.", "Le contraste visuel entre présence active et inactive est immédiatement compréhensible."],
+    ["Switch personnalisé", "Toggle carré aux coins arrondis : fond avec bordure (off), fond violet avec bouton blanc (on).", "S'aligne avec l'identité visuelle Nowly au lieu du switch navigateur standard."],
+    ["Checkbox personnalisé", "Checkbox 18×18px arrondie avec remplissage accent et icône check blanche.", "Look cohérent pour les toggles de consentement et futurs formulaires."],
+    ["Paramètres présence", "Les paramètres s'ouvrent dans un Sheet depuis le bas avec les réglages et le bouton Désinstaller. Labels liés au switch via htmlFor.", "Interface plus propre, plus accessible (clic sur le label = toggle), désinstallation toujours disponible."],
+    ["Snooze", "Snooze par présence avec un stepper en bottom sheet ([−] [temps] [+], pas de 5min, 5–240min). Icône Flocon pour snoozer, Soleil pour réveiller. Envoie seulement CLEAR_ACTIVITY au réveil — l'activité reste visible avec un badge 'Snoozé'.", "Mettre en pause l'activité Discord sans perdre l'état Nowly. Stepper rapide, indicateur clair."],
+    ["Planning", "Planning par présence ou global avec boutons jour (Dim–Sam) et plage horaire optionnelle. Mode 'toute la journée' masque les heures. Global via la barre d'actions, par présence via le bouton Calendar.", "Contrôle total sur quand une présence s'affiche sur Discord. Mode journée simplifie la configuration."],
+    ["Réorganisation paramètres", "Header simplifié avec bullet coloré + statut. Carte connexion/hôte supprimée. Gestion données fusionnée avec analytics. Carte mise à jour conditionnelle avec style accent. Barre d'actions visible uniquement sur l'onglet Activité.", "Paramètres plus épurés. La mise à jour hôte se démarque quand elle est disponible. Aucune distraction pendant la configuration."],
+    ["Panneau de debug conditionnel", "DebugPanel masqué dans les builds Chrome Web Store (vérification update_url). Affiché uniquement dans la vue Réglages avec un header repliable — plus de bannière séparée. Vérifier MAJ devient inactif en mode dev.", "Pas de fuite de debug en production. UI plus propre : le header sert aussi de notice. Pas de fausses mises à jour en développement."],
+    ["Barre de progression", "Affichée uniquement pour les catégories music, streaming, tv et anime. Masquée pour les présences 'other'.", "La barre de progression reste pertinente — pas de timer inutile pour les présences non-média."],
+    ["Consentement analytics", "Écran d'onboarding repensé avec une grille compacte : 6 éléments non collectés (X) et 1 élément collecté (✓). Bouton 'Partager' centré, 'Non merci' en texte cliquable.", "Communication plus claire sur la vie privée. Moins intimidant que l'ancien mur de texte."],
   ]}
 />
 
 ## Lecteur
 
-Le composant `CurrentActivityCard` a été entièrement repensé. L'état idle affiche un vinyle SVG animé en rotation continue, remplaçant l'ancienne icône `CirclePlay` statique. Le disque est composé de cercles concentriques avec un reflet lumineux.
+Le composant `CurrentActivityCard` a été entièrement repensé avec un layout Bar compact. L'état idle affiche un vinyle SVG animé de 48px avec le texte "Aucune activité détectée" en ligne. L'état actif affiche l'artwork en 48×48, le titre, le sous-titre, et un fond flou du poster quand `largeImage` est présent.
 
-L'état actif conserve le fond flou du poster mais l'artwork passe à 80×80px (anciennement 64×64). Le titre et le sous-titre sont plus grands et la barre de progression est plus épaisse. Un `useEffect` avec intervalle d'1 seconde recalcule le temps écoulé via `Date.now()`, rendant la progression fluide. Une rangée de boutons de contrôle (précédent, lecture/pause, suivant) a été ajoutée sous la progression.
+Les contrôles média (précédent, lecture/pause, suivant) ont été supprimés — ils ne mettaient pas en pause le média réel et ajoutaient du bruit visuel. La barre de progression est maintenant conditionnelle : seules les présences `music`, `streaming`, `tv` et `anime` l'affichent ; les présences `other` ne l'ont pas.
+
+Un toggle `showPlayer` dans les paramètres d'affichage permet de masquer entièrement la carte du lecteur.
 
 ## Sheet
 
-Un composant `Sheet` natif a été créé de zéro en Tailwind v4, sans Radix UI. Il supporte deux positions : un panneau latéral depuis la droite (usage futur) et un panneau depuis le bas avec bords supérieurs arrondis, utilisé pour les paramètres de présence.
-
-Le composant gère l'overlay sombre avec `backdrop-blur`, la fermeture au clic sur l'overlay ou la touche Escape, un focus trap cyclique pour la navigation au clavier, la sauvegarde et la restauration du focus précédent, et une animation CSS d'entrée.
+Un composant `Sheet` natif a été créé de zéro en Tailwind v4, sans Radix UI. Il supporte deux positions : un panneau latéral depuis la droite, et un panneau depuis le bas avec bords supérieurs arrondis. Le composant gère l'overlay sombre avec `backdrop-blur`, la fermeture au clic sur l'overlay ou la touche Escape, un focus trap cyclique, la sauvegarde et la restauration du focus précédent, et une animation CSS d'entrée. Une prop `subtitle` optionnelle permet d'afficher un texte secondaire dans l'en-tête.
 
 ## Badge d'extension
 
-Le service worker définit maintenant un badge `•` sur l'icône de l'extension quand une présence envoie une activité à Discord. La fonction `setActivityBadge(slug)` est appelée dans `handleActivityUpdate` et `clearActivityBadge()` dans `handleClearActivity`. La couleur du badge utilise l'accent Nowly (`#5865F2`).
+Le service worker définit un badge `•` quand une présence envoie une activité à Discord. La couleur du badge utilise l'accent Nowly (`#5865F2`). Il se nettoie quand l'activité est effacée.
 
-## Interrupteur personnalisé
+## Switch et Checkbox personnalisés
 
-Un composant `Switch` a été créé pour remplacer tous les toggles natifs du navigateur par un design propre à Nowly. Le track est carré aux coins arrondis (`rounded-lg`) au lieu d'une pilule standard.
+Deux composants remplacent les éléments de formulaire natifs du navigateur. Le Switch a un track carré de 18×36px avec `rounded-lg`. OFF : `bg-card-2` avec bordure, bouton gris. ON : `bg-accent`, bouton blanc. La Checkbox fait 18×18px avec `rounded-[5px]`. OFF : `bg-card-2 border-border`. ON : `bg-accent` avec une icône `Check` blanche.
 
-L'état OFF affiche un fond `bg-card-2` avec bordure et un bouton gris. L'état ON passe à un fond `bg-accent` (violet Nowly) avec un bouton blanc. L'animation est fluide avec `transition-all duration-300`, et un focus ring violet assure l'accessibilité.
+Les deux supportent la prop `id` pour le lien de label via `htmlFor`.
 
-## Paramètres présence
+## Snooze
 
-Le panneau de paramètres a été modernisé. Les réglages s'ouvrent dans un Sheet depuis le bas au lieu d'un expand inline. Un bouton "Désinstaller" (rouge) est accessible dans le Sheet, même pour les présences sans paramètres, via une icône engrenage toujours visible.
+La fonctionnalité snooze permet de mettre en pause l'activité Discord pour une durée définie. Un bottom sheet avec un stepper `[−] [minutes] [+]` (pas de 5 minutes, plage 5–240 minutes) permet une sélection rapide de la durée. Quand le snooze est actif, la barre d'actions affiche une icône Soleil au lieu du Flocon.
 
-Les labels des champs sont liés au `Switch` via `htmlFor`, ce qui permet de cliquer sur le texte pour toggler le paramètre sans viser précisément l'interrupteur.
+Le réveil n'envoie que `CLEAR_ACTIVITY` à Discord — l'activité Nowly reste visible avec un badge "Snoozé". Le désnoozage renvoie l'activité stockée à Discord.
 
-## Présence inactive
+## Planning
 
-Quand une présence est désactivée, son icône et son fond deviennent gris et désaturés (`opacity-40 saturate-0`), et le nom de la présence s'estompe en `text-muted-foreground/60`. Une transition douce adoucit le changement d'état.
+Les utilisateurs peuvent définir des plannings par présence ou globalement. Le sheet de planning affiche 7 boutons de jour (Dim–Sam) avec un toggle de plage horaire optionnel. Quand le mode "Toute la journée" est activé, seuls les jours sont sauvegardés — la présence est active toute la journée sur les jours sélectionnés. Quand la plage horaire est active, les heures de début et fin sont affichées.
 
-> Cette release pose les bases visuelles de Nowly — elle rend l'extension identifiable, cohérente et plus agréable à utiliser au quotidien.
+Le planning global (accessible depuis le bouton Calendar de la barre d'actions) sert de fallback quand aucun planning par présence n'est défini. Un bouton Calendar par présence se trouve à côté de l'icône engrenage sur chaque élément de la liste.
+
+Le planning peut être désactivé via la section "Fonctionnalités supplémentaires" dans les paramètres (`scheduleEnabled` désactivé par défaut), ce qui masque tous les boutons de planning.
+
+## Réorganisation des paramètres
+
+Le panneau des paramètres a été simplifié :
+- **Header** : Le statut de connexion est maintenant un bullet coloré + texte de statut. La carte connexion/hôte est supprimée.
+- **Carte de mise à jour** : Affichée uniquement quand `hostVersionInfo.updateAvailable` est vrai, stylisée avec une teinte accent (`bg-accent/5`, `border-accent/20`).
+- **Gestion des données** : Fusionnée avec le consentement analytics sous une seule carte "Données et confidentialité".
+- **Vérifier les mises à jour** : Déplacé du footer d'activité vers la barre d'actions, avec une limite de 30 secondes. Désactivé automatiquement en mode décompressé.
+- **Fonctionnalités supplémentaires** : Nouvelle section hébergeant les toggles de fonctionnalités (Planning est le premier).
+- **Barre d'actions** : Visible uniquement sur l'onglet Activité — l'onglet Réglages reste dégagé sans boutons d'action.
+
+## Panneau de debug conditionnel
+
+Le `DebugPanel` n'est rendu que dans les extensions **décompressées** (`!chrome.runtime.getManifest().update_url`). Il réside exclusivement dans la vue **Réglages** — la page Activité reste propre. Quand un problème de debug existe (`debug` n'est pas null ou `nativeStatus` n'est pas connecté/ok), l'en-tête du panneau est toujours visible avec une icône Terminal et le label "Debug". En cliquant sur l'en-tête, le panneau se déploie pour afficher les détails de debug et un champ de personnalisation de l'URL de l'API.
+
+Dans les builds Chrome Web Store (`update_url` présent), le panneau de debug n'est jamais rendu.
+
+De plus, **Vérifier les mises à jour** est automatiquement désactivé en mode décompressé — l'appel devient inactif pour éviter les fausses notifications de mise à jour causées par l'absence de métadonnées de version dans les présences en développement.
+
+## Style des présences inactives
+
+Quand une présence est désactivée, son icône devient `opacity-60 saturate-0` et le nom s'estompe en `text-muted-foreground/80` — subtilement atténué mais toujours lisible.
+
+> Cette release transforme Nowly d'un simple gestionnaire de présence en un outil complet avec planification, snooze et une interface raffinée.
