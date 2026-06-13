@@ -1,4 +1,4 @@
-import { BarChart3, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Lock, MonitorDown, PlugZap, Settings, ShoppingBag, Sparkles } from "lucide-react";
+import { BarChart3, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Lock, MonitorDown, PlugZap, Settings, ShoppingBag, Sparkles, X } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useMemo, useState } from "react";
 import { Header } from "@/components/header";
@@ -6,8 +6,8 @@ import { LocaleFlag } from "@/components/locale-flag";
 import { platforms } from "@/lib/platforms";
 import type { NativeStatus } from "@/lib/messages";
 import type { ExtensionSettings, UserScriptsStatus } from "@/shared/types";
-import { resolveLocale, t } from "@/shared/i18n";
-import type { LocalePreference } from "@/shared/i18n";
+import { resolveLocale, t, type LocalePreference } from "@/shared/i18n";
+import type frMessages from "@/../messages/fr.json";
 
 type Props = {
   nativeStatus: NativeStatus;
@@ -136,6 +136,15 @@ const NativeClientGate: FC<{ nativeStatus: NativeStatus; onConnectNative: () => 
   );
 };
 
+const notCollectedItems: Array<{ key: string }> = [
+  { key: "urls" },
+  { key: "titles" },
+  { key: "searches" },
+  { key: "content" },
+  { key: "ips" },
+  { key: "ids" },
+];
+
 const AnalyticsConsentGate: FC<{ onAccept: () => void; onDecline: () => void }> = ({ onAccept, onDecline }) => (
   <PanelShell>
     <div className="text-center">
@@ -143,22 +152,37 @@ const AnalyticsConsentGate: FC<{ onAccept: () => void; onDecline: () => void }> 
         <BarChart3 className="h-6 w-6" />
       </div>
       <h1 className="mt-4 text-lg font-semibold text-foreground">{t("onboardingAnalyticsTitle")}</h1>
-      <p className="mt-3 text-sm leading-6 text-muted-foreground">{t("onboardingAnalyticsBody")}</p>
-      <p className="mt-3 text-xs leading-5 text-muted-foreground">{t("onboardingAnalyticsPrivacy")}</p>
-      <div className="mt-5 flex items-center justify-center gap-2">
-        <button
-          type="button"
-          onClick={onDecline}
-          className="inline-flex h-10 items-center rounded-lg border border-border bg-card-2 px-4 text-sm font-semibold text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
-        >
-          {t("onboardingAnalyticsDecline")}
-        </button>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">{t("onboardingAnalyticsHelp")}</p>
+
+      <div className="mt-5 grid grid-cols-2 gap-1.5 text-left">
+        {notCollectedItems.map((item) => (
+          <div key={item.key} className="flex items-center gap-2 rounded-lg border border-border bg-card-2 px-2.5 py-2">
+            <X className="h-3.5 w-3.5 shrink-0 text-red-400" />
+            <span className="text-xs text-muted-foreground">{t(`analyticsNotCollect${item.key.charAt(0).toUpperCase() + item.key.slice(1)}` as keyof typeof frMessages)}</span>
+          </div>
+        ))}
+        <div className="flex items-center justify-center gap-2 rounded-lg border border-border bg-card-2 px-2.5 py-2 col-span-2">
+          <Check className="h-3.5 w-3.5 shrink-0 text-accent" />
+          <span className="text-xs text-foreground">{t("analyticsCollectUsage")}</span>
+        </div>
+      </div>
+
+      <p className="mt-3 text-xs leading-5 text-dim-foreground">{t("onboardingAnalyticsDelete")}</p>
+
+      <div className="mt-4 flex flex-col items-center gap-3">
         <button
           type="button"
           onClick={onAccept}
-          className="inline-flex h-10 items-center rounded-lg bg-accent px-4 text-sm font-semibold text-background transition-opacity hover:opacity-90"
+          className="inline-flex h-10 items-center rounded-lg bg-accent px-5 text-sm font-semibold text-background transition-opacity hover:opacity-90"
         >
           {t("onboardingAnalyticsAccept")}
+        </button>
+        <button
+          type="button"
+          onClick={onDecline}
+          className="text-xs text-muted-foreground underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground"
+        >
+          {t("onboardingAnalyticsDecline")}
         </button>
       </div>
     </div>
