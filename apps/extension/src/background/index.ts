@@ -1,9 +1,9 @@
 import { WEB_BASE_URL, API_BASE_URL, CDN_BASE_URL } from "@/shared/constants";
-import type { ExtensionMessage, ExtensionSettings, InstalledPresences, PresenceData, PresenceDebug, PresenceRelease, StoredPresence } from "@/shared/types";
+import type { ExtensionMessage, ExtensionSettings, InstalledPresences, PresenceData, PresenceDebug, PresenceRelease, PresenceSchedule, StoredPresence } from "@/shared/types";
 import { connectNative, mapPresenceData, onNativeResponse, postNative, reconnectNative, refreshNativeStatus } from "./native";
 import { createPresenceRuntime, USER_SCRIPT_MESSAGE_SOURCE } from "./presence-runtime";
 import { verifyPresenceRelease } from "./release-security";
-import { getCurrentActivity, getDebug, getDeviceId, getPresenceSettings, getPresences, getSettings, setCurrentActivity, setDebug, setPresences, setPresenceSettings, setSettings } from "./storage";
+import { clearSnooze, getCurrentActivity, getDebug, getDeviceId, getPresenceSettings, getPresences, getSettings, setCurrentActivity, setDebug, setPresences, setPresenceSchedule, setPresenceSettings, setSettings, snoozePresence } from "./storage";
 import { BUNDLED_PRESENCES } from "@/generated/bundled-presences";
 
 let customApiUrl: string | undefined;
@@ -420,6 +420,29 @@ const normalizeActivity = (activity: PresenceData, fallbackName: string): Presen
   };
 };
 
+const isSnoozed = async (presence: StoredPresence): Promise<boolean> => {
+  if (presence.snoozeUntil && presence.snoozeUntil > Date.now()) return true;
+
+  const schedule = presence.schedule ?? (await getSettings()).globalSchedule;
+
+  if (schedule) {
+    const now = new Date();
+    const day = now.getDay();
+    if (!schedule.days.includes(day)) return true;
+
+    if (schedule.start && schedule.end) {
+      const minutes = now.getHours() * 60 + now.getMinutes();
+      const [startH, startM] = schedule.start.split(":").map(Number);
+      const [endH, endM] = schedule.end.split(":").map(Number);
+      const startMinutes = startH * 60 + startM;
+      const endMinutes = endH * 60 + endM;
+      if (minutes < startMinutes || minutes > endMinutes) return true;
+    }
+  }
+
+  return false;
+};
+
 const handleActivityUpdate = async (
   slug: string,
   activity: PresenceData,
@@ -428,6 +451,16 @@ const handleActivityUpdate = async (
   const presences = await getPresences();
   const stored = presences[slug];
   if (!stored?.release) return { ok: false };
+
+  if (await isSnoozed(stored)) {
+    postNative({ type: "CLEAR_ACTIVITY" });
+    // Keep the Nowly state updated so unsnooze sends the latest activity
+    const appName = activity.appName ?? stored.release.metadata.name;
+    const normalizedActivity = normalizeActivity(activity, appName);
+    const presence = mapPresenceData(normalizedActivity);
+    await setCurrentActivity({ slug, presence, updatedAt: Date.now() });
+    return { ok: true };
+  }
 
   const verified = await verifyPresenceRelease(stored.release, slug);
   if (!verified.ok) {
@@ -587,6 +620,35 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
 
     case "CLEAR_ACTIVITY":
       handleClearActivity().then((result) => respond(sendResponse, result));
+      return true;
+
+    case "SNOOZE_PRESENCE":
+      getPresences().then(async (presences) => {
+        const { slug, duration } = message.payload as { slug: string; duration: number };
+        const updated = await snoozePresence(slug, duration);
+        respond(sendResponse, updated);
+      });
+      return true;
+
+    case "CLEAR_SNOOZE":
+      getPresences().then(async (presences) => {
+        const { slug } = message.payload as { slug: string };
+        const updated = await clearSnooze(slug);
+        // Resend the stored activity if one exists for this slug
+        const current = await getCurrentActivity();
+        if (current && current.slug === slug) {
+          postNative({ type: "SET_ACTIVITY", presence: current.presence });
+        }
+        respond(sendResponse, updated);
+      });
+      return true;
+
+    case "SET_PRESENCE_SCHEDULE":
+      getPresences().then(async (presences) => {
+        const { slug, schedule } = message.payload as { slug: string; schedule: PresenceSchedule | undefined };
+        const updated = await setPresenceSchedule(slug, schedule);
+        respond(sendResponse, updated);
+      });
       return true;
 
     case "CHECK_UPDATES":

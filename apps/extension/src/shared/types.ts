@@ -86,12 +86,16 @@ export type PresenceRelease = {
   signedAt: string;
 };
 
+export type PresenceSchedule = { start?: string; end?: string; days: number[] };
+
 export type StoredPresence = {
   metadata: PresenceMetadata;
   release: PresenceRelease;
   enabled: boolean;
   installedAt: number;
   updatedAt?: number;
+  snoozeUntil?: number;
+  schedule?: PresenceSchedule;
 };
 
 export type InstalledPresences = Record<string, StoredPresence>;
@@ -125,6 +129,8 @@ export type ExtensionSettings = {
   showPlayer: boolean;
   analyticsConsent?: boolean;
   customApiBaseUrl?: string;
+  scheduleEnabled?: boolean;
+  globalSchedule?: PresenceSchedule;
 };
 
 export type PresenceSettings = Record<string, unknown>;
@@ -148,7 +154,10 @@ export type ExtensionMessageType =
   | "GET_SETTINGS"
   | "SET_SETTINGS"
   | "GET_PRESENCE_SETTINGS"
-  | "SET_PRESENCE_SETTINGS";
+  | "SET_PRESENCE_SETTINGS"
+  | "SNOOZE_PRESENCE"
+  | "CLEAR_SNOOZE"
+  | "SET_PRESENCE_SCHEDULE";
 
 export type UserScriptsStatus = {
   enabled: boolean;

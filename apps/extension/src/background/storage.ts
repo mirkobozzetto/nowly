@@ -1,4 +1,4 @@
-import type { CurrentActivity, DiscordProfileSnapshot, ExtensionSettings, InstalledPresences, PresenceDebug, PresenceDisplayMode, PresenceSettings } from "@/shared/types";
+import type { CurrentActivity, DiscordProfileSnapshot, ExtensionSettings, InstalledPresences, PresenceDebug, PresenceDisplayMode, PresenceSchedule, PresenceSettings, StoredPresence } from "@/shared/types";
 
 const PRESENCES_KEY = "presences";
 const ACTIVITY_KEY = "currentActivity";
@@ -12,6 +12,7 @@ export const DEFAULT_SETTINGS: ExtensionSettings = {
   presenceDisplayMode: "category" as PresenceDisplayMode,
   separateActivePresence: false,
   showPlayer: true,
+  scheduleEnabled: false,
 };
 
 export const getPresences = (): Promise<InstalledPresences> =>
@@ -105,4 +106,32 @@ export const getDeviceId = async (): Promise<string> => {
   const deviceId = crypto.randomUUID();
   await chrome.storage.local.set({ [DEVICE_ID_KEY]: deviceId });
   return deviceId;
+};
+
+export const snoozePresence = async (slug: string, durationMs: number): Promise<StoredPresence | null> => {
+  const presences = await getPresences();
+  const presence = presences[slug];
+  if (!presence) return null;
+  presences[slug] = { ...presence, snoozeUntil: Date.now() + durationMs };
+  await setPresences(presences);
+  return presences[slug];
+};
+
+export const clearSnooze = async (slug: string): Promise<StoredPresence | null> => {
+  const presences = await getPresences();
+  const presence = presences[slug];
+  if (!presence) return null;
+  const { snoozeUntil: _, ...rest } = presence;
+  presences[slug] = rest;
+  await setPresences(presences);
+  return presences[slug];
+};
+
+export const setPresenceSchedule = async (slug: string, schedule: PresenceSchedule | undefined): Promise<StoredPresence | null> => {
+  const presences = await getPresences();
+  const presence = presences[slug];
+  if (!presence) return null;
+  presences[slug] = { ...presence, schedule };
+  await setPresences(presences);
+  return presences[slug];
 };
