@@ -1,6 +1,6 @@
 import { t } from "@/shared/i18n";
-import type { FC, ReactElement } from "react";
 import type { InstalledPresences, PresenceDisplayMode, PresenceMetadata } from "@/shared/types";
+import type { FC, ReactElement } from "react";
 import { EmptyState } from "./empty-state";
 import { PresenceListItem } from "./presence-list-item";
 
@@ -10,8 +10,10 @@ type Props = {
   entries: Array<[string, InstalledPresences[string]]>;
   onOpenMarketplace: (slug: string) => void;
   onRemove: (slug: string) => void;
+  onSchedule: (slug: string) => void;
   onToggle: (slug: string, enabled: boolean) => void;
   separateActive: boolean;
+  showSchedule: boolean;
   updates: Record<string, string>;
 };
 
@@ -47,17 +49,21 @@ const PresenceListSection: FC<{
   activeSlug: string | null;
   onOpenMarketplace: (slug: string) => void;
   onRemove: (slug: string) => void;
+  onSchedule: (slug: string) => void;
   onToggle: (slug: string, enabled: boolean) => void;
+  showSchedule: boolean;
   updates: Record<string, string>;
-}> = ({ entries, activeSlug, onOpenMarketplace, onRemove, onToggle, updates }) => (
+}> = ({ entries, onOpenMarketplace, onRemove, onSchedule, onToggle, showSchedule, updates }) => (
   <div className="overflow-hidden rounded-lg border border-border bg-card">
     {entries.map(([slug, presence]) => (
       <PresenceListItem
         key={slug}
         slug={slug}
         presence={presence}
+        showSchedule={showSchedule}
         onToggle={onToggle}
         onRemove={onRemove}
+        onSchedule={onSchedule}
         onOpenMarketplace={onOpenMarketplace}
         updateAvailable={updates[slug]}
       />
@@ -71,8 +77,10 @@ export const PresenceList: FC<Props> = ({
   entries,
   onOpenMarketplace,
   onRemove,
+  onSchedule,
   onToggle,
   separateActive,
+  showSchedule,
   updates,
 }): ReactElement => {
   const filtered = separateActive && activeSlug
@@ -96,7 +104,9 @@ export const PresenceList: FC<Props> = ({
               activeSlug={activeSlug}
               onOpenMarketplace={onOpenMarketplace}
               onRemove={onRemove}
+              onSchedule={onSchedule}
               onToggle={onToggle}
+              showSchedule={showSchedule}
               updates={updates}
             />
           </div>
@@ -116,7 +126,9 @@ export const PresenceList: FC<Props> = ({
               activeSlug={activeSlug}
               onOpenMarketplace={onOpenMarketplace}
               onRemove={onRemove}
+              onSchedule={onSchedule}
               onToggle={onToggle}
+              showSchedule={showSchedule}
               updates={updates}
             />
           </section>
@@ -130,7 +142,9 @@ export const PresenceList: FC<Props> = ({
               activeSlug={activeSlug}
               onOpenMarketplace={onOpenMarketplace}
               onRemove={onRemove}
+              onSchedule={onSchedule}
               onToggle={onToggle}
+              showSchedule={showSchedule}
               updates={updates}
             />
           </section>
@@ -153,12 +167,15 @@ export const PresenceList: FC<Props> = ({
               <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                 {categoryLabels[category]} {enabled.length}/{categoryEntries.length}
               </h2>
+
               <PresenceListSection
                 entries={[...enabled, ...disabled]}
                 activeSlug={activeSlug}
                 onOpenMarketplace={onOpenMarketplace}
                 onRemove={onRemove}
+                onSchedule={onSchedule}
                 onToggle={onToggle}
+                showSchedule={showSchedule}
                 updates={updates}
               />
             </section>

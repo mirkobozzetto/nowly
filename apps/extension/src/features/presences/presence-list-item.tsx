@@ -1,4 +1,4 @@
-import { BellRing } from "lucide-react";
+import { BellRing, Calendar } from "lucide-react";
 import type { FC, MouseEvent, ReactElement } from "react";
 import { assetUrl } from "@/shared/api";
 import { Switch } from "@/components/switch";
@@ -9,13 +9,15 @@ import { PresenceSettingsPanel } from "./presence-settings-panel";
 type Props = {
   onOpenMarketplace: (slug: string) => void;
   onRemove: (slug: string) => void;
+  onSchedule: (slug: string) => void;
   onToggle: (slug: string, enabled: boolean) => void;
   presence: StoredPresence;
+  showSchedule: boolean;
   slug: string;
   updateAvailable?: string;
 };
 
-export const PresenceListItem: FC<Props> = ({ onOpenMarketplace, onRemove, onToggle, presence, slug, updateAvailable }): ReactElement | null => {
+export const PresenceListItem: FC<Props> = ({ onOpenMarketplace, onRemove, onSchedule, onToggle, presence, showSchedule, slug, updateAvailable }): ReactElement | null => {
   if (!presence?.metadata) return null;
 
   return (
@@ -76,11 +78,27 @@ export const PresenceListItem: FC<Props> = ({ onOpenMarketplace, onRemove, onTog
           ariaLabel={presence.enabled ? t("disable") : t("enable")}
         />
 
-        <PresenceSettingsPanel
-          definitions={presence.metadata.settings as Record<string, unknown>}
-          onRemove={() => onRemove(slug)}
-          slug={slug}
-        />
+        <div className="flex items-center gap-0.5">
+          {showSchedule ? (
+            <button
+              type="button"
+              onClick={(event: MouseEvent) => {
+                event.stopPropagation();
+                onSchedule(slug);
+              }}
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-card-2 hover:text-foreground"
+              aria-label="Schedule"
+            >
+              <Calendar className="h-4 w-4" />
+            </button>
+          ) : null}
+
+          <PresenceSettingsPanel
+            definitions={presence.metadata.settings as Record<string, unknown>}
+            onRemove={() => onRemove(slug)}
+            slug={slug}
+          />
+        </div>
       </div>
     </article>
   );
