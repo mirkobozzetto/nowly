@@ -1,35 +1,45 @@
 import type { FC, ReactElement } from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import { ActionBar } from "@/components/action-bar";
 import { Header } from "@/components/header";
 import { WEB_BASE_URL } from "@/shared/constants";
+import { sendMessage } from "@/lib/messages";
 import { useExtensionState } from "@/hooks/use-extension-state";
 import { useLocalePreference } from "@/hooks/use-locale-preference";
 import { useOnboardingState } from "@/hooks/use-onboarding-state";
 import { ActivityView } from "@/features/presences/activity-view";
-import { DebugNotice } from "@/features/settings/debug-notice";
-import { DebugPanel } from "@/features/settings/debug-panel";
 import { OnboardingOverlay } from "@/features/onboarding/onboarding-overlay";
+import { ScheduleSheet } from "@/features/presences/schedule-sheet";
 import { SettingsView } from "@/features/settings/settings-view";
 import { SidepanelNav, type SidepanelView } from "@/components/sidepanel-nav";
+import { SnoozeSheet } from "@/features/presences/snooze-sheet";
 
 const App: FC = (): ReactElement => {
   const { activity, checkUpdates, connectNative, debug, entries, hostVersionInfo, isCheckingUpdates, nativeStatus, presences, removePresence, togglePresence, updates, settings, setSettings } =
     useExtensionState();
   const { localePreference, setLocalePreference } = useLocalePreference();
-  const { onboarding, setOnboarding, nativeStatus: onboardingNativeStatus, userScripts, refresh } = useOnboardingState();
+  const { onboarding, setOnboarding, nativeStatus: onboardingNativeStatus, userScripts } = useOnboardingState();
   const [activeView, setActiveView] = useState<SidepanelView>("activity");
-  const [debugOpen, setDebugOpen] = useState(false);
-  const [isUnpacked, setIsUnpacked] = useState(false);
+  const [snoozeSheetOpen, setSnoozeSheetOpen] = useState(false);
+  const [scheduleSheetOpen, setScheduleSheetOpen] = useState(false);
+  const [scheduleSlug, setScheduleSlug] = useState<string | null>(null);
 
-  useEffect(() => {
-    try { setIsUnpacked(!chrome.runtime.getManifest().update_url) } catch { setIsUnpacked(false) }
+  const onOpenMarketplace = useCallback((slug: string): void => {
+    void chrome.tabs.create({ url: `${WEB_BASE_URL}/library/${slug}` });
   }, []);
 
-  const onOpenMarketplace = (slug: string): void => {
-    void chrome.tabs.create({ url: `${WEB_BASE_URL}/library/${slug}` });
-  };
+  const activePresence = activity?.slug ? presences[activity.slug] : null;
+  const isSnoozed = Boolean(activePresence?.snoozeUntil && activePresence.snoozeUntil > Date.now());
 
-  const hasDebugIssue = debug || (nativeStatus.status !== "connected" && nativeStatus.status !== "ok");
+  const handleUnsnooze = useCallback((): void => {
+    if (!activity?.slug) return;
+    void sendMessage("CLEAR_SNOOZE", { slug: activity.slug });
+  }, [activity?.slug]);
+
+  const handleScheduleOpen = useCallback((slug: string | null) => {
+    setScheduleSlug(slug);
+    setScheduleSheetOpen(true);
+  }, []);
 
   return (
     <main className="relative min-h-screen bg-background text-foreground">
@@ -37,41 +47,58 @@ const App: FC = (): ReactElement => {
         <Header nativeStatus={nativeStatus} />
         <SidepanelNav activeView={activeView} onChange={setActiveView} />
 
-        {activeView === "activity" && (
-          <ActivityView
-            activity={activity}
-            checkUpdates={checkUpdates}
-            entries={entries}
-            isCheckingUpdates={isCheckingUpdates}
-            onOpenMarketplace={onOpenMarketplace}
-            onRemove={removePresence}
-            onToggle={togglePresence}
-            presences={presences}
-            settings={settings}
-            updates={updates}
-          />
-        )}
+        {activeView === "activity" ? (
+          <section className="flex min-h-0 flex-1 flex-col gap-3">
+            <ActivityView
+              activity={activity}
+              entries={entries}
+              onOpenMarketplace={onOpenMarketplace}
+              onRemove={removePresence}
+              onSchedule={handleScheduleOpen}
+              onToggle={togglePresence}
+              presences={presences}
+              settings={settings}
+              updates={updates}
+            />
 
-        {activeView === "settings" && (
+            <ActionBar
+              activeSlug={activity?.slug ?? null}
+              isCheckingUpdates={isCheckingUpdates}
+              isSnoozed={isSnoozed}
+              scheduleEnabled={settings.scheduleEnabled !== false}
+              onCheckUpdates={checkUpdates}
+              onScheduleClick={() => handleScheduleOpen(null)}
+              onSnoozeClick={() => setSnoozeSheetOpen(true)}
+              onUnsnoozeClick={handleUnsnooze}
+            />
+          </section>
+        ) : (
           <SettingsView
+            debug={debug}
             hostVersionInfo={hostVersionInfo}
             localePreference={localePreference}
+            nativeStatus={nativeStatus}
             onLocaleChange={setLocalePreference}
             settings={settings}
             onSettingsChange={setSettings}
           />
         )}
-
-        {isUnpacked && hasDebugIssue && !debugOpen ? (
-          <button type="button" onClick={() => setDebugOpen(true)} className="w-full text-left">
-            <DebugNotice debug={debug} nativeStatus={nativeStatus} />
-          </button>
-        ) : null}
-
-        {isUnpacked && debugOpen ? (
-          <DebugPanel debug={debug} nativeStatus={nativeStatus} settings={settings} onSettingsChange={setSettings} />
-        ) : null}
       </div>
+
+      <SnoozeSheet
+        activeSlug={activity?.slug ?? null}
+        onClose={() => setSnoozeSheetOpen(false)}
+        open={snoozeSheetOpen}
+        presences={presences}
+      />
+
+      <ScheduleSheet
+        activeSlug={scheduleSlug}
+        globalSchedule={settings.globalSchedule}
+        onClose={() => setScheduleSheetOpen(false)}
+        open={scheduleSheetOpen}
+        presences={presences}
+      />
 
       <OnboardingOverlay
         nativeStatus={onboardingNativeStatus}
@@ -81,7 +108,6 @@ const App: FC = (): ReactElement => {
         onLocaleChange={setLocalePreference}
         onConnectNative={() => {
           connectNative();
-          refresh();
         }}
         onComplete={() => setOnboarding({ onboardingCompleted: true })}
         onSkipTour={() => setOnboarding({ onboardingCompleted: true })}
