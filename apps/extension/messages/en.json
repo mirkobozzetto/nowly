@@ -18,6 +18,7 @@
   "version": "v{version}",
   "activityTab": "Activity",
   "settingsTab": "Settings",
+  "analyticsLogsTab": "Analytics logs",
   "connection": "Connection",
   "connectionDescription": "Manage the connection between the extension, the native companion, and Discord.",
   "marketplaceDescription": "Install, update, or remove your presences from the Nowly library.",

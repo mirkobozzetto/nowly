@@ -139,6 +139,9 @@ export const syncDevice = async (input: DeviceSyncInput): Promise<void> => {
   for (const presence of input.presences) {
     const slug = cleanText(presence.slug, 80)?.toLowerCase()
     if (!slug) continue
+    const installed = presence.installed !== false
+    const enabled = installed && presence.enabled !== false
+    const uninstalledAt = installed ? null : new Date()
 
     await prisma.devicePresence.upsert({
       where: { deviceId_slug: { deviceId: input.deviceId, slug } },
@@ -146,16 +149,16 @@ export const syncDevice = async (input: DeviceSyncInput): Promise<void> => {
         deviceId: input.deviceId,
         slug,
         installedVersion: cleanText(presence.version ?? undefined, 60),
-        installed: presence.installed !== false,
-        enabled: presence.enabled !== false,
-        uninstalledAt: presence.installed === false ? new Date() : null,
+        installed,
+        enabled,
+        uninstalledAt,
       },
       update: {
         installedVersion: cleanText(presence.version ?? undefined, 60),
-        installed: presence.installed !== false,
-        enabled: presence.enabled !== false,
+        installed,
+        enabled,
         updatedAt: new Date(),
-        uninstalledAt: presence.installed === false ? new Date() : null,
+        uninstalledAt,
       },
     })
   }

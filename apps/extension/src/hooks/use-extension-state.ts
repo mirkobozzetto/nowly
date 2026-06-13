@@ -19,6 +19,7 @@ type ExtensionState = {
   entries: Array<[string, InstalledPresences[string]]>;
   isCheckingUpdates: boolean;
   isCheckingHostVersion: boolean;
+  isUnpacked: boolean;
   nativeStatus: NativeStatus;
   presences: InstalledPresences;
   removePresence: (slug: string) => void;
@@ -195,6 +196,7 @@ export const useExtensionState = (): ExtensionState => {
     debug,
     entries,
     isCheckingUpdates,
+    isUnpacked,
     nativeStatus,
     presences,
     removePresence,

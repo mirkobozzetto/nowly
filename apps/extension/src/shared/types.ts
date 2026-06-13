@@ -113,6 +113,19 @@ export type PresenceDebug = {
   updatedAt: number;
 };
 
+export type AnalyticsLogLevel = "info" | "success" | "warn" | "error";
+
+export type AnalyticsLogType = "analytics" | "api" | "presence" | "native" | "settings";
+
+export type AnalyticsLogEntry = {
+  id: string;
+  at: number;
+  level: AnalyticsLogLevel;
+  type: AnalyticsLogType;
+  message: string;
+  payload?: Record<string, string | number | boolean | null>;
+};
+
 export type WebMessageType =
   | "INSTALL_PRESENCE"
   | "UPDATE_PRESENCE"
@@ -157,7 +170,9 @@ export type ExtensionMessageType =
   | "SET_PRESENCE_SETTINGS"
   | "SNOOZE_PRESENCE"
   | "CLEAR_SNOOZE"
-  | "SET_PRESENCE_SCHEDULE";
+  | "SET_PRESENCE_SCHEDULE"
+  | "GET_ANALYTICS_LOGS"
+  | "CLEAR_ANALYTICS_LOGS";
 
 export type UserScriptsStatus = {
   enabled: boolean;

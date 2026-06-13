@@ -7,7 +7,7 @@ import {
   addVersion, getAllPresenceSlugs, getPresenceMeta, getPresenceStats, getVersionHistory,
   setAdded, setPresenceMeta, setUpdated, setVersion,
   markActiveDevice, clearActiveDevice, clearActiveDevicesForDevice,
-  incrementInstalls, setActiveUsers,
+  setActiveUsers,
 } from "./presence.repository"
 import type { FastifyInstance } from "fastify"
 
@@ -278,11 +278,10 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
     return { ok: true, removed: null }
   })
 
-  fastify.post<{ Params: { slug: string } }>("/:slug/installs", async (request, _reply) => {
-    const slug = request.params.slug.toLowerCase()
-    const body = request.body as { deviceId?: string; version?: string } | undefined
-    const total = await incrementInstalls(slug, body?.deviceId, body?.version)
-    return { totalInstalls: total }
+  fastify.post<{ Params: { slug: string } }>("/:slug/installs", async (_request, reply) => {
+    return reply.status(410).send({
+      error: "Presence install counters are synced by the extension via /devices/sync",
+    })
   })
 }
 

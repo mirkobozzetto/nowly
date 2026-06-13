@@ -4,7 +4,7 @@ import type { Presence } from "@/lib/data/presences";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { EXT_SOURCE, fireAndForget, nextId } from "./utils";
+import { EXT_SOURCE, nextId } from "./utils";
 
 type UsePresenceStatusReturn = {
   isInstalled: boolean
@@ -35,7 +35,7 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
   const [installedVersion, setInstalledVersion] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [extDetected, setExtDetected] = useState(false);
-  const [totalInstalls, setTotalInstalls] = useState(presence.totalInstalls);
+  const [totalInstalls] = useState(presence.totalInstalls);
   const [savedRating, setSavedRating] = useState(0);
   const [deviceId, setDeviceId] = useState<string | null>(null);
 
@@ -107,6 +107,16 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
       if (msg.source === EXT_SOURCE && msg.type === "INSTALL_PRESENCE_RESULT") {
         if (msg.payload?.ok) {
           setIsInstalled(true);
+          setInstalledVersion(presence.version ?? null);
+          setLoading(false);
+          if (!isInstalled) {
+            trackPublicAnalytics({
+              key: "marketplace_conversion",
+              slug: presence.slug,
+              version: presence.version ?? undefined,
+              payload: { source: "presence-detail" },
+            });
+          }
           toast.success(t("installSuccess", { platform: presence.name }));
         } else {
           setIsInstalled(false);
@@ -131,7 +141,7 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
       window.removeEventListener("message", handler);
       stopPing();
     };
-  }, [presence.name, presence.slug, t]);
+  }, [isInstalled, presence.name, presence.slug, presence.version, t]);
 
   const handleInstall = useCallback(async (): Promise<void> => {
     if (!extDetected) {
@@ -154,21 +164,6 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
         { cache: "no-store" },
       ).then((response) => response.json());
 
-      if (!isInstalled) {
-        trackPublicAnalytics({
-          key: "marketplace_conversion",
-          slug: presence.slug,
-          version: presence.version ?? undefined,
-          payload: { source: "presence-detail" },
-        });
-        fireAndForget(`${API_BASE_URL}/presences/${presence.slug}/installs`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ deviceId, version: presence.version }),
-        });
-        setTotalInstalls((current) => current + 1);
-      }
-
       window.postMessage(
         {
           source: EXT_SOURCE,
@@ -182,14 +177,11 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
         "*",
       );
 
-      setIsInstalled(true);
-      setInstalledVersion(release.version ?? null);
     } catch {
       toast.error(t("installError", { platform: presence.name }));
-    } finally {
       setLoading(false);
     }
-  }, [extDetected, isInstalled, needsUpdate, presence.name, presence.slug, presence.version, t]);
+  }, [extDetected, needsUpdate, presence.name, presence.slug, presence.version, t]);
 
   const handleUninstallRequest = useCallback((): void => {
     setShowUninstallConfirm(true);

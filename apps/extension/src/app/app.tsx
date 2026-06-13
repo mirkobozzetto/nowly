@@ -8,6 +8,7 @@ import { useExtensionState } from "@/hooks/use-extension-state";
 import { useLocalePreference } from "@/hooks/use-locale-preference";
 import { useOnboardingState } from "@/hooks/use-onboarding-state";
 import { ActivityView } from "@/features/presences/activity-view";
+import { AnalyticsLogsView } from "@/features/analytics-logs/analytics-logs-view";
 import { OnboardingOverlay } from "@/features/onboarding/onboarding-overlay";
 import { ScheduleSheet } from "@/features/presences/schedule-sheet";
 import { SettingsView } from "@/features/settings/settings-view";
@@ -15,7 +16,7 @@ import { SidepanelNav, type SidepanelView } from "@/components/sidepanel-nav";
 import { SnoozeSheet } from "@/features/presences/snooze-sheet";
 
 const App: FC = (): ReactElement => {
-  const { activity, checkUpdates, connectNative, debug, entries, hostVersionInfo, isCheckingUpdates, nativeStatus, presences, removePresence, togglePresence, updates, settings, setSettings } =
+  const { activity, checkUpdates, connectNative, debug, entries, hostVersionInfo, isCheckingUpdates, isUnpacked, nativeStatus, presences, removePresence, togglePresence, updates, settings, setSettings } =
     useExtensionState();
   const { localePreference, setLocalePreference } = useLocalePreference();
   const { onboarding, setOnboarding, nativeStatus: onboardingNativeStatus, userScripts } = useOnboardingState();
@@ -45,7 +46,7 @@ const App: FC = (): ReactElement => {
     <main className="relative min-h-screen bg-background text-foreground">
       <div className="flex min-h-screen w-full min-w-0 flex-col gap-4 p-3">
         <Header nativeStatus={nativeStatus} />
-        <SidepanelNav activeView={activeView} onChange={setActiveView} />
+        <SidepanelNav activeView={activeView} onChange={setActiveView} showAnalyticsLogs={isUnpacked} />
 
         {activeView === "activity" ? (
           <section className="flex min-h-0 flex-1 flex-col gap-3">
@@ -72,6 +73,8 @@ const App: FC = (): ReactElement => {
               onUnsnoozeClick={handleUnsnooze}
             />
           </section>
+        ) : activeView === "analyticsLogs" && isUnpacked ? (
+          <AnalyticsLogsView />
         ) : (
           <SettingsView
             debug={debug}

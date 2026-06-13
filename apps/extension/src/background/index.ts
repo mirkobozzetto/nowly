@@ -1,10 +1,11 @@
-import { WEB_BASE_URL, API_BASE_URL, CDN_BASE_URL } from "@/shared/constants";
+import { BUNDLED_PRESENCES } from "@/generated/bundled-presences";
+import { API_BASE_URL, CDN_BASE_URL, WEB_BASE_URL } from "@/shared/constants";
 import type { ExtensionMessage, ExtensionSettings, InstalledPresences, PresenceData, PresenceDebug, PresenceRelease, PresenceSchedule, StoredPresence } from "@/shared/types";
-import { connectNative, mapPresenceData, onNativeResponse, postNative, reconnectNative, refreshNativeStatus } from "./native";
+import { addAnalyticsLog, clearAnalyticsLogs, getAnalyticsLogs, sanitizeLogPayload } from "./analytics-log";
+import { connectNative, getNativeStatus, mapPresenceData, onNativeResponse, postNative, reconnectNative } from "./native";
 import { createPresenceRuntime, USER_SCRIPT_MESSAGE_SOURCE } from "./presence-runtime";
 import { verifyPresenceRelease } from "./release-security";
-import { clearSnooze, getCurrentActivity, getDebug, getDeviceId, getPresenceSettings, getPresences, getSettings, setCurrentActivity, setDebug, setPresences, setPresenceSchedule, setPresenceSettings, setSettings, snoozePresence } from "./storage";
-import { BUNDLED_PRESENCES } from "@/generated/bundled-presences";
+import { clearSnooze, getCurrentActivity, getDebug, getDeviceId, getPresences, getPresenceSettings, getSettings, setCurrentActivity, setDebug, setPresences, setPresenceSchedule, setPresenceSettings, setSettings, snoozePresence } from "./storage";
 
 let customApiUrl: string | undefined;
 let cachedDeviceId: string | null = null;
@@ -55,36 +56,53 @@ const osName = (): string => {
   return "unknown";
 };
 
-const syncDeviceState = async (): Promise<void> => {
+const syncDeviceState = async (
+  extraPresences: Array<{ slug: string; version?: string; enabled?: boolean; installed?: boolean }> = [],
+): Promise<void> => {
   const [deviceId, presences, settings] = await Promise.all([
     getActiveDeviceId(),
     getPresences(),
     getSettings(),
   ]);
 
-  await fetch(`${getEffectiveApiUrl()}/devices/sync`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      deviceId,
-      analyticsConsent: settings.analyticsConsent === true,
-      extensionVersion: chrome.runtime.getManifest().version,
-      browser: browserName(),
-      os: osName(),
-      presences: Object.entries(presences).map(([slug, presence]) => ({
-        slug,
-        version: presence.release?.version ?? presence.metadata?.version ?? undefined,
-        enabled: presence.enabled,
-        installed: true,
-      })),
-    }),
-  }).catch(() => {});
+  const syncedPresences = [
+    ...Object.entries(presences).map(([slug, presence]) => ({
+      slug,
+      version: presence.release?.version ?? presence.metadata?.version ?? undefined,
+      enabled: presence.enabled,
+      installed: true,
+    })),
+    ...extraPresences,
+  ];
+
+  addAnalyticsLog("info", "api", "POST /devices/sync", { presenceCount: syncedPresences.length });
+
+  try {
+    const response = await fetch(`${getEffectiveApiUrl()}/devices/sync`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        deviceId,
+        analyticsConsent: settings.analyticsConsent === true,
+        extensionVersion: chrome.runtime.getManifest().version,
+        browser: browserName(),
+        os: osName(),
+        presences: syncedPresences,
+      }),
+    });
+    addAnalyticsLog(response.ok ? "success" : "warn", "api", "POST /devices/sync result", { status: response.status });
+  } catch (error) {
+    addAnalyticsLog("error", "api", "POST /devices/sync failed", {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
 };
 
 const flushAnalytics = async (): Promise<void> => {
   if (!analyticsQueue.length) return;
   const settings = await getSettings();
   if (settings.analyticsConsent !== true) {
+    addAnalyticsLog("warn", "analytics", "analytics queue dropped: consent disabled", { count: analyticsQueue.length });
     analyticsQueue = [];
     return;
   }
@@ -101,13 +119,24 @@ const flushAnalytics = async (): Promise<void> => {
     },
   }));
 
-  await fetch(`${getEffectiveApiUrl()}/analytics/events`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ events }),
-  }).catch(() => {
+  addAnalyticsLog("info", "analytics", "POST /analytics/events", { count: events.length });
+
+  try {
+    const response = await fetch(`${getEffectiveApiUrl()}/analytics/events`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ events }),
+    });
+    addAnalyticsLog(response.ok ? "success" : "warn", "analytics", "POST /analytics/events result", { status: response.status });
+    if (!response.ok) {
+      analyticsQueue.unshift(...events.map(({ deviceId: _deviceId, ...event }) => event));
+    }
+  } catch (error) {
+    addAnalyticsLog("error", "analytics", "POST /analytics/events failed", {
+      error: error instanceof Error ? error.message : String(error),
+    });
     analyticsQueue.unshift(...events.map(({ deviceId: _deviceId, ...event }) => event));
-  });
+  }
 };
 
 const trackAnalytics = async (
@@ -115,7 +144,16 @@ const trackAnalytics = async (
   event: { slug?: string; version?: string; payload?: Record<string, unknown> } = {},
 ): Promise<void> => {
   const settings = await getSettings();
-  if (settings.analyticsConsent !== true) return;
+  if (settings.analyticsConsent !== true) {
+    addAnalyticsLog("warn", "analytics", "analytics event skipped: consent disabled", { key });
+    return;
+  }
+  addAnalyticsLog("info", "analytics", "analytics event queued", {
+    key,
+    slug: event.slug,
+    version: event.version,
+    ...sanitizeLogPayload(event.payload),
+  });
   analyticsQueue.push({ key, ...event });
   if (analyticsQueue.length >= 10) await flushAnalytics();
 };
@@ -168,6 +206,7 @@ const enableSidePanelAction = (): void => {
 
 onNativeResponse((message) => {
   if (message.type === "ERROR") {
+    addAnalyticsLog("error", "native", "native error", { reason: message.error });
     void setDebug({
       stage: "native-error",
       message: message.error,
@@ -178,10 +217,16 @@ onNativeResponse((message) => {
   }
 
   if (message.type === "CONNECTED") {
+    addAnalyticsLog("success", "native", "native connected", { nativeVersion: message.version });
     void trackAnalytics("native_connected", { payload: { nativeVersion: message.version } });
   }
 
   if (message.type === "PONG") {
+    addAnalyticsLog(message.connected ? "success" : "warn", "native", "native heartbeat", {
+      connected: message.connected,
+      status: message.status,
+      nativeVersion: message.version,
+    });
     void trackAnalytics(message.connected ? "native_heartbeat_ok" : "native_heartbeat_failed", {
       payload: {
         nativeVersion: message.version,
@@ -273,6 +318,7 @@ const registerPresenceScript = async (slug: string, presence: StoredPresence): P
   if (!presence.release.bundle?.trim()) return { ok: false, error: "presence has no bundle" };
 
   try {
+    addAnalyticsLog("info", "presence", "register presence script", { slug, version: presence.release.version });
     await unregisterPresenceScript(slug);
     const code = await getPresenceRuntime(slug, metadata.name, presence.release.bundle);
     const script: RegisteredUserScript = {
@@ -295,6 +341,10 @@ const registerPresenceScript = async (slug: string, presence: StoredPresence): P
 
     return { ok: true };
   } catch (error) {
+    addAnalyticsLog("error", "presence", "register presence script failed", {
+      slug,
+      error: error instanceof Error ? error.message : "failed to register presence user script",
+    });
     return {
       ok: false,
       error: error instanceof Error ? error.message : "failed to register presence user script",
@@ -330,12 +380,18 @@ const broadcastPresencesChanged = (): void => {
 const installPresence = async (payload: unknown): Promise<{ ok: boolean; error?: string }> => {
   const presence = payload as { slug: string; release: PresenceRelease };
   const verified = await verifyPresenceRelease(presence.release, presence.slug);
-  if (!verified.ok) return verified;
+  if (!verified.ok) {
+    addAnalyticsLog("error", "presence", "presence install verification failed", {
+      slug: presence.slug,
+      version: presence.release?.version,
+      error: verified.error,
+    });
+    return verified;
+  }
 
   const presences = await getPresences();
   const existing = presences[presence.slug];
-
-  presences[presence.slug] = {
+  const nextPresence: StoredPresence = {
     metadata: presence.release.metadata,
     release: presence.release,
     enabled: existing?.enabled ?? true,
@@ -343,15 +399,30 @@ const installPresence = async (payload: unknown): Promise<{ ok: boolean; error?:
     updatedAt: Date.now(),
   };
 
+  const registerResult = await registerPresenceScript(presence.slug, nextPresence);
+  if (!registerResult.ok) {
+    addAnalyticsLog("error", "presence", "presence install failed", {
+      slug: presence.slug,
+      version: presence.release.version,
+      error: registerResult.error,
+    });
+    return registerResult;
+  }
+
+  presences[presence.slug] = nextPresence;
   await setPresences(presences);
   await syncDeviceState();
+  addAnalyticsLog("success", "presence", existing ? "presence update installed" : "presence installed", {
+    slug: presence.slug,
+    version: presence.release.version,
+  });
   void trackAnalytics(existing ? "presence_update" : "presence_install", {
     slug: presence.slug,
     version: presence.release.version,
     payload: { source: "extension" },
   });
   broadcastPresencesChanged();
-  return registerPresenceScript(presence.slug, presences[presence.slug]);
+  return { ok: true };
 };
 
 const clampText = (value: string | undefined, maxLength: number): string | undefined => {
@@ -524,7 +595,7 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
       return true;
 
     case "GET_NATIVE_STATUS":
-      respond(sendResponse, refreshNativeStatus());
+      respond(sendResponse, getNativeStatus());
       return false;
 
     case "GET_USER_SCRIPTS_STATUS":
@@ -564,17 +635,35 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
       getPresences().then(async (presences) => {
         const { slug } = message.payload as { slug: string };
         const deviceId = await getActiveDeviceId();
+        const removedPresence = presences[slug];
         delete presences[slug];
 
         await setPresences(presences);
-        await syncDeviceState();
+        await syncDeviceState([{
+          slug,
+          version: removedPresence?.release?.version ?? removedPresence?.metadata?.version ?? undefined,
+          enabled: false,
+          installed: false,
+        }]);
+        addAnalyticsLog("success", "presence", "presence uninstalled", {
+          slug,
+          version: removedPresence?.release?.version ?? removedPresence?.metadata?.version,
+        });
         void trackAnalytics("presence_uninstall", { slug, payload: { source: "extension" } });
         broadcastPresencesChanged();
         await unregisterPresenceScript(slug);
         await removeActiveSlug(slug, "uninstall");
-        await fetch(`${getEffectiveApiUrl()}/presences/active/${encodeURIComponent(deviceId)}/${encodeURIComponent(slug)}`, {
-          method: "DELETE",
-        }).catch(() => {});
+        try {
+          const response = await fetch(`${getEffectiveApiUrl()}/presences/active/${encodeURIComponent(deviceId)}/${encodeURIComponent(slug)}`, {
+            method: "DELETE",
+          });
+          addAnalyticsLog(response.ok ? "success" : "warn", "api", "DELETE /presences/active/:deviceId/:slug result", { status: response.status, slug });
+        } catch (error) {
+          addAnalyticsLog("error", "api", "DELETE /presences/active/:deviceId/:slug failed", {
+            slug,
+            error: error instanceof Error ? error.message : String(error),
+          });
+        }
         if (activeSlugs.size === 0) {
           await handleClearActivity();
         }
@@ -599,15 +688,25 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
         broadcastPresencesChanged();
         if (enabled) {
           const result = await registerPresenceScript(slug, presences[slug]);
+          addAnalyticsLog(result.ok ? "success" : "error", "presence", "presence enabled", { slug, error: result.error });
           respond(sendResponse, result);
           return;
         }
 
         await unregisterPresenceScript(slug);
         await removeActiveSlug(slug, "disabled");
-        await fetch(`${getEffectiveApiUrl()}/presences/active/${encodeURIComponent(deviceId)}/${encodeURIComponent(slug)}`, {
-          method: "DELETE",
-        }).catch(() => {});
+        addAnalyticsLog("info", "presence", "presence disabled", { slug });
+        try {
+          const response = await fetch(`${getEffectiveApiUrl()}/presences/active/${encodeURIComponent(deviceId)}/${encodeURIComponent(slug)}`, {
+            method: "DELETE",
+          });
+          addAnalyticsLog(response.ok ? "success" : "warn", "api", "DELETE /presences/active/:deviceId/:slug result", { status: response.status, slug });
+        } catch (error) {
+          addAnalyticsLog("error", "api", "DELETE /presences/active/:deviceId/:slug failed", {
+            slug,
+            error: error instanceof Error ? error.message : String(error),
+          });
+        }
         respond(sendResponse, { ok: true });
       });
       return true;
@@ -684,6 +783,11 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
       getSettings().then((previousSettings) => setSettings(message.payload as Partial<ExtensionSettings>).then((settings) => {
         customApiUrl = settings.customApiBaseUrl;
         void syncDeviceState();
+        addAnalyticsLog("info", "settings", "settings changed", {
+          analyticsConsent: settings.analyticsConsent === true,
+          customApiEnabled: Boolean(settings.customApiBaseUrl),
+          scheduleEnabled: settings.scheduleEnabled !== false,
+        });
         const partial = message.payload as Partial<ExtensionSettings>;
         const source = previousSettings.analyticsConsent === undefined ? "onboarding" : "settings";
         if (typeof partial.analyticsConsent === "boolean" && partial.analyticsConsent !== previousSettings.analyticsConsent) {
@@ -746,6 +850,15 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
     case "DEBUG":
       setDebug(message.payload as PresenceDebug).then(() => respond(sendResponse, { ok: true }));
       return true;
+
+    case "GET_ANALYTICS_LOGS":
+      respond(sendResponse, getAnalyticsLogs());
+      return false;
+
+    case "CLEAR_ANALYTICS_LOGS":
+      clearAnalyticsLogs();
+      respond(sendResponse, { ok: true });
+      return false;
 
     default:
       respond(sendResponse, { ok: false });
@@ -829,18 +942,26 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     void (async () => {
       const slugs = [...activeSlugs];
       const deviceId = await getActiveDeviceId();
-      fetch(`${getEffectiveApiUrl()}/presences/active`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ presences: slugs, deviceId }),
-      }).catch(() => {});
+      addAnalyticsLog("info", "api", "POST /presences/active", { count: slugs.length });
+      try {
+        const response = await fetch(`${getEffectiveApiUrl()}/presences/active`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ presences: slugs, deviceId }),
+        });
+        addAnalyticsLog(response.ok ? "success" : "warn", "api", "POST /presences/active result", { status: response.status, count: slugs.length });
+      } catch (error) {
+        addAnalyticsLog("error", "api", "POST /presences/active failed", {
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
       void syncDeviceState();
       for (const slug of slugs) {
-          void trackAnalytics("presence_active_heartbeat", {
-            slug,
-            version: await getPresenceVersion(slug),
-            payload: { source: "heartbeat" },
-          });
+        void trackAnalytics("presence_active_heartbeat", {
+          slug,
+          version: await getPresenceVersion(slug),
+          payload: { source: "heartbeat" },
+        });
       }
     })();
   }
