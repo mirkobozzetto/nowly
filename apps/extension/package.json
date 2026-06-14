@@ -12,6 +12,7 @@
   "dependencies": {
     "@nowly/locales": "workspace:*",
     "@nowly/env": "workspace:*",
+    "@nowly/shared": "workspace:*",
     "@vitejs/plugin-react": "^4.7.0",
     "lucide-react": "^0.564.0",
     "react": "^19",

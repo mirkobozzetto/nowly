@@ -22,6 +22,9 @@ importers:
       '@nowly/presence':
         specifier: workspace:*
         version: link:../../packages/presence
+      '@nowly/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@nowly/websites':
         specifier: workspace:*
         version: link:../../packages/websites
@@ -74,6 +77,9 @@ importers:
       '@nowly/locales':
         specifier: workspace:*
         version: link:../../packages/locales
+      '@nowly/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@vitejs/plugin-react':
         specifier: ^4.7.0
         version: 4.7.0(vite@5.4.21(@types/node@22.19.19)(lightningcss@1.32.0))
@@ -408,6 +414,16 @@ importers:
       '@nowly/locales':
         specifier: workspace:*
         version: link:../locales
+      typescript:
+        specifier: 5.7.3
+        version: 5.7.3
+
+  packages/shared:
+    dependencies:
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+    devDependencies:
       typescript:
         specifier: 5.7.3
         version: 5.7.3
