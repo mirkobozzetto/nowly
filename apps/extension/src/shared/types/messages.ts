@@ -1,0 +1,54 @@
+export type WebMessageType =
+  | "INSTALL_PRESENCE"
+  | "UPDATE_PRESENCE"
+  | "UNINSTALL_PRESENCE"
+  | "GET_INSTALLED"
+  | "SAVE_USER_RATING"
+  | "GET_USER_RATINGS";
+
+export type ExtensionMessageType =
+  | "GET_PRESENCES"
+  | "GET_INSTALLED"
+  | "GET_NATIVE_STATUS"
+  | "GET_USER_SCRIPTS_STATUS"
+  | "CONNECT_NATIVE"
+  | "GET_CURRENT_ACTIVITY"
+  | "GET_DEBUG"
+  | "TOGGLE_PRESENCE"
+  | "UNINSTALL_PRESENCE"
+  | "ACTIVITY_UPDATE"
+  | "CLEAR_ACTIVITY"
+  | "INSTALL_PRESENCE"
+  | "UPDATE_PRESENCE"
+  | "DEBUG"
+  | "CHECK_UPDATES"
+  | "GET_SETTINGS"
+  | "SET_SETTINGS"
+  | "GET_PRESENCE_SETTINGS"
+  | "SET_PRESENCE_SETTINGS"
+  | "SNOOZE_PRESENCE"
+  | "CLEAR_SNOOZE"
+  | "SET_PRESENCE_SCHEDULE"
+  | "GET_ANALYTICS_LOGS"
+  | "CLEAR_ANALYTICS_LOGS";
+
+export type UserScriptsStatus = {
+  enabled: boolean;
+  reason?: string;
+  // Chrome requires an explicit user toggle in the extension details UI.
+  // This is surfaced so onboarding can explain what to do.
+  requiresUserToggle?: boolean;
+};
+
+export type WebMessage = {
+  source: typeof import("../constants").EXT_WEB_SOURCE;
+  type: WebMessageType | "PING";
+  payload?: unknown;
+  messageId?: string;
+};
+
+export type ExtensionMessage = {
+  source: "PRESENCES_POPUP" | "PRESENCES_CONTENT";
+  type: ExtensionMessageType;
+  payload?: unknown;
+};
