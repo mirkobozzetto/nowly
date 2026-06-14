@@ -1,3 +1,4 @@
+import { canonicalJson } from "@nowly/shared";
 import type { PresenceRelease } from "@/shared/types";
 
 const IS_UNPACKED = (): boolean => {
@@ -11,18 +12,6 @@ const base64UrlToBytes = (value: string): Uint8Array => {
   const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
   const binary = atob(padded);
   return Uint8Array.from(binary, (char) => char.charCodeAt(0));
-};
-
-const canonicalJson = (value: unknown): string => {
-  if (value === null || typeof value !== "object") return JSON.stringify(value);
-  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
-
-  const object = value as Record<string, unknown>;
-  return `{${Object.keys(object)
-    .filter((key) => object[key] !== undefined)
-    .sort()
-    .map((key) => `${JSON.stringify(key)}:${canonicalJson(object[key])}`)
-    .join(",")}}`;
 };
 
 const sha256Base64Url = async (input: string): Promise<string> => {
