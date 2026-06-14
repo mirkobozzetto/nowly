@@ -1,20 +1,14 @@
 import { buildLocaleObject } from "@nowly/locales"
+import { presenceActiveBodySchema, presencePutBodySchema } from "@nowly/shared/schemas"
 import { requireAuth } from "@/features/auth/auth.middleware"
-import { generateChangelog, translateChangelog } from "@/shared/openai.service"
-import { sha256Base64Url } from "@/shared/crypto.service"
-import { serializeJsonField, buildRelease } from "./presence.service"
+import { buildRelease } from "./presence.service"
+import { processPresenceSync, type PresenceSyncBody } from "./presence.sync"
 import {
   addVersion, getAllPresenceSlugs, getPresenceMeta, getPresenceStats, getVersionHistory,
-  setAdded, setPresenceMeta, setUpdated, setVersion,
+  setAdded, setUpdated, setVersion,
   markActiveDevice, clearActiveDevice, clearActiveDevicesForDevice,
-  setActiveUsers,
 } from "./presence.repository"
 import type { FastifyInstance } from "fastify"
-
-type ReleasePerson = {
-  name: string
-  github?: string
-}
 
 export const presenceRoutes = async (fastify: FastifyInstance) => {
   fastify.get("", async (_request, _reply) => {
@@ -79,15 +73,11 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
     if (reply.sent) return
 
     const slug = request.params.slug.toLowerCase()
-    const body = request.body as {
-      version?: string;
-      added?: string;
-      updated?: string;
-      changelog?: string;
-      author?: string;
-      authorGithub?: string;
-      pr?: string
+    const parsedBody = presencePutBodySchema.safeParse(request.body)
+    if (!parsedBody.success) {
+      return reply.status(400).send({ error: "Invalid request body" })
     }
+    const body = parsedBody.data
 
     if (body.version) {
       await setVersion(slug, body.version)
@@ -115,150 +105,25 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
     await requireAuth(request, reply)
     if (reply.sent) return
 
-    const body = request.body as {
-      presences: {
-        slug: string
-        type: "new" | "modified"
-        name: string
-        category?: string
-        author?: string
-        authorGithub?: string
-        releaseAuthor?: ReleasePerson
-        releaseContributors?: ReleasePerson[]
-        version?: string
-        versionType?: string
-        description?: Record<string, string>
-        color?: string
-        url?: string[]
-        changelog?: string
-        bundle?: string
-        source?: "cli" | "pr"
-        commitSha?: string
-        changedFiles?: string[]
-        diffSummary?: string
-        metadata?: Record<string, any>
-      }[]
-      pr?: string
-      prTitle?: string
-      changes?: string
-    }
-
-    const results: { slug: string; version: string; changelog: string }[] = []
-    const seen = new Set<string>()
-
-    for (const p of body.presences) {
-      if (seen.has(p.slug)) continue
-      seen.add(p.slug)
-      const stats = await getPresenceStats(p.slug)
-      const currentVersion = stats.version
-      const author = p.author || (stats.version ? (await getVersionHistory(p.slug))[0]?.author || "unknown" : "unknown")
-      const aiGeneratedChangelog = !p.changelog
-      const changelogs = p.changelog
-        ? await translateChangelog(p.changelog)
-        : await generateChangelog({
-          type: p.type,
-          name: p.name,
-          prTitle: body.prTitle,
-          changes: body.changes,
-          changedFiles: p.changedFiles,
-          diffSummary: p.diffSummary,
-          ...(p.type === "new" ? { descriptions: p.description } : {}),
-        })
-      const changelog = JSON.stringify(changelogs)
-      const displayChangelog = changelogs["en-US"] || ""
-      const timestamp = Date.now()
-      const createdAt = new Date(timestamp).toISOString()
-      const bundleSizeBytes = p.bundle ? Buffer.byteLength(p.bundle, "utf-8") : undefined
-      const bundleSha256 = p.bundle ? sha256Base64Url(p.bundle) : undefined
-      const versionEntryMeta = {
-        changelog,
-        author,
-        authorGithub: p.authorGithub,
-        releaseAuthor: serializeJsonField(p.releaseAuthor),
-        releaseContributors: serializeJsonField(p.releaseContributors),
-        pr: body.pr,
-        source: p.source ?? (body.pr ? "pr" as const : "cli" as const),
-        commitSha: p.commitSha,
-        changedFiles: serializeJsonField(p.changedFiles),
-        bundleSizeBytes,
-        bundleSizeLabel: bundleSizeBytes != null ? formatBytes(bundleSizeBytes) : undefined,
-        bundleSha256,
-        versionType: p.versionType,
-        aiGeneratedChangelog,
-        createdAt,
-        timestamp,
-      }
-
-      if (p.type === "new" || !currentVersion) {
-        const version = p.version ?? "1.0.0"
-
-        await setVersion(p.slug, version)
-        await setAdded(p.slug)
-        await addVersion(p.slug, {
-          version,
-          ...versionEntryMeta,
-          versionType: p.versionType ?? "new",
-        })
-
-        results.push({ slug: p.slug, version, changelog: displayChangelog })
-      } else {
-        const parts = currentVersion.split(".").map(Number)
-        parts[2] = (parts[2] || 0) + 1
-        const nextVersion = p.version ?? parts.join(".")
-
-        await setVersion(p.slug, nextVersion)
-        await setUpdated(p.slug)
-        await addVersion(p.slug, {
-          version: nextVersion,
-          ...versionEntryMeta,
-          versionType: p.versionType ?? "patch",
-        })
-
-        results.push({ slug: p.slug, version: nextVersion, changelog: displayChangelog })
-      }
-
-      if (p.metadata) {
-        await setPresenceMeta(p.slug, p.metadata as any)
-      } else {
-        await setPresenceMeta(p.slug, {
-          slug: p.slug,
-          name: p.name,
-          author,
-          category: p.category || "",
-          description: p.description || {},
-          color: p.color,
-          url: p.url,
-        })
-      }
-    }
-
+    const results = await processPresenceSync(request.body as PresenceSyncBody)
     return { ok: true, results }
   })
 
-  fastify.post("/active", async (request, _reply) => {
-    const body = request.body as { presences?: string[]; deviceId?: string }
-    const slugs = body?.presences ?? []
-    const deviceId = body?.deviceId?.trim()
-
-    if (!deviceId) {
-      for (const slug of slugs) {
-        await setActiveUsers(slug, 1)
-      }
-
-      return {
-        ok: true,
-        count: slugs.length,
-      }
+  // SEC-04 / SEC-06: validate the body and require a deviceId. Active-user
+  // tracking is keyed by (slug, deviceId), so an anonymous call cannot bump
+  // counters for arbitrary presences.
+  fastify.post("/active", async (request, reply) => {
+    const parsed = presenceActiveBodySchema.safeParse(request.body)
+    if (!parsed.success || !parsed.data.deviceId) {
+      return reply.status(400).send({ error: "deviceId is required" })
     }
 
+    const { presences: slugs, deviceId } = parsed.data
     for (const slug of slugs) {
-      await markActiveDevice(slug, deviceId)
+      await markActiveDevice(slug.toLowerCase(), deviceId)
     }
 
-    return {
-      ok: true,
-      count: slugs.length
-    }
+    return { ok: true, count: slugs.length }
   })
 
   fastify.delete<{ Params: { deviceId: string; slug?: string } }>("/active/:deviceId/:slug?", async (request, _reply) => {
@@ -283,11 +148,6 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
       error: "Presence install counters are synced by the extension via /devices/sync",
     })
   })
-}
-
-const formatBytes = (bytes: number): string => {
-  if (bytes >= 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(2)} MB`
-  return `${(bytes / 1024).toFixed(1)} KB`
 }
 
 export const register = async (app: FastifyInstance): Promise<void> => {
