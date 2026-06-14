@@ -1,5 +1,6 @@
 import { RefreshCw, Wifi, WifiOff } from "lucide-react";
 import type { FC, ReactElement } from "react";
+import { Button } from "@/components/ui";
 import { t } from "@/shared/i18n";
 import type { NativeStatus } from "@/lib/messages";
 
@@ -14,8 +15,9 @@ export const NativeStatusButton: FC<Props> = ({ nativeStatus, onConnect }): Reac
   const Icon = connected ? Wifi : WifiOff;
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="unstyled"
+      size="none"
       aria-label={t("connectNative")}
       title={nativeStatus.status}
       onClick={onConnect}
@@ -25,6 +27,6 @@ export const NativeStatusButton: FC<Props> = ({ nativeStatus, onConnect }): Reac
       <Icon className={connected ? "h-3.5 w-3.5 text-accent" : "h-3.5 w-3.5 text-destructive"} />
       <span>{connected ? t("nativeConnected") : t("nativeDisconnected")}</span>
       <RefreshCw className={`h-3.5 w-3.5 ${isConnecting ? "animate-spin" : "opacity-60 group-hover:opacity-100"}`} />
-    </button>
+    </Button>
   );
 };

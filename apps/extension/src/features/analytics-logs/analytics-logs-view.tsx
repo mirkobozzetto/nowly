@@ -1,6 +1,7 @@
 import { Copy, Trash2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Button } from "@/components/ui";
 import { sendMessage } from "@/lib/messages";
 import type { AnalyticsLogEntry, AnalyticsLogLevel, AnalyticsLogType } from "@/shared/types";
 
@@ -63,32 +64,35 @@ export const AnalyticsLogsView: FC = (): ReactElement => {
           <p className="text-xs text-muted-foreground">Dev only / unpacked only</p>
         </div>
         <div className="flex items-center gap-1">
-          <button
-            type="button"
+          <Button
+            variant="unstyled"
+            size="none"
             onClick={copyLogs}
             className="flex h-8 items-center gap-1 rounded-md border border-border bg-card-2 px-2 text-xs text-muted-foreground hover:text-foreground"
             title="Copy visible logs as JSON"
           >
             <Copy className="h-3.5 w-3.5" />
             JSON
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="unstyled"
+            size="none"
             onClick={clearLogs}
             className="flex h-8 items-center gap-1 rounded-md border border-border bg-card-2 px-2 text-xs text-muted-foreground hover:text-foreground"
             title="Clear logs"
           >
             <Trash2 className="h-3.5 w-3.5" />
             Clear
-          </button>
+          </Button>
         </div>
       </div>
 
       <div className="flex gap-1 overflow-x-auto">
         {filters.map((item) => (
-          <button
+          <Button
             key={item}
-            type="button"
+            variant="unstyled"
+            size="none"
             onClick={() => setFilter(item)}
             className={
               filter === item
@@ -97,7 +101,7 @@ export const AnalyticsLogsView: FC = (): ReactElement => {
             }
           >
             {item}
-          </button>
+          </Button>
         ))}
       </div>
 

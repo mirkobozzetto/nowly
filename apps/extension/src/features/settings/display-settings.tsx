@@ -1,4 +1,4 @@
-import { Switch } from "@/components/switch";
+import { Button, Label, Switch } from "@/components/ui";
 import { t } from "@/shared/i18n";
 import type { ExtensionSettings, PresenceDisplayMode } from "@/shared/types";
 import { LayoutGrid, List } from "lucide-react";
@@ -15,8 +15,9 @@ export const DisplaySettings: FC<Props> = ({ settings, onSettingsChange }): Reac
     <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("displayDescription")}</p>
 
     <div className="mb-3 flex gap-2">
-      <button
-        type="button"
+      <Button
+        variant="unstyled"
+        size="none"
         onClick={() => onSettingsChange({ presenceDisplayMode: "category" as PresenceDisplayMode })}
         className={`flex flex-1 items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
           settings.presenceDisplayMode === "category"
@@ -26,9 +27,10 @@ export const DisplaySettings: FC<Props> = ({ settings, onSettingsChange }): Reac
       >
         <LayoutGrid className="h-4 w-4" />
         {t("displayCategory")}
-      </button>
-      <button
-        type="button"
+      </Button>
+      <Button
+        variant="unstyled"
+        size="none"
         onClick={() => onSettingsChange({ presenceDisplayMode: "alphabetical" as PresenceDisplayMode })}
         className={`flex flex-1 items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-colors ${
           settings.presenceDisplayMode === "alphabetical"
@@ -38,10 +40,13 @@ export const DisplaySettings: FC<Props> = ({ settings, onSettingsChange }): Reac
       >
         <List className="h-4 w-4" />
         {t("displayAlphabetical")}
-      </button>
+      </Button>
     </div>
 
-    <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-card-2 px-3 py-2.5 transition-colors hover:bg-card-hover">
+    <Label
+      unstyled
+      className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-card-2 px-3 py-2.5 transition-colors hover:bg-card-hover"
+    >
       <div className="min-w-0 flex-1">
         <p className="text-xs font-medium text-foreground">{t("separateActive")}</p>
         <p className="mt-0.5 text-[11px] text-muted-foreground">{t("separateActiveDescription")}</p>
@@ -51,6 +56,6 @@ export const DisplaySettings: FC<Props> = ({ settings, onSettingsChange }): Reac
         onChange={(checked) => onSettingsChange({ separateActivePresence: checked })}
         ariaLabel={t("separateActive")}
       />
-    </label>
+    </Label>
   </section>
 );

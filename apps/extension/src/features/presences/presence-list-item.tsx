@@ -1,7 +1,7 @@
 import { BellRing, Calendar } from "lucide-react";
 import type { FC, MouseEvent, ReactElement } from "react";
 import { assetUrl } from "@/shared/api";
-import { Switch } from "@/components/switch";
+import { Button, Switch } from "@/components/ui";
 import { t } from "@/shared/i18n";
 import type { StoredPresence } from "@/shared/types";
 import { PresenceSettingsPanel } from "./presence-settings-panel";
@@ -47,8 +47,9 @@ export const PresenceListItem: FC<Props> = ({ onOpenMarketplace, onRemove, onSch
               {presence.enabled ? t("enabled") : t("disabled")}
               {presence.metadata.version ? ` - ${t("version", { version: presence.metadata.version })}` : ""}
               {updateAvailable ? (
-                <button
-                  type="button"
+                <Button
+                  variant="unstyled"
+                  size="none"
                   onClick={(event: MouseEvent) => {
                     event.stopPropagation();
                     onOpenMarketplace(slug);
@@ -66,7 +67,7 @@ export const PresenceListItem: FC<Props> = ({ onOpenMarketplace, onRemove, onSch
                   }}
                 >
                   <BellRing className="h-3 w-3" /> {updateAvailable}
-                </button>
+                </Button>
               ) : null}
             </span>
           </div>
@@ -80,8 +81,9 @@ export const PresenceListItem: FC<Props> = ({ onOpenMarketplace, onRemove, onSch
 
         <div className="flex items-center gap-0.5">
           {showSchedule ? (
-            <button
-              type="button"
+            <Button
+              variant="unstyled"
+              size="none"
               onClick={(event: MouseEvent) => {
                 event.stopPropagation();
                 onSchedule(slug);
@@ -90,7 +92,7 @@ export const PresenceListItem: FC<Props> = ({ onOpenMarketplace, onRemove, onSch
               aria-label="Schedule"
             >
               <Calendar className="h-4 w-4" />
-            </button>
+            </Button>
           ) : null}
 
           <PresenceSettingsPanel

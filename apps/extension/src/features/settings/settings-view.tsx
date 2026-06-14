@@ -1,6 +1,5 @@
-import { Checkbox } from "@/components/checkbox";
 import { LocaleFlag } from "@/components/locale-flag";
-import { Switch } from "@/components/switch";
+import { Checkbox, Label, Select, Switch } from "@/components/ui";
 import type { NativeStatus } from "@/lib/messages";
 import { WEB_BASE_URL } from "@/shared/constants";
 import { resolveLocale, t, type LocalePreference } from "@/shared/i18n";
@@ -74,7 +73,8 @@ export const SettingsView: FC<Props> = ({
         <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("language")}</h2>
         <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("languageDescription")}</p>
         <div className="relative">
-          <select
+          <Select
+            unstyled
             value={localePreference}
             onChange={(event) => onLocaleChange(event.target.value as LocalePreference)}
             className="h-10 w-full appearance-none rounded-lg border border-border bg-card-2 px-3 pl-10 pr-10 text-sm text-foreground outline-none transition-colors hover:bg-card-hover focus:border-border-light"
@@ -84,7 +84,7 @@ export const SettingsView: FC<Props> = ({
                 {option.label}
               </option>
             ))}
-          </select>
+          </Select>
           <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted-foreground">
             <LocaleFlag locale={resolveLocale(localePreference)} />
           </div>
@@ -97,26 +97,26 @@ export const SettingsView: FC<Props> = ({
       <section className="rounded-lg border border-border bg-card p-4">
         <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("features")}</h2>
         <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("scheduleFeatureDescription")}</p>
-        <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card-2 px-3 py-2">
+        <Label unstyled className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card-2 px-3 py-2">
           <span className="text-xs font-medium text-foreground">{t("scheduleFeature")}</span>
           <Switch
             checked={settings.scheduleEnabled !== false}
             onChange={(checked) => onSettingsChange({ scheduleEnabled: checked })}
           />
-        </label>
+        </Label>
       </section>
 
       <section className="rounded-lg border border-border bg-card p-4">
         <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("dataManagement")}</h2>
         <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("analyticsDescription")}</p>
 
-        <label className="mb-3 flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card-2 px-3 py-2">
+        <Label unstyled className="mb-3 flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card-2 px-3 py-2">
           <span className="text-xs font-medium text-foreground">{t("analyticsConsent")}</span>
           <Checkbox
             checked={settings.analyticsConsent === true}
             onChange={(checked) => onSettingsChange({ analyticsConsent: checked })}
           />
-        </label>
+        </Label>
 
         <a
           href={`${WEB_BASE_URL}/consent`}
