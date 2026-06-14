@@ -1,13 +1,7 @@
 import { sendMessage, type NativeStatus } from "@/lib/messages";
-import { WEB_BASE_URL } from "@/shared/constants";
 import type { CurrentActivity, ExtensionSettings, InstalledPresences, PresenceDebug } from "@/shared/types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-type HostVersionInfo = {
-  currentVersion?: string;
-  latestVersion: string;
-  updateAvailable: boolean;
-};
+import { useHostVersion, type HostVersionInfo } from "./use-host-version";
 
 type ExtensionState = {
   activity: CurrentActivity | null;
@@ -61,38 +55,11 @@ export const useExtensionState = (): ExtensionState => {
     }
   }, []);
 
-  const [isCheckingHostVersion, setIsCheckingHostVersion] = useState(false);
-  const [hostVersionInfo, setHostVersionInfo] = useState<HostVersionInfo | null>(null);
   const [settings, setSettingsState] = useState<ExtensionSettings>(FALLBACK_SETTINGS);
 
+  const { hostVersionInfo, isCheckingHostVersion, checkHostUpdate, fetchHostVersion } = useHostVersion();
+
   const entries = useMemo(() => Object.entries(presences), [presences]);
-
-  const fetchHostVersion = useCallback(async (): Promise<void> => {
-    try {
-      const url = `${WEB_BASE_URL.replace(/\/$/, "")}/host/version`;
-      const [res, currentStatus] = await Promise.all([
-        fetch(url, { signal: AbortSignal.timeout(5000) }),
-        sendMessage<NativeStatus>("GET_NATIVE_STATUS"),
-      ]);
-      if (!res.ok) throw new Error("failed to fetch host version");
-      const data = await res.json() as { version: string };
-      if (typeof data.version !== "string" || !data.version) throw new Error("host version missing");
-      const currentVersion = currentStatus?.version;
-      setHostVersionInfo({
-        currentVersion,
-        latestVersion: data.version,
-        updateAvailable: Boolean(currentVersion && data.version !== currentVersion),
-      });
-    } catch {
-      // Host unreachable — keep previous state
-    }
-  }, []);
-
-  const checkHostUpdate = useCallback((): void => {
-    if (isCheckingHostVersion) return;
-    setIsCheckingHostVersion(true);
-    void fetchHostVersion().finally(() => setIsCheckingHostVersion(false));
-  }, [fetchHostVersion, isCheckingHostVersion]);
 
   const refresh = useCallback((): void => {
     void Promise.all([
