@@ -2,9 +2,14 @@ import { BUNDLED_PRESENCES } from "@/generated/bundled-presences";
 import { API_BASE_URL, CDN_BASE_URL, WEB_BASE_URL } from "@/shared/constants";
 import type { ExtensionMessage, ExtensionSettings, InstalledPresences, PresenceData, PresenceDebug, PresenceRelease, PresenceSchedule, StoredPresence } from "@/shared/types";
 import { addAnalyticsLog, clearAnalyticsLogs, getAnalyticsLogs, sanitizeLogPayload } from "./analytics-log";
+import { browserName, osName } from "./device-info";
 import { connectNative, getNativeStatus, mapPresenceData, onNativeResponse, postNative, reconnectNative } from "./native";
 import { createPresenceRuntime, USER_SCRIPT_MESSAGE_SOURCE } from "./presence-runtime";
 import { verifyPresenceRelease } from "./release-security";
+import {
+  toMatchPatterns, userScriptId, visiblePresences,
+  type ChromeWithUserScripts, type RegisteredUserScript,
+} from "./user-scripts";
 import { clearSnooze, getCurrentActivity, getDebug, getDeviceId, getPresences, getPresenceSettings, getSettings, setCurrentActivity, setDebug, setPresences, setPresenceSchedule, setPresenceSettings, setSettings, snoozePresence } from "./storage";
 
 let customApiUrl: string | undefined;
@@ -39,21 +44,6 @@ const syncUninstallUrl = async (): Promise<void> => {
   } catch {
     // Best effort only.
   }
-};
-
-const browserName = (): string => {
-  const ua = navigator.userAgent;
-  if (ua.includes("Edg/")) return "edge";
-  if (ua.includes("OPR/")) return "opera";
-  return "chromium";
-};
-
-const osName = (): string => {
-  const platform = navigator.platform.toLowerCase();
-  if (platform.includes("win")) return "windows";
-  if (platform.includes("mac")) return "macos";
-  if (platform.includes("linux")) return "linux";
-  return "unknown";
 };
 
 const syncDeviceState = async (
@@ -167,28 +157,6 @@ const trackExtensionOpen = (): void => {
 
 let activeTabId: number | null = null;
 
-type UserScriptSource = {
-  code?: string;
-  file?: string;
-};
-
-type RegisteredUserScript = {
-  id: string;
-  matches: string[];
-  js: UserScriptSource[];
-  runAt?: "document_start" | "document_end" | "document_idle";
-  allFrames?: boolean;
-  world?: "USER_SCRIPT" | "MAIN";
-};
-
-type ChromeWithUserScripts = typeof chrome & {
-  userScripts?: {
-    getScripts(filter?: { ids?: string[] }): Promise<RegisteredUserScript[]>;
-    register(scripts: RegisteredUserScript[]): Promise<void>;
-    unregister(filter?: { ids?: string[] }): Promise<void>;
-  };
-};
-
 type ChromeWithSidePanel = typeof chrome & {
   sidePanel?: {
     setPanelBehavior(options: { openPanelOnActionClick: boolean }): Promise<void>;
@@ -243,44 +211,6 @@ onNativeResponse((message) => {
     });
   }
 });
-
-const userScriptId = (slug: string): string => `nowly-presence-${slug}`;
-
-const visiblePresences = (presences: InstalledPresences): InstalledPresences =>
-  Object.fromEntries(
-    Object.entries(presences).filter(([, presence]) => (
-      presence?.metadata?.slug
-      && presence.metadata.name
-      && Array.isArray(presence.metadata.url)
-    )),
-  ) as InstalledPresences;
-
-const toMatchPatterns = (urls: string[]): string[] => {
-  const patterns = new Set<string>();
-
-  for (const rawUrl of urls) {
-    const raw = rawUrl.trim();
-    if (!raw) continue;
-
-    if (raw.includes("://")) {
-      const withPath = raw.endsWith("/*") || raw.includes("/", raw.indexOf("://") + 3)
-        ? raw
-        : `${raw}/*`;
-      patterns.add(withPath);
-      continue;
-    }
-
-    const host = raw.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
-    if (host === "*" || host === "*.*" || host === "<all_urls>") continue;
-    patterns.add(`*://${host}/*`);
-
-    if (!host.startsWith("*.") && !host.startsWith("*.")) {
-      patterns.add(`*://*.${host}/*`);
-    }
-  }
-
-  return [...patterns];
-};
 
 const unregisterPresenceScript = async (slug: string): Promise<void> => {
   const userScripts = (chrome as ChromeWithUserScripts).userScripts;
