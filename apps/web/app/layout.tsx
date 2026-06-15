@@ -1,3 +1,4 @@
+import { CookieBanner } from "@/components/layout/cookie-banner";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { Toaster } from "@/components/ui/sonner";
@@ -40,6 +41,7 @@ const Layout = async ({ children }: PropsWithChildren): Promise<ReactElement> =>
             </div>
 
             <Toaster />
+            <CookieBanner />
           </Providers>
         </NextIntlClientProvider>
       </body>
