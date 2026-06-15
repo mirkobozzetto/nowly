@@ -48,6 +48,8 @@ Source: "installer.ico"; DestDir: "{app}"; Flags: ignoreversion
 Root: HKCU; Subkey: "Software\Google\Chrome\NativeMessagingHosts\{#HostName}"; ValueType: string; ValueData: "{app}\{#HostName}.json"; Flags: uninsdeletekey
 Root: HKCU; Subkey: "Software\Microsoft\Edge\NativeMessagingHosts\{#HostName}"; ValueType: string; ValueData: "{app}\{#HostName}.json"; Flags: uninsdeletekey
 Root: HKCU; Subkey: "Software\BraveSoftware\Brave-Browser\NativeMessagingHosts\{#HostName}"; ValueType: string; ValueData: "{app}\{#HostName}.json"; Flags: uninsdeletekey
+; Firefox uses a separate registry key and a manifest with allowed_extensions instead of allowed_origins
+Root: HKCU; Subkey: "Software\Mozilla\NativeMessagingHosts\{#HostName}"; ValueType: string; ValueData: "{app}\{#HostName}-firefox.json"; Flags: uninsdeletekey
 
 [Run]
 Filename: "powershell.exe"; Parameters: "-Command ""Add-MpPreference -ExclusionPath '{app}' -ErrorAction SilentlyContinue"""; Flags: runhidden; Description: "Add Defender exclusion"
@@ -63,6 +65,8 @@ var
   ManifestPath: string;
   HostPath: string;
   Manifest: string;
+  FirefoxManifestPath: string;
+  FirefoxManifest: string;
 begin
   if CurStep = ssPostInstall then
   begin
@@ -83,5 +87,21 @@ begin
       '}';
 
     SaveStringToFile(ManifestPath, Manifest, False);
+
+    // Firefox manifest — uses allowed_extensions (UUID) instead of allowed_origins
+    // TODO: add prod extension ID alongside dev ID when available
+    FirefoxManifestPath := ExpandConstant('{app}\{#HostName}-firefox.json');
+    FirefoxManifest :=
+      '{' + #13#10 +
+      '  "name": "{#HostName}",' + #13#10 +
+      '  "description": "Nowly Native Messaging Host",' + #13#10 +
+      '  "path": "' + HostPath + '",' + #13#10 +
+      '  "type": "stdio",' + #13#10 +
+      '  "allowed_extensions": [' + #13#10 +
+      '    "abbegmindbabanjcabnmcjmamaoffbam"' + #13#10 +
+      '  ]' + #13#10 +
+      '}';
+
+    SaveStringToFile(FirefoxManifestPath, FirefoxManifest, False);
   end;
 end;

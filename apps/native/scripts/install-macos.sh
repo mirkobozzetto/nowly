@@ -16,6 +16,11 @@ MANIFEST_DIRS=(
   "${HOME}/Library/Application Support/Microsoft Edge/NativeMessagingHosts"
 )
 
+# Firefox uses allowed_extensions (UUID) and a separate directory
+FIREFOX_MANIFEST_DIR="${HOME}/Library/Application Support/Mozilla/NativeMessagingHosts"
+FIREFOX_EXT_ID_DEV="abbegmindbabanjcabnmcjmamaoffbam"
+# FIREFOX_EXT_ID_PROD="nowly@nowly.me"  # TODO: ADD WHEN PUBLISHED
+
 if [ ! -f "$BINARY_SRC" ]; then
   echo "Error: binary not found at $BINARY_SRC"
   echo "Usage: $0 [path-to-binary]"
@@ -59,8 +64,25 @@ for dir in "${MANIFEST_DIRS[@]}"; do
   fi
 done
 
+FIREFOX_MANIFEST=$(cat <<FIREFOX_END
+{
+  "name": "${HOST_NAME}",
+  "description": "Nowly Native Messaging Host",
+  "path": "${INSTALL_DIR}/${BINARY_NAME}",
+  "type": "stdio",
+  "allowed_extensions": [
+    "${FIREFOX_EXT_ID_DEV}"
+  ]
+}
+FIREFOX_END
+)
+
+mkdir -p "$FIREFOX_MANIFEST_DIR"
+echo "$FIREFOX_MANIFEST" > "${FIREFOX_MANIFEST_DIR}/${HOST_NAME}.json"
+echo "  Firefox manifest installed: ${FIREFOX_MANIFEST_DIR}/${HOST_NAME}.json"
+
 echo ""
 echo "Done! Binary installed at: ${INSTALL_DIR}/${BINARY_NAME}"
-echo "Manifests written to ${INSTALLED_COUNT} browser(s)."
+echo "Manifests written to ${INSTALLED_COUNT} Chromium-based browser(s) + Firefox."
 echo ""
 echo "To uninstall, run: ./scripts/uninstall-macos.sh"
