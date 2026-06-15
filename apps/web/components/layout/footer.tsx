@@ -16,11 +16,11 @@ export const Footer: FC = (): ReactElement => {
   const t = useTranslations("Footer");
 
   return (
-    <footer className="py-8 border-t border-border text-dim-foreground text-sm">
+    <footer className="py-12 border-t border-border text-dim-foreground text-sm">
       <div className="mx-auto w-full max-w-300 min-w-0 px-6">
-        <div className="flex min-w-0 flex-col gap-4">
-          <div className="flex min-w-0 flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
-            <div className="flex min-w-0 items-center gap-3">
+        <div className="flex flex-col gap-10 sm:flex-row sm:justify-between">
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-3">
               <AvatarGroup className="-space-x-4">
                 <Avatar size="lg" className="z-6">
                   <AvatarImage
@@ -38,21 +38,23 @@ export const Footer: FC = (): ReactElement => {
               </AvatarGroup>
 
               <div className="min-w-0 text-left">
-                <p className="text-muted-foreground">{t("copyright")}</p>
-                <small className="opacity-60 text-xs">
-                  {t("trademark")}{" "}
-                  <Link
-                    href="https://discord.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline hover:text-foreground transition-colors"
-                  >
-                    Discord Inc
-                  </Link>
-                  .
-                </small>
+                <p className="text-muted-foreground font-medium">Nowly</p>
+                <p className="opacity-60 text-xs">{t("copyright")}</p>
               </div>
             </div>
+
+            <small className="opacity-50 text-xs max-w-56 leading-relaxed">
+              {t("trademark")}{" "}
+              <Link
+                href="https://discord.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-foreground transition-colors"
+              >
+                Discord Inc
+              </Link>
+              .
+            </small>
 
             <div className="flex items-center gap-3 flex-wrap">
               <SupportButton />
@@ -71,10 +73,11 @@ export const Footer: FC = (): ReactElement => {
                 <span className="hidden sm:inline">{t("openSource")}</span>
               </Link>
             </div>
+
+            <LocaleSelector />
           </div>
 
           <FooterLinks />
-          <LocaleSelector />
         </div>
       </div>
     </footer>
