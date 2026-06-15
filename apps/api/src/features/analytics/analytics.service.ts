@@ -1,5 +1,11 @@
 import { getPrisma, hasDatabase } from "@/db/client"
 import { getAnalyticsMetric } from "@/features/analytics/analytics.metric"
+import {
+  cleanText,
+  FORBIDDEN_PAYLOAD_KEYS_SET,
+  MAX_ANALYTICS_EVENTS_PER_BATCH,
+  MAX_ANALYTICS_EVENTS_PER_DEVICE_PER_MINUTE,
+} from "@nowly/shared"
 import { Prisma } from "../../generated/prisma/client"
 
 type DeviceSyncPresence = {
@@ -34,31 +40,12 @@ export type AnalyticsRecordResult = {
   rejected: number
 }
 
-const MAX_EVENTS_PER_BATCH = 100
-const MAX_EVENTS_PER_DEVICE_PER_MINUTE = 120
+// SEC-05: the rate-limit state lives in-memory (no Redis in this deployment),
+// so it is bounded to avoid unbounded growth from many distinct device ids and
+// is reset on restart. For multi-instance deployments this should move to a
+// shared store (e.g. Redis).
+const MAX_RATE_LIMIT_BUCKETS = 50_000
 const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>()
-const forbiddenPayloadKeys = new Set([
-  "url",
-  "href",
-  "title",
-  "query",
-  "search",
-  "content",
-  "channel",
-  "profile",
-  "ip",
-  "userAgent",
-  "history",
-  "discordId",
-  "discordUserId",
-])
-
-const cleanText = (value: unknown, max = 120): string | undefined => {
-  if (typeof value !== "string") return undefined
-  const trimmed = value.trim()
-  if (!trimmed) return undefined
-  return trimmed.slice(0, max)
-}
 
 const normalizeCreatedAt = (value: unknown): Date | undefined => {
   if (typeof value !== "string") return undefined
@@ -78,15 +65,26 @@ const parseMetricDate = (value: unknown): Date | undefined => {
   return Number.isNaN(date.getTime()) ? undefined : date
 }
 
+const pruneRateLimitBuckets = (now: number): void => {
+  for (const [key, bucket] of rateLimitBuckets) {
+    if (bucket.resetAt <= now) rateLimitBuckets.delete(key)
+  }
+  if (rateLimitBuckets.size >= MAX_RATE_LIMIT_BUCKETS) {
+    const oldestKey = rateLimitBuckets.keys().next().value
+    if (oldestKey) rateLimitBuckets.delete(oldestKey)
+  }
+}
+
 const takeRateLimitSlot = (deviceId: string | undefined): boolean => {
   if (!deviceId) return true
   const now = Date.now()
   const current = rateLimitBuckets.get(deviceId)
   if (!current || current.resetAt <= now) {
+    if (rateLimitBuckets.size >= MAX_RATE_LIMIT_BUCKETS) pruneRateLimitBuckets(now)
     rateLimitBuckets.set(deviceId, { count: 1, resetAt: now + 60_000 })
     return true
   }
-  if (current.count >= MAX_EVENTS_PER_DEVICE_PER_MINUTE) return false
+  if (current.count >= MAX_ANALYTICS_EVENTS_PER_DEVICE_PER_MINUTE) return false
   current.count += 1
   return true
 }
@@ -97,7 +95,7 @@ const allowedPayload = (key: string, payload: Record<string, unknown> = {}): Pri
 
   return Object.fromEntries(
     Object.entries(payload)
-      .filter(([payloadKey]) => allowedKeys.has(payloadKey) && !forbiddenPayloadKeys.has(payloadKey))
+      .filter(([payloadKey]) => allowedKeys.has(payloadKey) && !FORBIDDEN_PAYLOAD_KEYS_SET.has(payloadKey))
       .map(([payloadKey, value]) => [payloadKey, typeof value === "string" ? cleanText(value, 160) : value])
       .filter(([, value]) => typeof value === "string" || typeof value === "number" || typeof value === "boolean")
       .filter(([, value]) => value !== undefined),
@@ -179,7 +177,7 @@ export const recordAnalyticsEvents = async (events: AnalyticsEventInput[]): Prom
   const prisma = getPrisma()
   let inserted = 0
   let rejected = 0
-  for (const event of events.slice(0, MAX_EVENTS_PER_BATCH)) {
+  for (const event of events.slice(0, MAX_ANALYTICS_EVENTS_PER_BATCH)) {
     const key = cleanText(event.key, 100)
     const metric = key ? getAnalyticsMetric(key) : undefined
     if (!key || !metric) {

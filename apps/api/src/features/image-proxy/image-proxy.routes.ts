@@ -6,6 +6,7 @@ const FETCH_TIMEOUT_MS = 8_000
 const CACHED_IMAGE_TTL_SECONDS = 5 * 60
 const CACHED_IMAGE_STALE_SECONDS = 60
 const PUBLIC_IMAGE_PROXY_ORIGIN = "*"
+const MAX_CACHE_ENTRIES = 2_000
 
 type ImageProxyService = {
   id: string
@@ -52,24 +53,58 @@ const services: ImageProxyService[] = [
     hostSuffixes: ["tiktokcdn.com", "tiktokcdn-eu.com", "tiktokcdn-us.com", "tiktokv.com"],
     headers: { Referer: "https://www.tiktok.com/" },
   },
-  {
-    id: "generic",
-    hostSuffixes: [],
-  },
 ]
+
+// SEC-02: a host matches a service only when it is the exact domain or a
+// subdomain of it. A bare `endsWith` would let "evil-ytimg.com" match "ytimg.com".
+const hostMatchesSuffix = (hostname: string, suffix: string): boolean =>
+  hostname === suffix || hostname.endsWith(`.${suffix}`)
+
+// SEC-02: reject hostnames that point at private / loopback / link-local space
+// (e.g. 127.0.0.1, 169.254.169.254 cloud metadata, 10/172.16/192.168 ranges,
+// IPv6 loopback/ULA/link-local) to prevent the proxy being used for SSRF.
+const isBlockedHost = (hostname: string): boolean => {
+  const host = hostname.toLowerCase().replace(/^\[|\]$/g, "")
+  if (host === "localhost" || host.endsWith(".localhost")) return true
+  if (host.endsWith(".local") || host.endsWith(".internal")) return true
+
+  const ipv4 = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/)
+  if (ipv4) {
+    const [a, b] = [Number(ipv4[1]), Number(ipv4[2])]
+    if (a === 10 || a === 127 || a === 0) return true
+    if (a === 169 && b === 254) return true
+    if (a === 172 && b >= 16 && b <= 31) return true
+    if (a === 192 && b === 168) return true
+    if (a === 100 && b >= 64 && b <= 127) return true
+    return false
+  }
+
+  if (host.includes(":")) {
+    if (host === "::1" || host === "::") return true
+    if (host.startsWith("fe80") || host.startsWith("fc") || host.startsWith("fd")) return true
+    if (host.startsWith("::ffff:")) return true
+  }
+
+  return false
+}
 
 const parseProxyUrl = (url?: string, serviceId?: string): { url: URL; service: ImageProxyService } | null => {
   if (!url?.trim()) return null
 
   try {
     const parsed = new URL(url.trim())
-    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return null
+    if (parsed.protocol !== "https:") return null
+    if (isBlockedHost(parsed.hostname)) return null
 
     const matchedService = serviceId
       ? services.find((s) => s.id === serviceId)
-      : services.find((s) => s.hostSuffixes.some((suffix) => parsed.hostname.endsWith(suffix)))
+      : services.find((s) => s.hostSuffixes.some((suffix) => hostMatchesSuffix(parsed.hostname, suffix)))
 
+    // A matched service must actually whitelist the host (covers explicit
+    // serviceId calls); services with no suffixes are never accepted.
     if (!matchedService) return null
+    if (!matchedService.hostSuffixes.some((suffix) => hostMatchesSuffix(parsed.hostname, suffix))) return null
+
     return { url: parsed, service: matchedService }
   } catch { return null }
 }
@@ -90,6 +125,19 @@ const getCached = (id: string): CachedImage | undefined => {
 }
 
 const setCached = (id: string, image: Omit<CachedImage, "expiresAt">): void => {
+  // SEC-13: bound the in-memory cache so it cannot be grown without limit.
+  // Evict expired entries first, then the oldest one if still at capacity.
+  if (cache.size >= MAX_CACHE_ENTRIES) {
+    const now = Date.now()
+    for (const [key, value] of cache) {
+      if (value.expiresAt <= now) cache.delete(key)
+    }
+    if (cache.size >= MAX_CACHE_ENTRIES) {
+      const oldestKey = cache.keys().next().value
+      if (oldestKey) cache.delete(oldestKey)
+    }
+  }
+
   const expiresAt = Date.now() + CACHED_IMAGE_TTL_SECONDS * 1000
   cache.set(id, { ...image, expiresAt })
   setTimeout(() => { if (cache.get(id)?.expiresAt === expiresAt) cache.delete(id) }, CACHED_IMAGE_STALE_SECONDS * 1000)

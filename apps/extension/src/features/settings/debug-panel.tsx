@@ -1,6 +1,7 @@
-import { ChevronDown, ExternalLink, Terminal } from "lucide-react";
+import { ChevronDown, Terminal } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useEffect, useState } from "react";
+import { Button, Input, Label } from "@/components/ui";
 import { API_BASE_URL } from "@/shared/constants";
 import { formatRelativeTime } from "@/lib/format";
 import type { NativeStatus } from "@/lib/messages";
@@ -39,15 +40,16 @@ export const DebugPanel: FC<Props> = ({ debug, nativeStatus, settings, onSetting
 
   return (
     <section className="mt-auto rounded-lg border border-border bg-card">
-      <button
-        type="button"
+      <Button
+        variant="unstyled"
+        size="none"
         onClick={() => setOpen((value) => !value)}
         className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-xs text-muted-foreground transition-colors hover:text-foreground"
       >
         <Terminal className="h-3.5 w-3.5" />
         <span className="min-w-0 flex-1 font-semibold text-foreground">{t("debug")}</span>
         <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
-      </button>
+      </Button>
 
       {open && (
         <div className="border-t border-border px-3 py-2.5 text-[11px] leading-5 text-muted-foreground">
@@ -71,14 +73,15 @@ export const DebugPanel: FC<Props> = ({ debug, nativeStatus, settings, onSetting
           )}
 
           <div className="mt-3 border-t border-border pt-3">
-            <label className="text-[11px] font-medium text-dim-foreground">
+            <Label unstyled className="text-[11px] font-medium text-dim-foreground">
               {t("apiBaseUrl")}
-            </label>
+            </Label>
             <p className="mb-1.5 text-[10px] leading-4 text-dim-foreground">
               {t("apiBaseUrlDescription")}
             </p>
             <div className="flex gap-1.5">
-              <input
+              <Input
+                unstyled
                 type="text"
                 value={apiUrl}
                 onChange={(e) => setApiUrl(e.target.value)}
@@ -86,8 +89,9 @@ export const DebugPanel: FC<Props> = ({ debug, nativeStatus, settings, onSetting
                 placeholder={API_BASE_URL}
                 className="min-w-0 flex-1 rounded-lg border border-border bg-card-2 px-2.5 py-1.5 text-[11px] text-foreground outline-none transition-colors placeholder:text-dim-foreground focus:border-border-light"
               />
-              <button
-                type="button"
+              <Button
+                variant="unstyled"
+                size="none"
                 onClick={handleSave}
                 className="shrink-0 rounded-lg border border-border bg-card-2 px-2.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
               >
@@ -96,16 +100,17 @@ export const DebugPanel: FC<Props> = ({ debug, nativeStatus, settings, onSetting
                 ) : (
                   t("save")
                 )}
-              </button>
+              </Button>
               {apiUrl.trim() && (
-                <button
-                  type="button"
+                <Button
+                  variant="unstyled"
+                  size="none"
                   onClick={handleReset}
                   className="shrink-0 rounded-lg border border-border bg-card-2 px-2.5 text-[11px] text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
                   title={t("reset")}
                 >
                   ✕
-                </button>
+                </Button>
               )}
             </div>
           </div>

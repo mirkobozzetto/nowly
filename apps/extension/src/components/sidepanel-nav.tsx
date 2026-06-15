@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui";
 import { t } from "@/shared/i18n";
 import { Activity, ListTree, Settings } from "lucide-react";
 import type { FC, ReactElement } from "react";
@@ -28,9 +29,10 @@ export const SidepanelNav: FC<Props> = ({ activeView, onChange, showAnalyticsLog
         const active = activeView === item.view;
 
         return (
-          <button
+          <Button
             key={item.view}
-            type="button"
+            variant="unstyled"
+            size="none"
             onClick={() => onChange(item.view)}
             className={
               active
@@ -40,7 +42,7 @@ export const SidepanelNav: FC<Props> = ({ activeView, onChange, showAnalyticsLog
           >
             <Icon className="h-3.5 w-3.5" />
             <span className="truncate">{t(item.label)}</span>
-          </button>
+          </Button>
         );
       })}
     </nav>

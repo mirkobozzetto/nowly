@@ -1,10 +1,9 @@
+import { CookieBanner } from "@/components/layout/cookie-banner";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { Toaster } from "@/components/ui/sonner";
 import { ADSENSE_CLIENT_ID, ADSENSE_ENABLED } from "@/lib/constants";
 import { Providers } from "@/providers/providers";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import type { PropsWithChildren, ReactElement } from "react";
@@ -42,11 +41,9 @@ const Layout = async ({ children }: PropsWithChildren): Promise<ReactElement> =>
             </div>
 
             <Toaster />
+            <CookieBanner />
           </Providers>
         </NextIntlClientProvider>
-
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );

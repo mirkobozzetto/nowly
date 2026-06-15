@@ -1,4 +1,5 @@
 import { Sheet } from "@/components/sheet";
+import { Button } from "@/components/ui";
 import { sendMessage } from "@/lib/messages";
 import { t } from "@/shared/i18n";
 import type { InstalledPresences } from "@/shared/types";
@@ -51,45 +52,49 @@ export const SnoozeSheet: FC<Props> = ({ activeSlug, onClose, open, presences })
       <div className="flex flex-col gap-4">
 
         <div className="flex items-center justify-center gap-3">
-          <button
-            type="button"
+          <Button
+            variant="unstyled"
+            size="none"
             onClick={dec}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card-2 text-foreground transition-colors hover:bg-card-hover"
             aria-label="Decrease duration"
           >
             <Minus className="h-4 w-4" />
-          </button>
+          </Button>
 
           <span className="min-w-18 text-center text-base font-semibold text-foreground tabular-nums">
             {formatDuration(duration)}
           </span>
 
-          <button
-            type="button"
+          <Button
+            variant="unstyled"
+            size="none"
             onClick={inc}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card-2 text-foreground transition-colors hover:bg-card-hover"
             aria-label="Increase duration"
           >
             <Plus className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
 
-        <button
-          type="button"
+        <Button
+          variant="unstyled"
+          size="none"
           onClick={handleSnooze}
           className="w-full rounded-lg border border-border bg-card-2 px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-card-hover"
         >
           {t("snooze")}
-        </button>
+        </Button>
 
         {isSnoozed ? (
-          <button
-            type="button"
+          <Button
+            variant="unstyled"
+            size="none"
             onClick={handleClearSnooze}
             className="w-full rounded-lg border border-border bg-card-2 px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
           >
             {t("clearSnooze")}
-          </button>
+          </Button>
         ) : null}
       </div>
     </Sheet>

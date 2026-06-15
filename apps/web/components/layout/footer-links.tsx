@@ -1,35 +1,55 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import type { FC } from "react";
+import type { FC, ReactElement } from "react";
 
-export const FooterLinks: FC = () => {
+const linkClass = "hover:text-foreground transition-colors";
+
+type FooterCategory = {
+  label: string;
+  links: { href: string; label: string }[];
+};
+
+export const FooterLinks: FC = (): ReactElement => {
   const t = useTranslations("Footer");
 
+  const categories: FooterCategory[] = [
+    {
+      label: t("categoryProduct"),
+      links: [
+        { href: "/about", label: t("about") },
+        { href: "/faq", label: t("faq") },
+        { href: "/status", label: t("status") },
+        { href: "/docs/changelog", label: t("changelog") },
+      ],
+    },
+    {
+      label: t("categoryLegal"),
+      links: [
+        { href: "/privacy", label: t("privacy") },
+        { href: "/tos", label: t("tos") },
+        { href: "/legal-notice", label: t("legalNotice") },
+        { href: "/cookies", label: t("cookies") },
+      ],
+    },
+  ];
+
   return (
-    <div className="flex flex-wrap items-center gap-3 mt-2">
-      <Link href="/about" className="hover:text-foreground transition-colors">
-        {t("about")}
-      </Link>
+    <div className="flex gap-12">
+      {categories.map((category) => (
+        <div key={category.label} className="flex flex-col gap-3">
+          <p className="text-xs font-semibold uppercase tracking-wider text-foreground/40">
+            {category.label}
+          </p>
 
-      <Link href="/faq" className="hover:text-foreground transition-colors">
-        {t("faq")}
-      </Link>
-
-      <Link href="/status" className="hover:text-foreground transition-colors">
-        {t("status")}
-      </Link>
-
-      <Link href="/docs/changelog" className="hover:text-foreground transition-colors">
-        {t("changelog")}
-      </Link>
-
-      <Link href="/privacy" className="hover:text-foreground transition-colors">
-        {t("privacy")}
-      </Link>
-
-      <Link href="/tos" className="hover:text-foreground transition-colors">
-        {t("tos")}
-      </Link>
+          <div className="flex flex-col gap-2">
+            {category.links.map((link) => (
+              <Link key={link.href} href={link.href} className={linkClass}>
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

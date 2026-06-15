@@ -3,6 +3,7 @@ import type { FC, ReactElement } from "react";
 import { useMemo, useState } from "react";
 import { Header } from "@/components/header";
 import { LocaleFlag } from "@/components/locale-flag";
+import { Button, Select } from "@/components/ui";
 import { platforms } from "@/lib/platforms";
 import type { NativeStatus } from "@/lib/messages";
 import type { ExtensionSettings, UserScriptsStatus } from "@/shared/types";
@@ -58,14 +59,15 @@ const UserScriptsGate: FC = () => (
       <h1 className="mt-4 text-lg font-semibold text-foreground">{t("onboardingUserScriptsGateTitle")}</h1>
       <p className="mt-3 text-sm leading-6 text-muted-foreground">{t("onboardingUserScriptsGateBody")}</p>
       <p className="mt-3 text-xs leading-5 text-muted-foreground">{t("onboardingUserScriptsGatePrivacy")}</p>
-      <button
-        type="button"
+      <Button
+        variant="unstyled"
+        size="none"
         onClick={() => chrome.tabs.create({ url: extensionDetailsUrl() })}
         className="mt-5 inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-background transition-opacity hover:opacity-90"
       >
         {t("onboardingUserScriptsOpenPage")}
         <ExternalLink className="h-4 w-4" />
-      </button>
+      </Button>
       <p className="mt-3 break-all text-[11px] text-muted-foreground">{extensionDetailsUrl()}</p>
     </div>
   </PanelShell>
@@ -106,13 +108,14 @@ const NativeClientGate: FC<{ nativeStatus: NativeStatus; onConnectNative: () => 
                   {t("onboardingDownload")}
                 </a>
               ) : (
-                <button
-                  type="button"
+                <Button
+                  variant="unstyled"
+                  size="none"
                   disabled
                   className="inline-flex h-9 shrink-0 items-center rounded-lg border border-border bg-card px-3 text-xs font-semibold text-dim-foreground"
                 >
                   {t("onboardingComingSoon")}
-                </button>
+                </Button>
               )}
             </div>
           ))}
@@ -123,13 +126,14 @@ const NativeClientGate: FC<{ nativeStatus: NativeStatus; onConnectNative: () => 
             <span className={`h-3 w-3 shrink-0 rounded-full ${ready ? "bg-accent shadow-[0_0_18px_rgba(34,211,238,.7)]" : "bg-dim-foreground"}`} />
             <p className="text-xs leading-5 text-muted-foreground">{t("onboardingNativeGateWait")}</p>
           </div>
-          <button
-            type="button"
+          <Button
+            variant="unstyled"
+            size="none"
             onClick={onConnectNative}
             className="mt-3 inline-flex h-9 items-center rounded-lg border border-border bg-card px-3 text-xs font-semibold text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
           >
             {ready ? t("onboardingNativeConnected") : t("connectNative")}
-          </button>
+          </Button>
         </div>
       </div>
     </PanelShell>
@@ -170,20 +174,22 @@ const AnalyticsConsentGate: FC<{ onAccept: () => void; onDecline: () => void }> 
       <p className="mt-3 text-xs leading-5 text-dim-foreground">{t("onboardingAnalyticsDelete")}</p>
 
       <div className="mt-4 flex flex-col items-center gap-3">
-        <button
-          type="button"
+        <Button
+          variant="unstyled"
+          size="none"
           onClick={onAccept}
           className="inline-flex h-10 items-center rounded-lg bg-accent px-5 text-sm font-semibold text-background transition-opacity hover:opacity-90"
         >
           {t("onboardingAnalyticsAccept")}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant="unstyled"
+          size="none"
           onClick={onDecline}
           className="text-xs text-muted-foreground underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground"
         >
           {t("onboardingAnalyticsDecline")}
-        </button>
+        </Button>
       </div>
     </div>
   </PanelShell>
@@ -252,7 +258,8 @@ export const OnboardingOverlay: FC<Props> = ({
           <div className="flex items-center border-b border-border px-4 py-3">
             <Header />
             <div className="relative ml-auto">
-              <select
+              <Select
+                unstyled
                 value={localePreference}
                 onChange={(event) => onLocaleChange(event.target.value as LocalePreference)}
                 className="h-8 appearance-none rounded-lg border border-border bg-card-2 pl-8 pr-7 text-xs text-foreground outline-none transition-colors hover:bg-card-hover focus:border-border-light"
@@ -262,7 +269,7 @@ export const OnboardingOverlay: FC<Props> = ({
                     {option.label}
                   </option>
                 ))}
-              </select>
+              </Select>
               <div className="pointer-events-none absolute inset-y-0 left-2 flex items-center">
                 <LocaleFlag locale={marketplaceLocale(localePreference)} />
               </div>
@@ -286,25 +293,28 @@ export const OnboardingOverlay: FC<Props> = ({
           </div>
 
           <footer className="flex items-center justify-between gap-2 border-t border-border px-4 py-3">
-            <button
-              type="button"
+            <Button
+              variant="unstyled"
+              size="none"
               onClick={onSkipTour}
               className="rounded-lg border border-border bg-card-2 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
             >
               {t("onboardingSkip")}
-            </button>
+            </Button>
             <div className="flex items-center gap-2">
-              <button
-                type="button"
+              <Button
+                variant="unstyled"
+                size="none"
                 disabled={index === 0}
                 onClick={() => setIndex((current) => Math.max(0, current - 1))}
                 className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card-2 px-3 text-xs font-semibold text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
                 {t("onboardingPrevious")}
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                variant="unstyled"
+                size="none"
                 onClick={() => {
                   if (isLast) onComplete();
                   else setIndex((current) => Math.min(tourSteps.length - 1, current + 1));
@@ -313,7 +323,7 @@ export const OnboardingOverlay: FC<Props> = ({
               >
                 {isLast ? t("onboardingFinish") : t("onboardingNext")}
                 {isLast ? <CheckCircle2 className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-              </button>
+              </Button>
             </div>
           </footer>
         </section>

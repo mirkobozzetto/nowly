@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import type { FC, ReactElement, ReactNode } from "react";
 import { useCallback, useEffect, useRef } from "react";
+import { Button } from "@/components/ui";
 
 type Props = {
   children: ReactNode;
@@ -122,14 +123,15 @@ export const Sheet: FC<Props> = ({ children, onClose, open, position = "right", 
               <p className="text-xs text-muted-foreground">{subtitle}</p>
             ) : null}
           </div>
-          <button
-            type="button"
+          <Button
+            variant="unstyled"
+            size="none"
             onClick={onClose}
             aria-label="Close"
             className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-card-2 hover:text-foreground"
           >
             <X className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4">

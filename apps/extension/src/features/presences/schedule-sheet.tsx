@@ -1,5 +1,5 @@
 import { Sheet } from "@/components/sheet";
-import { Switch } from "@/components/switch";
+import { Button, Input, Switch } from "@/components/ui";
 import { sendMessage } from "@/lib/messages";
 import { t } from "@/shared/i18n";
 import type { ExtensionSettings, InstalledPresences } from "@/shared/types";
@@ -55,9 +55,10 @@ export const ScheduleSheet: FC<Props> = ({ activeSlug, globalSchedule, onClose, 
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap gap-1.5">
           {dayKeys.map((key, day) => (
-            <button
+            <Button
               key={day}
-              type="button"
+              variant="unstyled"
+              size="none"
               onClick={() => toggleDay(day)}
               className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
                 scheduleDays.includes(day)
@@ -66,7 +67,7 @@ export const ScheduleSheet: FC<Props> = ({ activeSlug, globalSchedule, onClose, 
               }`}
             >
               {t(key)}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -82,7 +83,8 @@ export const ScheduleSheet: FC<Props> = ({ activeSlug, globalSchedule, onClose, 
           <div className="flex items-center gap-3">
             <div className="flex flex-col gap-1">
               <span className="text-[10px] text-dim-foreground">{t("startTime")}</span>
-              <input
+              <Input
+                unstyled
                 type="time"
                 value={scheduleStart}
                 onChange={(e) => setScheduleStart(e.target.value)}
@@ -92,7 +94,8 @@ export const ScheduleSheet: FC<Props> = ({ activeSlug, globalSchedule, onClose, 
 
             <div className="flex flex-col gap-1">
               <span className="text-[10px] text-dim-foreground">{t("endTime")}</span>
-              <input
+              <Input
+                unstyled
                 type="time"
                 value={scheduleEnd}
                 onChange={(e) => setScheduleEnd(e.target.value)}
@@ -102,8 +105,9 @@ export const ScheduleSheet: FC<Props> = ({ activeSlug, globalSchedule, onClose, 
           </div>
         ) : null}
 
-        <button
-          type="button"
+        <Button
+          variant="unstyled"
+          size="none"
           onClick={handleSave}
           className="w-full rounded-lg border border-border bg-card-2 px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-card-hover"
         >
@@ -114,7 +118,7 @@ export const ScheduleSheet: FC<Props> = ({ activeSlug, globalSchedule, onClose, 
           ) : (
             t("schedule")
           )}
-        </button>
+        </Button>
       </div>
     </Sheet>
   );

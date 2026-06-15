@@ -2,7 +2,7 @@ import { Settings, Trash2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Sheet } from "@/components/sheet";
-import { Switch } from "@/components/switch";
+import { Button, Input, Label, Select, Switch } from "@/components/ui";
 import { getLocale, t } from "@/shared/i18n";
 import { sendMessage } from "@/lib/messages";
 
@@ -73,15 +73,16 @@ export const PresenceSettingsPanel: FC<Props> = ({ definitions, onRemove, slug }
 
   return (
     <>
-      <button
-        type="button"
+      <Button
+        variant="unstyled"
+        size="none"
         aria-label={t("settings")}
         title={t("settings")}
         onClick={() => setOpen(true)}
         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
       >
         <Settings className="h-4 w-4" />
-      </button>
+      </Button>
 
       {open && (
           <Sheet title={t("settings")} open={open} onClose={() => setOpen(false)} position="bottom">
@@ -99,7 +100,7 @@ export const PresenceSettingsPanel: FC<Props> = ({ definitions, onRemove, slug }
 
               return (
                 <div key={key} className="flex items-center justify-between gap-3">
-                  <label htmlFor={switchId} className="text-sm text-foreground cursor-pointer">{label}</label>
+                  <Label unstyled htmlFor={switchId} className="text-sm text-foreground cursor-pointer">{label}</Label>
 
                   {type === "boolean" && (
                     <Switch
@@ -110,7 +111,8 @@ export const PresenceSettingsPanel: FC<Props> = ({ definitions, onRemove, slug }
                   )}
 
                   {type === "input" && (
-                    <input
+                    <Input
+                      unstyled
                       type="text"
                       value={String(value ?? "")}
                       placeholder={placeholder ?? ""}
@@ -120,7 +122,8 @@ export const PresenceSettingsPanel: FC<Props> = ({ definitions, onRemove, slug }
                   )}
 
                   {type === "select" && (
-                    <select
+                    <Select
+                      unstyled
                       value={String(value ?? "")}
                       onChange={(e) => handleChange(key, e.target.value)}
                       className="h-8 w-44 rounded-lg border border-border bg-card-2 px-3 text-sm text-foreground outline-none transition-colors focus:border-border-light"
@@ -134,12 +137,13 @@ export const PresenceSettingsPanel: FC<Props> = ({ definitions, onRemove, slug }
                         </option>
                       );
                     })}
-                    </select>
+                    </Select>
                   )}
 
                   {type === "slider" && (
                     <div className="flex items-center gap-2">
-                      <input
+                      <Input
+                        unstyled
                         type="range"
                         min={defObj?.min !== undefined ? Number(defObj.min) : 0}
                         max={defObj?.max !== undefined ? Number(defObj.max) : 100}
@@ -158,14 +162,15 @@ export const PresenceSettingsPanel: FC<Props> = ({ definitions, onRemove, slug }
 
           {onRemove && (
             <div className="mt-6">
-              <button
-                type="button"
+              <Button
+                variant="unstyled"
+                size="none"
                 onClick={onRemove}
                 className="flex w-full items-center justify-center gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm font-medium text-destructive transition-colors hover:bg-destructive/15"
               >
                 <Trash2 className="h-4 w-4" />
                 {t("uninstall")}
-              </button>
+              </Button>
             </div>
           )}
         </Sheet>
