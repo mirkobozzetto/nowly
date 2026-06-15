@@ -37,7 +37,10 @@ const marketplaceLocale = (preference: LocalePreference): string => {
   return "en-US";
 };
 
-const extensionDetailsUrl = (): string => `chrome://extensions/?id=${chrome.runtime.id}`;
+const extensionDetailsUrl = (): string =>
+  import.meta.env.BROWSER === "firefox"
+    ? "about:addons"
+    : `chrome://extensions/?id=${chrome.runtime.id}`;
 
 const isNativeReady = (nativeStatus: NativeStatus): boolean =>
   Boolean(nativeStatus.connected || nativeStatus.discordConnected);

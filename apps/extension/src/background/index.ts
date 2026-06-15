@@ -8,8 +8,9 @@ import { createPresenceRuntime, USER_SCRIPT_MESSAGE_SOURCE } from "./presence-ru
 import { verifyPresenceRelease } from "./release-security";
 import {
   toMatchPatterns, userScriptId, visiblePresences,
-  type ChromeWithUserScripts, type RegisteredUserScript,
+  type RegisteredUserScript,
 } from "./user-scripts";
+import { presenceInjector, firefoxInjector } from "./presence-injection";
 import { clearSnooze, getCurrentActivity, getDebug, getDeviceId, getPresences, getPresenceSettings, getSettings, setCurrentActivity, setDebug, setPresences, setPresenceSchedule, setPresenceSettings, setSettings, snoozePresence } from "./storage";
 
 let customApiUrl: string | undefined;
@@ -163,7 +164,18 @@ type ChromeWithSidePanel = typeof chrome & {
   };
 };
 
+type ChromeWithSidebarAction = typeof chrome & {
+  sidebarAction?: { toggle(): void };
+};
+
 const enableSidePanelAction = (): void => {
+  if (import.meta.env.BROWSER === "firefox") {
+    chrome.action.onClicked.addListener(() => {
+      (chrome as ChromeWithSidebarAction).sidebarAction?.toggle();
+    });
+    return;
+  }
+
   const sidePanel = (chrome as ChromeWithSidePanel).sidePanel;
   if (!sidePanel) return;
 
@@ -213,14 +225,8 @@ onNativeResponse((message) => {
 });
 
 const unregisterPresenceScript = async (slug: string): Promise<void> => {
-  const userScripts = (chrome as ChromeWithUserScripts).userScripts;
-  if (!userScripts) return;
-  const id = userScriptId(slug);
-
   try {
-    const scripts = await userScripts.getScripts({ ids: [id] });
-    if (!scripts.length) return;
-    await userScripts.unregister({ ids: [id] });
+    await presenceInjector.unregister(userScriptId(slug));
   } catch {
     // The script may not be registered yet.
   }
@@ -233,11 +239,6 @@ const getPresenceRuntime = async (slug: string, name: string, bundle: string): P
 };
 
 const registerPresenceScript = async (slug: string, presence: StoredPresence): Promise<{ ok: boolean; error?: string }> => {
-  const userScripts = (chrome as ChromeWithUserScripts).userScripts;
-  if (!userScripts) {
-    return { ok: false, error: "chrome.userScripts unavailable. Enable Developer Mode / Allow User Scripts for this extension." };
-  }
-
   if (!presence.release) return { ok: false, error: "presence release is not signed" };
   const verified = await verifyPresenceRelease(presence.release, slug);
   if (!verified.ok) return verified;
@@ -259,16 +260,7 @@ const registerPresenceScript = async (slug: string, presence: StoredPresence): P
       allFrames: false,
       world: slug === "youtube" ? "MAIN" : "USER_SCRIPT",
     };
-
-    try {
-      await userScripts.register([script]);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      if (!message.toLowerCase().includes("duplicate")) throw error;
-      await userScripts.unregister({ ids: [script.id] });
-      await userScripts.register([script]);
-    }
-
+    await presenceInjector.register(script);
     return { ok: true };
   } catch (error) {
     addAnalyticsLog("error", "presence", "register presence script failed", {
@@ -529,13 +521,15 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
       return false;
 
     case "GET_USER_SCRIPTS_STATUS":
-      respond(sendResponse, {
-        enabled: Boolean((chrome as unknown as { userScripts?: unknown }).userScripts),
-        requiresUserToggle: true,
-        reason: (chrome as unknown as { userScripts?: unknown }).userScripts
-          ? undefined
-          : "chrome.userScripts unavailable. Enable Developer Mode / Allow User Scripts for this extension.",
-      });
+      respond(sendResponse, import.meta.env.BROWSER === "firefox"
+        ? { enabled: true, requiresUserToggle: false }
+        : {
+            enabled: Boolean((chrome as unknown as { userScripts?: unknown }).userScripts),
+            requiresUserToggle: true,
+            reason: (chrome as unknown as { userScripts?: unknown }).userScripts
+              ? undefined
+              : "chrome.userScripts unavailable. Enable Developer Mode / Allow User Scripts for this extension.",
+          });
       return false;
 
     case "CONNECT_NATIVE":
@@ -970,6 +964,14 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 });
 
 enableSidePanelAction();
+
+if (import.meta.env.BROWSER === "firefox" && firefoxInjector) {
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.status !== "complete" || !tab.url) return;
+    void firefoxInjector.injectIntoTab(tabId, tab.url);
+  });
+}
+
 void (async () => {
   await handleClearActivity();
   connectNative();

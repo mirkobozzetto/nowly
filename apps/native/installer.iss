@@ -98,7 +98,7 @@ begin
       '  "path": "' + HostPath + '",' + #13#10 +
       '  "type": "stdio",' + #13#10 +
       '  "allowed_extensions": [' + #13#10 +
-      '    "abbegmindbabanjcabnmcjmamaoffbam"' + #13#10 +
+      '    "{01146c8d-3101-0d92-01dc-29c0c0e5510c}"' + #13#10 +
       '  ]' + #13#10 +
       '}';
 
