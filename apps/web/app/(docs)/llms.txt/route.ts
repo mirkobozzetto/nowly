@@ -36,7 +36,7 @@ export const GET = async () => {
     }
   }
 
-  lines.push("", "## Resources", "", "- [GitHub Repository](https://github.com/q-kimi/nowly)", "- [Discord Rich Presence](https://discord.com/rich-presence)");
+  lines.push("", "## Resources", "", "- [GitHub Repository](https://github.com/nowly-presence/nowly)", "- [Discord Rich Presence](https://discord.com/rich-presence)");
 
   return new NextResponse(lines.join("\n"), {
     headers: { "Content-Type": "text/plain; charset=utf-8" },

@@ -42,11 +42,11 @@ const githubUrl = (github: string): string => `https://github.com/${github}`;
 
 const sourceUrl = (update: VersionUpdate): string | undefined => {
   if (update.pr?.startsWith("#")) {
-    return `https://github.com/q-kimi/nowly/pull/${update.pr.slice(1)}`;
+    return `https://github.com/nowly-presence/nowly/pull/${update.pr.slice(1)}`;
   }
 
   if (update.commitSha) {
-    return `https://github.com/q-kimi/nowly/commit/${update.commitSha}`;
+    return `https://github.com/nowly-presence/nowly/commit/${update.commitSha}`;
   }
 
   return undefined;

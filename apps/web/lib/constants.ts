@@ -4,7 +4,7 @@ import { Presence } from "./data/presences";
 export const API_BASE_URL = clientEnv.NEXT_PUBLIC_API_BASE_URL;
 
 export const PROJECT_NAME = "Nowly";
-export const PROJECT_REPOSITORY_URL = "https://github.com/q-kimi/nowly";
+export const PROJECT_REPOSITORY_URL = "https://github.com/nowly-presence/nowly";
 export const PROJECT_PRESENCES_SOURCE_URL = `${PROJECT_REPOSITORY_URL}/tree/stable/packages/websites/src`;
 export const EXTENSION_ID = clientEnv.NEXT_PUBLIC_EXTENSION_ID;
 export const PROJECT_EXTENSION_DOWNLOAD_URL = `https://chromewebstore.google.com/detail/nowly/${EXTENSION_ID}`;
