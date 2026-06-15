@@ -9,6 +9,7 @@ MANIFEST_DIRS=(
   "${HOME}/Library/Application Support/Chromium/NativeMessagingHosts"
   "${HOME}/Library/Application Support/BraveSoftware/Brave-Browser/NativeMessagingHosts"
   "${HOME}/Library/Application Support/Microsoft Edge/NativeMessagingHosts"
+  "${HOME}/Library/Application Support/Mozilla/NativeMessagingHosts"
 )
 
 echo "Uninstalling Nowly Native Host..."

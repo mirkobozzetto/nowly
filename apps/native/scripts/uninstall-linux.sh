@@ -11,6 +11,7 @@ MANIFEST_DIRS=(
   "${HOME}/.config/microsoft-edge/NativeMessagingHosts"
   "${HOME}/.config/vivaldi/NativeMessagingHosts"
   "${HOME}/.config/opera/NativeMessagingHosts"
+  "${HOME}/.mozilla/native-messaging-hosts"
 )
 
 echo "Uninstalling Nowly Native Host..."
