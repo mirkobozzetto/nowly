@@ -20,7 +20,7 @@ const generateMetadata = (): Metadata => {
 };
 
 const Page = (): ReactElement => {
-  const t = useTranslations("CookiesPage");
+  const t = useTranslations("cookies-page");
   const sections = t.raw("sections") as PageSection[];
   const items = sections.map((section) => ({
     title: section.title,
@@ -30,7 +30,7 @@ const Page = (): ReactElement => {
   return (
     <StructuredContentPage
       title={t("title")}
-      lastUpdated={t("lastUpdated")}
+      lastUpdated={t("last-updated")}
       intro={t.raw("intro") as string}
       items={items}
     />

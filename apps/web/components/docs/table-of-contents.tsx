@@ -11,7 +11,7 @@ type TableOfContentsProps = {
 };
 
 export const TableOfContents: FC<TableOfContentsProps> = ({ items }) => {
-  const t = useTranslations("Docs");
+  const t = useTranslations("docs");
   const [activeId, setActiveId] = useState<string>("");
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -39,7 +39,7 @@ export const TableOfContents: FC<TableOfContentsProps> = ({ items }) => {
     <>
       <nav className="hidden xl:block fixed top-24 w-56 max-h-[calc(100vh-8rem)] overflow-y-auto" style={{ right: "max(1rem, calc((100vw - 1280px) / 2 + 1rem))" }}>
         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-          {t("onThisPage")}
+          {t("on-this-page")}
         </p>
         <ul className="space-y-1.5">
           {items.map((item) => (
@@ -65,7 +65,7 @@ export const TableOfContents: FC<TableOfContentsProps> = ({ items }) => {
         type="button"
         onClick={() => setMobileOpen(true)}
         className="xl:hidden fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-accent text-background px-4 py-3 shadow-lg"
-        aria-label={t("openTableOfContents")}
+        aria-label={t("open-table-of-contents")}
       >
         <ListTree size={18} />
         <span className="text-sm font-medium">{t("toc")}</span>
@@ -80,7 +80,7 @@ export const TableOfContents: FC<TableOfContentsProps> = ({ items }) => {
           <div className="absolute bottom-0 left-0 right-0 bg-card border-t border-border rounded-t-xl p-6 max-h-[60vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                {t("onThisPage")}
+                {t("on-this-page")}
               </p>
               <button
                 type="button"

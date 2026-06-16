@@ -36,7 +36,7 @@ const generateMetadata = (): Metadata => {
 };
 
 const Page = (): ReactElement => {
-  const t = useTranslations("LegalNoticePage");
+  const t = useTranslations("legal-notice-page");
   const sections = t.raw("sections") as PageSection[];
   const items = sections.map((section) => ({
     title: section.title,
@@ -46,7 +46,7 @@ const Page = (): ReactElement => {
   return (
     <StructuredContentPage
       title={t("title")}
-      lastUpdated={t("lastUpdated")}
+      lastUpdated={t("last-updated")}
       items={items}
     />
   );

@@ -9,7 +9,7 @@ import type { FC, ReactElement } from "react";
 const DISCORD_COMMUNITY_URL = "https://discord.gg/JRH9dyrVZX";
 
 export const FaqSection: FC = (): ReactElement => {
-  const t = useTranslations("HomeFaqSection");
+  const t = useTranslations("home-faq-section");
   const items = t.raw("items") as Array<{
     question: string
     answer: string
@@ -21,7 +21,7 @@ export const FaqSection: FC = (): ReactElement => {
         <div className="grid min-w-0 grid-cols-1 items-start gap-12 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
           <div className="min-w-0">
             <span className="text-accent font-bold uppercase tracking-widest text-xs mb-4 block">
-              {t("sectionLabel")}
+              {t("section-label")}
             </span>
 
             <h2 className="mb-4 text-balance text-[2.5rem]">
@@ -34,7 +34,7 @@ export const FaqSection: FC = (): ReactElement => {
 
             <div className="flex flex-wrap gap-3 mt-8">
               <Link href="/faq" className={buttonVariants({ variant: "primary", size: "md" })}>
-                {t("faqCta")}
+                {t("faq-cta")}
                 <ArrowRight className="h-4 w-4" />
               </Link>
 
@@ -45,7 +45,7 @@ export const FaqSection: FC = (): ReactElement => {
                 className={cn(buttonVariants({ variant: "secondary", size: "md" }))}
               >
                 <DiscordIcon />
-                {t("discordCta")}
+                {t("discord-cta")}
               </a>
             </div>
           </div>

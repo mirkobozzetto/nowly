@@ -15,7 +15,7 @@ type Props = {
 };
 
 export const PresenceCard: FC<Props> = ({ presence, locale }): ReactElement => {
-  const t = useTranslations("MarketplacePage");
+  const t = useTranslations("marketplace-page");
   const categoryLabel = t(`categories.${presence.category}`);
 
   return (

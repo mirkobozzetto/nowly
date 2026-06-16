@@ -4,8 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsx scripts/build.ts",
-    "build:dev": "tsx scripts/build-dev.ts",
+    "build": "tsx scripts/build.ts chrome",
+    "build:chrome": "tsx scripts/build.ts chrome",
+    "build:firefox": "tsx scripts/build.ts firefox",
+    "build:dev": "tsx scripts/build-dev.ts chrome",
+    "build:dev:chrome": "tsx scripts/build-dev.ts chrome",
+    "build:dev:firefox": "tsx scripts/build-dev.ts firefox",
     "dev": "vite build --watch",
     "lint": "tsc --noEmit"
   },

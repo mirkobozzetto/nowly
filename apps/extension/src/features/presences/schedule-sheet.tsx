@@ -15,7 +15,7 @@ type Props = {
   presences: InstalledPresences;
 };
 
-const dayKeys = ["daySun", "dayMon", "dayTue", "dayWed", "dayThu", "dayFri", "daySat"] as const;
+const dayKeys = ["day-sun", "day-mon", "day-tue", "day-wed", "day-thu", "day-fri", "day-sat"] as const;
 
 export const ScheduleSheet: FC<Props> = ({ activeSlug, globalSchedule, onClose, open, presences }): ReactElement | null => {
   const presence = activeSlug ? presences[activeSlug] : null;
@@ -51,7 +51,7 @@ export const ScheduleSheet: FC<Props> = ({ activeSlug, globalSchedule, onClose, 
   };
 
   return (
-    <Sheet open={open} onClose={onClose} position="bottom" subtitle={t("scheduleDescription")} title={t("schedule")}>
+    <Sheet open={open} onClose={onClose} position="bottom" subtitle={t("schedule-description")} title={t("schedule")}>
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap gap-1.5">
           {dayKeys.map((key, day) => (
@@ -74,7 +74,7 @@ export const ScheduleSheet: FC<Props> = ({ activeSlug, globalSchedule, onClose, 
         <div className="flex items-center justify-between rounded-lg border border-border bg-card-2 px-3 py-2">
           <div className="flex items-center gap-2">
             <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-            <span className="text-xs text-foreground">{t("scheduleTimeRange")}</span>
+            <span className="text-xs text-foreground">{t("schedule-time-range")}</span>
           </div>
           <Switch checked={useTimeRange} onChange={setUseTimeRange} ariaLabel="Toggle time range" />
         </div>
@@ -82,7 +82,7 @@ export const ScheduleSheet: FC<Props> = ({ activeSlug, globalSchedule, onClose, 
         {useTimeRange ? (
           <div className="flex items-center gap-3">
             <div className="flex flex-col gap-1">
-              <span className="text-[10px] text-dim-foreground">{t("startTime")}</span>
+              <span className="text-[10px] text-dim-foreground">{t("start-time")}</span>
               <Input
                 unstyled
                 type="time"
@@ -93,7 +93,7 @@ export const ScheduleSheet: FC<Props> = ({ activeSlug, globalSchedule, onClose, 
             </div>
 
             <div className="flex flex-col gap-1">
-              <span className="text-[10px] text-dim-foreground">{t("endTime")}</span>
+              <span className="text-[10px] text-dim-foreground">{t("end-time")}</span>
               <Input
                 unstyled
                 type="time"

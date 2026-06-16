@@ -15,11 +15,10 @@ MANIFEST_DIRS=(
   "${HOME}/Library/Application Support/BraveSoftware/Brave-Browser/NativeMessagingHosts"
   "${HOME}/Library/Application Support/Microsoft Edge/NativeMessagingHosts"
 )
-
 # Firefox uses allowed_extensions (UUID) and a separate directory
 FIREFOX_MANIFEST_DIR="${HOME}/Library/Application Support/Mozilla/NativeMessagingHosts"
-FIREFOX_EXT_ID_DEV="abbegmindbabanjcabnmcjmamaoffbam"
-# FIREFOX_EXT_ID_PROD="nowly@nowly.me"  # TODO: ADD WHEN PUBLISHED
+FIREFOX_EXT_ID_DEV="{01146c8d-3101-0d92-01dc-29c0c0e5510c}"  # derived from Chrome dev ID abbegmindbabanjcabnmcjmamaoffbam
+# FIREFOX_EXT_ID_PROD="nowly@nowly.me"  # TODO: add when AMO listing is created
 
 if [ ! -f "$BINARY_SRC" ]; then
   echo "Error: binary not found at $BINARY_SRC"

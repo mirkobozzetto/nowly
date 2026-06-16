@@ -22,7 +22,7 @@ const localeLabelKey: Record<LocaleString, string> = {
 export const LocaleSelector: FC = () => {
   const locale = useLocale();
   const router = useRouter();
-  const t = useTranslations("Footer");
+  const t = useTranslations("footer");
 
   const handleLocaleChange = (value: string): void => {
     document.cookie = `locale=${value};path=/;max-age=31536000;SameSite=Lax`;

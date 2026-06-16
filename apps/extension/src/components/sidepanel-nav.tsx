@@ -14,9 +14,9 @@ type Props = {
 type TranslationKey = Parameters<typeof t>[0];
 
 const items: Array<{ icon: typeof Activity; label: TranslationKey; view: SidepanelView }> = [
-  { icon: Activity, label: "activityTab", view: "activity" },
-  { icon: Settings, label: "settingsTab", view: "settings" },
-  { icon: ListTree, label: "analyticsLogsTab", view: "analyticsLogs" },
+  { icon: Activity, label: "activity-tab", view: "activity" },
+  { icon: Settings, label: "settings-tab", view: "settings" },
+  { icon: ListTree, label: "analytics-logs-tab", view: "analyticsLogs" },
 ];
 
 export const SidepanelNav: FC<Props> = ({ activeView, onChange, showAnalyticsLogs = false }): ReactElement => {

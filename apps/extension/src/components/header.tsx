@@ -14,10 +14,10 @@ const statusColor = (ns: NativeStatus): string => {
 };
 
 const statusText = (ns: NativeStatus): string => {
-  if (ns.discordConnected) return t("nativeConnected");
+  if (ns.discordConnected) return t("native-connected");
   if (ns.connected && !ns.discordConnected) return "Discord disconnected";
-  if (ns.status === "connecting") return t("nativeDisconnected");
-  return t("nativeDisconnected");
+  if (ns.status === "connecting") return t("native-disconnected");
+  return t("native-disconnected");
 };
 
 export const Header: FC<Props> = ({ nativeStatus }): ReactElement => (

@@ -13,7 +13,7 @@ import { LocaleSelector } from "./locale-selector";
 import { SupportButton } from "./support-button";
 
 export const Footer: FC = (): ReactElement => {
-  const t = useTranslations("Footer");
+  const t = useTranslations("footer");
 
   return (
     <footer className="py-12 border-t border-border text-dim-foreground text-sm">
@@ -25,7 +25,7 @@ export const Footer: FC = (): ReactElement => {
                 <Avatar size="lg" className="z-6">
                   <AvatarImage
                     src="https://avatars.githubusercontent.com/u/51194216?v=4"
-                    alt={t("authorAlt")}
+                    alt={t("author-alt")}
                   />
                 </Avatar>
 
@@ -70,7 +70,7 @@ export const Footer: FC = (): ReactElement => {
                 })}
               >
                 <GitHubIcon className="w-4 h-4" />
-                <span className="hidden sm:inline">{t("openSource")}</span>
+                <span className="hidden sm:inline">{t("open-source")}</span>
               </Link>
             </div>
 

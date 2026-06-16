@@ -7,7 +7,9 @@ import { build } from "vite"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, "..")
-const DIST = join(ROOT, "dist")
+
+const BROWSER = (process.argv[2] ?? "chrome") as "chrome" | "firefox"
+const DIST = join(ROOT, "dist", BROWSER)
 
 const webBaseUrl = process.env.VITE_WEB_BASE_URL ?? "https://nowly.me"
 const apiBaseUrl = process.env.VITE_API_BASE_URL ?? "https://api.nowly.me"
@@ -17,6 +19,7 @@ const define = {
   "import.meta.env.VITE_WEB_BASE_URL": JSON.stringify(webBaseUrl),
   "import.meta.env.VITE_API_BASE_URL": JSON.stringify(apiBaseUrl),
   "import.meta.env.VITE_CDN_BASE_URL": JSON.stringify(cdnBaseUrl),
+  "import.meta.env.BROWSER": JSON.stringify(BROWSER),
 }
 
 rmSync(DIST, { recursive: true, force: true })
@@ -72,11 +75,9 @@ const buildScript = async (name: string, entry: string) => {
 
 const copyManifest = () => {
   const manifest = JSON.parse(readFileSync(join(ROOT, "manifest.json"), "utf-8"))
-  manifest.background.service_worker = "background.js"
-  delete manifest.background.type
+
+  // Common mutations for all browsers
   manifest.content_scripts[0].js = ["content.js"]
-  delete manifest.action.default_popup
-  manifest.side_panel.default_path = "sidepanel/index.html"
   manifest.icons = {
     16: "icons/icon16.png",
     48: "icons/icon48.png",
@@ -84,6 +85,36 @@ const copyManifest = () => {
   }
   manifest.action.default_icon = { ...manifest.icons }
   delete manifest.key
+
+  if (BROWSER === "firefox") {
+    manifest.background = { scripts: ["background.js"] }
+    delete manifest.minimum_chrome_version
+    manifest.permissions = manifest.permissions
+      .filter((p: string) => p !== "userScripts" && p !== "sidePanel")
+      .concat("scripting")
+    delete manifest.side_panel
+    delete manifest.action.default_popup
+    manifest.sidebar_action = {
+      default_icon: manifest.icons,
+      default_panel: "sidepanel/index.html",
+      default_title: "__MSG_extensionName__",
+    }
+    manifest.browser_specific_settings = {
+      gecko: { id: "nowly@nowly.me", strict_min_version: "128.0" },
+    }
+    // Required by AMO — declare data collection practices.
+    // Update these arrays to reflect what the extension actually collects.
+    manifest.data_collection_permissions = {
+      required: [],
+      optional: [],
+    }
+  } else {
+    manifest.background.service_worker = "background.js"
+    delete manifest.background.type
+    delete manifest.action.default_popup
+    manifest.side_panel.default_path = "sidepanel/index.html"
+  }
+
   writeFileSync(join(DIST, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`)
 }
 

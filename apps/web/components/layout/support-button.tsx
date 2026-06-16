@@ -10,7 +10,7 @@ import { useState } from "react";
 export const SupportButton: FC = () => {
   const [thanked, setThanked] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
-  const t = useTranslations("Footer");
+  const t = useTranslations("footer");
 
   const handleSupport = (): void => {
     if (thanked) return;

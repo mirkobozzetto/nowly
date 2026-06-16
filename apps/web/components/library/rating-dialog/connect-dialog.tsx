@@ -12,7 +12,7 @@ type Props = {
 };
 
 export const ConnectDialog: FC<Props> = ({ trigger, onLogin }): ReactElement => {
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
 
   return (
     <Dialog>
@@ -27,20 +27,20 @@ export const ConnectDialog: FC<Props> = ({ trigger, onLogin }): ReactElement => 
           </DialogMedia>
 
           <DialogTitle>
-            {t("rateLoginTitle")}
+            {t("rate-login-title")}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 px-6 pb-6 text-left">
           <p className="text-sm leading-6 text-muted-foreground">
-            {t("rateLoginDesc1")}
+            {t("rate-login-desc1")}
           </p>
           <p className="text-sm leading-6 text-muted-foreground">
-            {t("rateLoginDesc2")}
+            {t("rate-login-desc2")}
           </p>
 
           <Button variant="accent" size="default" className="w-full" onClick={onLogin}>
-            {t("rateLoginButton")}
+            {t("rate-login-button")}
           </Button>
         </div>
       </DialogContent>

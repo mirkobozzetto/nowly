@@ -18,7 +18,7 @@ type SortOption = "name-asc" | "name-desc" | "popular" | "recent";
 
 export const MarketplaceClient: FC = (): ReactElement => {
   const locale = useLocale();
-  const t = useTranslations("MarketplacePage");
+  const t = useTranslations("marketplace-page");
   const { data: presences, isLoading, isError, refetch } = usePresences();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<PresenceCategory[]>([]);
@@ -112,7 +112,7 @@ export const MarketplaceClient: FC = (): ReactElement => {
 
         <MarketplaceSearch
           value={searchQuery}
-          placeholder={t("searchPlaceholder")}
+          placeholder={t("search-placeholder")}
           onChange={setSearchQuery}
         />
 

@@ -12,7 +12,7 @@ type Props = {
 export const DisplaySettings: FC<Props> = ({ settings, onSettingsChange }): ReactElement => (
   <section className="rounded-lg border border-border bg-card p-4">
     <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("display")}</h2>
-    <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("displayDescription")}</p>
+    <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("display-description")}</p>
 
     <div className="mb-3 flex gap-2">
       <Button
@@ -26,7 +26,7 @@ export const DisplaySettings: FC<Props> = ({ settings, onSettingsChange }): Reac
         }`}
       >
         <LayoutGrid className="h-4 w-4" />
-        {t("displayCategory")}
+        {t("display-category")}
       </Button>
       <Button
         variant="unstyled"
@@ -39,7 +39,7 @@ export const DisplaySettings: FC<Props> = ({ settings, onSettingsChange }): Reac
         }`}
       >
         <List className="h-4 w-4" />
-        {t("displayAlphabetical")}
+        {t("display-alphabetical")}
       </Button>
     </div>
 
@@ -48,13 +48,13 @@ export const DisplaySettings: FC<Props> = ({ settings, onSettingsChange }): Reac
       className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-card-2 px-3 py-2.5 transition-colors hover:bg-card-hover"
     >
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-medium text-foreground">{t("separateActive")}</p>
-        <p className="mt-0.5 text-[11px] text-muted-foreground">{t("separateActiveDescription")}</p>
+        <p className="text-xs font-medium text-foreground">{t("separate-active")}</p>
+        <p className="mt-0.5 text-[11px] text-muted-foreground">{t("separate-active-description")}</p>
       </div>
       <Switch
         checked={settings.separateActivePresence}
         onChange={(checked) => onSettingsChange({ separateActivePresence: checked })}
-        ariaLabel={t("separateActive")}
+        ariaLabel={t("separate-active")}
       />
     </Label>
   </section>

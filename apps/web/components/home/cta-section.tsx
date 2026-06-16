@@ -10,7 +10,7 @@ import { useState } from "react";
 
 export const CtaSection: FC = (): ReactElement => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const t = useTranslations("CtaSection");
+  const t = useTranslations("cta-section");
 
   const handleDownload = (): void => {
     setIsModalOpen(true);
@@ -33,7 +33,7 @@ export const CtaSection: FC = (): ReactElement => {
             <div className="flex min-w-0 flex-wrap items-stretch justify-center gap-4">
               <Button onClick={handleDownload} variant="primary" size="lg">
                 <Download className="w-5 h-5" />
-                {t("downloadFor", { browser: "Chrome" })}
+                {t("download-for", { browser: "Chrome" })}
               </Button>
 
               <Button disabled variant="secondary" size="lg">
@@ -46,7 +46,7 @@ export const CtaSection: FC = (): ReactElement => {
                 Firefox
 
                 <span className="ml-2 text-xs text-muted rounded-sm px-1.5 py-0.5 bg-muted-foreground border border-muted">
-                  {t("firefoxStatus")}
+                  {t("firefox-status")}
                 </span>
               </Button>
             </div>
@@ -63,7 +63,7 @@ export const CtaSection: FC = (): ReactElement => {
 
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
                 <Shield className="w-4 h-4" />
-                {t("openSource")}
+                {t("open-source")}
               </div>
 
               <div className="flex items-center gap-2 text-muted-foreground text-sm">

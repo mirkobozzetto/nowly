@@ -12,7 +12,7 @@ import { CompanionWindow } from "./companion-window";
 
 export const HeroSection: FC = (): ReactElement => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const t = useTranslations("HeroSection");
+  const t = useTranslations("hero-section");
 
   return (
     <>
@@ -38,7 +38,7 @@ export const HeroSection: FC = (): ReactElement => {
                 {t("title")}
                 <br />
                 <HighlightedText from="left" delay={0}>
-                  {t("titleAccent")}
+                  {t("title-accent")}
                 </HighlightedText>
               </h1>
 

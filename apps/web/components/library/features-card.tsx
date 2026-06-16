@@ -13,7 +13,7 @@ type Props = {
 };
 
 export const FeaturesCard: FC<Props> = ({ platform, locale }): ReactElement => {
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
 
   return (
     <Card>

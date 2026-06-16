@@ -17,7 +17,7 @@ type Props = {
 const AD_FREQUENCY = 6;
 
 export const MarketplaceGrid: FC<Props> = ({ platforms, locale, onReset }) => {
-  const t = useTranslations("MarketplacePage");
+  const t = useTranslations("marketplace-page");
 
   if (platforms.length === 0) {
     return (

@@ -74,10 +74,10 @@ export const DebugPanel: FC<Props> = ({ debug, nativeStatus, settings, onSetting
 
           <div className="mt-3 border-t border-border pt-3">
             <Label unstyled className="text-[11px] font-medium text-dim-foreground">
-              {t("apiBaseUrl")}
+              {t("api-base-url")}
             </Label>
             <p className="mb-1.5 text-[10px] leading-4 text-dim-foreground">
-              {t("apiBaseUrlDescription")}
+              {t("api-base-url-description")}
             </p>
             <div className="flex gap-1.5">
               <Input
