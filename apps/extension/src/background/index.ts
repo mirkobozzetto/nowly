@@ -966,9 +966,10 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 enableSidePanelAction();
 
 if (import.meta.env.BROWSER === "firefox" && firefoxInjector) {
+  const injector = firefoxInjector;
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status !== "complete" || !tab.url) return;
-    void firefoxInjector.injectIntoTab(tabId, tab.url);
+    void injector.injectIntoTab(tabId, tab.url);
   });
 }
 

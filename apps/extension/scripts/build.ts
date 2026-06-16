@@ -100,13 +100,13 @@ const copyManifest = () => {
       default_title: "__MSG_extensionName__",
     }
     manifest.browser_specific_settings = {
-      gecko: { id: "nowly@nowly.me", strict_min_version: "128.0" },
-    }
-    // Required by AMO — declare data collection practices.
-    // Update these arrays to reflect what the extension actually collects.
-    manifest.data_collection_permissions = {
-      required: [],
-      optional: [],
+      gecko: {
+        id: "nowly@nowly.me",
+        strict_min_version: "128.0",
+        // Required by AMO — declare data collection practices.
+        // "none" = nothing collected/transmitted. Update if that changes.
+        data_collection_permissions: { required: ["none"] },
+      },
     }
   } else {
     manifest.background.service_worker = "background.js"

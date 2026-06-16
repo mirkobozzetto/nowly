@@ -1,4 +1,5 @@
 import type { RegisteredUserScript, ChromeWithUserScripts } from "./user-scripts";
+import { getPresenceSettings } from "./storage";
 
 export interface PresenceInjector {
   register(script: RegisteredUserScript): Promise<void>;
@@ -6,11 +7,10 @@ export interface PresenceInjector {
   getRegistered(ids: string[]): Promise<RegisteredUserScript[]>;
 }
 
-// Converts a Chrome match pattern (e.g. "*://*.youtube.com/*") to a RegExp.
 const patternToRegExp = (pattern: string): RegExp => {
   const escaped = pattern
     .replace(/[.+^${}()|[\]\\]/g, "\\$&")
-    .replace(/\\\*/g, ".*");
+    .replace(/\*/g, ".*");
   return new RegExp(`^${escaped}$`);
 };
 
@@ -53,17 +53,30 @@ class ChromePresenceInjector implements PresenceInjector {
   async getRegistered(ids: string[]): Promise<RegisteredUserScript[]> {
     const api = this.api;
     if (!api) return [];
-    return api.getScripts({ ids });
+    return (await api.getScripts({ ids })) as RegisteredUserScript[];
   }
 }
 
-// --- Firefox implementation (uses scripting.executeScript + in-memory map) ---
+// --- Firefox implementation ---
+// Firefox MV3 has no userScripts API, and scripting.executeScript inherits the page's CSP
+// (even in ISOLATED world), so new Function()/eval() are blocked on strict-dynamic pages
+// like YouTube. The only CSP-exempt path is injecting a pre-built static file via
+// scripting.executeScript({ files }), which the browser compiles natively. We therefore
+// ship one runtime.js per presence (generated at build time) and inject it here, after
+// seeding settings into a global via a static func.
 
 class FirefoxPresenceInjector implements PresenceInjector {
   private readonly scripts = new Map<string, RegisteredUserScript>();
 
   async register(script: RegisteredUserScript): Promise<void> {
     this.scripts.set(script.id, script);
+    // tabs.onUpdated only fires on future navigations; inject into already-open matching tabs now.
+    try {
+      const tabs = await chrome.tabs.query({ url: script.matches });
+      await Promise.all(tabs.map((tab) => (tab.id != null ? this.runScript(tab.id, script) : undefined)));
+    } catch (error) {
+      console.error("[nowly] failed to inject into open tabs", error);
+    }
   }
 
   async unregister(id: string): Promise<void> {
@@ -80,24 +93,39 @@ class FirefoxPresenceInjector implements PresenceInjector {
 
   async injectIntoTab(tabId: number, tabUrl: string): Promise<void> {
     for (const script of this.scripts.values()) {
-      const matches = script.matches.some((p) => matchesPattern(tabUrl, p));
-      if (!matches) continue;
-
-      const code = script.js[0]?.code;
-      if (!code) continue;
-
+      if (!script.matches.some((p) => matchesPattern(tabUrl, p))) continue;
       // eslint-disable-next-line no-await-in-loop
+      await this.runScript(tabId, script);
+    }
+  }
+
+  private async runScript(tabId: number, script: RegisteredUserScript): Promise<void> {
+    const slug = script.id.replace("nowly-presence-", "");
+    try {
+      // Step 1: expose current settings as a global via a plain static func.
+      // The browser compiles this function natively (privileged extension call) — no eval from
+      // our JS, so page CSP cannot block it.
+      const allSettings = await getPresenceSettings();
+      const settings = (allSettings[slug] ?? {}) as Record<string, unknown>;
       await chrome.scripting.executeScript({
-        target: { tabId, allFrames: script.allFrames ?? false },
-        // func + args is the only way to inject a dynamic code string via scripting.executeScript.
-        // The function is serialized by the browser; args are passed as JSON.
-        // eslint-disable-next-line no-new-func
-        func: (presenceCode: string) => { new Function(presenceCode)(); },
-        args: [code],
-        world: "MAIN",
-      }).catch(() => {
-        // Tab may have navigated away or be inaccessible.
+        target: { tabId, allFrames: false },
+        func: (s: Record<string, unknown>) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (globalThis as any).__nowly_settings__ = s;
+        },
+        args: [settings],
+        world: "ISOLATED",
       });
+      // Step 2: inject the pre-built presence runtime file.
+      // File injection is handled natively by the browser (same as Chrome's userScripts.register),
+      // bypassing page CSP without any eval/new Function in our code.
+      await chrome.scripting.executeScript({
+        target: { tabId, allFrames: false },
+        files: [`presences/${slug}/runtime.js`],
+        world: "ISOLATED",
+      });
+    } catch (error) {
+      console.error(`[nowly] presence injection failed for ${script.id}`, error);
     }
   }
 }

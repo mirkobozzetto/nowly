@@ -108,7 +108,6 @@ window.addEventListener("message", (event: MessageEvent<WebMessage>) => {
 });
 
 window.addEventListener("message", (event: MessageEvent) => {
-  if (event.source !== window) return;
   if (event.data?.source !== USER_SCRIPT_MESSAGE_SOURCE) return;
 
   void sendRuntimeMessage({
