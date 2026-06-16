@@ -10,11 +10,11 @@ type FooterCategory = {
 };
 
 export const FooterLinks: FC = (): ReactElement => {
-  const t = useTranslations("Footer");
+  const t = useTranslations("footer");
 
   const categories: FooterCategory[] = [
     {
-      label: t("categoryProduct"),
+      label: t("category-product"),
       links: [
         { href: "/about", label: t("about") },
         { href: "/faq", label: t("faq") },
@@ -23,11 +23,11 @@ export const FooterLinks: FC = (): ReactElement => {
       ],
     },
     {
-      label: t("categoryLegal"),
+      label: t("category-legal"),
       links: [
         { href: "/privacy", label: t("privacy") },
         { href: "/tos", label: t("tos") },
-        { href: "/legal-notice", label: t("legalNotice") },
+        { href: "/legal-notice", label: t("legal-notice") },
         { href: "/cookies", label: t("cookies") },
       ],
     },

@@ -11,7 +11,7 @@ type Props = {
 };
 
 const Error: FC<Props> = ({ reset }): ReactElement => {
-  const t = useTranslations("ErrorPage");
+  const t = useTranslations("error-page");
 
   return (
     <div className="flex flex-1 items-center justify-center px-6">

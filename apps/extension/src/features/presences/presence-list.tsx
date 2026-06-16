@@ -119,7 +119,7 @@ export const PresenceList: FC<Props> = ({
         <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1">
           <section className="flex flex-col gap-2">
             <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-              {t("activePresences")}
+              {t("active-presences")}
             </h2>
             <PresenceListSection
               entries={activeSorted}
@@ -135,7 +135,7 @@ export const PresenceList: FC<Props> = ({
 
           <section className="flex flex-col gap-2">
             <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-              {t("disabledPresences")}
+              {t("disabled-presences")}
             </h2>
             <PresenceListSection
               entries={sortAlphabetically(disabledEntries)}

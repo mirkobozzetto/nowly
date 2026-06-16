@@ -24,7 +24,7 @@ type Props = {
 };
 
 export const MarketplaceFilters: FC<Props> = ({ sortBy, onToggleCategory, onSortChange }) => {
-  const t = useTranslations("MarketplacePage");
+  const t = useTranslations("marketplace-page");
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
@@ -37,16 +37,16 @@ export const MarketplaceFilters: FC<Props> = ({ sortBy, onToggleCategory, onSort
       </div>
 
       <div className="flex items-center gap-2">
-        <span className="text-sm text-dim-foreground">{t("sortLabel")}</span>
+        <span className="text-sm text-dim-foreground">{t("sort-label")}</span>
         <Select value={sortBy} onValueChange={(value) => onSortChange(value as SortOption)}>
           <SelectTrigger size="sm" className="w-fit">
-            <SelectValue placeholder={t("sortLabel")} />
+            <SelectValue placeholder={t("sort-label")} />
           </SelectTrigger>
           <SelectContent align="end">
-            <SelectItem value="popular">{t("sortPopular")}</SelectItem>
-            <SelectItem value="recent">{t("sortRecent")}</SelectItem>
-            <SelectItem value="name-asc">{t("sortNameAsc")}</SelectItem>
-            <SelectItem value="name-desc">{t("sortNameDesc")}</SelectItem>
+            <SelectItem value="popular">{t("sort-popular")}</SelectItem>
+            <SelectItem value="recent">{t("sort-recent")}</SelectItem>
+            <SelectItem value="name-asc">{t("sort-name-asc")}</SelectItem>
+            <SelectItem value="name-desc">{t("sort-name-desc")}</SelectItem>
           </SelectContent>
         </Select>
       </div>

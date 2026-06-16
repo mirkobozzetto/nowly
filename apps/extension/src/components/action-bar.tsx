@@ -37,7 +37,7 @@ export const ActionBar: FC<Props> = ({ activeSlug, isCheckingUpdates, isSnoozed,
           className="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-2 hover:text-foreground"
         >
           <Sun className="h-3.5 w-3.5" />
-          {t("clearSnooze")}
+          {t("clear-snooze")}
         </Button>
       ) : (
         <Button
@@ -73,14 +73,14 @@ export const ActionBar: FC<Props> = ({ activeSlug, isCheckingUpdates, isSnoozed,
       <Button
         variant="unstyled"
         size="none"
-        aria-label={t("checkUpdates")}
-        title={t("checkUpdates")}
+        aria-label={t("check-updates")}
+        title={t("check-updates")}
         onClick={handleCheckUpdates}
         disabled={isCheckingUpdates}
         className="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-2 hover:text-foreground disabled:opacity-50"
       >
         <RefreshCw className={`h-3.5 w-3.5 ${isCheckingUpdates ? "animate-spin" : ""}`} />
-        {t("checkUpdates")}
+        {t("check-updates")}
       </Button>
     </div>
   );

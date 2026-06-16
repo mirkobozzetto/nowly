@@ -20,7 +20,7 @@ const generateMetadata = (): Metadata => {
 };
 
 const Page = (): ReactElement => {
-  const t = useTranslations("PrivacyPage");
+  const t = useTranslations("privacy-page");
   const sections = t.raw("sections") as PageSection[];
 
   const items = sections.map((section) => ({
@@ -31,7 +31,7 @@ const Page = (): ReactElement => {
   return (
     <StructuredContentPage
       title={t("title")}
-      lastUpdated={t("lastUpdated")}
+      lastUpdated={t("last-updated")}
       intro={t.raw("intro") as string}
       items={items}
     />

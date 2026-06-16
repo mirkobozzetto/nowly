@@ -58,7 +58,7 @@ export const CurrentActivityCard: FC<Props> = ({ activity, presences }): ReactEl
   const largeImage = activity?.presence.largeImage;
   const hasLargeImage = Boolean(largeImage);
   const category = presence?.metadata.category as MediaCategory | undefined;
-  const title = getActivityTitle(activity, t("nothingPlaying"));
+  const title = getActivityTitle(activity, t("nothing-playing"));
   const subtitle = getActivitySubtitle(activity, presence?.metadata.name ?? "0:00 / 0:00");
   const progress = useRealtimeProgress(
     activity?.presence.startTime,

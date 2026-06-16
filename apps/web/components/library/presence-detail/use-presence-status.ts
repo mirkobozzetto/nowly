@@ -29,7 +29,7 @@ type UsePresenceStatusReturn = {
 };
 
 export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn => {
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
 
   const [isInstalled, setIsInstalled] = useState(false);
   const [installedVersion, setInstalledVersion] = useState<string | null>(null);
@@ -117,12 +117,12 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
               payload: { source: "presence-detail" },
             });
           }
-          toast.success(t("installSuccess", { platform: presence.name }));
+          toast.success(t("install-success", { platform: presence.name }));
         } else {
           setIsInstalled(false);
           setInstalledVersion(null);
           setLoading(false);
-          toast.error(t("installError", { platform: presence.name }));
+          toast.error(t("install-error", { platform: presence.name }));
         }
       }
 
@@ -130,7 +130,7 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
         if (msg.payload?.ok) {
           setIsInstalled(false);
           setInstalledVersion(null);
-          toast.success(t("uninstallSuccess", { platform: presence.name }));
+          toast.success(t("uninstall-success", { platform: presence.name }));
         }
       }
     };
@@ -145,7 +145,7 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
 
   const handleInstall = useCallback(async (): Promise<void> => {
     if (!extDetected) {
-      toast.info(t("extNotDetected"));
+      toast.info(t("ext-not-detected"));
       setIsInstalled((current) => !current);
       return;
     }
@@ -178,7 +178,7 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
       );
 
     } catch {
-      toast.error(t("installError", { platform: presence.name }));
+      toast.error(t("install-error", { platform: presence.name }));
       setLoading(false);
     }
   }, [extDetected, needsUpdate, presence.name, presence.slug, presence.version, t]);
@@ -241,9 +241,9 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
 
       setIsInstalled(true);
       setInstalledVersion(release.version ?? null);
-      toast.success(t("versionChanged", { platform: presence.name, version }));
+      toast.success(t("version-changed", { platform: presence.name, version }));
     } catch {
-      toast.error(t("versionChangeError", { platform: presence.name, version }));
+      toast.error(t("version-change-error", { platform: presence.name, version }));
     }
   }, [presence.name, presence.slug, t]);
 

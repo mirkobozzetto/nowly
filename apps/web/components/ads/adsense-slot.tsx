@@ -33,7 +33,7 @@ export const AdSenseSlot: FC<Props> = ({
     return <></>;
   }
 
-  const t = useTranslations("Ads");
+  const t = useTranslations("ads");
   const hasPushed = useRef(false);
   const isConfigured = useMemo(() => isConfiguredSlot(slot), [slot]);
 

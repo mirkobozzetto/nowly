@@ -19,7 +19,7 @@ const generateMetadata = (): Metadata => {
 
 const Page: FC<Props> = async ({ params }: Props): Promise<ReactElement> => {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "AboutPage" });
+  const t = await getTranslations({ locale, namespace: "about-page" });
 
   const sections = t.raw("sections") as Array<{
     title: string
@@ -90,7 +90,7 @@ const Page: FC<Props> = async ({ params }: Props): Promise<ReactElement> => {
       </div>
 
       <p className="mt-6 text-xs leading-relaxed text-dim-foreground">
-        {t("analyticsNote")}
+        {t("analytics-note")}
       </p>
     </main>
   );

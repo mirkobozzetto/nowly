@@ -40,7 +40,7 @@ export const PresenceDetailContent: FC<Props> = ({
   onUninstall,
 }): ReactElement => {
   const locale = useLocale();
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
 
   return (
     <PageLayout>
@@ -49,7 +49,7 @@ export const PresenceDetailContent: FC<Props> = ({
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/library">
-                {t("breadcrumbHome")}
+                {t("breadcrumb-home")}
               </BreadcrumbLink>
             </BreadcrumbItem>
 

@@ -29,7 +29,7 @@ export const RatingDialog: FC<Props> = ({
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
 }): ReactElement | null => {
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
   const { user, logout } = useUser();
   const queryClient = useQueryClient();
 
@@ -111,10 +111,10 @@ export const RatingDialog: FC<Props> = ({
       setSubmitted(true);
       onRate?.(rating);
       queryClient.invalidateQueries({ queryKey: presenceKey(slug) });
-      toast.success(t("rateThanks"));
+      toast.success(t("rate-thanks"));
     } catch {
       setRating(savedRating || 0);
-      toast.error(t("rateError"));
+      toast.error(t("rate-error"));
     } finally {
       setSubmitting(false);
     }
@@ -127,14 +127,14 @@ export const RatingDialog: FC<Props> = ({
       <DialogTrigger asChild>
         {trigger ?? (
           <Button variant="outline" size="sm" className="w-full">
-            {t("rateAction")}
+            {t("rate-action")}
           </Button>
         )}
       </DialogTrigger>
 
       <DialogContent size="default">
         {submitted ? (
-          <SubmittedState message={t("rateThanks")} />
+          <SubmittedState message={t("rate-thanks")} />
         ) : (
           <>
             <DialogHeader>
@@ -142,9 +142,9 @@ export const RatingDialog: FC<Props> = ({
                 <StarIcon className="size-5" />
               </DialogMedia>
 
-              <DialogTitle>{t("rateTitle")}</DialogTitle>
+              <DialogTitle>{t("rate-title")}</DialogTitle>
 
-              <DialogDescription>{t("rateReviewDesc")}</DialogDescription>
+              <DialogDescription>{t("rate-review-desc")}</DialogDescription>
             </DialogHeader>
 
             <div className="space-y-5 px-6 pb-6">
@@ -158,7 +158,7 @@ export const RatingDialog: FC<Props> = ({
             />
 
             <Textarea
-              placeholder={t("ratePlaceholder")}
+              placeholder={t("rate-placeholder")}
               value={comment}
               onChange={(event) => setComment(event.target.value)}
               disabled={submitting}
@@ -171,7 +171,7 @@ export const RatingDialog: FC<Props> = ({
                 onCheckedChange={(checked) => setAnonymous(checked === true)}
                 disabled={submitting}
               />
-              {t("rateAnonymous")}
+              {t("rate-anonymous")}
             </label>
 
             <ConnectedUserCard
@@ -179,11 +179,11 @@ export const RatingDialog: FC<Props> = ({
               anonymous={anonymous}
               submitting={submitting}
               rating={rating}
-              connectedAsLabel={t("connectedAs")}
+              connectedAsLabel={t("connected-as")}
               anonymousLabel="Anonymous"
               anonymousDescription="Your identity will be hidden"
-              submitLabel={t("rateSubmit")}
-              submittingLabel={t("rateSubmitting")}
+              submitLabel={t("rate-submit")}
+              submittingLabel={t("rate-submitting")}
               logoutLabel={t("logout")}
               onSubmit={handleSubmit}
               onLogout={logout}
