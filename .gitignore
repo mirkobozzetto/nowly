@@ -8,6 +8,7 @@ apps/native/dist/
 
 # Extension (managed separately)
 # apps/extension/
+apps/discord/
 apps/mvp-chromium-extension/
 old-native/
 
