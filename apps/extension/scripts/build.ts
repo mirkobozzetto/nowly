@@ -89,9 +89,11 @@ const copyManifest = () => {
   if (BROWSER === "firefox") {
     manifest.background = { scripts: ["background.js"] }
     delete manifest.minimum_chrome_version
+    // userScripts is an optional-only permission on Firefox — declare it in optional_permissions
+    // and request it at runtime (Firefox 136+ MV3 userScripts API).
     manifest.permissions = manifest.permissions
       .filter((p: string) => p !== "userScripts" && p !== "sidePanel")
-      .concat("scripting")
+    manifest.optional_permissions = [...(manifest.optional_permissions ?? []), "userScripts"]
     delete manifest.side_panel
     delete manifest.action.default_popup
     manifest.sidebar_action = {
@@ -102,7 +104,7 @@ const copyManifest = () => {
     manifest.browser_specific_settings = {
       gecko: {
         id: "nowly@nowly.me",
-        strict_min_version: "128.0",
+        strict_min_version: "136.0",
         // Required by AMO — declare data collection practices.
         // "none" = nothing collected/transmitted. Update if that changes.
         data_collection_permissions: { required: ["none"] },

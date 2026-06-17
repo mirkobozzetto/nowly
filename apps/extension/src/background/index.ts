@@ -10,7 +10,7 @@ import {
   toMatchPatterns, userScriptId, visiblePresences,
   type RegisteredUserScript,
 } from "./user-scripts";
-import { presenceInjector, firefoxInjector } from "./presence-injection";
+import { presenceInjector } from "./presence-injection";
 import { clearSnooze, getCurrentActivity, getDebug, getDeviceId, getPresences, getPresenceSettings, getSettings, setCurrentActivity, setDebug, setPresences, setPresenceSchedule, setPresenceSettings, setSettings, snoozePresence } from "./storage";
 
 let customApiUrl: string | undefined;
@@ -521,15 +521,24 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
       return false;
 
     case "GET_USER_SCRIPTS_STATUS":
-      respond(sendResponse, import.meta.env.BROWSER === "firefox"
-        ? { enabled: true, requiresUserToggle: false }
-        : {
-            enabled: Boolean((chrome as unknown as { userScripts?: unknown }).userScripts),
-            requiresUserToggle: true,
-            reason: (chrome as unknown as { userScripts?: unknown }).userScripts
-              ? undefined
-              : "chrome.userScripts unavailable. Enable Developer Mode / Allow User Scripts for this extension.",
+      if (import.meta.env.BROWSER === "firefox") {
+        // userScripts is an optional permission on Firefox — reflect the actual grant state.
+        chrome.permissions.contains({ permissions: ["userScripts"] }).then((granted) => {
+          respond(sendResponse, {
+            enabled: granted,
+            requiresUserToggle: !granted,
+            reason: granted ? undefined : "userScripts permission not granted",
           });
+        });
+        return true;
+      }
+      respond(sendResponse, {
+        enabled: Boolean((chrome as unknown as { userScripts?: unknown }).userScripts),
+        requiresUserToggle: true,
+        reason: (chrome as unknown as { userScripts?: unknown }).userScripts
+          ? undefined
+          : "chrome.userScripts unavailable. Enable Developer Mode / Allow User Scripts for this extension.",
+      });
       return false;
 
     case "CONNECT_NATIVE":
@@ -965,11 +974,13 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 
 enableSidePanelAction();
 
-if (import.meta.env.BROWSER === "firefox" && firefoxInjector) {
-  const injector = firefoxInjector;
-  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.status !== "complete" || !tab.url) return;
-    void injector.injectIntoTab(tabId, tab.url);
+// Firefox exposes userScripts as an optional permission granted at runtime. Once granted,
+// chrome.userScripts becomes available, so (re)register the installed presences immediately
+// instead of waiting for the next navigation.
+if (import.meta.env.BROWSER === "firefox") {
+  chrome.permissions.onAdded.addListener((permissions) => {
+    if (!permissions.permissions?.includes("userScripts")) return;
+    void getPresences().then((presences) => syncPresenceScripts(presences));
   });
 }
 

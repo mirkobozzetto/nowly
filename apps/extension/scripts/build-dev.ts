@@ -100,9 +100,11 @@ const copyManifest = () => {
   if (BROWSER === "firefox") {
     manifest.background = { scripts: ["background.js"] }
     delete manifest.minimum_chrome_version
+    // userScripts is an optional-only permission on Firefox — declare it in optional_permissions
+    // and request it at runtime (Firefox 136+ MV3 userScripts API).
     manifest.permissions = manifest.permissions
       .filter((p: string) => p !== "userScripts" && p !== "sidePanel")
-      .concat("scripting")
+    manifest.optional_permissions = [...(manifest.optional_permissions ?? []), "userScripts"]
     delete manifest.side_panel
     delete manifest.action.default_popup
     manifest.sidebar_action = {
@@ -115,7 +117,7 @@ const copyManifest = () => {
     manifest.browser_specific_settings = {
       gecko: {
         id: chromeIdToFirefoxUuid("abbegmindbabanjcabnmcjmamaoffbam"),
-        strict_min_version: "128.0",
+        strict_min_version: "136.0",
         // Required by AMO — declare data collection practices.
         // "none" = nothing collected/transmitted. Update if that changes.
         data_collection_permissions: { required: ["none"] },
@@ -220,174 +222,6 @@ export const BUNDLED_PRESENCES: BundledPresence[] = ${JSON.stringify(entries, nu
   console.log(`  ✔ Bundled ${entries.length} presences`)
 }
 
-// Generates a standalone presence runtime JS file for Firefox.
-// Firefox cannot use userScripts.register() (permission unsupported in MV3), and eval()/
-// new Function() are blocked by page CSP even in extension content scripts.
-// Injecting a pre-built static file via scripting.executeScript({ files }) is the only
-// mechanism the browser handles natively (bypassing page CSP, just like Chrome's userScripts).
-//
-// Settings are NOT embedded — the background injects them via a preceding
-// scripting.executeScript({ func }) call that sets globalThis.__nowly_settings__.
-const createFirefoxPresenceRuntimeFile = (
-  slug: string,
-  name: string,
-  bundle: string,
-  builtCdnBaseUrl: string,
-): string => {
-  const assetsBaseExpr = builtCdnBaseUrl
-    ? JSON.stringify(`${builtCdnBaseUrl.replace(/\/+$/, "")}/presences/${slug}/assets`)
-    : `chrome.runtime.getURL(${JSON.stringify(`presences/${slug}/assets`)})`
-  return `\
-(() => {
-  "use strict";
-
-  const NOWLY_SLUG = ${JSON.stringify(slug)};
-  // The background re-injects on every navigation/sync; guard against running multiple
-  // runtimes (and thus multiple setInterval tickers) in the same page context.
-  const NOWLY_GUARD = "__nowly_active_" + NOWLY_SLUG;
-  if (globalThis[NOWLY_GUARD]) return;
-  globalThis[NOWLY_GUARD] = true;
-
-  const NOWLY_NAME = ${JSON.stringify(name)};
-  const NOWLY_SOURCE = "NOWLY_PRESENCE";
-  // Settings injected by the background immediately before this file via scripting.executeScript.
-  const NOWLY_SETTINGS = typeof __nowly_settings__ !== "undefined" ? __nowly_settings__ : {};
-  // chrome.runtime.getURL is available in extension content scripts (ISOLATED world).
-  const NOWLY_ASSETS_BASE = ${assetsBaseExpr};
-  const listeners = new Map();
-  const instances = [];
-  const storage = new Map();
-  const ctxSettings = Object.assign({}, NOWLY_SETTINGS);
-
-  const post = (type, payload = {}) => {
-    window.postMessage({ source: NOWLY_SOURCE, type, payload: { slug: NOWLY_SLUG, ...payload } }, "*");
-  };
-
-  class Presence {
-    constructor() { instances.push(this); }
-
-    static Settings(definitions) {
-      if (typeof __PRESENCE_SETTINGS__ !== "undefined") { __PRESENCE_SETTINGS__ = definitions; }
-      if (typeof definitions !== "object" || definitions === null) return ctxSettings;
-      for (const [key, value] of Object.entries(definitions)) {
-        if (!(key in ctxSettings)) {
-          ctxSettings[key] = typeof value === "object" && value !== null && "default" in value ? value.default : value;
-        }
-      }
-      return ctxSettings;
-    }
-
-    static Assets(assets) {
-      if (typeof assets !== "object" || assets === null) return {};
-      const resolved = {};
-      for (const [key, value] of Object.entries(assets)) {
-        resolved[key] = NOWLY_ASSETS_BASE + "/" + String(value).replace(/^\\//, "");
-      }
-      return resolved;
-    }
-
-    on(eventName, listener) {
-      const eventListeners = listeners.get(this) ?? new Map();
-      const callbacks = eventListeners.get(eventName) ?? [];
-      callbacks.push(listener);
-      eventListeners.set(eventName, callbacks);
-      listeners.set(this, eventListeners);
-    }
-
-    setActivity(data) {
-      if (!data) { this.clearActivity(); return Promise.resolve(); }
-      post("ACTIVITY_UPDATE", { activity: { name: NOWLY_NAME, ...data } });
-      return Promise.resolve();
-    }
-
-    clearActivity() { post("CLEAR_ACTIVITY"); }
-    getStrings(strings) { return Promise.resolve(strings); }
-    getSetting() { return Promise.resolve(undefined); }
-    info(message) { post("DEBUG", { stage: "presence", message: String(message) }); }
-    error(message) { post("DEBUG", { stage: "presence-error", message: String(message) }); }
-  }
-
-  globalThis.Presence = Presence;
-  const Assets = globalThis.Assets = {
-    Logo: NOWLY_ASSETS_BASE + "/logo.png",
-    Icon: NOWLY_ASSETS_BASE + "/icon.png",
-    Thumbnail: NOWLY_ASSETS_BASE + "/thumbnail.jpg",
-  };
-
-  const ctx = {
-    setActivity(data) { post("ACTIVITY_UPDATE", { activity: { name: NOWLY_NAME, ...data } }); },
-    clearActivity() { post("CLEAR_ACTIVITY"); },
-    storage,
-    settings: ctxSettings,
-  };
-
-  try {
-    ${bundle}
-
-    const factory = typeof __PRESENCE__ !== "undefined" && __PRESENCE__?.default ? __PRESENCE__.default : undefined;
-    factory?.init?.(ctx);
-
-    const tick = () => {
-      try {
-        factory?.tick?.(ctx);
-        for (const instance of instances) {
-          const eventListeners = listeners.get(instance);
-          const callbacks = eventListeners?.get("UpdateData") ?? [];
-          for (const callback of callbacks) {
-            Promise.resolve(callback(ctx)).catch((error) => {
-              post("DEBUG", { stage: "presence-error", message: error instanceof Error ? error.message : "UpdateData failed" });
-            });
-          }
-        }
-      } catch (error) {
-        post("DEBUG", { stage: "presence-error", message: error instanceof Error ? error.message : "presence tick failed" });
-      }
-    };
-
-    tick();
-    const timer = setInterval(tick, 5000);
-    window.addEventListener("pagehide", () => { clearInterval(timer); factory?.destroy?.(); post("CLEAR_ACTIVITY"); });
-    window.addEventListener("message", (event) => {
-      if (event.data?.source !== "NOWLY_HOST") return;
-      if (event.data?.type !== "SETTINGS_UPDATED") return;
-      if (event.data?.slug !== NOWLY_SLUG) return;
-      Object.assign(ctx.settings, event.data.settings);
-      tick();
-    });
-  } catch (error) {
-    post("DEBUG", { stage: "presence-error", message: error instanceof Error ? error.message : "presence bundle failed" });
-  }
-})();
-`
-}
-
-const generateFirefoxPresenceRuntimeFiles = (): void => {
-  if (BROWSER !== "firefox") return
-  if (!existsSync(WEBSITES_PRESENCES)) return
-
-  const dirs = readdirSync(WEBSITES_PRESENCES, { withFileTypes: true }).filter((d) => d.isDirectory())
-  let count = 0
-  for (const dir of dirs) {
-    const slug = dir.name
-    const bundlePath = join(WEBSITES_PRESENCES, slug, "bundle.js")
-    const metadataPath = join(WEBSITES_PRESENCES, slug, "metadata.json")
-    if (!existsSync(bundlePath) || !existsSync(metadataPath)) continue
-
-    const bundle = readFileSync(bundlePath, "utf-8")
-    const metadata = JSON.parse(readFileSync(metadataPath, "utf-8"))
-    const rawName = metadata.name
-    const name = typeof rawName === "object" && rawName !== null
-      ? (rawName["en-US"] ?? String(Object.values(rawName)[0] ?? slug))
-      : String(rawName ?? slug)
-
-    const outDir = join(DIST, "presences", slug)
-    mkdirSync(outDir, { recursive: true })
-    writeFileSync(join(outDir, "runtime.js"), createFirefoxPresenceRuntimeFile(slug, name, bundle, cdnBaseUrl))
-    count++
-  }
-  if (count > 0) console.log(`  ✔ Generated Firefox presence runtime files for ${count} presences`)
-}
-
 const copyPresenceAssets = (): void => {
   if (!existsSync(WEBSITES_PRESENCES)) return
 
@@ -409,7 +243,6 @@ const copyPresenceAssets = (): void => {
 }
 
 await generateBundledPresences()
-generateFirefoxPresenceRuntimeFiles()
 await buildPage("sidepanel", "app")
 await buildScript("background", join(ROOT, "src", "background", "index.ts"))
 await buildScript("content", join(ROOT, "src", "content", "index.ts"))

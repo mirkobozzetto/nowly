@@ -66,6 +66,7 @@
   "onboardingUserScriptsGateTitle": "Enable User Scripts",
   "onboardingUserScriptsGateBody": "Nowly uses user scripts to run presences on supported websites. This is how the extension detects what you are watching or listening to, then prepares your Discord activity.",
   "onboardingUserScriptsGatePrivacy": "Installed presences are signed and verified locally before they run. Nowly does not store personal data for this step and only sends the minimum required information to the local client.",
+  "onboardingUserScriptsAllow": "Allow user scripts",
   "onboardingNativeGateTitle": "Install the Nowly Client",
   "onboardingNativeGateBody": "The client is a small local app that connects the extension to Discord Rich Presence. Without it, the browser cannot send your activity to Discord.",
   "onboardingNativeGatePrivacy": "The client only receives the activity information needed for Discord display. Nowly does not store your personal data for this connection.",

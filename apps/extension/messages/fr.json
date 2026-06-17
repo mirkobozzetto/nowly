@@ -66,6 +66,7 @@
   "onboardingUserScriptsGateTitle": "Activez les scripts utilisateur",
   "onboardingUserScriptsGateBody": "Nowly utilise les scripts utilisateur pour lancer les présences sur les sites pris en charge. C'est le mécanisme qui permet de détecter ce que vous regardez ou écoutez, puis de préparer votre activité Discord.",
   "onboardingUserScriptsGatePrivacy": "Les présences installées sont signées et vérifiées localement avant exécution. Nowly ne stocke pas de données personnelles pour cette étape et ne transmet que le minimum nécessaire au client local.",
+  "onboardingUserScriptsAllow": "Autoriser les scripts utilisateur",
   "onboardingNativeGateTitle": "Installez le client Nowly",
   "onboardingNativeGateBody": "Une petite application locale qui relie l'extension à Discord. Sans elle, le navigateur ne peut pas envoyer votre activité.",
   "onboardingNativeGatePrivacy": "Seules les informations d'activité nécessaires à Discord sont transmises. Aucune donnée personnelle stockée.",
