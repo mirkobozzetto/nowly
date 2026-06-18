@@ -918,10 +918,23 @@ const initializeCustomApiUrl = async (): Promise<void> => {
   customApiUrl = settings.customApiBaseUrl;
 };
 
+const isUnpackedBuild = (): boolean => !chrome.runtime.getManifest().update_url;
+
 const installBundledPresences = async (): Promise<void> => {
-  if (!BUNDLED_PRESENCES?.length) return;
+  if (!BUNDLED_PRESENCES?.length && !isUnpackedBuild()) return;
   const presences = await getPresences();
+  const bundledSlugs = new Set(BUNDLED_PRESENCES.map((bp) => bp.slug));
   let changed = false;
+
+  if (isUnpackedBuild()) {
+    for (const slug of Object.keys(presences)) {
+      if (bundledSlugs.has(slug)) continue;
+      delete presences[slug];
+      await unregisterPresenceScript(slug);
+      await removeActiveSlug(slug, "dev-bundle-prune");
+      changed = true;
+    }
+  }
 
   for (const bp of BUNDLED_PRESENCES) {
     const existing = presences[bp.slug];
