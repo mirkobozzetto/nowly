@@ -2,19 +2,17 @@
 set -euo pipefail
 
 VERSION="${1:-0.0.0-dev}"
-ARCH="${2:-amd64}" # amd64 or arm64
+ARCH="${2:-amd64}" # amd64, arm64, or universal
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist"
 
-ARCH_SUFFIX=""
-BINARY_SUFFIX=""
+BINARY="$DIST_DIR/nowly-host-darwin"
 if [ "$ARCH" = "arm64" ]; then
-  ARCH_SUFFIX="-arm64"
-  BINARY_SUFFIX="-arm64"
+  BINARY="$DIST_DIR/nowly-host-darwin-arm64"
+elif [ "$ARCH" = "universal" ]; then
+  BINARY="$DIST_DIR/nowly-host-darwin-universal"
 fi
-
-BINARY="$DIST_DIR/nowly-host-darwin$BINARY_SUFFIX"
 APP_NAME="Nowly Host.app"
 APP_DIR="$DIST_DIR/$APP_NAME"
 APP_BUNDLE_VERSION="$VERSION"

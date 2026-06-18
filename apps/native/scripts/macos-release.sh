@@ -39,23 +39,24 @@ mkdir -p "$RELEASE_DIR"
 echo "=== Step 1/4: Build Go binaries ==="
 bash "$SCRIPT_DIR/macos-build.sh" "$VERSION"
 
-# --------------- Step 2+3: Bundle + DMG per architecture ---------------
-# Build sequentially so the .app bundle is created fresh for each arch.
-for ARCH in "amd64" "arm64"; do
-  if [ "$ARCH" = "arm64" ]; then
-    ARCH_LABEL="Apple Silicon"
-  else
-    ARCH_LABEL="Intel"
-  fi
+# --------------- Step 2: Create universal binary ---------------
+echo "=== Step 2/4: Create universal binary ==="
+UNIVERSAL="$DIST_DIR/nowly-host-darwin-universal"
+lipo -create \
+  "$DIST_DIR/nowly-host-darwin" \
+  "$DIST_DIR/nowly-host-darwin-arm64" \
+  -output "$UNIVERSAL"
+echo "   ✔ nowly-host-darwin-universal ($(du -h "$UNIVERSAL" | cut -f1))"
 
-  echo "=== Step 2-3/4: Bundle + DMG ($ARCH_LABEL) ==="
+# --------------- Step 3: Create .app bundle ---------------
+echo "=== Step 3/4: Create .app bundle ==="
+bash "$SCRIPT_DIR/macos-bundle.sh" "$VERSION" "universal" "$ICON_SOURCE"
 
-  bash "$SCRIPT_DIR/macos-bundle.sh" "$VERSION" "$ARCH" "$ICON_SOURCE"
-  bash "$SCRIPT_DIR/macos-dmg.sh" "$ARCH"
+# --------------- Step 4: Create DMG ---------------
+echo "=== Step 4/4: Create DMG ==="
+bash "$SCRIPT_DIR/macos-dmg.sh" "universal"
 
-  cp "$DIST_DIR/NowlyHost-macos-$ARCH.dmg" "$RELEASE_DIR/"
-  rm -rf "$DIST_DIR/Nowly Host.app"
-done
+cp "$DIST_DIR/NowlyHost-macos.dmg" "$RELEASE_DIR/"
 
 echo ""
 echo "=== macOS Release v$VERSION complete ==="

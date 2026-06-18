@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ARCH="${1:-amd64}" # amd64 or arm64
+ARCH="${1:-amd64}" # amd64, arm64, or universal
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist"
 
-ARCH_TAG="-amd64"
-if [ "$ARCH" = "arm64" ]; then
+ARCH_TAG=""
+if [ "$ARCH" = "amd64" ]; then
+  ARCH_TAG="-amd64"
+elif [ "$ARCH" = "arm64" ]; then
   ARCH_TAG="-arm64"
 fi
 
