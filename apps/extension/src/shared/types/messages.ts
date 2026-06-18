@@ -12,6 +12,7 @@ export type ExtensionMessageType =
   | "GET_NATIVE_STATUS"
   | "GET_USER_SCRIPTS_STATUS"
   | "CONNECT_NATIVE"
+  | "RESTART_NATIVE"
   | "GET_CURRENT_ACTIVITY"
   | "GET_DEBUG"
   | "TOGGLE_PRESENCE"

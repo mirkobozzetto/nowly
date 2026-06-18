@@ -59,6 +59,24 @@ export const reconnectNative = (): { connected: boolean; status: string; discord
   return getNativeStatus();
 };
 
+export const restartNative = (): { connected: boolean; status: string; discordConnected: boolean; version?: string } => {
+  if (nativePort) {
+    try {
+      nativePort.disconnect();
+    } catch {
+      // Ignore stale ports.
+    }
+  }
+
+  nativePort = null;
+  connected = false;
+  discordConnected = false;
+  version = undefined;
+  status = "connecting";
+  connectNative();
+  return getNativeStatus();
+};
+
 export const connectNative = (): void => {
   if (nativePort) return;
   if (connecting) return;

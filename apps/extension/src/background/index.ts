@@ -3,7 +3,7 @@ import { API_BASE_URL, CDN_BASE_URL, WEB_BASE_URL } from "@/shared/constants";
 import type { ExtensionMessage, ExtensionSettings, InstalledPresences, PresenceData, PresenceDebug, PresenceRelease, PresenceSchedule, StoredPresence } from "@/shared/types";
 import { addAnalyticsLog, clearAnalyticsLogs, getAnalyticsLogs, sanitizeLogPayload } from "./analytics-log";
 import { browserName, osName } from "./device-info";
-import { connectNative, getNativeStatus, mapPresenceData, onNativeResponse, postNative, reconnectNative } from "./native";
+import { connectNative, getNativeStatus, mapPresenceData, onNativeResponse, postNative, reconnectNative, restartNative } from "./native";
 import { createPresenceRuntime, USER_SCRIPT_MESSAGE_SOURCE } from "./presence-runtime";
 import { verifyPresenceRelease } from "./release-security";
 import {
@@ -544,6 +544,11 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
     case "CONNECT_NATIVE":
       void trackAnalytics("native_reconnect", { payload: { source: "extension" } });
       respond(sendResponse, reconnectNative());
+      return false;
+
+    case "RESTART_NATIVE":
+      void trackAnalytics("native_reconnect", { payload: { source: "extension_restart" } });
+      respond(sendResponse, restartNative());
       return false;
 
     case "GET_CURRENT_ACTIVITY":
