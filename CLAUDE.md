@@ -196,5 +196,4 @@ pnpm presence:build   # Terminal 3 (optional, rebuild presences)
 - **lint.yml** — ESLint/TypeScript check on push to `stable`
 - **test-api.yml** — API vitest suite on push to `stable`
 - **test-websites.yml** — Websites package tests on push to `stable`
-- **host-release.yml** — Triggered by `host-vX.Y.Z` tag; compiles Go for all platforms, builds Windows installer, publishes to R2, creates GitHub release
-- **macos-release.yml** — Triggered by `host-vX.Y.Z` tag or GitHub Release published; builds macOS .app bundles + DMGs for Intel and Apple Silicon on `macos-latest`, attaches DMGs to the release
+- **host-release.yml** — Triggered by `host-vX.Y.Z` tag; builds Windows `.exe` + Linux `.tar.gz` on `windows-latest` and macOS `.dmg` on `macos-latest` in parallel, publishes all artifacts to CDN, creates GitHub release
