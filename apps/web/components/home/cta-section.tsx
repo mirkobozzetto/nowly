@@ -2,6 +2,7 @@
 
 import { KofiModal } from "@/components/l-ui/kofi-modal";
 import { Button } from "@/components/ui/button";
+import { useBrowser } from "@/hooks/use-browser";
 import { CheckCircle, Download, Monitor, Shield } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -10,6 +11,7 @@ import { useState } from "react";
 
 export const CtaSection: FC = (): ReactElement => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const browser = useBrowser();
   const t = useTranslations("cta-section");
 
   const handleDownload = (): void => {
@@ -33,7 +35,7 @@ export const CtaSection: FC = (): ReactElement => {
             <div className="flex min-w-0 flex-wrap items-stretch justify-center gap-4">
               <Button onClick={handleDownload} variant="primary" size="lg">
                 <Download className="w-5 h-5" />
-                {t("download-for", { browser: "Chrome" })}
+                {browser ? t("download-for", { browser }) : t("download-desktop")}
               </Button>
 
               <Button disabled variant="secondary" size="lg">
