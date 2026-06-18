@@ -1,6 +1,6 @@
-import type { FC, ReactElement } from "react";
 import type { NativeStatus } from "@/lib/messages";
 import { t } from "@/shared/i18n";
+import type { FC, ReactElement } from "react";
 
 type Props = {
   nativeStatus?: NativeStatus;
@@ -25,7 +25,7 @@ export const Header: FC<Props> = ({ nativeStatus }): ReactElement => (
     <img src={chrome.runtime.getURL("app_title_white.png")} alt="Nowly" className="h-8 w-auto min-w-0" />
     {nativeStatus ? (
       <div className="flex items-center gap-2">
-        <span className={`inline-block h-2 w-2 rounded-full ${statusColor(nativeStatus)}`} />
+        <span role="status" aria-label={statusText(nativeStatus)} className={`inline-block h-2 w-2 rounded-full ${statusColor(nativeStatus)}`} />
         <span className="text-xs text-muted-foreground">{statusText(nativeStatus)}</span>
       </div>
     ) : null}

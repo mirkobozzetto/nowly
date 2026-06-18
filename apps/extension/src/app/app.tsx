@@ -1,22 +1,22 @@
-import type { FC, ReactElement } from "react";
-import { useCallback, useState } from "react";
 import { ActionBar } from "@/components/action-bar";
 import { Header } from "@/components/header";
-import { WEB_BASE_URL } from "@/shared/constants";
-import { sendMessage } from "@/lib/messages";
+import { SidepanelNav, type SidepanelView } from "@/components/sidepanel-nav";
+import { AnalyticsLogsView } from "@/features/analytics-logs/analytics-logs-view";
+import { OnboardingOverlay } from "@/features/onboarding/onboarding-overlay";
+import { ActivityView } from "@/features/presences/activity-view";
+import { ScheduleSheet } from "@/features/presences/schedule-sheet";
+import { SnoozeSheet } from "@/features/presences/snooze-sheet";
+import { SettingsView } from "@/features/settings/settings-view";
 import { useExtensionState } from "@/hooks/use-extension-state";
 import { useLocalePreference } from "@/hooks/use-locale-preference";
 import { useOnboardingState } from "@/hooks/use-onboarding-state";
-import { ActivityView } from "@/features/presences/activity-view";
-import { AnalyticsLogsView } from "@/features/analytics-logs/analytics-logs-view";
-import { OnboardingOverlay } from "@/features/onboarding/onboarding-overlay";
-import { ScheduleSheet } from "@/features/presences/schedule-sheet";
-import { SettingsView } from "@/features/settings/settings-view";
-import { SidepanelNav, type SidepanelView } from "@/components/sidepanel-nav";
-import { SnoozeSheet } from "@/features/presences/snooze-sheet";
+import { sendMessage } from "@/lib/messages";
+import { WEB_BASE_URL } from "@/shared/constants";
+import type { FC, ReactElement } from "react";
+import { useCallback, useState } from "react";
 
 const App: FC = (): ReactElement => {
-  const { activity, checkUpdates, connectNative, debug, entries, hostVersionInfo, isCheckingUpdates, isUnpacked, nativeStatus, presences, removePresence, togglePresence, updates, settings, setSettings } =
+  const { activity, checkUpdates, connectNative, debug, entries, hostVersionInfo, isCheckingUpdates, isLoading, isUnpacked, nativeStatus, presences, removePresence, togglePresence, updates, settings, setSettings } =
     useExtensionState();
   const { localePreference, setLocalePreference } = useLocalePreference();
   const { onboarding, setOnboarding, nativeStatus: onboardingNativeStatus, userScripts } = useOnboardingState();
@@ -53,6 +53,7 @@ const App: FC = (): ReactElement => {
             <ActivityView
               activity={activity}
               entries={entries}
+              isLoading={isLoading}
               onOpenMarketplace={onOpenMarketplace}
               onRemove={removePresence}
               onSchedule={handleScheduleOpen}
@@ -79,6 +80,7 @@ const App: FC = (): ReactElement => {
           <SettingsView
             debug={debug}
             hostVersionInfo={hostVersionInfo}
+            isLoading={isLoading}
             localePreference={localePreference}
             nativeStatus={nativeStatus}
             onLocaleChange={setLocalePreference}

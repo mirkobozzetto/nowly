@@ -1,14 +1,16 @@
-import { Disc3, Snowflake } from "lucide-react";
-import type { FC, ReactElement } from "react";
-import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getActivitySubtitle, getActivityTitle } from "@/lib/format";
 import { assetUrl } from "@/shared/api";
 import { t } from "@/shared/i18n";
 import type { CurrentActivity, InstalledPresences } from "@/shared/types";
-import { getActivitySubtitle, getActivityTitle } from "@/lib/format";
+import { Disc3, Snowflake } from "lucide-react";
+import type { FC, ReactElement } from "react";
+import { useEffect, useState } from "react";
 import VinylAnimation from "./vinyl-animation";
 
 type Props = {
   activity: CurrentActivity | null;
+  isLoading: boolean;
   presences: InstalledPresences;
 };
 
@@ -52,7 +54,21 @@ const useRealtimeProgress = (
   };
 };
 
-export const CurrentActivityCard: FC<Props> = ({ activity, presences }): ReactElement => {
+export const CurrentActivityCard: FC<Props> = ({ activity, isLoading, presences }): ReactElement => {
+  if (isLoading) {
+    return (
+      <section className="rounded-lg border border-border bg-card-2 p-3">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-12 w-12 shrink-0" rounded="lg" />
+          <div className="min-w-0 flex-1 space-y-2">
+            <Skeleton className="h-4 w-3/5" />
+            <Skeleton className="h-3 w-2/5" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   const presence = activity ? presences[activity.slug] : null;
   const hasActivity = Boolean(activity);
   const largeImage = activity?.presence.largeImage;

@@ -1,9 +1,9 @@
+import { Button } from "@/components/ui/button";
+import { sendMessage } from "@/lib/messages";
+import type { AnalyticsLogEntry, AnalyticsLogLevel, AnalyticsLogType } from "@/shared/types";
 import { Copy, Trash2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Button } from "@/components/ui";
-import { sendMessage } from "@/lib/messages";
-import type { AnalyticsLogEntry, AnalyticsLogLevel, AnalyticsLogType } from "@/shared/types";
 
 type Filter = "all" | AnalyticsLogType;
 
@@ -87,10 +87,12 @@ export const AnalyticsLogsView: FC = (): ReactElement => {
         </div>
       </div>
 
-      <div className="flex gap-1 overflow-x-auto">
+      <div role="tablist" className="flex gap-1 overflow-x-auto">
         {filters.map((item) => (
           <Button
             key={item}
+            role="tab"
+            aria-selected={filter === item}
             variant="unstyled"
             size="none"
             onClick={() => setFilter(item)}

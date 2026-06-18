@@ -1,6 +1,7 @@
+import { Skeleton } from "@/components/ui/skeleton";
 import { t } from "@/shared/i18n";
 import type { InstalledPresences, PresenceDisplayMode, PresenceMetadata } from "@/shared/types";
-import type { FC, ReactElement } from "react";
+import type { FC } from "react";
 import { EmptyState } from "./empty-state";
 import { PresenceListItem } from "./presence-list-item";
 
@@ -8,6 +9,7 @@ type Props = {
   activeSlug: string | null;
   displayMode: PresenceDisplayMode;
   entries: Array<[string, InstalledPresences[string]]>;
+  isLoading: boolean;
   onOpenMarketplace: (slug: string) => void;
   onRemove: (slug: string) => void;
   onSchedule: (slug: string) => void;
@@ -71,10 +73,26 @@ const PresenceListSection: FC<{
   </div>
 );
 
+const PresenceListSkeleton: FC = () => (
+  <div className="overflow-hidden rounded-lg border border-border bg-card">
+    {Array.from({ length: 4 }).map((_, i) => (
+      <div key={i} className="flex items-center gap-3 border-b border-border p-3">
+        <Skeleton className="h-8 w-8 shrink-0" rounded="md" />
+        <div className="min-w-0 flex-1 space-y-1.5">
+          <Skeleton className="h-3.5 w-3/6" />
+          <Skeleton className="h-3 w-2/6" />
+        </div>
+        <Skeleton className="h-5 w-8 shrink-0" rounded="full" />
+      </div>
+    ))}
+  </div>
+);
+
 export const PresenceList: FC<Props> = ({
   activeSlug,
   displayMode,
   entries,
+  isLoading,
   onOpenMarketplace,
   onRemove,
   onSchedule,
@@ -82,7 +100,9 @@ export const PresenceList: FC<Props> = ({
   separateActive,
   showSchedule,
   updates,
-}): ReactElement => {
+}) => {
+  if (isLoading) return <PresenceListSkeleton />;
+
   const filtered = separateActive && activeSlug
     ? entries.filter(([slug]) => slug !== activeSlug)
     : entries;

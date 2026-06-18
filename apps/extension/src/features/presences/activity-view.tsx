@@ -1,11 +1,12 @@
-import type { FC, ReactElement } from "react";
 import { CurrentActivityCard } from "@/features/presences/current-activity-card";
 import { PresenceList } from "@/features/presences/presence-list";
 import type { CurrentActivity, ExtensionSettings, InstalledPresences } from "@/shared/types";
+import type { FC, ReactElement } from "react";
 
 type Props = {
   activity: CurrentActivity | null;
   entries: Array<[string, InstalledPresences[string]]>;
+  isLoading: boolean;
   onOpenMarketplace: (slug: string) => void;
   onRemove: (slug: string) => void;
   onSchedule: (slug: string) => void;
@@ -18,6 +19,7 @@ type Props = {
 export const ActivityView: FC<Props> = ({
   activity,
   entries,
+  isLoading,
   onOpenMarketplace,
   onRemove,
   onSchedule,
@@ -27,8 +29,9 @@ export const ActivityView: FC<Props> = ({
   updates,
 }): ReactElement => (
   <section className="flex min-h-0 flex-1 flex-col gap-3">
-    {settings.showPlayer ? <CurrentActivityCard activity={activity} presences={presences} /> : null}
+    {settings.showPlayer ? <CurrentActivityCard activity={activity} isLoading={isLoading} presences={presences} /> : null}
     <PresenceList
+      isLoading={isLoading}
       activeSlug={activity?.slug ?? null}
       displayMode={settings.presenceDisplayMode}
       entries={entries}

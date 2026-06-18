@@ -13,6 +13,7 @@ type ExtensionState = {
   entries: Array<[string, InstalledPresences[string]]>;
   isCheckingUpdates: boolean;
   isCheckingHostVersion: boolean;
+  isLoading: boolean;
   isUnpacked: boolean;
   nativeStatus: NativeStatus;
   presences: InstalledPresences;
@@ -43,6 +44,7 @@ export const useExtensionState = (): ExtensionState => {
   const [updates, setUpdates] = useState<Record<string, string>>({});
   const [isCheckingUpdates, setIsCheckingUpdates] = useState(false);
   const [isUnpacked, setIsUnpacked] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const isUnpackedRef = useRef(false);
 
   useEffect(() => {
@@ -74,6 +76,8 @@ export const useExtensionState = (): ExtensionState => {
       setNativeStatus(nextNativeStatus ?? FALLBACK_NATIVE_STATUS);
       setDebug(nextDebug ?? null);
       setSettingsState(nextSettings ?? FALLBACK_SETTINGS);
+    }).finally(() => {
+      setIsLoading(false);
     });
     void fetchHostVersion();
   }, []);
@@ -162,6 +166,7 @@ export const useExtensionState = (): ExtensionState => {
     connectNative,
     debug,
     entries,
+    isLoading,
     isCheckingUpdates,
     isUnpacked,
     nativeStatus,

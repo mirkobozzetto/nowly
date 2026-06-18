@@ -73,3 +73,12 @@ button:disabled {
   background: var(--card-hover);
   border-radius: 999px;
 }
+
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

@@ -1,8 +1,8 @@
+import { Button } from "@/components/ui/button";
+import { t } from "@/shared/i18n";
 import { Calendar, RefreshCw, Snowflake, Sun } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useRef } from "react";
-import { Button } from "@/components/ui";
-import { t } from "@/shared/i18n";
 
 const CHECK_RATE_LIMIT_MS = 30_000;
 
@@ -33,6 +33,7 @@ export const ActionBar: FC<Props> = ({ activeSlug, isCheckingUpdates, isSnoozed,
         <Button
           variant="unstyled"
           size="none"
+          aria-label={t("clear-snooze")}
           onClick={onUnsnoozeClick}
           className="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-2 hover:text-foreground"
         >
@@ -43,6 +44,7 @@ export const ActionBar: FC<Props> = ({ activeSlug, isCheckingUpdates, isSnoozed,
         <Button
           variant="unstyled"
           size="none"
+          aria-label={t("snooze")}
           disabled={!activeSlug}
           onClick={onSnoozeClick}
           className="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-2 hover:text-foreground disabled:opacity-40 disabled:pointer-events-none"
@@ -59,6 +61,7 @@ export const ActionBar: FC<Props> = ({ activeSlug, isCheckingUpdates, isSnoozed,
           <Button
             variant="unstyled"
             size="none"
+            aria-label={t("schedule")}
             onClick={onScheduleClick}
             className="inline-flex h-7 items-center gap-1.5 rounded-md px-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-2 hover:text-foreground"
           >

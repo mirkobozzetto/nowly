@@ -1,5 +1,9 @@
 import { LocaleFlag } from "@/components/locale-flag";
-import { Checkbox, Label, Select, Switch } from "@/components/ui";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import type { NativeStatus } from "@/lib/messages";
 import { WEB_BASE_URL } from "@/shared/constants";
 import { resolveLocale, t, type LocalePreference } from "@/shared/i18n";
@@ -19,6 +23,7 @@ type HostVersionInfo = {
 type Props = {
   debug: PresenceDebug | null;
   hostVersionInfo: HostVersionInfo | null;
+  isLoading: boolean;
   localePreference: LocalePreference;
   nativeStatus: NativeStatus;
   onLocaleChange: (preference: LocalePreference) => void;
@@ -36,6 +41,7 @@ const localeOptions: Array<{ label: string; value: LocalePreference }> = [
 export const SettingsView: FC<Props> = ({
   debug,
   hostVersionInfo,
+  isLoading,
   localePreference,
   nativeStatus,
   onLocaleChange,
@@ -49,6 +55,33 @@ export const SettingsView: FC<Props> = ({
   }, []);
 
   const hasDebugIssue = debug || (nativeStatus.status !== "connected" && nativeStatus.status !== "ok");
+
+  if (isLoading) {
+    return (
+      <section className="flex min-h-0 flex-1 flex-col gap-3">
+        <section className="rounded-lg border border-border bg-card p-4">
+          <Skeleton className="mb-2 h-3 w-1/4" />
+          <Skeleton className="mb-3 h-3 w-3/5" />
+          <Skeleton className="h-10 w-full" rounded="lg" />
+        </section>
+        <section className="rounded-lg border border-border bg-card p-4">
+          <Skeleton className="mb-2 h-3 w-1/5" />
+          <Skeleton className="mb-3 h-3 w-2/5" />
+          <Skeleton className="h-10 w-full" rounded="lg" />
+        </section>
+        <section className="rounded-lg border border-border bg-card p-4">
+          <Skeleton className="mb-2 h-3 w-1/5" />
+          <Skeleton className="mb-3 h-3 w-3/5" />
+          <Skeleton className="h-8 w-full" rounded="lg" />
+        </section>
+        <section className="rounded-lg border border-border bg-card p-4">
+          <Skeleton className="mb-2 h-3 w-1/4" />
+          <Skeleton className="mb-3 h-3 w-3/5" />
+          <Skeleton className="h-8 w-full" rounded="lg" />
+        </section>
+      </section>
+    );
+  }
 
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-3">
@@ -113,6 +146,7 @@ export const SettingsView: FC<Props> = ({
         <Label unstyled className="mb-3 flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card-2 px-3 py-2">
           <span className="text-xs font-medium text-foreground">{t("analytics-consent")}</span>
           <Checkbox
+            ariaLabel={t("analytics-consent")}
             checked={settings.analyticsConsent === true}
             onChange={(checked) => onSettingsChange({ analyticsConsent: checked })}
           />
