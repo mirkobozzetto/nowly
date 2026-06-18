@@ -48,7 +48,8 @@ program
   .option("--portable <path>", "Path to Windows portable zip archive")
   .option("--linux <path>", "Path to Linux tar.gz archive")
   .option("--macos <path>", "Path to macOS tar.gz archive")
-  .action(async (options: { releaseVersion: string; installer: string; portable?: string; linux?: string; macos?: string }) => {
+  .option("--macos-dmg <path>", "Path to macOS DMG disk image")
+  .action(async (options: { releaseVersion: string; installer: string; portable?: string; linux?: string; macos?: string; macosDmg?: string }) => {
     const resolveArtifactPath = (path: string | undefined): string | undefined => {
       if (!path) return undefined
       const fromCurrent = resolve(path)
@@ -68,12 +69,14 @@ program
         resolveArtifactPath(options.portable),
         resolveArtifactPath(options.linux),
         resolveArtifactPath(options.macos),
+        resolveArtifactPath(options.macosDmg),
       )
       logger.success(`Published host v${manifest.version}`)
       logger.success(manifest.windows.installer.url)
       if (manifest.windows.portable) logger.success(manifest.windows.portable.url)
       if (manifest.linux) logger.success(manifest.linux.archive.url)
-      if (manifest.macos) logger.success(manifest.macos.archive.url)
+      if (manifest.macos?.archive) logger.success(manifest.macos.archive.url)
+      if (manifest.macos?.dmg) logger.success(manifest.macos.dmg.url)
       logger.success("Published installer/latest.json")
     } catch (err: any) {
       logger.error(err.message)

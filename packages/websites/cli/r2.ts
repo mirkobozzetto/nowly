@@ -25,6 +25,7 @@ const MIME_TYPES: Record<string, string> = {
   ".exe": "application/vnd.microsoft.portable-executable",
   ".zip": "application/zip",
   ".gz": "application/gzip",
+  ".dmg": "application/x-apple-diskimage",
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
 }
@@ -261,7 +262,8 @@ export type HostReleaseManifest = {
     archive: HostReleaseArtifact
   }
   macos?: {
-    archive: HostReleaseArtifact
+    archive?: HostReleaseArtifact
+    dmg?: HostReleaseArtifact
   }
 }
 
@@ -271,6 +273,7 @@ export const uploadHostReleaseToR2 = async (
   portablePath?: string,
   linuxArchivePath?: string,
   macosArchivePath?: string,
+  macosDmgPath?: string,
 ): Promise<HostReleaseManifest> => {
   if (!/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(version)) {
     throw new Error(`Invalid host version: ${version}`)
@@ -286,6 +289,9 @@ export const uploadHostReleaseToR2 = async (
   }
   if (macosArchivePath && !existsSync(macosArchivePath)) {
     throw new Error(`macOS archive not found: ${macosArchivePath}`)
+  }
+  if (macosDmgPath && !existsSync(macosDmgPath)) {
+    throw new Error(`macOS DMG not found: ${macosDmgPath}`)
   }
 
   const installerLatestKey = "installer/nowly-setup.exe"
@@ -342,6 +348,19 @@ export const uploadHostReleaseToR2 = async (
         sha256: sha256File(macosArchivePath),
         size: statSync(macosArchivePath).size,
       },
+    }
+  }
+
+  if (macosDmgPath) {
+    const dmgLatestKey = "installer/nowly-macos.dmg"
+    const dmgVersionKey = `installer/releases/${version}/nowly-macos.dmg`
+    const dmgUrl = await putFile(dmgLatestKey, macosDmgPath, "public, max-age=300")
+    await putFile(dmgVersionKey, macosDmgPath, "public, max-age=31536000, immutable")
+    if (!manifest.macos) manifest.macos = {}
+    manifest.macos.dmg = {
+      url: dmgUrl,
+      sha256: sha256File(macosDmgPath),
+      size: statSync(macosDmgPath).size,
     }
   }
 

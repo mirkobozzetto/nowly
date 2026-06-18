@@ -68,6 +68,21 @@ jobs:
           name: nowly-host-macos
           path: apps/native/releases/${{ steps.version.outputs.version }}/NowlyHost-macos.dmg
 
+      - name: Publish DMG to CDN
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET || 'nowly' }}
+        run: |
+          if [ -n "${R2_ACCESS_KEY_ID:-}" ]; then
+            pnpm admin host:publish \
+              --release-version ${{ steps.version.outputs.version }} \
+              --macos-dmg "${{ github.workspace }}/apps/native/releases/${{ steps.version.outputs.version }}/NowlyHost-macos.dmg"
+          else
+            echo "R2 credentials not configured — skipping CDN publish"
+          fi
+
       - name: Attach DMG to release
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
