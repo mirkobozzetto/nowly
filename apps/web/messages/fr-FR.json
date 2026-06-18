@@ -139,7 +139,7 @@
       },
       {
         "question": "Comment fonctionne la connexion avec Discord ?",
-        "answer": "L'<strong>application native</strong> Nowly communique directement avec le client <a href='https://discord.com'>Discord</a> installé sur votre ordinateur via un tube nommé Windows (IPC). <strong>Aucune donnée ne transite par nos serveurs.</strong> Nowly se contente d'envoyer les informations de votre activité actuelle (titre, plateforme, durée) à Discord, qui les affiche sur votre profil."
+        "answer": "L'<strong>application native</strong> Nowly communique directement avec le client <a href='https://discord.com'>Discord</a> installé sur votre ordinateur via une connexion locale IPC. <strong>Aucune donnée ne transite par nos serveurs.</strong> Nowly se contente d'envoyer les informations de votre activité actuelle (titre, plateforme, durée) à Discord, qui les affiche sur votre profil."
       },
       {
         "question": "Mes données sont-elles envoyées à vos serveurs ?",
@@ -238,7 +238,7 @@
     "sections": [
       {
         "title": "Fonctionnement général",
-        "body": "Nowly se compose de trois parties : une <strong>extension navigateur</strong>, une <strong>application native</strong> et un <strong>site web</strong> (bibliothèque). L'extension détecte les contenus multimédias dans votre navigateur et les transmet à l'application native, qui les envoie directement au client Discord installé sur votre machine via une communication locale Windows (IPC). Ces données d'activité ne transitent pas par nos serveurs."
+        "body": "Nowly se compose de trois parties : une <strong>extension navigateur</strong>, une <strong>application native</strong> et un <strong>site web</strong> (bibliothèque). L'extension détecte les contenus multimédias dans votre navigateur et les transmet à l'application native, qui les envoie directement au client Discord installé sur votre machine via une communication locale IPC. Ces données d'activité ne transitent pas par nos serveurs."
       },
       {
         "title": "Données traitées localement (extension)",

@@ -139,7 +139,7 @@
       },
       {
         "question": "How does the Discord connection work?",
-        "answer": "The <strong>native application</strong> communicates directly with the <a href='https://discord.com'>Discord</a> client on your computer via a Windows named pipe (IPC). <strong>No data passes through our servers.</strong> Nowly simply sends your current activity information (title, platform, duration) to Discord, which displays it on your profile."
+        "answer": "The <strong>native application</strong> communicates directly with the <a href='https://discord.com'>Discord</a> client on your computer via a local IPC connection. <strong>No data passes through our servers.</strong> Nowly simply sends your current activity information (title, platform, duration) to Discord, which displays it on your profile."
       },
       {
         "question": "Is my data sent to your servers?",
@@ -238,7 +238,7 @@
     "sections": [
       {
         "title": "General Operation",
-        "body": "Nowly consists of three parts: a <strong>browser extension</strong>, a <strong>Windows native application</strong>, and a <strong>website</strong> (library). The extension detects media content in your browser and passes it to the native app, which sends it directly to the Discord client on your machine via a local Windows named pipe (IPC). This activity data never touches our servers."
+        "body": "Nowly consists of three parts: a <strong>browser extension</strong>, a <strong>native application</strong>, and a <strong>website</strong> (library). The extension detects media content in your browser and passes it to the native app, which sends it directly to the Discord client on your machine via a local IPC connection. This activity data never touches our servers."
       },
       {
         "title": "Data Processed Locally (Extension)",
@@ -296,7 +296,7 @@
       },
       {
         "title": "Service Description",
-        "body": "Nowly is a <strong>free, open-source</strong> tool that detects media content in your browser and automatically updates your Discord status (Rich Presence) via local communication with the Discord client. The service consists of:<ul><li>A <strong>Chromium browser extension</strong> that detects and reports your activity.</li><li>A <strong>Windows native application</strong> that acts as a gateway to Discord.</li><li>A <strong>website</strong> (library) for discovering and installing presences.</li><li>A <strong>developer SDK</strong> and tooling for creating custom presences.</li></ul>"
+        "body": "Nowly is a <strong>free, open-source</strong> tool that detects media content in your browser and automatically updates your Discord status (Rich Presence) via local communication with the Discord client. The service consists of:<ul><li>A <strong>Chromium browser extension</strong> that detects and reports your activity.</li><li>A <strong>native application</strong> that acts as a gateway to Discord.</li><li>A <strong>website</strong> (library) for discovering and installing presences.</li><li>A <strong>developer SDK</strong> and tooling for creating custom presences.</li></ul>"
       },
       {
         "title": "Minimum Age",

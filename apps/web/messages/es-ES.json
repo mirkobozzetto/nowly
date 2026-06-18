@@ -139,7 +139,7 @@
       },
       {
         "question": "¿Cómo funciona la conexión con Discord?",
-        "answer": "La <strong>aplicación nativa</strong> de Nowly se comunica directamente con el cliente de <a href='https://discord.com'>Discord</a> instalado en tu ordenador a través de una tubería nominada de Windows (IPC). <strong>Ningún dato pasa por nuestros servidores.</strong> Nowly simplemente envía la información de tu actividad actual (título, plataforma, duración) a Discord, que la muestra en tu perfil."
+        "answer": "La <strong>aplicación nativa</strong> de Nowly se comunica directamente con el cliente de <a href='https://discord.com'>Discord</a> instalado en tu ordenador mediante una conexión IPC local. <strong>Ningún dato pasa por nuestros servidores.</strong> Nowly simplemente envía la información de tu actividad actual (título, plataforma, duración) a Discord, que la muestra en tu perfil."
       },
       {
         "question": "¿Comparten mis datos con servidores de terceros?",
