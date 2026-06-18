@@ -97,7 +97,8 @@
     "privacy": "Politique de confidentialité",
     "tos": "Conditions d'utilisation",
     "legal-notice": "Mentions légales",
-    "cookies": "Cookies"
+    "cookies": "Cookies",
+    "data-management": "Données et confidentialité"
   },
   "cookie-banner": {
     "message": "Ce site utilise uniquement des cookies strictement nécessaires (session & langue). Aucun suivi, aucune publicité.",
@@ -600,6 +601,28 @@
     "req-storage-windows-value": "Installateur 3,71 Mo / Portable 1,82 Mo",
     "req-storage-macos-value": "3,38 Mo",
     "req-storage-linux-value": "1,76 Mo"
+  },
+  "consent-page": {
+    "title": "Gérer vos données",
+    "intro": "Votre vie privée compte. Depuis cette page, vous pouvez consulter l'état de votre consentement analytique, exporter vos données ou les supprimer.",
+    "consent-status": "État du consentement",
+    "consent-granted": "Le consentement analytique est actif. Votre appareil partage des données d'utilisation anonymes.",
+    "consent-denied": "Le consentement analytique est désactivé. Aucune donnée n'est collectée depuis votre appareil.",
+    "export-title": "Exporter vos données",
+    "export-description": "Téléchargez toutes les données associées à votre appareil au format JSON. Cela inclut les informations de l'appareil, les présences installées et les événements analytiques.",
+    "export-button": "Exporter mes données",
+    "export-success": "Vos données ont été exportées.",
+    "export-error": "Échec de l'exportation. Veuillez réessayer.",
+    "delete-title": "Supprimer vos données",
+    "delete-description": "Supprimez définitivement toutes les données associées à votre appareil, y compris les événements analytiques, l'historique des présences et les métadonnées. Cette action est irréversible.",
+    "delete-button": "Supprimer mes données",
+    "delete-confirm": "Êtes-vous sûr ? Cela effacera définitivement toutes les données liées à votre appareil.",
+    "delete-cancel": "Annuler",
+    "delete-success": "Toutes les données associées à votre appareil ont été supprimées.",
+    "delete-error": "Échec de la suppression. Veuillez réessayer.",
+    "device-id": "ID de l'appareil",
+    "no-device": "Aucun ID d'appareil trouvé. Ouvrez les paramètres de l'extension et visitez cette page depuis la section « Données et confidentialité ».",
+    "loading": "Chargement de vos données..."
   },
   "error-page": {
     "title": "Une erreur est survenue",

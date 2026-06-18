@@ -97,7 +97,8 @@
     "privacy": "Privacy Policy",
     "tos": "Terms of Service",
     "legal-notice": "Legal Notice",
-    "cookies": "Cookies"
+    "cookies": "Cookies",
+    "data-management": "Data & Privacy"
   },
   "cookie-banner": {
     "message": "This site uses only strictly necessary cookies (session & language). No tracking, no advertising.",
@@ -600,6 +601,28 @@
     "req-storage-windows-value": "Installer 3.71 MB / Portable 1.82 MB",
     "req-storage-macos-value": "3.38 MB",
     "req-storage-linux-value": "1.76 MB"
+  },
+  "consent-page": {
+    "title": "Manage Your Data",
+    "intro": "Your privacy matters. From this page you can review your analytics consent status, export your device data, or delete it entirely.",
+    "consent-status": "Consent Status",
+    "consent-granted": "Analytics consent is active. Your device shares anonymous usage data.",
+    "consent-denied": "Analytics consent is disabled. No data is being collected from your device.",
+    "export-title": "Export Your Data",
+    "export-description": "Download all data associated with your device in JSON format. This includes your device info, installed presences, and analytics events.",
+    "export-button": "Export my data",
+    "export-success": "Your data has been exported.",
+    "export-error": "Failed to export data. Please try again.",
+    "delete-title": "Delete Your Data",
+    "delete-description": "Permanently remove all data associated with your device, including analytics events, presence history, and device metadata. This action cannot be undone.",
+    "delete-button": "Delete my data",
+    "delete-confirm": "Are you sure? This will permanently erase all data linked to your device.",
+    "delete-cancel": "Cancel",
+    "delete-success": "All data associated with your device has been deleted.",
+    "delete-error": "Failed to delete data. Please try again.",
+    "device-id": "Device ID",
+    "no-device": "No device ID found. Open the extension settings and visit this page from the \"Data & Privacy\" section.",
+    "loading": "Loading your data..."
   },
   "error-page": {
     "title": "Something went wrong",

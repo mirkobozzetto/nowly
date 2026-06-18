@@ -28,6 +28,7 @@ export const FooterLinks: FC = (): ReactElement => {
         { href: "/privacy", label: t("privacy") },
         { href: "/tos", label: t("tos") },
         { href: "/legal-notice", label: t("legal-notice") },
+        { href: "/consent", label: t("data-management") },
         { href: "/cookies", label: t("cookies") },
       ],
     },

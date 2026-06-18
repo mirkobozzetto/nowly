@@ -32,7 +32,10 @@ export const LocaleSelector: FC = () => {
   return (
     <div className="flex justify-start">
       <Select value={locale} onValueChange={handleLocaleChange}>
-        <SelectTrigger className="">
+        <SelectTrigger
+          size="sm"
+          className="h-9 border border-border bg-card-2 text-foreground hover:border-muted-foreground hover:bg-card-hover"
+        >
           <LocaleFlag locale={locale} />
           <SelectValue />
         </SelectTrigger>

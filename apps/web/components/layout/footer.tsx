@@ -72,12 +72,14 @@ export const Footer: FC = (): ReactElement => {
                 <GitHubIcon className="w-4 h-4" />
                 <span className="hidden sm:inline">{t("open-source")}</span>
               </Link>
-            </div>
 
-            <LocaleSelector />
+            </div>
           </div>
 
-          <FooterLinks />
+          <div className="flex flex-col items-end gap-6">
+            <FooterLinks />
+            <LocaleSelector />
+          </div>
         </div>
       </div>
     </footer>
