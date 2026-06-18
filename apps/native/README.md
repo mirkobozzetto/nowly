@@ -76,6 +76,23 @@ make build/darwin-arm
 GOOS=darwin GOARCH=arm64 go build -o dist/nowly-host-darwin-arm64 ./cmd/host
 ```
 
+#### macOS (.app bundle + DMG)
+
+```bash
+make release/macos HOST_VERSION=1.0.0
+# or from monorepo root:
+pnpm build:macos
+```
+
+This produces a universal `Nowly Host.app` bundle (Intel + Apple Silicon in one binary via `lipo`) and a single `.dmg`.
+
+| Output | Description |
+|--------|-------------|
+| `dist/Nowly Host.app` | Universal .app bundle |
+| `dist/NowlyHost-macos.dmg` | Universal disk image |
+
+The `.app` bundle is unsigned and unnotarized — no Apple Developer account required. On first launch, the binary automatically registers itself with Chrome/Firefox via native messaging manifests.
+
 ### Output
 
 | Platform | Binary |
@@ -93,6 +110,7 @@ GOOS=darwin GOARCH=arm64 go build -o dist/nowly-host-darwin-arm64 ./cmd/host
 | Windows  | Windows 10 x64 | `nowly-windows.zip` | ~3.3 MB | Same `.exe` in a zip |
 | Linux    | Linux 2.6.32+ / glibc 2.17+ | `nowly-linux.tar.gz` | ~1.9 MB | `nowly-host-linux` binary + install/uninstall scripts |
 | macOS    | macOS 11 Big Sur+ | `nowly-macos.tar.gz` | ~3.7 MB | Intel + ARM binaries + install/uninstall scripts |
+| macOS DMG | macOS 11 Big Sur+ (Universal) | `NowlyHost-macos.dmg` | ~6 MB | Universal .app bundle (Intel + Apple Silicon) |
 
 ## Release flow
 

@@ -18,7 +18,7 @@ export const platforms: Platform[] = [
   {
     name: "macOS",
     icon: <AppleIcon />,
-    downloadLink: `${CDN_BASE}/nowly-macos.tar.gz`,
+    downloadLink: `${CDN_BASE}/nowly-macos.dmg`,
   },
   {
     name: "Linux",

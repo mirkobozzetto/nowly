@@ -20,6 +20,7 @@
     "admin:push": "pnpm --filter @nowly/internal-cli cli push",
     "admin": "pnpm --filter @nowly/internal-cli cli",
     "admin:r2-sync": "pnpm --filter @nowly/internal-cli r2:sync",
-    "admin:host-publish": "pnpm --filter @nowly/internal-cli host:publish"
+    "admin:host-publish": "pnpm --filter @nowly/internal-cli host:publish",
+    "build:macos": "cd apps/native && bash scripts/macos-release.sh"
   }
 }

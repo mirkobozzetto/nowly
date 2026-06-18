@@ -25,6 +25,7 @@ const MIME_TYPES: Record<string, string> = {
   ".exe": "application/vnd.microsoft.portable-executable",
   ".zip": "application/zip",
   ".gz": "application/gzip",
+  ".dmg": "application/x-apple-diskimage",
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
 }
@@ -253,7 +254,7 @@ type HostReleaseArtifact = {
 export type HostReleaseManifest = {
   version: string
   releasedAt: string
-  windows: {
+  windows?: {
     installer: HostReleaseArtifact
     portable?: HostReleaseArtifact
   }
@@ -261,21 +262,23 @@ export type HostReleaseManifest = {
     archive: HostReleaseArtifact
   }
   macos?: {
-    archive: HostReleaseArtifact
+    archive?: HostReleaseArtifact
+    dmg?: HostReleaseArtifact
   }
 }
 
 export const uploadHostReleaseToR2 = async (
   version: string,
-  installerPath: string,
+  installerPath?: string,
   portablePath?: string,
   linuxArchivePath?: string,
   macosArchivePath?: string,
+  macosDmgPath?: string,
 ): Promise<HostReleaseManifest> => {
   if (!/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(version)) {
     throw new Error(`Invalid host version: ${version}`)
   }
-  if (!existsSync(installerPath)) {
+  if (installerPath && !existsSync(installerPath)) {
     throw new Error(`Installer not found: ${installerPath}`)
   }
   if (portablePath && !existsSync(portablePath)) {
@@ -287,22 +290,26 @@ export const uploadHostReleaseToR2 = async (
   if (macosArchivePath && !existsSync(macosArchivePath)) {
     throw new Error(`macOS archive not found: ${macosArchivePath}`)
   }
-
-  const installerLatestKey = "installer/nowly-setup.exe"
-  const installerVersionKey = `installer/releases/${version}/nowly-setup.exe`
-  const installerUrl = await putFile(installerLatestKey, installerPath, "public, max-age=300")
-  await putFile(installerVersionKey, installerPath, "public, max-age=31536000, immutable")
+  if (macosDmgPath && !existsSync(macosDmgPath)) {
+    throw new Error(`macOS DMG not found: ${macosDmgPath}`)
+  }
 
   const manifest: HostReleaseManifest = {
     version,
     releasedAt: new Date().toISOString(),
-    windows: {
-      installer: {
-        url: installerUrl,
-        sha256: sha256File(installerPath),
-        size: statSync(installerPath).size,
-      },
-    },
+  }
+
+  if (installerPath) {
+    const installerLatestKey = "installer/nowly-setup.exe"
+    const installerVersionKey = `installer/releases/${version}/nowly-setup.exe`
+    const installerUrl = await putFile(installerLatestKey, installerPath, "public, max-age=300")
+    await putFile(installerVersionKey, installerPath, "public, max-age=31536000, immutable")
+    if (!manifest.windows) manifest.windows = {}
+    manifest.windows.installer = {
+      url: installerUrl,
+      sha256: sha256File(installerPath),
+      size: statSync(installerPath).size,
+    }
   }
 
   if (portablePath) {
@@ -310,6 +317,7 @@ export const uploadHostReleaseToR2 = async (
     const portableVersionKey = `installer/releases/${version}/nowly-windows.zip`
     const portableUrl = await putFile(portableLatestKey, portablePath, "public, max-age=300")
     await putFile(portableVersionKey, portablePath, "public, max-age=31536000, immutable")
+    if (!manifest.windows) manifest.windows = {}
     manifest.windows.portable = {
       url: portableUrl,
       sha256: sha256File(portablePath),
@@ -342,6 +350,19 @@ export const uploadHostReleaseToR2 = async (
         sha256: sha256File(macosArchivePath),
         size: statSync(macosArchivePath).size,
       },
+    }
+  }
+
+  if (macosDmgPath) {
+    const dmgLatestKey = "installer/nowly-macos.dmg"
+    const dmgVersionKey = `installer/releases/${version}/nowly-macos.dmg`
+    const dmgUrl = await putFile(dmgLatestKey, macosDmgPath, "public, max-age=300")
+    await putFile(dmgVersionKey, macosDmgPath, "public, max-age=31536000, immutable")
+    if (!manifest.macos) manifest.macos = {}
+    manifest.macos.dmg = {
+      url: dmgUrl,
+      sha256: sha256File(macosDmgPath),
+      size: statSync(macosDmgPath).size,
     }
   }
 
