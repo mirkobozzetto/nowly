@@ -62,6 +62,7 @@
   "onboarding-tour-settings-body": "Encuentra el idioma, la visualización, las actualizaciones, el cliente nativo y el diagnóstico en los ajustes.",
   "host-update-available": "Actualización disponible: v{latestVersion}",
   "host-download-update": "Descargar actualización",
+  "host-check-update": "Comprobar",
   "analytics": "Analíticas",
   "analytics-description": "Comparte estadísticas técnicas anónimas para mejorar presencias, fiabilidad e instalación. Nunca se envían títulos, URLs, búsquedas, contenido visto ni IDs de Discord.",
   "analytics-consent": "Compartir analíticas anónimas",

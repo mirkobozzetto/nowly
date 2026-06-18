@@ -62,6 +62,7 @@
   "onboarding-tour-settings-body": "Retrouvez la langue, l'affichage, les mises à jour, le client natif et les outils de diagnostic dans les réglages.",
   "host-update-available": "Mise à jour disponible : v{latestVersion}",
   "host-download-update": "Télécharger la mise à jour",
+  "host-check-update": "Vérifier",
   "analytics": "Analytiques",
   "analytics-description": "Partagez des statistiques techniques anonymes pour améliorer les présences, la fiabilité et les parcours d'installation. Les titres, URL, recherches, contenus regardés et IDs Discord ne sont jamais envoyés.",
   "analytics-consent": "Partager des analytiques anonymes",

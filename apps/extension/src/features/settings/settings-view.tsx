@@ -8,7 +8,7 @@ import type { NativeStatus } from "@/lib/messages";
 import { WEB_BASE_URL } from "@/shared/constants";
 import { resolveLocale, t, type LocalePreference } from "@/shared/i18n";
 import type { ExtensionSettings, PresenceDebug } from "@/shared/types";
-import { ChevronDown, ExternalLink } from "lucide-react";
+import { ChevronDown, ExternalLink, RefreshCw } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useEffect, useState } from "react";
 import { DebugPanel } from "./debug-panel";
@@ -23,9 +23,11 @@ type HostVersionInfo = {
 type Props = {
   debug: PresenceDebug | null;
   hostVersionInfo: HostVersionInfo | null;
+  isCheckingHostVersion: boolean;
   isLoading: boolean;
   localePreference: LocalePreference;
   nativeStatus: NativeStatus;
+  onCheckHostUpdate: () => Promise<void>;
   onLocaleChange: (preference: LocalePreference) => void;
   settings: ExtensionSettings;
   onSettingsChange: (partial: Partial<ExtensionSettings>) => void;
@@ -41,9 +43,11 @@ const localeOptions: Array<{ label: string; value: LocalePreference }> = [
 export const SettingsView: FC<Props> = ({
   debug,
   hostVersionInfo,
+  isCheckingHostVersion,
   isLoading,
   localePreference,
   nativeStatus,
+  onCheckHostUpdate,
   onLocaleChange,
   settings,
   onSettingsChange,
@@ -90,15 +94,26 @@ export const SettingsView: FC<Props> = ({
           <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-accent">
             {t("host-update-available", { latestVersion: hostVersionInfo.latestVersion })}
           </h2>
-          <a
-            href="https://nowly.me/host"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex h-9 items-center gap-2 rounded-lg border border-accent/20 bg-accent/10 px-3 text-xs font-medium text-accent transition-colors hover:bg-accent/20"
-          >
-            {t("host-download-update")}
-            <ExternalLink className="h-3.5 w-3.5" />
-          </a>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href="https://nowly.me/host"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-9 items-center gap-2 rounded-lg border border-accent/20 bg-accent/10 px-3 text-xs font-medium text-accent transition-colors hover:bg-accent/20"
+            >
+              {t("host-download-update")}
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+            <button
+              type="button"
+              onClick={() => { void onCheckHostUpdate(); }}
+              disabled={isCheckingHostVersion}
+              className="inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card-2 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${isCheckingHostVersion ? "animate-spin" : ""}`} />
+              {t("host-check-update")}
+            </button>
+          </div>
         </section>
       ) : null}
 

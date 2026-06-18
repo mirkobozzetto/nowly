@@ -16,7 +16,7 @@ import type { FC, ReactElement } from "react";
 import { useCallback, useState } from "react";
 
 const App: FC = (): ReactElement => {
-  const { activity, checkUpdates, connectNative, debug, entries, hostVersionInfo, isCheckingUpdates, isLoading, isUnpacked, nativeStatus, presences, removePresence, togglePresence, updates, settings, setSettings } =
+  const { activity, checkHostUpdate, checkUpdates, connectNative, debug, entries, hostVersionInfo, isCheckingHostVersion, isCheckingUpdates, isLoading, isUnpacked, nativeStatus, presences, removePresence, togglePresence, updates, settings, setSettings } =
     useExtensionState();
   const { localePreference, setLocalePreference } = useLocalePreference();
   const { onboarding, setOnboarding, nativeStatus: onboardingNativeStatus, userScripts } = useOnboardingState();
@@ -80,9 +80,11 @@ const App: FC = (): ReactElement => {
           <SettingsView
             debug={debug}
             hostVersionInfo={hostVersionInfo}
+            isCheckingHostVersion={isCheckingHostVersion}
             isLoading={isLoading}
             localePreference={localePreference}
             nativeStatus={nativeStatus}
+            onCheckHostUpdate={checkHostUpdate}
             onLocaleChange={setLocalePreference}
             settings={settings}
             onSettingsChange={setSettings}

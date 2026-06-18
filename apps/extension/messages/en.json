@@ -62,6 +62,7 @@
   "onboarding-tour-settings-body": "Find language, display, updates, the native client, and diagnostics in settings.",
   "host-update-available": "Update available: v{latestVersion}",
   "host-download-update": "Download Update",
+  "host-check-update": "Check",
   "analytics": "Analytics",
   "analytics-description": "Share anonymous technical stats to help improve presences, reliability, and install flows. Titles, URLs, searches, watched content, and Discord IDs are never sent.",
   "analytics-consent": "Share anonymous analytics",
