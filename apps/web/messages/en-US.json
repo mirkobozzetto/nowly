@@ -233,7 +233,7 @@
   },
   "privacy-page": {
     "title": "Privacy Policy",
-    "last-updated": "Last updated: June 2026.",
+    "last-updated": "Last updated: June 18, 2026.",
     "intro": "Nowly is designed with privacy as a priority. Your Rich Presence activity is processed <strong>entirely locally</strong> on your machine — it never passes through our servers. Some optional features (reviews, analytics) involve server-side processing, described below.",
     "sections": [
       {
@@ -288,7 +288,7 @@
   },
   "tos-page": {
     "title": "Terms of Service",
-    "last-updated": "Last updated: June 2026.",
+    "last-updated": "Last updated: June 18, 2026.",
     "sections": [
       {
         "title": "Acceptance of Terms",
@@ -384,7 +384,7 @@
   },
   "cookies-page": {
     "title": "Cookie Policy",
-    "last-updated": "Last updated: June 2026.",
+    "last-updated": "Last updated: June 18, 2026.",
     "intro": "This page describes the cookies and similar technologies used on <strong>nowly.me</strong>. Nowly does <strong>not</strong> place any tracking, profiling or advertising cookies.",
     "sections": [
       {

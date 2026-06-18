@@ -71,7 +71,7 @@ export default async function StatusPage(): Promise<ReactElement> {
       <section className="overflow-hidden rounded-2xl border border-border bg-card">
         <div className="border-b border-border px-5 py-4">
           <h2 className="font-semibold text-foreground">
-            {t("checked-history", { time: formatRelativeTime(locale, report.generatedAt) })}
+            {report.generatedAt ? t("checked-history", { time: formatRelativeTime(locale, report.generatedAt) }) : t("last-checked")}
           </h2>
         </div>
 

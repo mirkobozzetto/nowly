@@ -233,7 +233,7 @@
   },
   "privacy-page": {
     "title": "Política de privacidad",
-    "last-updated": "Última actualización: junio de 2026.",
+    "last-updated": "Última actualización: 18 de junio de 2026.",
     "intro": "Nowly está diseñado con la privacidad como prioridad. Tu actividad de Rich Presence se procesa <strong>íntegramente de forma local</strong> en tu equipo — nunca pasa por nuestros servidores. Algunas funciones opcionales (valoraciones, analytics) implican un procesamiento en el servidor, que se describe a continuación.",
     "sections": [
       {
@@ -288,7 +288,7 @@
   },
   "tos-page": {
     "title": "Términos del servicio",
-    "last-updated": "Última actualización: junio de 2026.",
+    "last-updated": "Última actualización: 18 de junio de 2026.",
     "sections": [
       {
         "title": "Aceptación de los términos",
@@ -384,7 +384,7 @@
   },
   "cookies-page": {
     "title": "Política de cookies",
-    "last-updated": "Última actualización: junio de 2026.",
+    "last-updated": "Última actualización: 18 de junio de 2026.",
     "intro": "Esta página describe las cookies y tecnologías similares utilizadas en <strong>nowly.me</strong>. Nowly <strong>no</strong> deposita ninguna cookie de seguimiento, perfilado o publicidad.",
     "sections": [
       {

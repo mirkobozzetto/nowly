@@ -187,7 +187,7 @@
     "badge": "Statut",
     "title": "État des services Nowly",
     "description": "Tout est opérationnel ? Vérifiez en un coup d'œil.",
-    "checked-history": "Vérifié pour la dernière fois à {time}",
+    "checked-history": "Dernière vérification {time}",
     "latest-latency": "Dernière latence",
     "last-checked": "Dernier check",
     "recent-checks": "10 derniers checks",
@@ -233,7 +233,7 @@
   },
   "privacy-page": {
     "title": "Politique de confidentialité",
-    "last-updated": "Dernière mise à jour : juin 2026.",
+    "last-updated": "Dernière mise à jour : 18 juin 2026.",
     "intro": "Nowly est conçu avec la confidentialité comme priorité. L'activité Rich Presence est traitée <strong>entièrement en local</strong> sur votre machine — elle ne transite jamais par nos serveurs. Certaines fonctionnalités optionnelles (avis, analytics) impliquent un traitement côté serveur, décrit ci-dessous.",
     "sections": [
       {
@@ -288,7 +288,7 @@
   },
   "tos-page": {
     "title": "Conditions d'utilisation",
-    "last-updated": "Dernière mise à jour : juin 2026.",
+    "last-updated": "Dernière mise à jour : 18 juin 2026.",
     "sections": [
       {
         "title": "Acceptation des conditions",
@@ -384,7 +384,7 @@
   },
   "cookies-page": {
     "title": "Politique de cookies",
-    "last-updated": "Dernière mise à jour : juin 2026.",
+    "last-updated": "Dernière mise à jour : 18 juin 2026.",
     "intro": "Cette page décrit les cookies et technologies similaires utilisés sur <strong>nowly.me</strong>. Nowly ne dépose <strong>aucun</strong> cookie de suivi, de profilage ou publicitaire.",
     "sections": [
       {
