@@ -42,11 +42,10 @@ bash "$SCRIPT_DIR/macos-build.sh" "$VERSION"
 # --------------- Step 2+3: Bundle + DMG per architecture ---------------
 # Build sequentially so the .app bundle is created fresh for each arch.
 for ARCH in "amd64" "arm64"; do
-  ARCH_LABEL="Intel"
-  ARCH_TAG=""
   if [ "$ARCH" = "arm64" ]; then
     ARCH_LABEL="Apple Silicon"
-    ARCH_TAG="-arm64"
+  else
+    ARCH_LABEL="Intel"
   fi
 
   echo "=== Step 2-3/4: Bundle + DMG ($ARCH_LABEL) ==="
@@ -54,7 +53,7 @@ for ARCH in "amd64" "arm64"; do
   bash "$SCRIPT_DIR/macos-bundle.sh" "$VERSION" "$ARCH" "$ICON_SOURCE"
   bash "$SCRIPT_DIR/macos-dmg.sh" "$ARCH"
 
-  cp "$DIST_DIR/NowlyHost-macos$ARCH_TAG.dmg" "$RELEASE_DIR/"
+  cp "$DIST_DIR/NowlyHost-macos-$ARCH.dmg" "$RELEASE_DIR/"
   rm -rf "$DIST_DIR/Nowly Host.app"
 done
 
