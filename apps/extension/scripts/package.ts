@@ -1,5 +1,5 @@
 import { execFileSync } from "child_process";
-import { mkdirSync, readFileSync } from "fs";
+import { mkdirSync, readFileSync, rmSync } from "fs";
 import { join, relative } from "path";
 import { fileURLToPath } from "url";
 
@@ -57,26 +57,13 @@ const runBuild = (browser: Browser): void => {
   runPnpmCommand(`pnpm --filter @nowly/extension build:${browser}`);
 };
 
-const powershellLiteral = (value: string): string => `'${value.replaceAll("'", "''")}'`;
-
 const createZip = (sourceDir: string, outputPath: string): void => {
+  rmSync(outputPath, { force: true });
+
   if (process.platform === "win32") {
-    execFileSync(
-      "powershell.exe",
-      [
-        "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-Command",
-        [
-          `$source = ${powershellLiteral(sourceDir)}`,
-          `$dest = ${powershellLiteral(outputPath)}`,
-          "if (Test-Path -LiteralPath $dest) { Remove-Item -LiteralPath $dest -Force }",
-          "Compress-Archive -Path (Join-Path $source '*') -DestinationPath $dest -Force",
-        ].join("; "),
-      ],
-      { stdio: "inherit" },
-    );
+    execFileSync("tar.exe", ["-a", "-c", "-f", outputPath, "-C", sourceDir, "."], {
+      stdio: "inherit",
+    });
     return;
   }
 
