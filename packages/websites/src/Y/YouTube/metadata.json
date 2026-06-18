@@ -4,7 +4,7 @@
     "name": "Gaëtan H",
     "github": "steellgold"
   },
-  "url": ["youtube.com", "www.youtube.com", "youtu.be"],
+  "url": ["www.youtube.com", "m.youtube.com", "youtu.be"],
   "regExp": "^https?://(www|m)\\.youtube\\.com/",
   "color": "#FF0033",
   "category": "streaming",
