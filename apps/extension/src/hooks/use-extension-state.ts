@@ -6,7 +6,7 @@ import { useHostVersion, type HostVersionInfo } from "./use-host-version";
 type ExtensionState = {
   activity: CurrentActivity | null;
   checkUpdates: () => void;
-  checkHostUpdate: () => void;
+  checkHostUpdate: () => Promise<void>;
   hostVersionInfo: HostVersionInfo | null;
   connectNative: () => void;
   debug: PresenceDebug | null;
@@ -80,7 +80,13 @@ export const useExtensionState = (): ExtensionState => {
       setIsLoading(false);
     });
     void fetchHostVersion();
-  }, []);
+  }, [fetchHostVersion]);
+
+  const refreshHostUpdate = useCallback(async (): Promise<void> => {
+    await checkHostUpdate();
+    const nextNativeStatus = await sendMessage<NativeStatus>("GET_NATIVE_STATUS");
+    setNativeStatus(nextNativeStatus ?? FALLBACK_NATIVE_STATUS);
+  }, [checkHostUpdate]);
 
   const refreshUpdates = useCallback((): void => {
     if (isUnpackedRef.current) return;
@@ -160,7 +166,7 @@ export const useExtensionState = (): ExtensionState => {
   return {
     activity,
     checkUpdates: refreshUpdates,
-    checkHostUpdate,
+    checkHostUpdate: refreshHostUpdate,
     hostVersionInfo,
     isCheckingHostVersion,
     connectNative,
