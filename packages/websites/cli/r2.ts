@@ -254,7 +254,7 @@ type HostReleaseArtifact = {
 export type HostReleaseManifest = {
   version: string
   releasedAt: string
-  windows: {
+  windows?: {
     installer: HostReleaseArtifact
     portable?: HostReleaseArtifact
   }
@@ -269,7 +269,7 @@ export type HostReleaseManifest = {
 
 export const uploadHostReleaseToR2 = async (
   version: string,
-  installerPath: string,
+  installerPath?: string,
   portablePath?: string,
   linuxArchivePath?: string,
   macosArchivePath?: string,
@@ -278,7 +278,7 @@ export const uploadHostReleaseToR2 = async (
   if (!/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(version)) {
     throw new Error(`Invalid host version: ${version}`)
   }
-  if (!existsSync(installerPath)) {
+  if (installerPath && !existsSync(installerPath)) {
     throw new Error(`Installer not found: ${installerPath}`)
   }
   if (portablePath && !existsSync(portablePath)) {
@@ -294,21 +294,22 @@ export const uploadHostReleaseToR2 = async (
     throw new Error(`macOS DMG not found: ${macosDmgPath}`)
   }
 
-  const installerLatestKey = "installer/nowly-setup.exe"
-  const installerVersionKey = `installer/releases/${version}/nowly-setup.exe`
-  const installerUrl = await putFile(installerLatestKey, installerPath, "public, max-age=300")
-  await putFile(installerVersionKey, installerPath, "public, max-age=31536000, immutable")
-
   const manifest: HostReleaseManifest = {
     version,
     releasedAt: new Date().toISOString(),
-    windows: {
-      installer: {
-        url: installerUrl,
-        sha256: sha256File(installerPath),
-        size: statSync(installerPath).size,
-      },
-    },
+  }
+
+  if (installerPath) {
+    const installerLatestKey = "installer/nowly-setup.exe"
+    const installerVersionKey = `installer/releases/${version}/nowly-setup.exe`
+    const installerUrl = await putFile(installerLatestKey, installerPath, "public, max-age=300")
+    await putFile(installerVersionKey, installerPath, "public, max-age=31536000, immutable")
+    if (!manifest.windows) manifest.windows = {}
+    manifest.windows.installer = {
+      url: installerUrl,
+      sha256: sha256File(installerPath),
+      size: statSync(installerPath).size,
+    }
   }
 
   if (portablePath) {
@@ -316,6 +317,7 @@ export const uploadHostReleaseToR2 = async (
     const portableVersionKey = `installer/releases/${version}/nowly-windows.zip`
     const portableUrl = await putFile(portableLatestKey, portablePath, "public, max-age=300")
     await putFile(portableVersionKey, portablePath, "public, max-age=31536000, immutable")
+    if (!manifest.windows) manifest.windows = {}
     manifest.windows.portable = {
       url: portableUrl,
       sha256: sha256File(portablePath),
