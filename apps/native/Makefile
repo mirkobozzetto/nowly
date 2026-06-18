@@ -16,7 +16,7 @@ SCRIPTS_DIR    := scripts
 HOST_VERSION   ?= 0.0.0-dev
 LDFLAGS        := -X nowly.client/native/internal/contract.HostVersion=$(HOST_VERSION)
 
-.PHONY: build build/windows build/linux build/darwin build/darwin-arm installer clean
+.PHONY: build build/windows build/linux build/darwin build/darwin-arm installer clean build/macos release/macos
 
 build: build/windows build/linux build/darwin build/darwin-arm
 
@@ -31,6 +31,11 @@ build/darwin:
 
 build/darwin-arm:
 	GOOS=darwin GOARCH=arm64 go build -ldflags "$(LDFLAGS)" -o $(DIST_DIR)/$(BINARY_NAME)-darwin-arm64 ./cmd/host
+
+build/macos: build/darwin build/darwin-arm
+
+release/macos:
+	$(SCRIPTS_DIR)/macos-release.sh $(HOST_VERSION)
 
 ifneq ($(OS),Windows_NT)
 installer:

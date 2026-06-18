@@ -1,0 +1,85 @@
+name: macOS Release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Host version to release, e.g. 1.0.0"
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+          cache-dependency-path: apps/native/go.mod
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ inputs.version }}"
+          else
+            VERSION="${{ github.event.release.tag_name }}"
+            VERSION="${VERSION#host-v}"
+            VERSION="${VERSION#v}"
+          fi
+
+          if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)?$'; then
+            echo "Error: Invalid host version: $VERSION"
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Test native host
+        working-directory: apps/native
+        run: go test ./...
+
+      - name: macOS release
+        id: release
+        working-directory: apps/native
+        run: |
+          bash scripts/macos-release.sh "${{ steps.version.outputs.version }}"
+
+      - name: Upload DMG artifacts (Intel)
+        uses: actions/upload-artifact@v4
+        with:
+          name: nowly-host-macos-amd64
+          path: apps/native/releases/${{ steps.version.outputs.version }}/NowlyHost-macos-amd64.dmg
+
+      - name: Upload DMG artifacts (Apple Silicon)
+        uses: actions/upload-artifact@v4
+        with:
+          name: nowly-host-macos-arm64
+          path: apps/native/releases/${{ steps.version.outputs.version }}/NowlyHost-macos-arm64.dmg
+
+      - name: Attach DMGs to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            apps/native/releases/${{ steps.version.outputs.version }}/NowlyHost-macos-amd64.dmg
+            apps/native/releases/${{ steps.version.outputs.version }}/NowlyHost-macos-arm64.dmg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
