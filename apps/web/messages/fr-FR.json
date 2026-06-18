@@ -1,31 +1,31 @@
 {
-  "Navbar": {
+  "navbar": {
     "marketplace": "Bibliothèque",
     "docs": "Documentation",
-    "downloadDesktop": "Télécharger l'application",
-    "downloadFor": "Télécharger pour {browser}",
-    "downloadShort": "Télécharger"
+    "download-desktop": "Télécharger l'application",
+    "download-for": "Télécharger pour {browser}",
+    "download-short": "Télécharger"
   },
-  "HeroSection": {
+  "hero-section": {
     "badge": "Nouveau",
     "title": "Votre activité Discord,",
-    "titleAccent": "synchronisée.",
+    "title-accent": "synchronisée.",
     "description": "La façon la plus simple d'afficher automatiquement ce que vous regardez. Séries, films ou streams, votre statut Discord reste toujours à jour.",
     "cta": "Découvrir les présences"
   },
-  "PlatformsSection": {
-    "sectionLabel": "Plateformes",
+  "platforms-section": {
+    "section-label": "Plateformes",
     "title": "Vos services favoris",
     "description": "Compatible avec les plateformes de streaming les plus populaires",
-    "libraryCta": "Ouvrir la bibliothèque",
-    "servicesCount": "{count, plural, one {# service prêt} other {# services prêts}}",
-    "availableHeading": "Disponibles",
-    "comingSoonHeading": "Bientôt disponibles",
-    "comingSoonBadge": "Bientôt",
-    "moreToDiscover": "Encore à découvrir"
+    "library-cta": "Ouvrir la bibliothèque",
+    "services-count": "{count, plural, one {# service prêt} other {# services prêts}}",
+    "available-heading": "Disponibles",
+    "coming-soon-heading": "Bientôt disponibles",
+    "coming-soon-badge": "Bientôt",
+    "more-to-discover": "Encore à découvrir"
   },
-  "StepsSection": {
-    "sectionLabel": "Comment ça marche",
+  "steps-section": {
+    "section-label": "Comment ça marche",
     "title": "Aussi simple que ça",
     "description": "Trois étapes pour afficher ce que vous regardez",
     "steps": [
@@ -43,24 +43,24 @@
       }
     ]
   },
-  "CtaSection": {
+  "cta-section": {
     "title": "Commencez dès maintenant",
     "description": "Aucun abonnement requis. Léger et sécurisé.",
-    "downloadFor": "Télécharger pour {browser}",
-    "comingSoon": "Bientôt disponible",
-    "firefoxStatus": "Bientôt",
+    "download-for": "Télécharger pour {browser}",
+    "coming-soon": "Bientôt disponible",
+    "firefox-status": "Bientôt",
     "extension": "Télécharger l'extension",
     "browser": "Navigateur",
     "platforms": "Compatible avec les navigateurs basés sur Chromium",
-    "openSource": "Open source",
+    "open-source": "Open source",
     "free": "Gratuit"
   },
-  "HomeFaqSection": {
-    "sectionLabel": "FAQ",
+  "home-faq-section": {
+    "section-label": "FAQ",
     "title": "Questions fréquentes",
     "description": "Les réponses rapides aux questions les plus courantes sur Nowly, l'installation et la confidentialité.",
-    "faqCta": "Aller sur la page",
-    "discordCta": "Discord communautaire",
+    "faq-cta": "Aller sur la page",
+    "discord-cta": "Discord communautaire",
     "items": [
       {
         "question": "Qu'est-ce que Nowly ?",
@@ -76,47 +76,47 @@
       }
     ]
   },
-  "Footer": {
+  "footer": {
     "copyright": "© 2026 Nowly.",
     "trademark": "Discord est une marque déposée de",
     "support": "Soutenir le projet",
     "thanks": "Merci !",
     "redirect": "Redirection dans {countdown}s",
-    "openSource": "Open source",
-    "authorAlt": "Auteur",
-    "languageLabel": "Afficher le site en",
+    "open-source": "Open source",
+    "author-alt": "Auteur",
+    "language-label": "Afficher le site en",
     "french": "Français",
     "english": "Anglais",
     "spanish": "Espagnol",
-    "categoryProduct": "Produit",
-    "categoryLegal": "Légal",
+    "category-product": "Produit",
+    "category-legal": "Légal",
     "about": "À propos",
     "faq": "FAQ",
     "status": "Statut",
     "changelog": "Notes de version",
     "privacy": "Politique de confidentialité",
     "tos": "Conditions d'utilisation",
-    "legalNotice": "Mentions légales",
+    "legal-notice": "Mentions légales",
     "cookies": "Cookies"
   },
-  "CookieBanner": {
+  "cookie-banner": {
     "message": "Ce site utilise uniquement des cookies strictement nécessaires (session & langue). Aucun suivi, aucune publicité.",
-    "learnMore": "En savoir plus",
+    "learn-more": "En savoir plus",
     "dismiss": "Compris"
   },
-  "KofiModal": {
+  "kofi-modal": {
     "title": "Le projet est gratuit",
     "description": "On a pris un truc qui existait et on s'est dit : on peut faire mieux, plus complet, et avec une interface qui déchire.",
     "support": "Nous soutenir sur Ko-fi",
     "skip": "Non merci, télécharger directement"
   },
-  "Ads": {
+  "ads": {
     "label": "Publicité",
     "placeholder": "Emplacement publicitaire réservé. Ajoutez le data-ad-slot AdSense pour activer les annonces.",
-    "cardTitle": "Sponsor",
-    "cardDescription": "Un emplacement discret pour soutenir Nowly sans interrompre la navigation."
+    "card-title": "Sponsor",
+    "card-description": "Un emplacement discret pour soutenir Nowly sans interrompre la navigation."
   },
-  "FaqPage": {
+  "faq-page": {
     "title": "FAQ",
     "items": [
       {
@@ -157,7 +157,7 @@
       }
     ]
   },
-  "AboutPage": {
+  "about-page": {
     "badge": "À propos",
     "title": "Une vision moderne de l'activité Discord",
     "intro": "Nowly remet le Rich Presence communautaire au goût du jour : plus propre, plus simple, plus moderne.",
@@ -179,21 +179,21 @@
         "body": "Nous ajoutons progressivement de nouvelles plateformes, une meilleure expérience d'installation et des outils plus simples pour créer des présences fiables."
       }
     ],
-    "analyticsNote": "* Hors analytics optionnelles, désactivables à l'installation. Elles servent uniquement à mesurer des informations agrégées comme les installations, sans nom, email ou donnée personnelle permettant de vous identifier."
+    "analytics-note": "* Hors analytics optionnelles, désactivables à l'installation. Elles servent uniquement à mesurer des informations agrégées comme les installations, sans nom, email ou donnée personnelle permettant de vous identifier."
   },
-  "StatusPage": {
+  "status-page": {
     "badge": "Statut",
     "title": "État des services Nowly",
     "description": "Tout est opérationnel ? Vérifiez en un coup d'œil.",
-    "checkedHistory": "Vérifié pour la dernière fois à {time}",
-    "latestLatency": "Dernière latence",
-    "lastChecked": "Dernier check",
-    "recentChecks": "10 derniers checks",
-    "historyLabel": "Historique récent des temps de réponse",
-    "noData": "Aucune donnée",
-    "allOperational": "Tous les services sont opérationnels",
-    "someDegraded": "Certains services répondent difficilement",
-    "checkedLive": "Ces vérifications sont effectuées en direct avec un délai court.",
+    "checked-history": "Vérifié pour la dernière fois à {time}",
+    "latest-latency": "Dernière latence",
+    "last-checked": "Dernier check",
+    "recent-checks": "10 derniers checks",
+    "history-label": "Historique récent des temps de réponse",
+    "no-data": "Aucune donnée",
+    "all-operational": "Tous les services sont opérationnels",
+    "some-degraded": "Certains services répondent difficilement",
+    "checked-live": "Ces vérifications sont effectuées en direct avec un délai court.",
     "operational": "Opérationnel",
     "degraded": "Dégradé",
     "overall": {
@@ -203,7 +203,7 @@
       "down": "Certains services sont indisponibles",
       "unknown": "Aucune donnée de statut pour le moment"
     },
-    "statusLabels": {
+    "status-labels": {
       "operational": "Opérationnel",
       "slow": "Lent",
       "degraded": "Dégradé",
@@ -229,9 +229,9 @@
       }
     }
   },
-  "PrivacyPage": {
+  "privacy-page": {
     "title": "Politique de confidentialité",
-    "lastUpdated": "Dernière mise à jour : juin 2026.",
+    "last-updated": "Dernière mise à jour : juin 2026.",
     "intro": "Nowly est conçu avec la confidentialité comme priorité. L'activité Rich Presence est traitée <strong>entièrement en local</strong> sur votre machine — elle ne transite jamais par nos serveurs. Certaines fonctionnalités optionnelles (avis, analytics) impliquent un traitement côté serveur, décrit ci-dessous.",
     "sections": [
       {
@@ -284,9 +284,9 @@
       }
     ]
   },
-  "TosPage": {
+  "tos-page": {
     "title": "Conditions d'utilisation",
-    "lastUpdated": "Dernière mise à jour : juin 2026.",
+    "last-updated": "Dernière mise à jour : juin 2026.",
     "sections": [
       {
         "title": "Acceptation des conditions",
@@ -342,9 +342,9 @@
       }
     ]
   },
-  "LegalNoticePage": {
+  "legal-notice-page": {
     "title": "Mentions légales",
-    "lastUpdated": "En vigueur depuis le 15 juin 2026 — requises par le droit français (LCEN, art. 6-III).",
+    "last-updated": "En vigueur depuis le 15 juin 2026 — requises par le droit français (LCEN, art. 6-III).",
     "sections": [
       {
         "title": "Éditeur",
@@ -380,9 +380,9 @@
       }
     ]
   },
-  "CookiesPage": {
+  "cookies-page": {
     "title": "Politique de cookies",
-    "lastUpdated": "Dernière mise à jour : juin 2026.",
+    "last-updated": "Dernière mise à jour : juin 2026.",
     "intro": "Cette page décrit les cookies et technologies similaires utilisés sur <strong>nowly.me</strong>. Nowly ne dépose <strong>aucun</strong> cookie de suivi, de profilage ou publicitaire.",
     "sections": [
       {
@@ -411,16 +411,16 @@
       }
     ]
   },
-  "MarketplacePage": {
+  "marketplace-page": {
     "badge": "Bibliothèque",
     "title": "Plateformes compatibles",
     "description": "Découvrez toutes les plateformes compatibles avec Nowly",
-    "searchPlaceholder": "Rechercher une plateforme...",
-    "sortLabel": "Trier par :",
-    "sortPopular": "Popularité",
-    "sortRecent": "Plus récentes",
-    "sortNameAsc": "A - Z",
-    "sortNameDesc": "Z - A",
+    "search-placeholder": "Rechercher une plateforme...",
+    "sort-label": "Trier par :",
+    "sort-popular": "Popularité",
+    "sort-recent": "Plus récentes",
+    "sort-name-asc": "A - Z",
+    "sort-name-desc": "Z - A",
     "categories": {
       "streaming": "Streaming",
       "music": "Musique",
@@ -432,143 +432,142 @@
     "empty": "Aucune plateforme trouvée",
     "reset": "Réinitialiser les filtres"
   },
-  "Docs": {
+  "docs": {
     "documentation": "Documentation",
-    "onThisPage": "Sur cette page",
+    "on-this-page": "Sur cette page",
     "toc": "TOC",
-    "openTableOfContents": "Ouvrir la table des matières",
+    "open-table-of-contents": "Ouvrir la table des matières",
     "previous": "Précédent",
     "next": "Suivant",
     "menu": "Menu",
     "collapse": "Réduire",
     "expand": "Développer"
   },
-  "Common": {
-    "statusAvailable": "Disponible",
-    "statusSoon": "Bientôt",
-    "statusBeta": "Bêta"
+  "common": {
+    "status-available": "Disponible",
+    "status-soon": "Bientôt",
+    "status-beta": "Bêta"
   },
-  "MarketplaceDetail": {
-    "breadcrumbHome": "Bibliothèque",
+  "marketplace-detail": {
+    "breadcrumb-home": "Bibliothèque",
     "about": "À propos",
-    "supportedUrls": "URL compatibles",
+    "supported-urls": "URL compatibles",
     "features": "Fonctionnalités",
-    "authorLabel": "Auteur",
-    "contributorLabel": "Contributeur",
+    "author-label": "Auteur",
+    "contributor-label": "Contributeur",
     "development": "Contributeurs",
     "stats": "Statistiques",
-    "activeUsers": "Utilisateurs actifs",
-    "totalInstalls": "Installations totales",
+    "active-users": "Utilisateurs actifs",
+    "total-installs": "Installations totales",
     "rating": "Note",
-    "addedAt": "Ajoutée le",
-    "lastUpdated": "Dernière mise à jour",
+    "added-at": "Ajoutée le",
+    "last-updated": "Dernière mise à jour",
     "ready": "Disponible maintenant",
     "installed": "Présence installée",
-    "installAction": "Installer",
-    "installedAction": "Installée",
+    "install-action": "Installer",
+    "installed-action": "Installée",
     "installing": "Installation...",
-    "updateAction": "Mettre à jour",
-    "updateAvailable": "Mise à jour disponible",
-    "updateDescription": "Une nouvelle version de la présence {platform} est disponible.",
-    "uninstallAction": "Désinstaller",
-    "uninstallConfirmTitle": "Supprimer la présence",
-    "uninstallConfirmDescription": "Si {platform} contient des données de configuration, elles seront définitivement perdues.",
-    "uninstallConfirmAction": "Supprimer",
-    "uninstallConfirmCancel": "Annuler",
-    "installSuccess": "{platform} installée avec succès",
-    "installError": "Échec de l'installation de {platform}",
-    "uninstallSuccess": "{platform} désinstallée",
-    "extNotDetected": "Extension Nowly non détectée. Assurez-vous que l'extension est installée et rechargez la page.",
-    "betaLabel": "Bêta",
-    "betaNote": "Version bêta. Des erreurs peuvent survenir.",
-    "comingSoon": "Bientôt disponible",
+    "update-action": "Mettre à jour",
+    "update-available": "Mise à jour disponible",
+    "update-description": "Une nouvelle version de la présence {platform} est disponible.",
+    "uninstall-action": "Désinstaller",
+    "uninstall-confirm-title": "Supprimer la présence",
+    "uninstall-confirm-description": "Si {platform} contient des données de configuration, elles seront définitivement perdues.",
+    "uninstall-confirm-action": "Supprimer",
+    "uninstall-confirm-cancel": "Annuler",
+    "install-success": "{platform} installée avec succès",
+    "install-error": "Échec de l'installation de {platform}",
+    "uninstall-success": "{platform} désinstallée",
+    "ext-not-detected": "Extension Nowly non détectée. Assurez-vous que l'extension est installée et rechargez la page.",
+    "beta-label": "Bêta",
+    "beta-note": "Version bêta. Des erreurs peuvent survenir.",
+    "coming-soon": "Bientôt disponible",
     "waiting": "En attente",
     "source": "Code source",
     "back": "Retour à la bibliothèque",
-    "activeDescription": "{platform} est active dans votre extension",
-    "addDescription": "Ajoutez {platform} à votre présence Discord",
-    "yourRating": "Votre note",
-    "comingSoonDescription": "La prise en charge de {platform} est actuellement en cours de développement.",
+    "active-description": "{platform} est active dans votre extension",
+    "add-description": "Ajoutez {platform} à votre présence Discord",
+    "your-rating": "Votre note",
+    "coming-soon-description": "La prise en charge de {platform} est actuellement en cours de développement.",
     "settings": "Paramètres",
-    "settingsAvailableInExtension": "Configurez ces paramètres depuis l'extension Nowly.",
+    "settings-available-in-extension": "Configurez ces paramètres depuis l'extension Nowly.",
     "installation": "Installation",
-    "versionHistory": "Historique des versions",
-    "showAllVersions": "Afficher les {count} versions",
-    "currentVersion": "Version actuelle",
-    "useVersion": "Utiliser cette version",
-    "versionChanged": "{platform} basculée vers la v{version}",
-    "versionChangeError": "Échec du changement de version pour {platform} v{version}",
-    "downgradeConfirmTitle": "Rétrograder la version",
-    "downgradeConfirmDescription": "Utiliser une ancienne version n'est généralement pas recommandé. Si vous rencontrez des problèmes avec la version actuelle, revenir à une version antérieure peut parfois les résoudre.",
-    "downgradeConfirmAction": "Utiliser cette version",
-    "downgradeConfirmCancel": "Annuler",
-    "rateAction": "Noter",
-    "rateTitle": "Noter cette présence",
-    "ratePlaceholder": "Ajouter un commentaire (optionnel)...",
-    "rateSubmit": "Envoyer",
-    "rateSubmitting": "Envoi...",
-    "rateSubmitted": "Merci !",
-    "rateThanks": "Votre note a été envoyée.",
-    "rateError": "Échec de l'envoi de la note. Réessaye.",
+    "version-history": "Historique des versions",
+    "show-all-versions": "Afficher les {count} versions",
+    "current-version": "Version actuelle",
+    "use-version": "Utiliser cette version",
+    "version-changed": "{platform} basculée vers la v{version}",
+    "version-change-error": "Échec du changement de version pour {platform} v{version}",
+    "downgrade-confirm-title": "Rétrograder la version",
+    "downgrade-confirm-description": "Utiliser une ancienne version n'est généralement pas recommandé. Si vous rencontrez des problèmes avec la version actuelle, revenir à une version antérieure peut parfois les résoudre.",
+    "downgrade-confirm-action": "Utiliser cette version",
+    "downgrade-confirm-cancel": "Annuler",
+    "rate-action": "Noter",
+    "rate-title": "Noter cette présence",
+    "rate-placeholder": "Ajouter un commentaire (optionnel)...",
+    "rate-submit": "Envoyer",
+    "rate-submitting": "Envoi...",
+    "rate-submitted": "Merci !",
+    "rate-thanks": "Votre note a été envoyée.",
+    "rate-error": "Échec de l'envoi de la note. Réessaye.",
     "comments": "Commentaires",
-    "commentsTitle": "Commentaires",
-    "commentsEmpty": "Aucun commentaire pour l'instant.",
-    "commentsCount": "{count} avis",
-    "commentsRatingDistribution": "Répartition des notes",
+    "comments-title": "Commentaires",
+    "comments-empty": "Aucun commentaire pour l'instant.",
+    "comments-count": "{count} avis",
+    "comments-rating-distribution": "Répartition des notes",
     "community": "Communauté",
     "logout": "Se déconnecter",
-    "rateAnonymous": "Publier anonymement",
-    "rateComment": "Commentaire",
-    "rateModify": "Modifier",
-    "commentDeleted": "Votre commentaire a été supprimé.",
-    "commentDelete": "Supprimer",
-    "commentAnonymous": "Anonyme",
-    "connectedAs": "Connecté en tant que",
-    "rateLoginTitle": "Connexion requise",
-    "rateLoginDesc1": "Connecte-toi avec Discord pour noter et commenter. On garde uniquement ton avatar, ton pseudo et ton ID Discord.",
-    "rateLoginDesc2": "Cette connexion permet d'éviter les abus. Tu veux rester discret ? Coche « Publier anonymement » — on hachera ton ID pour que personne ne puisse relier le commentaire à toi.",
-    "rateLoginButton": "Se connecter avec Discord",
-    "rateReviewDesc": "Partage ton expérience et aide les autres à choisir."
+    "rate-anonymous": "Publier anonymement",
+    "rate-comment": "Commentaire",
+    "rate-modify": "Modifier",
+    "comment-deleted": "Votre commentaire a été supprimé.",
+    "comment-delete": "Supprimer",
+    "comment-anonymous": "Anonyme",
+    "connected-as": "Connecté en tant que",
+    "rate-login-title": "Connexion requise",
+    "rate-login-desc1": "Connecte-toi avec Discord pour noter et commenter. On garde uniquement ton avatar, ton pseudo et ton ID Discord.",
+    "rate-login-desc2": "Cette connexion permet d'éviter les abus. Tu veux rester discret ? Coche « Publier anonymement » — on hachera ton ID pour que personne ne puisse relier le commentaire à toi.",
+    "rate-login-button": "Se connecter avec Discord",
+    "rate-review-desc": "Partage ton expérience et aide les autres à choisir."
   },
-  "VersionUpdatesCard": {
-    "versionTitle": "Version {version}",
-    "currentBadge": "Actuelle",
-    "installAction": "Installer",
-    "installOldAction": "Installer l'ancienne version",
-    "versionPlaceholder": "Version",
-    "sizeLabel": "Taille",
-    "sourceLabel": "Source",
-    "commitLabel": "Commit",
-    "authorLabel": "Auteur de la version",
-    "contributorsLabel": "Contributeurs"
+  "version-updates-card": {
+    "version-title": "Version {version}",
+    "current-badge": "Actuelle",
+    "install-action": "Installer",
+    "install-old-action": "Installer l'ancienne version",
+    "version-placeholder": "Version",
+    "size-label": "Taille",
+    "source-label": "Source",
+    "commit-label": "Commit",
+    "author-label": "Auteur de la version",
+    "contributors-label": "Contributeurs"
   },
-  "NotFound": {
+  "not-found": {
     "description": "La page que vous recherchez n'existe pas ou a été déplacée.",
-    "backToHome": "Retour à l'accueil"
+    "back-to-home": "Retour à l'accueil"
   },
-  "HostPage": {
+  "host-page": {
     "badge": "Application native",
     "title": "Télécharger l'application hôte",
     "description": "L'hôte natif est le pont entre votre navigateur et Discord. Il fonctionne en arrière-plan et maintient votre Rich Presence synchronisée.",
-    "cardTitle": "Télécharger l'hôte pour",
-    "cardVersion": "Version {version} — {details}",
-    "platformSelectLabel": "Sélectionner la plateforme",
-    "windowsDetails": "Windows 10/11, 64-bit",
-    "macosDetails": "macOS 11+, Intel ou Apple Silicon",
-    "linuxDetails": "Linux 2.6.32+ / glibc 2.17+",
-    "downloadButton": "Télécharger l'installateur",
-    "downloadFor": "Télécharger pour {platform}",
-    "winDownloadInstaller": "Télécharger l'installeur",
-    "winDownloadPortable": "Version portable (.zip)",
-    "downloadArchive": "Télécharger l'archive (.tar.gz)",
-    "chipOpenSource": "Open source",
-    "chipLightweight": "Faible empreinte",
-    "chipOpenSourceDesc": "Code source et historique du projet sur GitHub.",
-    "chipLightweightDesc": "Petit, silencieux et conçu pour se faire oublier.",
-    "trustBadge": "Confiance",
-    "trustTitle": "Qu'est-ce que l'application hôte fait exactement ?",
-    "trustDescription": "Elle sert uniquement de pont local entre votre navigateur et Discord. Elle permet à Nowly de mettre à jour votre Rich Presence sans envoyer votre activité à nos serveurs.",
-    "trustItems": [
+    "card-title": "Télécharger l'hôte pour",
+    "card-version": "Version {version} — {details}",
+    "platform-select-label": "Sélectionner la plateforme",
+    "windows-details": "Windows 10/11, 64-bit",
+    "macos-details": "macOS 11+, Intel ou Apple Silicon",
+    "linux-details": "Linux 2.6.32+ / glibc 2.17+",
+    "download-for": "Télécharger pour {platform}",
+    "win-download-installer": "Télécharger l'installeur",
+    "win-download-portable": "Version portable (.zip)",
+    "download-archive": "Télécharger l'archive (.tar.gz)",
+    "chip-open-source": "Open source",
+    "chip-lightweight": "Faible empreinte",
+    "chip-open-source-desc": "Code source et historique du projet sur GitHub.",
+    "chip-lightweight-desc": "Petit, silencieux et conçu pour se faire oublier.",
+    "trust-badge": "Confiance",
+    "trust-title": "Qu'est-ce que l'application hôte fait exactement ?",
+    "trust-description": "Elle sert uniquement de pont local entre votre navigateur et Discord. Elle permet à Nowly de mettre à jour votre Rich Presence sans envoyer votre activité à nos serveurs.",
+    "trust-items": [
       {
         "title": "Traitement local",
         "description": "L'extension détecte l'activité dans votre navigateur et l'application hôte la traite directement sur votre machine."
@@ -582,32 +581,27 @@
         "description": "Vos titres, plateformes et informations de lecture ne sont pas envoyés à nos serveurs."
       }
     ],
-    "guideTitle": "Guide d'installation",
-    "step1Title": "Téléchargez l'installateur",
-    "step1Desc": "Cliquez sur le bouton de téléchargement ci-dessus pour obtenir la dernière version de l'application hôte Nowly.",
-    "step2Title": "Exécutez l'installateur",
-    "step2Desc": "Ouvrez le fichier téléchargé et suivez l'assistant d'installation. Aucune permission spéciale n'est requise.",
-    "step3Title": "Installez l'extension navigateur",
-    "step3Desc": "Rendez-vous dans la bibliothèque pour installer l'extension Nowly dans votre navigateur.",
-    "step3Link": "Aller à la bibliothèque",
-    "step4Title": "Profitez",
-    "step4Desc": "Une fois les deux installés, Nowly fonctionne automatiquement. Ouvrez une plateforme compatible et votre statut Discord se mettra à jour en temps réel.",
-    "reqTitle": "Configuration requise",
-    "reqOs": "Système d'exploitation",
-    "reqOsValue": "Windows 10 ou Windows 11",
-    "reqArch": "Architecture",
-    "reqArchValue": "64-bit (x64)",
-    "reqDiscord": "Discord",
-    "reqDiscordValue": "Application Discord installée et en cours d'exécution",
-    "reqBrowser": "Navigateur",
-    "reqBrowserValue": "Navigateur basé sur Chromium (Chrome, Edge, Brave, Opera)",
-    "reqStorage": "Stockage",
-    "reqStorageValue": "Taille variable selon le package",
-    "reqStorageWindowsValue": "Installateur 3,71 Mo / Portable 1,82 Mo",
-    "reqStorageMacosValue": "3,38 Mo",
-    "reqStorageLinuxValue": "1,76 Mo"
+    "guide-title": "Guide d'installation",
+    "step1-title": "Téléchargez l'installateur",
+    "step1-desc": "Cliquez sur le bouton de téléchargement ci-dessus pour obtenir la dernière version de l'application hôte Nowly.",
+    "step2-title": "Exécutez l'installateur",
+    "step2-desc": "Ouvrez le fichier téléchargé et suivez l'assistant d'installation. Aucune permission spéciale n'est requise.",
+    "step3-title": "Installez l'extension navigateur",
+    "step3-desc": "Rendez-vous dans la bibliothèque pour installer l'extension Nowly dans votre navigateur.",
+    "step3-link": "Aller à la bibliothèque",
+    "step4-title": "Profitez",
+    "step4-desc": "Une fois les deux installés, Nowly fonctionne automatiquement. Ouvrez une plateforme compatible et votre statut Discord se mettra à jour en temps réel.",
+    "req-title": "Configuration requise",
+    "req-os": "Système d'exploitation",
+    "req-arch": "Architecture",
+    "req-discord": "Discord",
+    "req-browser": "Navigateur",
+    "req-storage": "Stockage",
+    "req-storage-windows-value": "Installateur 3,71 Mo / Portable 1,82 Mo",
+    "req-storage-macos-value": "3,38 Mo",
+    "req-storage-linux-value": "1,76 Mo"
   },
-  "ErrorPage": {
+  "error-page": {
     "title": "Une erreur est survenue",
     "description": "Une erreur inattendue s'est produite. Réessaie ou reviens plus tard.",
     "retry": "Réessayer"

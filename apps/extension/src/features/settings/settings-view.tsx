@@ -55,7 +55,7 @@ export const SettingsView: FC<Props> = ({
       {hostVersionInfo?.updateAvailable ? (
         <section className="rounded-lg border border-accent/20 bg-accent/5 p-4">
           <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-accent">
-            {t("hostUpdateAvailable", { latestVersion: hostVersionInfo.latestVersion })}
+            {t("host-update-available", { latestVersion: hostVersionInfo.latestVersion })}
           </h2>
           <a
             href="https://nowly.me/host"
@@ -63,7 +63,7 @@ export const SettingsView: FC<Props> = ({
             rel="noreferrer"
             className="inline-flex h-9 items-center gap-2 rounded-lg border border-accent/20 bg-accent/10 px-3 text-xs font-medium text-accent transition-colors hover:bg-accent/20"
           >
-            {t("hostDownloadUpdate")}
+            {t("host-download-update")}
             <ExternalLink className="h-3.5 w-3.5" />
           </a>
         </section>
@@ -71,7 +71,7 @@ export const SettingsView: FC<Props> = ({
 
       <section className="rounded-lg border border-border bg-card p-4">
         <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("language")}</h2>
-        <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("languageDescription")}</p>
+        <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("language-description")}</p>
         <div className="relative">
           <Select
             unstyled
@@ -96,9 +96,9 @@ export const SettingsView: FC<Props> = ({
 
       <section className="rounded-lg border border-border bg-card p-4">
         <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("features")}</h2>
-        <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("scheduleFeatureDescription")}</p>
+        <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("schedule-feature-description")}</p>
         <Label unstyled className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card-2 px-3 py-2">
-          <span className="text-xs font-medium text-foreground">{t("scheduleFeature")}</span>
+          <span className="text-xs font-medium text-foreground">{t("schedule-feature")}</span>
           <Switch
             checked={settings.scheduleEnabled !== false}
             onChange={(checked) => onSettingsChange({ scheduleEnabled: checked })}
@@ -107,11 +107,11 @@ export const SettingsView: FC<Props> = ({
       </section>
 
       <section className="rounded-lg border border-border bg-card p-4">
-        <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("dataManagement")}</h2>
-        <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("analyticsDescription")}</p>
+        <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("data-management")}</h2>
+        <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("analytics-description")}</p>
 
         <Label unstyled className="mb-3 flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card-2 px-3 py-2">
-          <span className="text-xs font-medium text-foreground">{t("analyticsConsent")}</span>
+          <span className="text-xs font-medium text-foreground">{t("analytics-consent")}</span>
           <Checkbox
             checked={settings.analyticsConsent === true}
             onChange={(checked) => onSettingsChange({ analyticsConsent: checked })}
@@ -124,7 +124,7 @@ export const SettingsView: FC<Props> = ({
           rel="noreferrer"
           className="inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card-2 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
         >
-          {t("dataManagement")}
+          {t("data-management")}
           <ExternalLink className="h-3.5 w-3.5" />
         </a>
       </section>

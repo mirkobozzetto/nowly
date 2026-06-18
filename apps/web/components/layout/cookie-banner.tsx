@@ -8,7 +8,7 @@ import { useEffect, useState, type FC, type ReactElement } from "react";
 const STORAGE_KEY = "nowly_cookie_dismissed";
 
 export const CookieBanner: FC = (): ReactElement | null => {
-  const t = useTranslations("CookieBanner");
+  const t = useTranslations("cookie-banner");
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export const CookieBanner: FC = (): ReactElement | null => {
             href="/cookies"
             className="underline underline-offset-4 hover:text-foreground transition-colors"
           >
-            {t("learnMore")}
+            {t("learn-more")}
           </Link>
         </p>
 

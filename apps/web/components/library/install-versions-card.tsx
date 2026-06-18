@@ -12,7 +12,7 @@ type Props = {
 export const InstallVersionsCard: FC<Props> = ({
   platform,
 }): ReactElement | null => {
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
 
   if (platform.status === "available" || platform.status === "beta") return null;
 
@@ -20,7 +20,7 @@ export const InstallVersionsCard: FC<Props> = ({
     <Card size="sm" className="bg-linear-to-b from-card to-surface">
       <CardTitle className="text-foreground normal-case tracking-normal">{t("installation")}</CardTitle>
       
-      <p className="text-sm text-muted-foreground leading-relaxed">{t("comingSoonDescription", { platform: platform.name })}</p>
+      <p className="text-sm text-muted-foreground leading-relaxed">{t("coming-soon-description", { platform: platform.name })}</p>
     </Card>
   );
 };

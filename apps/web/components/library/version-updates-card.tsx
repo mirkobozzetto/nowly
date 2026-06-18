@@ -53,7 +53,7 @@ const sourceUrl = (update: VersionUpdate): string | undefined => {
 };
 
 export const VersionUpdatesCard: FC<VersionUpdatesCardProps> = ({ currentVersion, installedVersion, accentColor, updates, className, onInstallVersion }): ReactElement => {
-  const t = useTranslations("VersionUpdatesCard");
+  const t = useTranslations("version-updates-card");
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const sortedUpdates = useMemo(() => updates, [updates]);
@@ -67,8 +67,8 @@ export const VersionUpdatesCard: FC<VersionUpdatesCardProps> = ({ currentVersion
   const releaseSourceUrl = sourceUrl(selectedUpdate);
   const contributors = selectedUpdate.contributors ?? [];
   const installLabel = isCurrentVersion
-    ? t("installAction")
-    : t("installOldAction");
+    ? t("install-action")
+    : t("install-old-action");
 
   const handleSelectVersion = (version: string): void => {
     const nextIndex = sortedUpdates.findIndex((update) => update.version === version);
@@ -79,7 +79,7 @@ export const VersionUpdatesCard: FC<VersionUpdatesCardProps> = ({ currentVersion
     <Card className={cn("space-y-5", className)}>
       <CardHeader>
         <div className="flex items-center gap-3 mb-2 flex-wrap">
-          <CardTitle>{t("versionTitle", { version: selectedUpdate.version })}</CardTitle>
+          <CardTitle>{t("version-title", { version: selectedUpdate.version })}</CardTitle>
           {isCurrentVersion && (
             <Badge
               variant="outline"
@@ -91,7 +91,7 @@ export const VersionUpdatesCard: FC<VersionUpdatesCardProps> = ({ currentVersion
                   }
                 : undefined}
             >
-              {t("currentBadge")}
+              {t("current-badge")}
             </Badge>
           )}
           {selectedUpdate.versionType && (
@@ -122,21 +122,21 @@ export const VersionUpdatesCard: FC<VersionUpdatesCardProps> = ({ currentVersion
         <div className="grid grid-cols-2 gap-3 text-xs sm:grid-cols-3">
           {selectedUpdate.bundleSizeLabel ? (
             <div className="rounded-md border border-border bg-card-2 px-3 py-2">
-              <div className="text-dim-foreground">{t("sizeLabel")}</div>
+              <div className="text-dim-foreground">{t("size-label")}</div>
               <div className="mt-1 font-medium text-foreground">{selectedUpdate.bundleSizeLabel}</div>
             </div>
           ) : null}
 
           {selectedUpdate.source ? (
             <div className="rounded-md border border-border bg-card-2 px-3 py-2">
-              <div className="text-dim-foreground">{t("sourceLabel")}</div>
+              <div className="text-dim-foreground">{t("source-label")}</div>
               <div className="mt-1 font-medium uppercase text-foreground">{selectedUpdate.source}</div>
             </div>
           ) : null}
 
           {selectedUpdate.commitSha ? (
             <div className="rounded-md border border-border bg-card-2 px-3 py-2">
-              <div className="text-dim-foreground">{t("commitLabel")}</div>
+              <div className="text-dim-foreground">{t("commit-label")}</div>
               <div className="mt-1 font-mono font-medium text-foreground">{selectedUpdate.commitSha.slice(0, 7)}</div>
             </div>
           ) : null}
@@ -146,7 +146,7 @@ export const VersionUpdatesCard: FC<VersionUpdatesCardProps> = ({ currentVersion
           <div className="space-y-2">
             {selectedUpdate.author ? (
               <div className="flex items-center justify-between gap-3 rounded-md bg-card-2 px-3 py-2">
-                <span className="text-xs text-dim-foreground">{t("authorLabel")}</span>
+                <span className="text-xs text-dim-foreground">{t("author-label")}</span>
                 {selectedUpdate.author.github ? (
                   <a
                     href={githubUrl(selectedUpdate.author.github)}
@@ -165,7 +165,7 @@ export const VersionUpdatesCard: FC<VersionUpdatesCardProps> = ({ currentVersion
 
             {contributors.length > 0 ? (
               <div className="rounded-md bg-card-2 px-3 py-2">
-                <div className="mb-2 text-xs text-dim-foreground">{t("contributorsLabel")}</div>
+                <div className="mb-2 text-xs text-dim-foreground">{t("contributors-label")}</div>
                 <div className="flex flex-wrap gap-1.5">
                   {contributors.map((contributor) => (
                     contributor.github ? (
@@ -211,7 +211,7 @@ export const VersionUpdatesCard: FC<VersionUpdatesCardProps> = ({ currentVersion
             onValueChange={handleSelectVersion}
           >
             <SelectTrigger size="sm" className="w-40">
-              <SelectValue placeholder={t("versionPlaceholder")} />
+              <SelectValue placeholder={t("version-placeholder")} />
             </SelectTrigger>
 
             <SelectContent>

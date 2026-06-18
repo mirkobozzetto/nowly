@@ -24,7 +24,7 @@ type Props = {
 };
 
 export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRating }): ReactElement => {
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
   const { isAuthenticated, token, login } = useUser();
   const queryClient = useQueryClient();
   const [localRating, setLocalRating] = useState(savedRating ?? 0);
@@ -66,12 +66,12 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRat
         setLocalRating(0);
         queryClient.invalidateQueries({ queryKey: presenceKey(slug) });
         queryClient.invalidateQueries({ queryKey: myRatingKey });
-        toast.success(t("commentDeleted"));
+        toast.success(t("comment-deleted"));
       } else {
-        toast.error(t("rateError"));
+        toast.error(t("rate-error"));
       }
     } catch {
-      toast.error(t("rateError"));
+      toast.error(t("rate-error"));
     } finally {
       setDeleting(false);
     }
@@ -81,10 +81,10 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRat
   const hasComment = myRating?.hasComment;
 
   const actionLabel = !isRated
-    ? t("rateAction")
+    ? t("rate-action")
     : isRated && !hasComment
-      ? t("rateComment")
-      : t("rateModify");
+      ? t("rate-comment")
+      : t("rate-modify");
 
   const actionRating = isRated ? (myRating?.rating ?? localRating) : 0;
 
@@ -95,12 +95,12 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRat
         {platform.status !== "soon" && (
           <>
             <StatRow
-              label={t("activeUsers")}
+              label={t("active-users")}
               value={platform.activeUsers.toLocaleString()}
             />
 
             <StatRow
-              label={t("totalInstalls")}
+              label={t("total-installs")}
               value={platform.totalInstalls.toLocaleString()}
             />
 
@@ -141,14 +141,14 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRat
                         onLogin={login}
                         trigger={
                           <Button variant="outline" size="xs">
-                            {t("rateAction")}
+                            {t("rate-action")}
                           </Button>
                         }
                       />
                     )}
                     {isAuthenticated && isRated && hasComment && (
                       <Button variant="destructive" size="xs" disabled={deleting} onClick={handleDelete}>
-                        {deleting ? t("rateSubmitting") : t("commentDelete")}
+                        {deleting ? t("rate-submitting") : t("comment-delete")}
                       </Button>
                     )}
                   </span>
@@ -159,12 +159,12 @@ export const StatsCard: FC<Props> = ({ platform, locale, slug, canRate, savedRat
         )}
 
         <StatRow
-          label={t("addedAt")}
+          label={t("added-at")}
           value={dateFormatter.format(new Date(platform.addedAt))}
         />
 
         <StatRow
-          label={t("lastUpdated")}
+          label={t("last-updated")}
           value={dateFormatter.format(new Date(platform.lastUpdated))}
         />
       </div>

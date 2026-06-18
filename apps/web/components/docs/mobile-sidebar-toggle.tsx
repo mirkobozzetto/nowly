@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useSidebar } from "../ui/sidebar-context";
 
 export const MobileSidebarToggle = () => {
-  const t = useTranslations("Docs");
+  const t = useTranslations("docs");
   const { toggle } = useSidebar();
 
   return (

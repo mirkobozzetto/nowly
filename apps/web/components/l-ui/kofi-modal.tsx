@@ -11,7 +11,7 @@ interface KofiModalProps {
 }
 
 export function KofiModal({ isOpen, onClose }: KofiModalProps) {
-  const t = useTranslations("KofiModal");
+  const t = useTranslations("kofi-modal");
 
   const triggerDownload = () => {
     const a = document.createElement("a");

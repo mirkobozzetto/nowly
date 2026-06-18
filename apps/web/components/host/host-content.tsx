@@ -19,7 +19,7 @@ export const HostContent: FC = (): ReactElement => {
   const detectedPlatform = usePlatform();
   const [manualPlatform, setManualPlatform] = useState<(typeof platformKeys)[number] | null>(null);
   const [version, setVersion] = useState<string | null>(null);
-  const t = useTranslations("HostPage");
+  const t = useTranslations("host-page");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -44,26 +44,26 @@ export const HostContent: FC = (): ReactElement => {
     windows: {
       icon: WindowsIcon,
       label: "Windows",
-      details: t("windowsDetails"),
+      details: t("windows-details"),
       downloads: [
-        { label: t("winDownloadInstaller"), url: `${CDN_INSTALLER_BASE_URL}/nowly-setup.exe` },
-        { label: t("winDownloadPortable"), url: `${CDN_INSTALLER_BASE_URL}/nowly-windows.zip` },
+        { label: t("win-download-installer"), url: `${CDN_INSTALLER_BASE_URL}/nowly-setup.exe` },
+        { label: t("win-download-portable"), url: `${CDN_INSTALLER_BASE_URL}/nowly-windows.zip` },
       ],
     },
     macos: {
       icon: AppleIcon,
       label: "macOS",
-      details: t("macosDetails"),
+      details: t("macos-details"),
       downloads: [
-        { label: t("downloadArchive"), url: `${CDN_INSTALLER_BASE_URL}/nowly-macos.tar.gz` },
+        { label: t("download-archive"), url: `${CDN_INSTALLER_BASE_URL}/nowly-macos.tar.gz` },
       ],
     },
     linux: {
       icon: LinuxIcon,
       label: "Linux",
-      details: t("linuxDetails"),
+      details: t("linux-details"),
       downloads: [
-        { label: t("downloadArchive"), url: `${CDN_INSTALLER_BASE_URL}/nowly-linux.tar.gz` },
+        { label: t("download-archive"), url: `${CDN_INSTALLER_BASE_URL}/nowly-linux.tar.gz` },
       ],
     },
   };
@@ -82,7 +82,7 @@ export const HostContent: FC = (): ReactElement => {
             value={activePlatform}
             onValueChange={(value) => setManualPlatform(value as (typeof platformKeys)[number])}
           >
-            <SelectTrigger className="min-w-44" aria-label={t("platformSelectLabel")}>
+            <SelectTrigger className="min-w-44" aria-label={t("platform-select-label")}>
               <SelectValue />
             </SelectTrigger>
 
@@ -102,7 +102,7 @@ export const HostContent: FC = (): ReactElement => {
           </Select>
 
           <p className="wrap-break-word text-sm text-muted-foreground">
-            {t("cardVersion", { version: version ?? "latest", details: config.details })}
+            {t("card-version", { version: version ?? "latest", details: config.details })}
           </p>
           </div>
 
@@ -122,8 +122,8 @@ export const HostContent: FC = (): ReactElement => {
             <GitHubIcon className="size-5" />
           </span>
           <span className="min-w-0">
-            <span className="block text-sm font-semibold text-foreground">{t("chipOpenSource")}</span>
-            <span className="block text-xs text-muted-foreground">{t("chipOpenSourceDesc")}</span>
+            <span className="block text-sm font-semibold text-foreground">{t("chip-open-source")}</span>
+            <span className="block text-xs text-muted-foreground">{t("chip-open-source-desc")}</span>
           </span>
         </a>
 
@@ -135,8 +135,8 @@ export const HostContent: FC = (): ReactElement => {
             <Feather className="size-5" />
           </span>
           <span className="min-w-0">
-            <span className="block text-sm font-semibold text-foreground">{t("chipLightweight")}</span>
-            <span className="block text-xs text-muted-foreground">{t("chipLightweightDesc")}</span>
+            <span className="block text-sm font-semibold text-foreground">{t("chip-lightweight")}</span>
+            <span className="block text-xs text-muted-foreground">{t("chip-lightweight-desc")}</span>
           </span>
           <LibraryBig className="ml-auto size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
         </Link>

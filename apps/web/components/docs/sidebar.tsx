@@ -14,7 +14,7 @@ type AppSidebarProps = {
 };
 
 export const AppSidebar: FC<AppSidebarProps> = ({ items }) => {
-  const t = useTranslations("Docs");
+  const t = useTranslations("docs");
   const { open: mobileOpen, setOpen: setMobileOpen } = useSidebar();
   const pathname = usePathname();
 

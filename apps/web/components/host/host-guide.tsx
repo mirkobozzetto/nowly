@@ -4,19 +4,19 @@ import Link from "next/link";
 import type { FC, ReactElement } from "react";
 
 export const HostGuide: FC = (): ReactElement => {
-  const t = useTranslations("HostPage");
+  const t = useTranslations("host-page");
 
   const steps = [
-    { step: "01", title: t("step1Title"), description: t("step1Desc") },
-    { step: "02", title: t("step2Title"), description: t("step2Desc") },
-    { step: "03", title: t("step3Title"), description: t("step3Desc"), link: { href: "/library", label: t("step3Link") } },
-    { step: "04", title: t("step4Title"), description: t("step4Desc") },
+    { step: "01", title: t("step1-title"), description: t("step1-desc") },
+    { step: "02", title: t("step2-title"), description: t("step2-desc") },
+    { step: "03", title: t("step3-title"), description: t("step3-desc"), link: { href: "/library", label: t("step3-link") } },
+    { step: "04", title: t("step4-title"), description: t("step4-desc") },
   ];
 
   return (
     <section className="mb-16">
       <h2 className="text-2xl font-bold tracking-tight mb-8">
-        {t("guideTitle")}
+        {t("guide-title")}
       </h2>
 
       <div className="space-y-6">

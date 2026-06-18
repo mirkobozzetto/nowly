@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 
 export const MarketplaceAdCard: FC = (): ReactElement | null => {
-  const t = useTranslations("Ads");
+  const t = useTranslations("ads");
 
   if (!ADSENSE_ENABLED || process.env.NODE_ENV === "development") {
     return null;
@@ -31,9 +31,9 @@ export const MarketplaceAdCard: FC = (): ReactElement | null => {
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-foreground truncate mb-1">{t("cardTitle")}</h3>
+            <h3 className="font-semibold text-foreground truncate mb-1">{t("card-title")}</h3>
             <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-              {t("cardDescription")}
+              {t("card-description")}
             </p>
           </div>
         </div>

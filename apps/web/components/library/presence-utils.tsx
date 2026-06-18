@@ -8,7 +8,7 @@ type StatusBadgeProps = {
 };
 
 export const StatusBadge: FC<StatusBadgeProps> = ({ status }): ReactElement => {
-  const t = useTranslations("Common");
+  const t = useTranslations("common");
   const styles = {
     available: "bg-success/10 text-success border-success/20",
     soon: "bg-muted text-dim-foreground border-border",
@@ -16,9 +16,9 @@ export const StatusBadge: FC<StatusBadgeProps> = ({ status }): ReactElement => {
   };
 
   const labels = {
-    available: t("statusAvailable"),
-    soon: t("statusSoon"),
-    beta: t("statusBeta"),
+    available: t("status-available"),
+    soon: t("status-soon"),
+    beta: t("status-beta"),
   };
 
   return (

@@ -48,7 +48,7 @@ export const SnoozeSheet: FC<Props> = ({ activeSlug, onClose, open, presences })
   };
 
   return (
-    <Sheet open={open} onClose={onClose} position="bottom" subtitle={t("snoozeDescription")} title={t("snooze")}>
+    <Sheet open={open} onClose={onClose} position="bottom" subtitle={t("snooze-description")} title={t("snooze")}>
       <div className="flex flex-col gap-4">
 
         <div className="flex items-center justify-center gap-3">
@@ -93,7 +93,7 @@ export const SnoozeSheet: FC<Props> = ({ activeSlug, onClose, open, presences })
             onClick={handleClearSnooze}
             className="w-full rounded-lg border border-border bg-card-2 px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
           >
-            {t("clearSnooze")}
+            {t("clear-snooze")}
           </Button>
         ) : null}
       </div>

@@ -25,7 +25,7 @@ export const PresenceDetailDialogs: FC<Props> = ({
   onConfirmUninstall,
   onConfirmDowngrade,
 }): ReactElement => {
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
 
   return (
     <>
@@ -36,19 +36,19 @@ export const PresenceDetailDialogs: FC<Props> = ({
               <Trash2 className="h-5 w-5" />
             </DialogMedia>
 
-            <DialogTitle>{t("uninstallConfirmTitle")}</DialogTitle>
+            <DialogTitle>{t("uninstall-confirm-title")}</DialogTitle>
 
             <DialogDescription>
-              {t("uninstallConfirmDescription", { platform: presence.name })}
+              {t("uninstall-confirm-description", { platform: presence.name })}
             </DialogDescription>
           </DialogHeader>
 
           <DialogFooter>
             <DialogAction variant="destructive" onClick={onConfirmUninstall}>
-              {t("uninstallConfirmAction")}
+              {t("uninstall-confirm-action")}
             </DialogAction>
 
-            <DialogCancel>{t("uninstallConfirmCancel")}</DialogCancel>
+            <DialogCancel>{t("uninstall-confirm-cancel")}</DialogCancel>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -60,19 +60,19 @@ export const PresenceDetailDialogs: FC<Props> = ({
               <TriangleAlert className="h-5 w-5" />
             </DialogMedia>
 
-            <DialogTitle>{t("downgradeConfirmTitle")}</DialogTitle>
+            <DialogTitle>{t("downgrade-confirm-title")}</DialogTitle>
 
             <DialogDescription>
-              {t("downgradeConfirmDescription", { platform: presence.name })}
+              {t("downgrade-confirm-description", { platform: presence.name })}
             </DialogDescription>
           </DialogHeader>
 
           <DialogFooter>
             <DialogAction onClick={onConfirmDowngrade}>
-              {t("downgradeConfirmAction")}
+              {t("downgrade-confirm-action")}
             </DialogAction>
 
-            <DialogCancel>{t("downgradeConfirmCancel")}</DialogCancel>
+            <DialogCancel>{t("downgrade-confirm-cancel")}</DialogCancel>
           </DialogFooter>
         </DialogContent>
       </Dialog>

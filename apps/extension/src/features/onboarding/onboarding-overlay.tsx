@@ -69,9 +69,9 @@ const UserScriptsGate: FC = () => (
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent">
         <Lock className="h-6 w-6" />
       </div>
-      <h1 className="mt-4 text-lg font-semibold text-foreground">{t("onboardingUserScriptsGateTitle")}</h1>
-      <p className="mt-3 text-sm leading-6 text-muted-foreground">{t("onboardingUserScriptsGateBody")}</p>
-      <p className="mt-3 text-xs leading-5 text-muted-foreground">{t("onboardingUserScriptsGatePrivacy")}</p>
+      <h1 className="mt-4 text-lg font-semibold text-foreground">{t("onboarding-user-scripts-gate-title")}</h1>
+      <p className="mt-3 text-sm leading-6 text-muted-foreground">{t("onboarding-user-scripts-gate-body")}</p>
+      <p className="mt-3 text-xs leading-5 text-muted-foreground">{t("onboarding-user-scripts-gate-privacy")}</p>
       {import.meta.env.BROWSER === "firefox" ? (
         <Button
           variant="unstyled"
@@ -79,7 +79,7 @@ const UserScriptsGate: FC = () => (
           onClick={requestUserScriptsPermission}
           className="mt-5 inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-background transition-opacity hover:opacity-90"
         >
-          {t("onboardingUserScriptsAllow")}
+          {t("onboarding-user-scripts-allow")}
         </Button>
       ) : (
         <>
@@ -89,7 +89,7 @@ const UserScriptsGate: FC = () => (
             onClick={() => chrome.tabs.create({ url: extensionDetailsUrl() })}
             className="mt-5 inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-background transition-opacity hover:opacity-90"
           >
-            {t("onboardingUserScriptsOpenPage")}
+            {t("onboarding-user-scripts-open-page")}
             <ExternalLink className="h-4 w-4" />
           </Button>
           <p className="mt-3 break-all text-[11px] text-muted-foreground">{extensionDetailsUrl()}</p>
@@ -108,9 +108,9 @@ const NativeClientGate: FC<{ nativeStatus: NativeStatus; onConnectNative: () => 
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent">
           <MonitorDown className="h-6 w-6" />
         </div>
-        <h1 className="mt-4 text-center text-lg font-semibold text-foreground">{t("onboardingNativeGateTitle")}</h1>
-        <p className="mt-3 text-center text-sm leading-6 text-muted-foreground">{t("onboardingNativeGateBody")}</p>
-        <p className="mt-3 text-center text-xs leading-5 text-muted-foreground">{t("onboardingNativeGatePrivacy")}</p>
+        <h1 className="mt-4 text-center text-lg font-semibold text-foreground">{t("onboarding-native-gate-title")}</h1>
+        <p className="mt-3 text-center text-sm leading-6 text-muted-foreground">{t("onboarding-native-gate-body")}</p>
+        <p className="mt-3 text-center text-xs leading-5 text-muted-foreground">{t("onboarding-native-gate-privacy")}</p>
 
         <div className="mt-5 grid gap-2">
           {platforms.map((platform) => (
@@ -121,7 +121,7 @@ const NativeClientGate: FC<{ nativeStatus: NativeStatus; onConnectNative: () => 
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-foreground">{platform.name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {platform.downloadLink ? t("onboardingPlatformAvailable") : t("onboardingPlatformSoon")}
+                  {platform.downloadLink ? t("onboarding-platform-available") : t("onboarding-platform-soon")}
                 </p>
               </div>
               {platform.downloadLink ? (
@@ -131,7 +131,7 @@ const NativeClientGate: FC<{ nativeStatus: NativeStatus; onConnectNative: () => 
                   rel="noreferrer"
                   className="inline-flex h-9 shrink-0 items-center rounded-lg bg-accent px-3 text-xs font-semibold text-background transition-opacity hover:opacity-90"
                 >
-                  {t("onboardingDownload")}
+                  {t("onboarding-download")}
                 </a>
               ) : (
                 <Button
@@ -140,7 +140,7 @@ const NativeClientGate: FC<{ nativeStatus: NativeStatus; onConnectNative: () => 
                   disabled
                   className="inline-flex h-9 shrink-0 items-center rounded-lg border border-border bg-card px-3 text-xs font-semibold text-dim-foreground"
                 >
-                  {t("onboardingComingSoon")}
+                  {t("onboarding-coming-soon")}
                 </Button>
               )}
             </div>
@@ -150,7 +150,7 @@ const NativeClientGate: FC<{ nativeStatus: NativeStatus; onConnectNative: () => 
         <div className="mt-5 rounded-lg border border-border bg-card-2 p-3">
           <div className="flex items-center gap-3">
             <span className={`h-3 w-3 shrink-0 rounded-full ${ready ? "bg-accent shadow-[0_0_18px_rgba(34,211,238,.7)]" : "bg-dim-foreground"}`} />
-            <p className="text-xs leading-5 text-muted-foreground">{t("onboardingNativeGateWait")}</p>
+            <p className="text-xs leading-5 text-muted-foreground">{t("onboarding-native-gate-wait")}</p>
           </div>
           <Button
             variant="unstyled"
@@ -158,7 +158,7 @@ const NativeClientGate: FC<{ nativeStatus: NativeStatus; onConnectNative: () => 
             onClick={onConnectNative}
             className="mt-3 inline-flex h-9 items-center rounded-lg border border-border bg-card px-3 text-xs font-semibold text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
           >
-            {ready ? t("onboardingNativeConnected") : t("connectNative")}
+            {ready ? t("onboarding-native-connected") : t("connect-native")}
           </Button>
         </div>
       </div>
@@ -181,23 +181,23 @@ const AnalyticsConsentGate: FC<{ onAccept: () => void; onDecline: () => void }> 
       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent">
         <BarChart3 className="h-6 w-6" />
       </div>
-      <h1 className="mt-4 text-lg font-semibold text-foreground">{t("onboardingAnalyticsTitle")}</h1>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">{t("onboardingAnalyticsHelp")}</p>
+      <h1 className="mt-4 text-lg font-semibold text-foreground">{t("onboarding-analytics-title")}</h1>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">{t("onboarding-analytics-help")}</p>
 
       <div className="mt-5 grid grid-cols-2 gap-1.5 text-left">
         {notCollectedItems.map((item) => (
           <div key={item.key} className="flex items-center gap-2 rounded-lg border border-border bg-card-2 px-2.5 py-2">
             <X className="h-3.5 w-3.5 shrink-0 text-red-400" />
-            <span className="text-xs text-muted-foreground">{t(`analyticsNotCollect${item.key.charAt(0).toUpperCase() + item.key.slice(1)}` as keyof typeof frMessages)}</span>
+            <span className="text-xs text-muted-foreground">{t(`analytics-not-collect-${item.key}` as keyof typeof frMessages)}</span>
           </div>
         ))}
         <div className="flex items-center justify-center gap-2 rounded-lg border border-border bg-card-2 px-2.5 py-2 col-span-2">
           <Check className="h-3.5 w-3.5 shrink-0 text-accent" />
-          <span className="text-xs text-foreground">{t("analyticsCollectUsage")}</span>
+          <span className="text-xs text-foreground">{t("analytics-collect-usage")}</span>
         </div>
       </div>
 
-      <p className="mt-3 text-xs leading-5 text-dim-foreground">{t("onboardingAnalyticsDelete")}</p>
+      <p className="mt-3 text-xs leading-5 text-dim-foreground">{t("onboarding-analytics-delete")}</p>
 
       <div className="mt-4 flex flex-col items-center gap-3">
         <Button
@@ -206,7 +206,7 @@ const AnalyticsConsentGate: FC<{ onAccept: () => void; onDecline: () => void }> 
           onClick={onAccept}
           className="inline-flex h-10 items-center rounded-lg bg-accent px-5 text-sm font-semibold text-background transition-opacity hover:opacity-90"
         >
-          {t("onboardingAnalyticsAccept")}
+          {t("onboarding-analytics-accept")}
         </Button>
         <Button
           variant="unstyled"
@@ -214,7 +214,7 @@ const AnalyticsConsentGate: FC<{ onAccept: () => void; onDecline: () => void }> 
           onClick={onDecline}
           className="text-xs text-muted-foreground underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground"
         >
-          {t("onboardingAnalyticsDecline")}
+          {t("onboarding-analytics-decline")}
         </Button>
       </div>
     </div>
@@ -224,23 +224,23 @@ const AnalyticsConsentGate: FC<{ onAccept: () => void; onDecline: () => void }> 
 const tourSteps = [
   {
     icon: Sparkles,
-    title: "onboardingTourActivityTitle",
-    body: "onboardingTourActivityBody",
+    title: "onboarding-tour-activity-title",
+    body: "onboarding-tour-activity-body",
   },
   {
     icon: ShoppingBag,
-    title: "onboardingTourLibraryTitle",
-    body: "onboardingTourLibraryBody",
+    title: "onboarding-tour-library-title",
+    body: "onboarding-tour-library-body",
   },
   {
     icon: PlugZap,
-    title: "onboardingTourPresencesTitle",
-    body: "onboardingTourPresencesBody",
+    title: "onboarding-tour-presences-title",
+    body: "onboarding-tour-presences-body",
   },
   {
     icon: Settings,
-    title: "onboardingTourSettingsTitle",
-    body: "onboardingTourSettingsBody",
+    title: "onboarding-tour-settings-title",
+    body: "onboarding-tour-settings-body",
   },
 ] as const;
 
@@ -325,7 +325,7 @@ export const OnboardingOverlay: FC<Props> = ({
               onClick={onSkipTour}
               className="rounded-lg border border-border bg-card-2 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
             >
-              {t("onboardingSkip")}
+              {t("onboarding-skip")}
             </Button>
             <div className="flex items-center gap-2">
               <Button
@@ -336,7 +336,7 @@ export const OnboardingOverlay: FC<Props> = ({
                 className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card-2 px-3 text-xs font-semibold text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40"
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
-                {t("onboardingPrevious")}
+                {t("onboarding-previous")}
               </Button>
               <Button
                 variant="unstyled"
@@ -347,7 +347,7 @@ export const OnboardingOverlay: FC<Props> = ({
                 }}
                 className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-accent px-3 text-xs font-semibold text-background transition-opacity hover:opacity-90"
               >
-                {isLast ? t("onboardingFinish") : t("onboardingNext")}
+                {isLast ? t("onboarding-finish") : t("onboarding-next")}
                 {isLast ? <CheckCircle2 className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
               </Button>
             </div>

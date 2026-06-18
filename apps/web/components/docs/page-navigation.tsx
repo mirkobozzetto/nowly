@@ -12,7 +12,7 @@ type PageNavigationProps = {
 };
 
 export const PageNavigation: FC<PageNavigationProps> = ({ prev, next }) => {
-  const t = useTranslations("Docs");
+  const t = useTranslations("docs");
 
   return (
     <nav className="mt-16 flex items-center border-t border-border pt-8">

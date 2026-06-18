@@ -19,7 +19,7 @@ const generateMetadata = (): Metadata => {
 };
 
 const Page = (): ReactElement => {
-  const t = useTranslations("FaqPage");
+  const t = useTranslations("faq-page");
   const items = t.raw("items") as FaqItem[];
   const faqItems = items.map((item) => ({
     question: item.question,

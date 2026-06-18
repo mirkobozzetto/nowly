@@ -18,14 +18,14 @@ export const NativeStatusButton: FC<Props> = ({ nativeStatus, onConnect }): Reac
     <Button
       variant="unstyled"
       size="none"
-      aria-label={t("connectNative")}
+      aria-label={t("connect-native")}
       title={nativeStatus.status}
       onClick={onConnect}
       disabled={isConnecting}
       className="group flex h-9 items-center gap-2 rounded-lg border border-border bg-card-2 px-2.5 text-xs text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground disabled:cursor-wait disabled:opacity-70"
     >
       <Icon className={connected ? "h-3.5 w-3.5 text-accent" : "h-3.5 w-3.5 text-destructive"} />
-      <span>{connected ? t("nativeConnected") : t("nativeDisconnected")}</span>
+      <span>{connected ? t("native-connected") : t("native-disconnected")}</span>
       <RefreshCw className={`h-3.5 w-3.5 ${isConnecting ? "animate-spin" : "opacity-60 group-hover:opacity-100"}`} />
     </Button>
   );

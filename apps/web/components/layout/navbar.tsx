@@ -11,7 +11,7 @@ import type { FC, ReactElement } from "react";
 
 export const Navbar: FC = (): ReactElement => {
   const browser = useBrowser();
-  const t = useTranslations("Navbar");
+  const t = useTranslations("navbar");
 
   return (
     <nav
@@ -84,9 +84,9 @@ export const Navbar: FC = (): ReactElement => {
               <Download size={16} />
 
               <span className="hidden sm:inline">
-                {browser ? t("downloadFor", { browser }) : t("downloadDesktop")}
+                {browser ? t("download-for", { browser }) : t("download-desktop")}
               </span>
-              <span className="sm:hidden">{browser || t("downloadShort")}</span>
+              <span className="sm:hidden">{browser || t("download-short")}</span>
             </Link>
           </div>
         </div>
