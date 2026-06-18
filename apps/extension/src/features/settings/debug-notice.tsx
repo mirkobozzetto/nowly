@@ -1,7 +1,7 @@
+import type { NativeStatus } from "@/lib/messages";
+import type { PresenceDebug } from "@/shared/types";
 import { Activity } from "lucide-react";
 import type { FC, ReactElement } from "react";
-import type { PresenceDebug } from "@/shared/types";
-import type { NativeStatus } from "@/lib/messages";
 
 type Props = {
   debug: PresenceDebug | null;

@@ -1,5 +1,7 @@
 import { Sheet } from "@/components/sheet";
-import { Button, Input, Switch } from "@/components/ui";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { sendMessage } from "@/lib/messages";
 import { t } from "@/shared/i18n";
 import type { ExtensionSettings, InstalledPresences } from "@/shared/types";

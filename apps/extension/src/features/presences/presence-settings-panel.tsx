@@ -1,10 +1,14 @@
+import { Sheet } from "@/components/sheet";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { sendMessage } from "@/lib/messages";
+import { getLocale, t } from "@/shared/i18n";
 import { Settings, Trash2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Sheet } from "@/components/sheet";
-import { Button, Input, Label, Select, Switch } from "@/components/ui";
-import { getLocale, t } from "@/shared/i18n";
-import { sendMessage } from "@/lib/messages";
 
 type SettingDefinition = Record<string, unknown> & { default?: unknown; type?: string };
 

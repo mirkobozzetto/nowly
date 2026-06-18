@@ -1,9 +1,10 @@
-import { BellRing, Calendar } from "lucide-react";
-import type { FC, MouseEvent, ReactElement } from "react";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { assetUrl } from "@/shared/api";
-import { Button, Switch } from "@/components/ui";
 import { t } from "@/shared/i18n";
 import type { StoredPresence } from "@/shared/types";
+import { BellRing, Calendar } from "lucide-react";
+import type { FC, MouseEvent, ReactElement } from "react";
 import { PresenceSettingsPanel } from "./presence-settings-panel";
 
 type Props = {

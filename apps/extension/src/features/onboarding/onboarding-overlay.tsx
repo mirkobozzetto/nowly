@@ -1,14 +1,15 @@
+import type frMessages from "@/../messages/fr.json";
+import { Header } from "@/components/header";
+import { LocaleFlag } from "@/components/locale-flag";
+import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
+import type { NativeStatus } from "@/lib/messages";
+import { platforms } from "@/lib/platforms";
+import { resolveLocale, t, type LocalePreference } from "@/shared/i18n";
+import type { ExtensionSettings, UserScriptsStatus } from "@/shared/types";
 import { BarChart3, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Lock, MonitorDown, PlugZap, Settings, ShoppingBag, Sparkles, X } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useMemo, useState } from "react";
-import { Header } from "@/components/header";
-import { LocaleFlag } from "@/components/locale-flag";
-import { Button, Select } from "@/components/ui";
-import { platforms } from "@/lib/platforms";
-import type { NativeStatus } from "@/lib/messages";
-import type { ExtensionSettings, UserScriptsStatus } from "@/shared/types";
-import { resolveLocale, t, type LocalePreference } from "@/shared/i18n";
-import type frMessages from "@/../messages/fr.json";
 
 type Props = {
   nativeStatus: NativeStatus;

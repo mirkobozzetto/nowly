@@ -1,4 +1,6 @@
-import { Button, Label, Switch } from "@/components/ui";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { t } from "@/shared/i18n";
 import type { ExtensionSettings, PresenceDisplayMode } from "@/shared/types";
 import { LayoutGrid, List } from "lucide-react";

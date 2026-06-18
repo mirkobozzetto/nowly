@@ -1,8 +1,8 @@
+import { Button } from "@/components/ui/button";
+import type { NativeStatus } from "@/lib/messages";
+import { t } from "@/shared/i18n";
 import { RefreshCw, Wifi, WifiOff } from "lucide-react";
 import type { FC, ReactElement } from "react";
-import { Button } from "@/components/ui";
-import { t } from "@/shared/i18n";
-import type { NativeStatus } from "@/lib/messages";
 
 type Props = {
   nativeStatus: NativeStatus;

@@ -1,5 +1,5 @@
 import { Sheet } from "@/components/sheet";
-import { Button } from "@/components/ui";
+import { Button } from "@/components/ui/button";
 import { sendMessage } from "@/lib/messages";
 import { t } from "@/shared/i18n";
 import type { InstalledPresences } from "@/shared/types";

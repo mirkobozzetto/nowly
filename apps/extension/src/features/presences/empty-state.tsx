@@ -1,6 +1,6 @@
+import { t } from "@/shared/i18n";
 import { PackageOpen } from "lucide-react";
 import type { FC, ReactElement } from "react";
-import { t } from "@/shared/i18n";
 import { MarketplaceLink } from "./marketplace-link";
 
 export const EmptyState: FC = (): ReactElement => (

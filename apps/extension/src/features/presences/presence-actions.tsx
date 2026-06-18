@@ -1,7 +1,7 @@
+import { Button } from "@/components/ui/button";
+import { t } from "@/shared/i18n";
 import { Power, Trash2, X } from "lucide-react";
 import type { FC, ReactElement } from "react";
-import { Button } from "@/components/ui";
-import { t } from "@/shared/i18n";
 
 type Props = {
   enabled: boolean;

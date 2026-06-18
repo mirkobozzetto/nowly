@@ -1,6 +1,6 @@
 import { cn } from "@/lib/cn";
-import { forwardRef } from "react";
 import type { LabelHTMLAttributes } from "react";
+import { forwardRef } from "react";
 
 export type LabelProps = LabelHTMLAttributes<HTMLLabelElement> & {
   /** Drop the default styling so a fully custom `className` controls the look. */
@@ -14,5 +14,3 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(
     </label>
   ),
 );
-
-Label.displayName = "Label";

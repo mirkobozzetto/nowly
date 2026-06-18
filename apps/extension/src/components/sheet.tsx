@@ -1,7 +1,7 @@
+import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import type { FC, ReactElement, ReactNode } from "react";
 import { useCallback, useEffect, useRef } from "react";
-import { Button } from "@/components/ui";
 
 type Props = {
   children: ReactNode;

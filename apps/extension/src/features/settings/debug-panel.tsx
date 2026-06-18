@@ -1,12 +1,14 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { formatRelativeTime } from "@/lib/format";
+import type { NativeStatus } from "@/lib/messages";
+import { API_BASE_URL } from "@/shared/constants";
+import { t } from "@/shared/i18n";
+import type { ExtensionSettings, PresenceDebug } from "@/shared/types";
 import { ChevronDown, Terminal } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useEffect, useState } from "react";
-import { Button, Input, Label } from "@/components/ui";
-import { API_BASE_URL } from "@/shared/constants";
-import { formatRelativeTime } from "@/lib/format";
-import type { NativeStatus } from "@/lib/messages";
-import { t } from "@/shared/i18n";
-import type { ExtensionSettings, PresenceDebug } from "@/shared/types";
 
 type Props = {
   debug: PresenceDebug | null;
@@ -54,7 +56,7 @@ export const DebugPanel: FC<Props> = ({ debug, nativeStatus, settings, onSetting
       {open && (
         <div className="border-t border-border px-3 py-2.5 text-[11px] leading-5 text-muted-foreground">
           {debug ? (
-            <p className="break-words">
+            <p className="wrap-break-words">
               <span className="font-semibold text-foreground">{debug.stage}</span>
               {" - "}
               {debug.message}
