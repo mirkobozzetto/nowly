@@ -1,11 +1,6 @@
 import { getPrisma, hasDatabase } from "@/db/client"
 import { getAnalyticsMetric } from "@/features/analytics/analytics.metric"
-import {
-  cleanText,
-  FORBIDDEN_PAYLOAD_KEYS_SET,
-  MAX_ANALYTICS_EVENTS_PER_BATCH,
-  MAX_ANALYTICS_EVENTS_PER_DEVICE_PER_MINUTE,
-} from "@nowly/shared"
+import { cleanText, FORBIDDEN_PAYLOAD_KEYS_SET, MAX_ANALYTICS_EVENTS_PER_BATCH, MAX_ANALYTICS_EVENTS_PER_DEVICE_PER_MINUTE } from "@nowly/shared"
 import { Prisma } from "../../generated/prisma/client"
 
 type DeviceSyncPresence = {
@@ -207,6 +202,53 @@ export const recordAnalyticsEvents = async (events: AnalyticsEventInput[]): Prom
   }
 
   return { inserted, rejected }
+}
+
+export const exportDeviceAnalytics = async (deviceId: string): Promise<Record<string, unknown> | null> => {
+  if (!hasDatabase()) return null
+
+  const prisma = getPrisma()
+  const device = await prisma.device.findUnique({ where: { deviceId } })
+  if (!device) return null
+
+  const presences = await prisma.devicePresence.findMany({ where: { deviceId } })
+  const events = await prisma.analyticsEvent.findMany({
+    where: { deviceId },
+    select: { id: true, key: true, slug: true, version: true, payload: true, createdAt: true },
+    orderBy: { createdAt: "asc" },
+  })
+
+  return {
+    exportedAt: new Date().toISOString(),
+    device: {
+      deviceId: device.deviceId,
+      analyticsConsent: device.analyticsConsent,
+      extensionVersion: device.extensionVersion,
+      nativeVersion: device.nativeVersion,
+      browser: device.browser,
+      os: device.os,
+      locale: device.locale,
+      firstSeenAt: device.firstSeenAt?.toISOString(),
+      lastSeenAt: device.lastSeenAt?.toISOString(),
+    },
+    presences: presences.map((p) => ({
+      slug: p.slug,
+      installedVersion: p.installedVersion,
+      installed: p.installed,
+      enabled: p.enabled,
+      installedAt: p.installedAt.toISOString(),
+      updatedAt: p.updatedAt?.toISOString(),
+      uninstalledAt: p.uninstalledAt?.toISOString(),
+    })),
+    events: events.map((e) => ({
+      id: e.id,
+      key: e.key,
+      slug: e.slug,
+      version: e.version,
+      payload: e.payload,
+      createdAt: e.createdAt?.toISOString(),
+    })),
+  }
 }
 
 export const deleteDeviceAnalytics = async (deviceId: string): Promise<void> => {

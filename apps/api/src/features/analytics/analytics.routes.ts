@@ -1,13 +1,9 @@
-import { requireAnalyticsAccess } from "./analytics.middleware"
-import { analyticsRegistry, getAnalyticsMetric } from "./analytics.metric"
-import { deleteDeviceAnalytics, getMetricRows, recordAnalyticsEvents, syncDevice, upsertDevice } from "./analytics.service"
 import { clearActiveDevicesForDevice } from "@/features/presence/presence.repository"
-import {
-  analyticsConsentBodySchema,
-  analyticsEventsBodySchema,
-  deviceSyncBodySchema,
-} from "@nowly/shared/schemas"
+import { analyticsConsentBodySchema, analyticsEventsBodySchema, deviceSyncBodySchema } from "@nowly/shared/schemas"
 import type { FastifyInstance } from "fastify"
+import { analyticsRegistry, getAnalyticsMetric } from "./analytics.metric"
+import { requireAnalyticsAccess } from "./analytics.middleware"
+import { deleteDeviceAnalytics, exportDeviceAnalytics, getMetricRows, recordAnalyticsEvents, syncDevice, upsertDevice } from "./analytics.service"
 
 export const analyticsRoutes = async (fastify: FastifyInstance) => {
   fastify.post("/consent", async (request, reply) => {
@@ -48,6 +44,13 @@ export const analyticsRoutes = async (fastify: FastifyInstance) => {
     ])
 
     return { slug, installs, activeUsers, ratings }
+  })
+
+  fastify.get<{ Params: { deviceId: string } }>("/device/:deviceId/export", async (request, reply) => {
+    const deviceId = request.params.deviceId.trim()
+    const data = await exportDeviceAnalytics(deviceId)
+    if (!data) return reply.status(404).send({ error: "Device not found" })
+    return data
   })
 
   fastify.delete<{ Params: { deviceId: string } }>("/device/:deviceId", async (request, _reply) => {
