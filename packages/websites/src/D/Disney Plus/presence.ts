@@ -1,35 +1,8 @@
 import { createMediaTimestamps, PresenceType } from "@nowly/presence"
+import { getDisneyPlayerData, installDisneyBridge } from "./utils/bridge"
+import { createDisneyImageUrl, findEntityTitle, findVideo, isEpisodeSubtitle, parseEpisodeState } from "./utils/dom"
 
-let disneyImageId: string | undefined
-let disneyTitle: string | undefined
-let disneySubtitle: string | undefined
-
-window.addEventListener("message", (e) => {
-  if (e.data.type === "nowly-disney-data") {
-    disneyImageId = e.data.imageId
-    disneyTitle = e.data.title
-    disneySubtitle = e.data.subtitle
-  }
-})
-
-const script = document.createElement("script")
-script.textContent = `
-setInterval(() => {
-  const el = document.querySelector("disney-web-player");
-  const metadata = el?.mediaPlayer?.mediaPlaybackCriteria?.metadata;
-  const images = metadata?.images_experience?.standard?.tile;
-  if (!images) return;
-  const ratios = Object.keys(images);
-  const closest = ratios.reduce((a, b) => Math.abs(100 / a - 100) < Math.abs(100 / b - 100) ? a : b);
-  window.postMessage({
-    type: "nowly-disney-data",
-    imageId: images[closest]?.imageId,
-    title: metadata?.title?.text,
-    subtitle: metadata?.subtitle?.text,
-  }, "*");
-}, 1000);
-`
-document.head.appendChild(script)
+installDisneyBridge()
 
 const settings = Presence.Settings({
   showBrowsing: {
@@ -50,49 +23,23 @@ const settings = Presence.Settings({
 
 const presence = new Presence(settings)
 
-const findVideo = (): HTMLVideoElement | null => {
-  const selectors = [
-    'video[id^="hivePlayer"]',
-    ".btm-media-player video",
-    "video",
-  ] as const
-
-  for (const selector of selectors) {
-    const video = document.querySelector<HTMLVideoElement>(selector)
-    if (video) return video
-  }
-
-  return null
-}
-
-const findEntityTitle = (): string | undefined => {
-  const img = document.querySelector<HTMLImageElement>('[data-testid="details-title-treatment"] img')
-  if (img?.alt) return img.alt
-
-  const title = document.title.split("|")[0]?.trim()
-  return title || undefined
-}
-
 presence.on("UpdateData", async (ctx) => {
   const { pathname } = document.location
   const video = findVideo()
+  const { imageId, title, subtitle } = getDisneyPlayerData()
 
-  if (pathname.includes("/play/") && video && disneyImageId) {
-    const largeImageKey = `https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/${disneyImageId}/compose?format=png&width=512`
-
-    const episodeMatch = disneySubtitle?.match(/S(\d+):E(\d+)\s+(.*)/)
-    const state = episodeMatch
-      ? `S${episodeMatch[1]}.E${episodeMatch[2]} ${episodeMatch[3]?.trim() || ""}`.trim()
-      : disneySubtitle
+  if (pathname.includes("/play/") && video && imageId) {
+    const largeImageKey = createDisneyImageUrl(imageId)
+    const state = parseEpisodeState(subtitle)
 
     const data: Parameters<typeof presence.setActivity>[0] = {
-      details: disneyTitle || "Disney+",
+      details: title || "Disney+",
       state,
       largeImageKey,
-      largeImageText: disneyTitle || "Disney+",
+      largeImageText: title || "Disney+",
       type: PresenceType.Watching,
       buttons: [{
-        label: episodeMatch ? "Watch Episode" : "Watch Movie",
+        label: isEpisodeSubtitle(subtitle) ? "Watch Episode" : "Watch Movie",
         url: window.location.href,
       }],
     }

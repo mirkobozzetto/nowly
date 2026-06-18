@@ -1,4 +1,6 @@
-import { createCachedImageProxyUrl, createImageProxyUrl, PresenceType, type PresenceData } from "@nowly/presence"
+import { PresenceType, type PresenceData } from "@nowly/presence"
+import { toDiscordImage } from "./utils/proxy"
+import { createProgressTimestamps, findPlayerBar, findVideo, getCurrentTrack } from "./utils/track"
 
 const settings = Presence.Settings({
   privacy: {
@@ -46,201 +48,8 @@ const settings = Presence.Settings({
 })
 
 const presence = new Presence(settings)
-const DISCORD_IMAGE_KEY_MAX_LENGTH = 300
-const TRACK_STALE_MS = 15_000
-
-type TrackInfo = {
-  title: string
-  artist?: string
-  artwork?: string
-  url: string
-  playing: boolean
-  currentTime?: number
-  duration?: number
-  updatedAt: number
-}
-
-let lastTrack: TrackInfo | undefined
 
 const isEnabled = (value: unknown): boolean => value === true || value === "true"
-
-const cleanText = (value: string | null | undefined): string | undefined => {
-  const cleaned = value?.replace(/\s+/g, " ").trim()
-  if (!cleaned || cleaned === "YouTube Music") return undefined
-  return cleaned
-}
-
-const text = (selector: string, parent: ParentNode = document): string | undefined =>
-  cleanText(parent.querySelector(selector)?.textContent)
-
-const attr = (selector: string, attribute: string, parent: ParentNode = document): string | undefined => {
-  const value = parent.querySelector(selector)?.getAttribute(attribute)
-  return cleanText(value)
-}
-
-const findPlayerBar = (): Element | null =>
-  document.querySelector("ytmusic-player-bar")
-  ?? document.querySelector("#player-bar")
-
-const findVideo = (): HTMLVideoElement | null =>
-  document.querySelector<HTMLVideoElement>("video.html5-main-video")
-  ?? document.querySelector<HTMLVideoElement>("#movie_player video")
-  ?? document.querySelector<HTMLVideoElement>("video")
-
-const normalizeArtworkUrl = (url: string | undefined): string | undefined => {
-  if (!url?.startsWith("https://")) return undefined
-  const videoId = url.match(/\/vi\/([^/?#]+)/)?.[1]
-  if (videoId) return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
-
-  return url
-    .replace(/=w\d+-h\d+(-[a-z0-9-]+)?$/i, "=w544-h544-l90-rj")
-    .replace(/=s\d+(-[a-z0-9-]+)?$/i, "=w544-h544-l90-rj")
-}
-
-const findArtwork = (playerBar: Element | null): string | undefined => {
-  const mediaSessionArtwork = navigator.mediaSession.metadata?.artwork
-  const largestMediaSessionArtwork = mediaSessionArtwork?.[mediaSessionArtwork.length - 1]?.src
-  const normalizedMediaSessionArtwork = normalizeArtworkUrl(largestMediaSessionArtwork)
-  if (normalizedMediaSessionArtwork) return normalizedMediaSessionArtwork
-
-  const selectors = [
-    "img.image",
-    "yt-img-shadow.image img",
-    ".thumbnail-image img",
-    "img[src*='googleusercontent.com']",
-    "img[src*='ytimg.com']",
-  ]
-
-  for (const selector of selectors) {
-    const src = attr(selector, "src", playerBar ?? document)
-    const normalized = normalizeArtworkUrl(src)
-    if (normalized) return normalized
-  }
-
-  const metaImage = document.querySelector<HTMLMetaElement>("meta[property='og:image']")?.content
-  const normalizedMetaImage = normalizeArtworkUrl(metaImage)
-  if (normalizedMetaImage) return normalizedMetaImage
-
-  const videoId = new URLSearchParams(document.location.search).get("v")
-  return videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : undefined
-}
-
-const toDiscordImage = async (imageUrl: string | undefined): Promise<string | undefined> => {
-  if (!imageUrl?.startsWith("https://")) return undefined
-  if (imageUrl.length <= DISCORD_IMAGE_KEY_MAX_LENGTH) return imageUrl
-
-  const cached = await createCachedImageProxyUrl("youtube", imageUrl)
-  if (cached) return cached
-
-  return createImageProxyUrl("youtube", imageUrl)
-}
-
-const findTitle = (playerBar: Element | null): string | undefined =>
-  cleanText(navigator.mediaSession.metadata?.title)
-  ?? text(".title.ytmusic-player-bar", playerBar ?? document)
-  ?? text(".content-info-wrapper .title", playerBar ?? document)
-  ?? text("yt-formatted-string.title", playerBar ?? document)
-  ?? cleanText(document.title.replace(/ - YouTube Music$/, ""))
-
-const findByline = (playerBar: Element | null): string | undefined =>
-  text(".byline.ytmusic-player-bar", playerBar ?? document)
-  ?? text(".subtitle.ytmusic-player-bar", playerBar ?? document)
-  ?? text(".content-info-wrapper .byline", playerBar ?? document)
-
-const findArtist = (playerBar: Element | null): string | undefined => {
-  const mediaSessionArtist = cleanText(navigator.mediaSession.metadata?.artist)
-  if (mediaSessionArtist) return mediaSessionArtist
-
-  const byline = findByline(playerBar)
-  if (!byline) return undefined
-  return byline
-    .split(/\s+[•\u2022]\s+/)
-    .map(part => part.trim())
-    .filter(Boolean)
-    .slice(0, 2)
-    .join(" - ")
-}
-
-const isPlaying = (video: HTMLVideoElement | null, playerBar: Element | null): boolean => {
-  if (video) return !video.paused
-
-  const playPauseLabel = attr("#play-pause-button", "aria-label", playerBar ?? document)
-    ?? attr("#play-pause-button", "title", playerBar ?? document)
-    ?? attr("tp-yt-paper-icon-button[title]", "title", playerBar ?? document)
-
-  return Boolean(playPauseLabel && /pause|mettre en pause|pausar/i.test(playPauseLabel))
-}
-
-const currentTrackUrl = (): string => {
-  const url = new URL(document.location.href)
-  const videoId = url.searchParams.get("v")
-
-  if (videoId) {
-    const trackUrl = new URL("https://music.youtube.com/watch")
-    trackUrl.searchParams.set("v", videoId)
-    const playlistId = url.searchParams.get("list")
-    if (playlistId) trackUrl.searchParams.set("list", playlistId)
-    return trackUrl.toString()
-  }
-
-  return document.location.href.split("&t=")[0]
-}
-
-const toAbsoluteUrl = (value: string | undefined): string | undefined => {
-  if (!value) return undefined
-  try {
-    return new URL(value, document.location.origin).toString()
-  } catch {
-    return undefined
-  }
-}
-
-const findTrackUrl = (playerBar: Element | null): string =>
-  toAbsoluteUrl(attr(".title a[href]", "href", playerBar ?? document))
-  ?? toAbsoluteUrl(attr("a[href*='/watch'][href*='v=']", "href", playerBar ?? document))
-  ?? currentTrackUrl()
-
-const createProgressTimestamps = (video: HTMLVideoElement | null, track: TrackInfo): Pick<PresenceData, "startTimestamp" | "endTimestamp"> => {
-  if (!track.playing) return {}
-
-  const currentTime = Number.isFinite(video?.currentTime)
-    ? video?.currentTime
-    : track.currentTime
-  const duration = Number.isFinite(video?.duration)
-    ? video?.duration
-    : track.duration
-
-  if (!Number.isFinite(currentTime) || !Number.isFinite(duration) || (duration ?? 0) <= 0) return {}
-
-  const now = Math.floor(Date.now() / 1000)
-  return {
-    startTimestamp: now - Math.floor(currentTime ?? 0),
-    endTimestamp: now + Math.max(0, Math.floor((duration ?? 0) - (currentTime ?? 0))),
-  }
-}
-
-const getCurrentTrack = (playerBar: Element | null, video: HTMLVideoElement | null): TrackInfo | undefined => {
-  const title = findTitle(playerBar)
-
-  if (!title) {
-    if (lastTrack && Date.now() - lastTrack.updatedAt < TRACK_STALE_MS) return lastTrack
-    return undefined
-  }
-
-  const track: TrackInfo = {
-    title,
-    artist: findArtist(playerBar),
-    artwork: findArtwork(playerBar),
-    url: findTrackUrl(playerBar),
-    playing: isPlaying(video, playerBar),
-    currentTime: Number.isFinite(video?.currentTime) ? video?.currentTime : undefined,
-    duration: Number.isFinite(video?.duration) ? video?.duration : undefined,
-    updatedAt: Date.now(),
-  }
-
-  lastTrack = track
-  return track
-}
 
 const browsingDetails = (pathname: string): string => {
   if (pathname === "/" || pathname === "/browse") return "Browsing home"
@@ -274,7 +83,7 @@ presence.on("UpdateData", async (ctx) => {
       }
 
       if (!privacy) {
-        data.largeImageKey = await toDiscordImage(track.artwork) ?? Assets.Logo
+        data.largeImageKey = toDiscordImage(track.artwork) ?? Assets.Logo
       }
 
       if (!privacy && showButtons) {
