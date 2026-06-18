@@ -53,6 +53,16 @@ const PanelShell: FC<{ children: ReactElement; className?: string }> = ({ childr
   </div>
 );
 
+// On Firefox, userScripts is an optional permission granted via a runtime prompt that must
+// originate from a user gesture (this click). On grant, useOnboardingState's poll picks up the
+// new status and dismisses the gate. On Chrome, the user enables "Allow user scripts" from the
+// extensions page instead.
+const requestUserScriptsPermission = (): void => {
+  void chrome.permissions.request({ permissions: ["userScripts"] }).catch(() => {
+    // Declined or unavailable — the gate stays until the permission is granted.
+  });
+};
+
 const UserScriptsGate: FC = () => (
   <PanelShell>
     <div className="text-center">
@@ -62,16 +72,29 @@ const UserScriptsGate: FC = () => (
       <h1 className="mt-4 text-lg font-semibold text-foreground">{t("onboarding-user-scripts-gate-title")}</h1>
       <p className="mt-3 text-sm leading-6 text-muted-foreground">{t("onboarding-user-scripts-gate-body")}</p>
       <p className="mt-3 text-xs leading-5 text-muted-foreground">{t("onboarding-user-scripts-gate-privacy")}</p>
-      <Button
-        variant="unstyled"
-        size="none"
-        onClick={() => chrome.tabs.create({ url: extensionDetailsUrl() })}
-        className="mt-5 inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-background transition-opacity hover:opacity-90"
-      >
-        {t("onboarding-user-scripts-open-page")}
-        <ExternalLink className="h-4 w-4" />
-      </Button>
-      <p className="mt-3 break-all text-[11px] text-muted-foreground">{extensionDetailsUrl()}</p>
+      {import.meta.env.BROWSER === "firefox" ? (
+        <Button
+          variant="unstyled"
+          size="none"
+          onClick={requestUserScriptsPermission}
+          className="mt-5 inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-background transition-opacity hover:opacity-90"
+        >
+          {t("onboarding-user-scripts-allow")}
+        </Button>
+      ) : (
+        <>
+          <Button
+            variant="unstyled"
+            size="none"
+            onClick={() => chrome.tabs.create({ url: extensionDetailsUrl() })}
+            className="mt-5 inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-background transition-opacity hover:opacity-90"
+          >
+            {t("onboarding-user-scripts-open-page")}
+            <ExternalLink className="h-4 w-4" />
+          </Button>
+          <p className="mt-3 break-all text-[11px] text-muted-foreground">{extensionDetailsUrl()}</p>
+        </>
+      )}
     </div>
   </PanelShell>
 );

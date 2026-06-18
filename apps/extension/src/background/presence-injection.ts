@@ -6,25 +6,15 @@ export interface PresenceInjector {
   getRegistered(ids: string[]): Promise<RegisteredUserScript[]>;
 }
 
-// Converts a Chrome match pattern (e.g. "*://*.youtube.com/*") to a RegExp.
-const patternToRegExp = (pattern: string): RegExp => {
-  const escaped = pattern
-    .replace(/[.+^${}()|[\]\\]/g, "\\$&")
-    .replace(/\\\*/g, ".*");
-  return new RegExp(`^${escaped}$`);
-};
+// --- userScripts implementation (Chrome + Firefox 136+) ---
+// Both browsers expose the MV3 userScripts API on `chrome.userScripts` and compile the
+// inline `code` natively in a CSP-exempt USER_SCRIPT world, so no eval/new Function is
+// needed on our side. The API namespace is undefined until enabled — Chrome's "Allow user
+// scripts" toggle, Firefox's optional `userScripts` permission grant — and we no-op until then
+// (the onboarding gate prompts the user). The same registration persists and auto-injects on
+// future navigations in both browsers.
 
-export const matchesPattern = (url: string, pattern: string): boolean => {
-  try {
-    return patternToRegExp(pattern).test(url);
-  } catch {
-    return false;
-  }
-};
-
-// --- Chrome implementation (delegates to chrome.userScripts) ---
-
-class ChromePresenceInjector implements PresenceInjector {
+class UserScriptsPresenceInjector implements PresenceInjector {
   private get api() {
     return (chrome as ChromeWithUserScripts).userScripts;
   }
@@ -53,61 +43,8 @@ class ChromePresenceInjector implements PresenceInjector {
   async getRegistered(ids: string[]): Promise<RegisteredUserScript[]> {
     const api = this.api;
     if (!api) return [];
-    return api.getScripts({ ids });
+    return (await api.getScripts({ ids })) as RegisteredUserScript[];
   }
 }
 
-// --- Firefox implementation (uses scripting.executeScript + in-memory map) ---
-
-class FirefoxPresenceInjector implements PresenceInjector {
-  private readonly scripts = new Map<string, RegisteredUserScript>();
-
-  async register(script: RegisteredUserScript): Promise<void> {
-    this.scripts.set(script.id, script);
-  }
-
-  async unregister(id: string): Promise<void> {
-    this.scripts.delete(id);
-  }
-
-  async getRegistered(ids: string[]): Promise<RegisteredUserScript[]> {
-    if (!ids.length) return [...this.scripts.values()];
-    return ids.flatMap((id) => {
-      const s = this.scripts.get(id);
-      return s ? [s] : [];
-    });
-  }
-
-  async injectIntoTab(tabId: number, tabUrl: string): Promise<void> {
-    for (const script of this.scripts.values()) {
-      const matches = script.matches.some((p) => matchesPattern(tabUrl, p));
-      if (!matches) continue;
-
-      const code = script.js[0]?.code;
-      if (!code) continue;
-
-      // eslint-disable-next-line no-await-in-loop
-      await chrome.scripting.executeScript({
-        target: { tabId, allFrames: script.allFrames ?? false },
-        // func + args is the only way to inject a dynamic code string via scripting.executeScript.
-        // The function is serialized by the browser; args are passed as JSON.
-        // eslint-disable-next-line no-new-func
-        func: (presenceCode: string) => { new Function(presenceCode)(); },
-        args: [code],
-        world: "MAIN",
-      }).catch(() => {
-        // Tab may have navigated away or be inaccessible.
-      });
-    }
-  }
-}
-
-export const presenceInjector: PresenceInjector =
-  import.meta.env.BROWSER === "firefox"
-    ? new FirefoxPresenceInjector()
-    : new ChromePresenceInjector();
-
-export const firefoxInjector =
-  import.meta.env.BROWSER === "firefox"
-    ? (presenceInjector as FirefoxPresenceInjector)
-    : null;
+export const presenceInjector: PresenceInjector = new UserScriptsPresenceInjector();

@@ -40,6 +40,7 @@
   "onboarding-user-scripts-gate-title": "Activa los scripts de usuario",
   "onboarding-user-scripts-gate-body": "Nowly usa scripts de usuario para ejecutar presencias en los sitios compatibles. Así la extensión detecta lo que estés viendo o escuchando y prepara tu actividad de Discord.",
   "onboarding-user-scripts-gate-privacy": "Las presencias instaladas están firmadas y se verifican localmente antes de ejecutarse. Nowly no almacena datos personales en este paso y solo envía la información mínima necesaria al cliente local.",
+  "onboarding-user-scripts-allow": "Permitir scripts de usuario",
   "onboarding-native-gate-title": "Instala el cliente de Nowly",
   "onboarding-native-gate-body": "El cliente es una pequeña aplicación local que conecta la extensión con Discord Rich Presence. Sin él, el navegador no puede enviar tu actividad a Discord.",
   "onboarding-native-gate-privacy": "El cliente solo recibe la información de actividad necesaria para mostrarla en Discord. Nowly no almacena tus datos personales para esta conexión.",

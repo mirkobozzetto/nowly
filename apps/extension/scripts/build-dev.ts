@@ -100,9 +100,11 @@ const copyManifest = () => {
   if (BROWSER === "firefox") {
     manifest.background = { scripts: ["background.js"] }
     delete manifest.minimum_chrome_version
+    // userScripts is an optional-only permission on Firefox — declare it in optional_permissions
+    // and request it at runtime (Firefox 136+ MV3 userScripts API).
     manifest.permissions = manifest.permissions
       .filter((p: string) => p !== "userScripts" && p !== "sidePanel")
-      .concat("scripting")
+    manifest.optional_permissions = [...(manifest.optional_permissions ?? []), "userScripts"]
     delete manifest.side_panel
     delete manifest.action.default_popup
     manifest.sidebar_action = {
@@ -110,12 +112,16 @@ const copyManifest = () => {
       default_panel: "sidepanel/index.html",
       default_title: "__MSG_extensionName__",
     }
+    // The Chromium-only `key` is rejected by Firefox; its ID comes from gecko.id.
+    delete manifest.key
     manifest.browser_specific_settings = {
-      gecko: { id: chromeIdToFirefoxUuid("abbegmindbabanjcabnmcjmamaoffbam"), strict_min_version: "128.0" },
-    }
-    manifest.data_collection_permissions = {
-      required: [],
-      optional: [],
+      gecko: {
+        id: chromeIdToFirefoxUuid("abbegmindbabanjcabnmcjmamaoffbam"),
+        strict_min_version: "136.0",
+        // Required by AMO — declare data collection practices.
+        // "none" = nothing collected/transmitted. Update if that changes.
+        data_collection_permissions: { required: ["none"] },
+      },
     }
   } else {
     manifest.background.service_worker = "background.js"

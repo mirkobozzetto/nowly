@@ -8,6 +8,7 @@ apps/native/dist/
 
 # Extension (managed separately)
 # apps/extension/
+apps/discord/
 apps/mvp-chromium-extension/
 old-native/
 
@@ -20,3 +21,4 @@ extension-key.pem
 
 # Auto-generated extension source
 apps/extension/src/generated/*
+apps/extension/artifacts/
