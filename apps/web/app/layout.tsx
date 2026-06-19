@@ -19,6 +19,7 @@ const Layout = async ({ children }: PropsWithChildren): Promise<ReactElement> =>
   return (
     <html
       lang={locale}
+      data-scroll-behavior="smooth"
       className={`${instrumentSans.variable} ${geist.variable} bg-background scroll-smooth`}
     >
       <head>
