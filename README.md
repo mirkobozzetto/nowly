@@ -66,4 +66,4 @@ Nowly is free and always will be. If you want to support the project, you can do
 </table>
 <!-- supporters:end -->
 
-Thank you to all of our supporters 💕 ! You can see the full list of supporters on [Ko-fi](https://ko-fi.com/qkimi_/supporters).
+Thank you to all of our supporters 💕
