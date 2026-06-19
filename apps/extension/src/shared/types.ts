@@ -68,6 +68,11 @@ export type PresenceMetadata = {
   features?: Record<string, string[]>;
   version?: string | null;
   settings?: Record<string, unknown>;
+  // Execution context for the presence user-script.
+  // "main": runs in the page world (page globals + same-origin authenticated fetch). Default: "isolated".
+  world?: "main" | "isolated";
+  // When the script is injected. Default: "document_idle".
+  runAt?: "document_start" | "document_end" | "document_idle";
   assets: {
     logo: string;
     icon: string;

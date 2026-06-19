@@ -120,7 +120,7 @@
       },
       {
         "question": "How do I install Nowly?",
-        "answer": "Installation is a two-step process:<br /><strong>Step 1:</strong> install the extension from the <a href='https://chromewebstore.google.com/detail/nowly/kmnlnfldimgneaopdihkplkebobckcjpf'>Chrome Web Store</a>.<br /><strong>Step 2:</strong> download and run the <strong>Windows installer</strong> (the native application that communicates with Discord).<br />Once both are installed, Nowly runs automatically in the background. No further configuration is needed."
+        "answer": "Installation is a two-step process:<br /><strong>Step 1:</strong> install the extension from the <a href='https://chromewebstore.google.com/detail/nowly/kmnlnfldimgneaopdihplkebobckcjpf'>Chrome Web Store</a>.<br /><strong>Step 2:</strong> download and run the <strong>Windows installer</strong> (the native application that communicates with Discord).<br />Once both are installed, Nowly runs automatically in the background. No further configuration is needed."
       },
       {
         "question": "Which platforms are supported?",

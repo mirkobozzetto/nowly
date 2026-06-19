@@ -60,6 +60,45 @@ Los nombres de usuario de GitHub (la clave `github`) se utilizan para resolver a
 Usa `regExp` solo cuando la coincidencia simple de `url` no sea suficiente. Prefiere listas de dominios explícitas.
 </CalloutWarning>
 
+## Contexto de ejecución
+
+Dos campos opcionales controlan cómo y cuándo se ejecuta el script de tu presence en el navegador.
+
+<TypeTable
+  properties={[
+    { name: "world", type: "\"main\" | \"isolated\"", description: "Mundo de ejecución. Por defecto: isolated.", required: false },
+    { name: "runAt", type: "\"document_start\" | \"document_end\" | \"document_idle\"", description: "Cuándo se inyecta el script. Por defecto: document_idle.", required: false }
+  ]}
+/>
+
+Por defecto, una presence se ejecuta en el mundo **isolated**: comparte el DOM de la página pero no su contexto de JavaScript. Es el valor por defecto seguro y funciona para casi todas las presences.
+
+Establece `"world": "main"` cuando tu presence necesite el **contexto de la página**, en concreto:
+
+- leer variables globales de la página (p. ej. un objeto reproductor que el sitio expone en `window`);
+- realizar un **`fetch` autenticado del mismo origen** que deba enviar las cookies de sesión del usuario (p. ej. la API interna de metadatos de un sitio).
+
+```json
+{
+  "name": "Netflix",
+  "url": ["netflix.com", "www.netflix.com"],
+  "world": "main",
+  "color": "#E50914",
+  "category": "streaming",
+  "description": {
+    "en-US": "Watch movies and series on Netflix."
+  }
+}
+```
+
+<CalloutWarning>
+Un `fetch` desde el mundo aislado no se trata como una solicitud de origen propio: las llamadas autenticadas fallan de forma silenciosa. Si tu presence depende de la API con sesión iniciada del sitio, debes establecer `"world": "main"`.
+</CalloutWarning>
+
+<CalloutInfo>
+La declaración reside por completo en `metadata.json` — la extensión la lee en el momento del registro. No se necesita ningún cambio en la extensión para añadir una nueva presence en contexto de página.
+</CalloutInfo>
+
 ## Categoría
 
 Las categorías permitidas son `streaming`, `music`, `tv`, `anime` y `other`.
