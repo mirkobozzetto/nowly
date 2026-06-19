@@ -92,7 +92,7 @@
     "category": {
       "type": "string",
       "description": "Category of the platform",
-      "enum": ["streaming", "music", "tv", "anime", "other"]
+      "enum": ["streaming", "music", "video", "social", "gaming", "tools", "ai", "learning", "creator", "other"]
     },
     "features": {
       "type": "object",
