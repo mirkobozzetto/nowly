@@ -275,13 +275,16 @@ const registerPresenceScript = async (slug: string, presence: StoredPresence): P
   try {
     await unregisterPresenceScript(slug);
     const code = await getPresenceRuntime(slug, metadata.name, presence.release.bundle);
+    // Execution context is declared per-presence in metadata.json. Presences
+    // needing page globals or same-origin authenticated fetch set world "main";
+    // everything else stays isolated by default.
     const script: RegisteredUserScript = {
       id: userScriptId(slug),
       matches,
       js: [{ code }],
-      runAt: slug === "youtube" ? "document_start" : "document_idle",
+      runAt: metadata.runAt ?? "document_idle",
       allFrames: false,
-      world: slug === "youtube" ? "MAIN" : "USER_SCRIPT",
+      world: metadata.world === "main" ? "MAIN" : "USER_SCRIPT",
     };
 
     try {
