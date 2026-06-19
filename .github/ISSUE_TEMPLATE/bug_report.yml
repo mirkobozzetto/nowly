@@ -1,0 +1,49 @@
+name: Bug report
+description: Report a bug in the website, extension, API, or native host.
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Website
+        - Extension
+        - API
+        - Native host
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to ...
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      placeholder: Chrome 126, Edge 126, Brave 1.67...
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: Windows 11, macOS 14, Ubuntu 24.04...
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Add extension logs, console errors, screenshots, or screen recordings if useful.

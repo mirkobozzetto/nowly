@@ -1,0 +1,58 @@
+name: Broken presence
+description: Report a presence that no longer detects activity correctly.
+title: "presence: "
+labels: ["presence", "bug"]
+body:
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      placeholder: YouTube, Netflix, Twitch...
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Page URL
+      description: Share an example URL where the presence fails.
+      placeholder: https://...
+    validations:
+      required: true
+  - type: dropdown
+    id: issue_type
+    attributes:
+      label: What is broken?
+      options:
+        - Activity is not detected
+        - Wrong title/details
+        - Wrong image/artwork
+        - Timestamps are wrong
+        - Buttons are wrong
+        - Presence crashes or clears itself
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should Nowly show on Discord?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What does Nowly show instead?
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      placeholder: Chrome 126, Edge 126, Brave 1.67...
+  - type: textarea
+    id: logs
+    attributes:
+      label: Extension debug logs or screenshots
+      description: Open the Nowly extension debug panel and paste relevant logs if possible.
