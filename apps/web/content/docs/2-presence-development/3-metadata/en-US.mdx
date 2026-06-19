@@ -14,7 +14,7 @@ Every presence needs:
     { name: "description", type: "object", description: "Short localized descriptions keyed by locale.", required: true },
     { name: "url", type: "string[]", description: "Supported domains or URL patterns for matching pages.", required: true },
     { name: "color", type: "string", description: "Brand color in hex format, used by UI and embeds.", required: true },
-    { name: "category", type: "string", description: "One of streaming, music, tv, anime, or other.", required: true }
+    { name: "category", type: "string", description: "One of streaming, music, video, social, gaming, tools, ai, learning, creator, or other.", required: true }
   ]}
 />
 
@@ -101,4 +101,4 @@ The declaration lives entirely in `metadata.json` — the extension reads it at 
 
 ## Category
 
-Allowed categories are `streaming`, `music`, `tv`, `anime`, and `other`.
+Allowed categories are `streaming`, `music`, `video`, `social`, `gaming`, `tools`, `ai`, `learning`, `creator`, and `other`.

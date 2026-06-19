@@ -1,9 +1,24 @@
-export type PresenceCategory = "streaming" | "music" | "tv" | "anime" | "other";
+export type PresenceCategory =
+  | "streaming"
+  | "music"
+  | "video"
+  | "social"
+  | "gaming"
+  | "tools"
+  | "ai"
+  | "learning"
+  | "creator"
+  | "other";
 
 export const CATEGORIES: PresenceCategory[] = [
   "streaming",
   "music",
-  "tv",
-  "anime",
+  "video",
+  "social",
+  "gaming",
+  "tools",
+  "ai",
+  "learning",
+  "creator",
   "other",
 ];

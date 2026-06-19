@@ -300,7 +300,7 @@ describe("Presence Routes", () => {
           slug: "youtube",
           type: "new",
           name: "YouTube",
-          category: "streaming",
+          category: "video",
           author: "dev",
           description: { "en-US": "Watch videos" },
         }],
@@ -319,7 +319,7 @@ describe("Presence Routes", () => {
     expect(mockPresenceRepo.setVersion).toHaveBeenCalledWith("youtube", "1.0.0")
     expect(mockPresenceRepo.setAdded).toHaveBeenCalledWith("youtube")
     expect(mockPresenceRepo.setPresenceMeta).toHaveBeenCalledWith("youtube", expect.objectContaining({
-      slug: "youtube", name: "YouTube", author: "dev", category: "streaming",
+      slug: "youtube", name: "YouTube", author: "dev", category: "video",
     }))
   })
 })

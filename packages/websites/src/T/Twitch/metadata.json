@@ -8,7 +8,7 @@
   "url": ["twitch.tv", "www.twitch.tv"],
   "regExp": "^https?://(www|clips)\\.twitch\\.tv/",
   "color": "#9146FF",
-  "category": "streaming",
+  "category": "gaming",
   "description": {
     "en-US": "Watch live streams, esports, and creators on the world's leading live streaming platform.",
     "fr-FR": "Regardez des streams en direct, de l'esport et vos créateurs favoris sur la plus grande plateforme de streaming au monde.",

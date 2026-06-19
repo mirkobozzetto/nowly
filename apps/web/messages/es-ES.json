@@ -326,8 +326,13 @@
     "categories": {
       "streaming": "Streaming",
       "music": "Música",
-      "tv": "TV y películas",
-      "anime": "Anime",
+      "video": "Vídeos",
+      "social": "Redes sociales",
+      "gaming": "Gaming",
+      "tools": "Herramientas",
+      "ai": "IA",
+      "learning": "Aprendizaje",
+      "creator": "Creadores",
       "other": "Otros"
     },
     "results": "{count, plural, one {# plataforma encontrada} other {# plataformas encontradas}}",

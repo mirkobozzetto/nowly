@@ -28,8 +28,13 @@ export const registerInit = (program: Command) => {
       const category = await select("Category:", [
         { name: "streaming", message: "Streaming" },
         { name: "music", message: "Music" },
-        { name: "tv", message: "TV" },
-        { name: "anime", message: "Anime" },
+        { name: "video", message: "Videos" },
+        { name: "social", message: "Social" },
+        { name: "gaming", message: "Gaming" },
+        { name: "tools", message: "Tools" },
+        { name: "ai", message: "AI" },
+        { name: "learning", message: "Learning" },
+        { name: "creator", message: "Creators" },
         { name: "other", message: "Other" },
       ])
 

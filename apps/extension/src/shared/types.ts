@@ -64,7 +64,17 @@ export type PresenceMetadata = {
   url: string[];
   regExp?: string;
   color: string;
-  category: "streaming" | "music" | "tv" | "anime" | "other";
+  category:
+    | "streaming"
+    | "music"
+    | "video"
+    | "social"
+    | "gaming"
+    | "tools"
+    | "ai"
+    | "learning"
+    | "creator"
+    | "other";
   features?: Record<string, string[]>;
   version?: string | null;
   settings?: Record<string, unknown>;
