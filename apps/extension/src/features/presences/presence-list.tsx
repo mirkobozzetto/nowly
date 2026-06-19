@@ -1,5 +1,6 @@
 import type { FC, ReactElement } from "react";
 import type { InstalledPresences, PresenceDisplayMode, PresenceMetadata } from "@/shared/types";
+import { t } from "@/shared/i18n";
 import { EmptyState } from "./empty-state";
 import { PresenceListItem } from "./presence-list-item";
 
@@ -15,14 +16,22 @@ type Props = {
 };
 
 type Category = PresenceMetadata["category"];
+type MessageKey = Parameters<typeof t>[0];
 
-const categoryLabels: Record<Category, string> = {
-  anime: "Anime",
-  music: "Musique",
-  other: "Autre",
-  streaming: "Streaming",
-  tv: "TV",
+const categoryLabelKeys: Record<Category, MessageKey> = {
+  ai: "categoryAi",
+  creator: "categoryCreator",
+  gaming: "categoryGaming",
+  learning: "categoryLearning",
+  music: "categoryMusic",
+  other: "categoryOther",
+  social: "categorySocial",
+  streaming: "categoryStreaming",
+  tools: "categoryTools",
+  video: "categoryVideo",
 };
+
+const getCategoryLabel = (category: Category): string => t(categoryLabelKeys[category]);
 
 const groupByCategory = (entries: Props["entries"]): Array<[Category, Props["entries"]]> => {
   const groups = new Map<Category, Props["entries"]>();
@@ -34,7 +43,7 @@ const groupByCategory = (entries: Props["entries"]): Array<[Category, Props["ent
   }
 
   return Array.from(groups.entries()).sort(([left], [right]) =>
-    categoryLabels[left].localeCompare(categoryLabels[right]),
+    getCategoryLabel(left).localeCompare(getCategoryLabel(right)),
   );
 };
 
@@ -91,7 +100,7 @@ export const PresenceList: FC<Props> = ({
           return (
             <section key={category} className="flex flex-col gap-2">
               <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                {categoryLabels[category]} {active}/{total}
+                {getCategoryLabel(category)} {active}/{total}
               </h2>
 
               <div className="overflow-hidden rounded-lg border border-border bg-card">
