@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PROJECT_REPOSITORY_URL } from "@/lib/constants";
 import type { Contributor } from "@/lib/data/presences";
 import { cn } from "@/lib/utils";
 import { DownloadIcon, GitBranchIcon, GithubIcon } from "lucide-react";
@@ -42,11 +43,11 @@ const githubUrl = (github: string): string => `https://github.com/${github}`;
 
 const sourceUrl = (update: VersionUpdate): string | undefined => {
   if (update.pr?.startsWith("#")) {
-    return `https://github.com/q-kimi/nowly/pull/${update.pr.slice(1)}`;
+    return `${PROJECT_REPOSITORY_URL}/pull/${update.pr.slice(1)}`;
   }
 
   if (update.commitSha) {
-    return `https://github.com/q-kimi/nowly/commit/${update.commitSha}`;
+    return `${PROJECT_REPOSITORY_URL}/commit/${update.commitSha}`;
   }
 
   return undefined;
