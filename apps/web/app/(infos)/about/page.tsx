@@ -5,10 +5,6 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import type { FC, ReactElement } from "react";
 
-type Props = {
-  params: Promise<{ locale: string }>;
-};
-
 const generateMetadata = (): Metadata => {
   return createMetadata({
     title: "About Nowly",
@@ -17,9 +13,8 @@ const generateMetadata = (): Metadata => {
   });
 };
 
-const Page: FC<Props> = async ({ params }: Props): Promise<ReactElement> => {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "about-page" });
+const Page: FC = async (): Promise<ReactElement> => {
+  const t = await getTranslations("about-page");
 
   const sections = t.raw("sections") as Array<{
     title: string

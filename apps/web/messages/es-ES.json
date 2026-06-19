@@ -81,8 +81,6 @@
     "copyright": "© 2026 Nowly.",
     "trademark": "Discord es una marca registrada de",
     "support": "Apoyar el proyecto",
-    "thanks": "¡Gracias!",
-    "redirect": "Redirigiendo en {countdown}s",
     "open-source": "Código abierto",
     "author-alt": "Autor",
     "language-label": "Mostrar el sitio en",
@@ -93,6 +91,7 @@
     "category-legal": "Legal",
     "about": "Acerca de",
     "faq": "FAQ",
+    "help": "Soporte",
     "status": "Estado",
     "changelog": "Registro de cambios",
     "privacy": "Política de privacidad",
@@ -106,11 +105,43 @@
     "learn-more": "Más información",
     "dismiss": "Entendido"
   },
-  "kofi-modal": {
+  "support-page": {
+    "badge": "Soporte",
+    "title": "¿Cómo podemos ayudar?",
+    "description": "Elige el formulario de GitHub correcto para darnos el contexto útil desde el inicio.",
+    "discord": {
+      "title": "Ticket de Discord",
+      "description": "Únete al servidor de Nowly y crea un ticket para hablar directamente con el staff."
+    },
+    "brokenPresence": {
+      "title": "Presence rota",
+      "description": "Informa de una plataforma que ya no detecta actividad, muestra información incorrecta o se borra sola."
+    },
+    "bugReport": {
+      "title": "Informar de un bug",
+      "description": "Informa de un problema en el sitio, la extensión, la API o la aplicación nativa."
+    },
+    "newPresence": {
+      "title": "Solicitar una presence",
+      "description": "Propón una nueva plataforma para añadir a la biblioteca de Nowly."
+    },
+    "featureRequest": {
+      "title": "Sugerir una mejora",
+      "description": "Comparte una idea para mejorar la experiencia, los ajustes o las herramientas de Nowly."
+    },
+    "blankIssue": {
+      "title": "Otra solicitud",
+      "description": "Abre una issue libre si tu tema no encaja en los formularios guiados."
+    },
+    "browseIssues": "Ver issues existentes"
+  },
+  "sponsor-modal": {
     "title": "El proyecto es gratuito",
     "description": "Vimos lo que había y pensamos: podemos hacer algo mejor, más completo, y con una interfaz que mola.",
-    "support": "Apoyarnos en Ko-fi",
-    "skip": "No, gracias. Descargar directamente"
+    "supportTitle": "Apóyanos en",
+    "supportKofi": "Ko-fi",
+    "skipDownload": "No, gracias. Descargar directamente",
+    "close": "Cerrar"
   },
   "ads": {
     "label": "Publicidad",
@@ -283,6 +314,7 @@
       {
         "title": "Contacto",
         "body": "Para cualquier pregunta sobre esta política de privacidad, contáctanos a través del <a href='https://github.com/nowly-presence/nowly'>repositorio de GitHub</a> o en la dirección indicada en el <a href='/legal-notice'>aviso legal</a>."
+        "body": "Para cualquier pregunta sobre esta política de privacidad, contáctanos a través del <a href='https://github.com/nowly-presence/nowly'>repositorio de GitHub</a> o en la dirección indicada en el <a href='/legal-notice'>aviso legal</a>."
       }
     ]
   },
@@ -304,6 +336,7 @@
       },
       {
         "title": "Licencia",
+        "body": "Nowly se distribuye como <strong>software de código abierto</strong>. Puedes usarlo, copiarlo, modificarlo y redistribuirlo de acuerdo con la licencia aplicable, disponible en el <a href='https://github.com/nowly-presence/nowly'>repositorio de GitHub</a>. Esta licencia no se aplica al contenido de plataformas de terceros (YouTube, Twitch, etc.) que decidas mostrar mediante Nowly."
         "body": "Nowly se distribuye como <strong>software de código abierto</strong>. Puedes usarlo, copiarlo, modificarlo y redistribuirlo de acuerdo con la licencia aplicable, disponible en el <a href='https://github.com/nowly-presence/nowly'>repositorio de GitHub</a>. Esta licencia no se aplica al contenido de plataformas de terceros (YouTube, Twitch, etc.) que decidas mostrar mediante Nowly."
       },
       {
@@ -340,6 +373,7 @@
       },
       {
         "title": "Contacto",
+        "body": "Para cualquier pregunta sobre estos términos, contáctanos a través del <a href='https://github.com/nowly-presence/nowly'>repositorio de GitHub</a> o en la dirección indicada en el <a href='/legal-notice'>aviso legal</a>."
         "body": "Para cualquier pregunta sobre estos términos, contáctanos a través del <a href='https://github.com/nowly-presence/nowly'>repositorio de GitHub</a> o en la dirección indicada en el <a href='/legal-notice'>aviso legal</a>."
       }
     ]
@@ -426,8 +460,13 @@
     "categories": {
       "streaming": "Streaming",
       "music": "Música",
-      "tv": "TV y películas",
-      "anime": "Anime",
+      "video": "Vídeos",
+      "social": "Redes sociales",
+      "gaming": "Gaming",
+      "tools": "Herramientas",
+      "ai": "IA",
+      "learning": "Aprendizaje",
+      "creator": "Creadores",
       "other": "Otros"
     },
     "results": "{count, plural, one {# plataforma encontrada} other {# plataformas encontradas}}",

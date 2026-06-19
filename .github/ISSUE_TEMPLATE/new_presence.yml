@@ -1,0 +1,54 @@
+name: New presence request
+description: Suggest a new platform for Nowly.
+title: "presence: add "
+labels: ["presence", "enhancement"]
+body:
+  - type: input
+    id: platform
+    attributes:
+      label: Platform name
+      placeholder: Spotify, GitHub, Figma...
+    validations:
+      required: true
+  - type: input
+    id: website
+    attributes:
+      label: Website
+      placeholder: https://example.com
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Suggested category
+      options:
+        - streaming
+        - music
+        - video
+        - social
+        - gaming
+        - tools
+        - ai
+        - learning
+        - creator
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: activity
+    attributes:
+      label: Activity to display
+      description: Describe what should appear in Discord Rich Presence.
+      placeholder: Current song, video title, repository, project, stream, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: pages
+    attributes:
+      label: Important pages or examples
+      description: Add example pages, states, or edge cases that should be detected.
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional context
+      description: Anything useful about login requirements, privacy, assets, or limitations.

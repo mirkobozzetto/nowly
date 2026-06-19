@@ -81,8 +81,6 @@
     "copyright": "© 2026 Nowly.",
     "trademark": "Discord est une marque déposée de",
     "support": "Soutenir le projet",
-    "thanks": "Merci !",
-    "redirect": "Redirection dans {countdown}s",
     "open-source": "Open source",
     "author-alt": "Auteur",
     "language-label": "Afficher le site en",
@@ -93,6 +91,7 @@
     "category-legal": "Légal",
     "about": "À propos",
     "faq": "FAQ",
+    "help": "Support",
     "status": "Statut",
     "changelog": "Notes de version",
     "privacy": "Politique de confidentialité",
@@ -106,11 +105,43 @@
     "learn-more": "En savoir plus",
     "dismiss": "Compris"
   },
-  "kofi-modal": {
+  "support-page": {
+    "badge": "Support",
+    "title": "Comment pouvons-nous aider ?",
+    "description": "Choisissez le bon formulaire GitHub pour nous donner le contexte utile dès le départ.",
+    "discord": {
+      "title": "Ticket Discord",
+      "description": "Rejoignez le serveur Nowly et créez un ticket pour discuter directement avec le staff."
+    },
+    "brokenPresence": {
+      "title": "Présence cassée",
+      "description": "Signalez une plateforme qui ne détecte plus l'activité, affiche de mauvaises informations ou se coupe toute seule."
+    },
+    "bugReport": {
+      "title": "Signaler un bug",
+      "description": "Signalez un problème sur le site, l'extension, l'API ou l'application native."
+    },
+    "newPresence": {
+      "title": "Demander une présence",
+      "description": "Proposez une nouvelle plateforme à ajouter à la bibliothèque Nowly."
+    },
+    "featureRequest": {
+      "title": "Suggérer une amélioration",
+      "description": "Partagez une idée pour améliorer l'expérience, les réglages ou les outils de Nowly."
+    },
+    "blankIssue": {
+      "title": "Autre demande",
+      "description": "Ouvrez une issue libre si votre sujet ne rentre pas dans les formulaires proposés."
+    },
+    "browseIssues": "Voir les issues existantes"
+  },
+  "sponsor-modal": {
     "title": "Le projet est gratuit",
     "description": "On a pris un truc qui existait et on s'est dit : on peut faire mieux, plus complet, et avec une interface qui déchire.",
-    "support": "Nous soutenir sur Ko-fi",
-    "skip": "Non merci, télécharger directement"
+    "supportTitle": "Nous soutenir sur",
+    "supportKofi": "Ko-fi",
+    "skipDownload": "Non merci, télécharger directement",
+    "close": "Fermer"
   },
   "ads": {
     "label": "Publicité",
@@ -283,6 +314,7 @@
       {
         "title": "Contact",
         "body": "Pour toute question concernant cette politique de confidentialité, contactez-nous via le <a href='https://github.com/nowly-presence/nowly'>dépôt GitHub</a> ou à l'adresse indiquée dans les <a href='/legal-notice'>mentions légales</a>."
+        "body": "Pour toute question concernant cette politique de confidentialité, contactez-nous via le <a href='https://github.com/nowly-presence/nowly'>dépôt GitHub</a> ou à l'adresse indiquée dans les <a href='/legal-notice'>mentions légales</a>."
       }
     ]
   },
@@ -340,6 +372,7 @@
       },
       {
         "title": "Contact",
+        "body": "Pour toute question concernant ces conditions, contactez-nous via le <a href='https://github.com/nowly-presence/nowly'>dépôt GitHub</a> ou à l'adresse indiquée dans les <a href='/legal-notice'>mentions légales</a>."
         "body": "Pour toute question concernant ces conditions, contactez-nous via le <a href='https://github.com/nowly-presence/nowly'>dépôt GitHub</a> ou à l'adresse indiquée dans les <a href='/legal-notice'>mentions légales</a>."
       }
     ]
@@ -426,8 +459,13 @@
     "categories": {
       "streaming": "Streaming",
       "music": "Musique",
-      "tv": "TV et films",
-      "anime": "Anime",
+      "video": "Vidéos",
+      "social": "Réseaux sociaux",
+      "gaming": "Gaming",
+      "tools": "Outils",
+      "ai": "IA",
+      "learning": "Apprentissage",
+      "creator": "Créateurs",
       "other": "Autres"
     },
     "results": "{count, plural, one {# plateforme trouvée} other {# plateformes trouvées}}",

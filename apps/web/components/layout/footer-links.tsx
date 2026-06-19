@@ -18,6 +18,7 @@ export const FooterLinks: FC = (): ReactElement => {
       links: [
         { href: "/about", label: t("about") },
         { href: "/faq", label: t("faq") },
+        { href: "/support", label: t("help") },
         { href: "/status", label: t("status") },
         { href: "/docs/changelog", label: t("changelog") },
       ],

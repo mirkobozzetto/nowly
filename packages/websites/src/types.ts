@@ -30,7 +30,17 @@ export interface Metadata {
   url: string[];
   regExp?: string;
   color: string;
-  category: "streaming" | "music" | "tv" | "anime" | "other";
+  category:
+    | "streaming"
+    | "music"
+    | "video"
+    | "social"
+    | "gaming"
+    | "tools"
+    | "ai"
+    | "learning"
+    | "creator"
+    | "other";
   features?: LocalizedValue<string[]>;
   settings?: Record<string, unknown>;
   assets: {

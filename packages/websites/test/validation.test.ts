@@ -72,7 +72,7 @@ describe("Metadata validation", () => {
       })
 
       it("has valid category", () => {
-        const valid = ["streaming", "music", "tv", "anime", "other"]
+        const valid = ["streaming", "music", "video", "social", "gaming", "tools", "ai", "learning", "creator", "other"]
         expect(valid).toContain(meta.category)
       })
 

@@ -5,6 +5,7 @@ import { MarketplaceGridSkeleton } from "@/components/library/marketplace-grid-s
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePresences } from "@/hooks/use-presences";
 import { trackPublicAnalytics } from "@/lib/analytics-client";
+import { CATEGORIES } from "@/lib/data/categories";
 import { type PresenceCategory } from "@/lib/data/presences";
 import { AlertCircle, RefreshCcw } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -24,6 +25,19 @@ export const MarketplaceClient: FC = (): ReactElement => {
   const [selectedCategories, setSelectedCategories] = useState<PresenceCategory[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>("popular");
   const lastFilterEventRef = useRef("");
+
+  const availableCategories = useMemo<PresenceCategory[]>(() => {
+    if (!presences) return [];
+    const categories = new Set(presences.map((presence) => presence.category));
+    return CATEGORIES.filter((category) => categories.has(category));
+  }, [presences]);
+
+  useEffect(() => {
+    if (!presences) return;
+    setSelectedCategories((prev) =>
+      prev.filter((category) => availableCategories.includes(category)),
+    );
+  }, [availableCategories, presences]);
 
   useEffect(() => {
     trackPublicAnalytics({
@@ -117,6 +131,7 @@ export const MarketplaceClient: FC = (): ReactElement => {
         />
 
         <MarketplaceFilters
+          availableCategories={availableCategories}
           selectedCategories={selectedCategories}
           sortBy={sortBy}
           onToggleCategory={toggleCategory}

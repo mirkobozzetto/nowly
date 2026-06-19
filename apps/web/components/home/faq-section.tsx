@@ -1,12 +1,11 @@
 import { DiscordIcon } from "@/components/icons";
 import { buttonVariants } from "@/components/ui/button";
+import { DISCORD_INVITE_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
-
-const DISCORD_COMMUNITY_URL = "https://discord.gg/JRH9dyrVZX";
 
 export const FaqSection: FC = (): ReactElement => {
   const t = useTranslations("home-faq-section");
@@ -39,7 +38,7 @@ export const FaqSection: FC = (): ReactElement => {
               </Link>
 
               <a
-                href={DISCORD_COMMUNITY_URL}
+                href={DISCORD_INVITE_URL}
                 target="_blank"
                 rel="noreferrer"
                 className={cn(buttonVariants({ variant: "secondary", size: "md" }))}
