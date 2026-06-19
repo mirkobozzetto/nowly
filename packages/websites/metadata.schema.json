@@ -74,6 +74,16 @@
       "type": "string",
       "description": "RegExp pattern to match URLs beyond simple domain matching"
     },
+    "world": {
+      "type": "string",
+      "description": "Execution context. 'main' runs the presence in the page world (needed for page globals or same-origin authenticated fetch); defaults to isolated.",
+      "enum": ["main", "isolated"]
+    },
+    "runAt": {
+      "type": "string",
+      "description": "When the presence script is injected. Defaults to document_idle.",
+      "enum": ["document_start", "document_end", "document_idle"]
+    },
     "color": {
       "type": "string",
       "description": "Brand color in hex format (e.g. #FF0033)",

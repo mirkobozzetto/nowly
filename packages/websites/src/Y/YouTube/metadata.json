@@ -6,6 +6,8 @@
   },
   "url": ["www.youtube.com", "m.youtube.com", "youtu.be"],
   "regExp": "^https?://(www|m)\\.youtube\\.com/",
+  "world": "main",
+  "runAt": "document_start",
   "color": "#FF0033",
   "category": "streaming",
   "description": {
