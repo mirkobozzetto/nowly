@@ -1,6 +1,6 @@
 "use client";
 
-import { KofiModal } from "@/components/l-ui/kofi-modal";
+import { SponsorModal } from "@/components/l-ui/sponsor-modal";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Download, Monitor, Shield } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -90,7 +90,11 @@ export const CtaSection: FC = (): ReactElement => {
         </div>
       </section>
 
-      <KofiModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <SponsorModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        downloadOnAction
+      />
     </>
   );
 };
