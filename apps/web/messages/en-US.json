@@ -79,9 +79,7 @@
   "Footer": {
     "copyright": "© 2026 Nowly.",
     "trademark": "Discord is a registered trademark of",
-    "support": "Support the project",
-    "thanks": "Thank you!",
-    "redirect": "Redirecting in {countdown}s",
+    "support": "Sponsor the project",
     "openSource": "Open Source",
     "authorAlt": "Author",
     "languageLabel": "View the site in",
@@ -90,16 +88,49 @@
     "spanish": "Spanish",
     "about": "About",
     "faq": "FAQ",
+    "help": "Support",
     "status": "Status",
     "changelog": "Changelog",
     "privacy": "Privacy Policy",
     "tos": "Terms of Service"
   },
-  "KofiModal": {
+  "SupportPage": {
+    "badge": "Support",
+    "title": "How can we help?",
+    "description": "Choose the right GitHub form so we get the useful context from the start.",
+    "discord": {
+      "title": "Discord ticket",
+      "description": "Join the Nowly server and create a ticket to talk directly with the staff."
+    },
+    "brokenPresence": {
+      "title": "Broken presence",
+      "description": "Report a platform that no longer detects activity, shows wrong information, or clears itself."
+    },
+    "bugReport": {
+      "title": "Report a bug",
+      "description": "Report an issue with the website, extension, API, or native application."
+    },
+    "newPresence": {
+      "title": "Request a presence",
+      "description": "Suggest a new platform to add to the Nowly library."
+    },
+    "featureRequest": {
+      "title": "Suggest an improvement",
+      "description": "Share an idea to improve the experience, settings, or tooling around Nowly."
+    },
+    "blankIssue": {
+      "title": "Other request",
+      "description": "Open a blank issue if your topic does not fit one of the guided forms."
+    },
+    "browseIssues": "Browse existing issues"
+  },
+  "SponsorModal": {
     "title": "This project is free",
     "description": "We looked at what was out there and thought: we can do better — richer, and with a UI that actually rocks.",
-    "support": "Support us on Ko-fi",
-    "skip": "No thanks, download directly"
+    "supportTitle": "Support us on",
+    "supportKofi": "Ko-fi",
+    "skipDownload": "No thanks, download directly",
+    "close": "Close"
   },
   "Ads": {
     "label": "Advertisement",
@@ -124,7 +155,7 @@
       },
       {
         "question": "Which platforms are supported?",
-        "answer": "Nowly currently supports <strong>YouTube</strong>, <strong>Twitch</strong>, <strong>Disney+</strong>, <strong>Apple TV+</strong>, and <strong>Prime Video</strong>.<br /><br />New platforms are regularly added through extension updates. These presences are built by both the <strong>core team</strong> and <strong>community contributors</strong>. Anyone can propose or create a new presence — check the <a href='https://github.com/q-kimi/nowly'>GitHub</a> repository to get involved.<br /><br />Head over to the <strong>library</strong> for the full list and the development status of each presence."
+        "answer": "Nowly currently supports <strong>YouTube</strong>, <strong>Twitch</strong>, <strong>Disney+</strong>, <strong>Apple TV+</strong>, and <strong>Prime Video</strong>.<br /><br />New platforms are regularly added through extension updates. These presences are built by both the <strong>core team</strong> and <strong>community contributors</strong>. Anyone can propose or create a new presence — check the <a href='https://github.com/nowly-presence/nowly'>GitHub</a> repository to get involved.<br /><br />Head over to the <strong>library</strong> for the full list and the development status of each presence."
       },
       {
         "question": "How does the Discord connection work?",
@@ -144,7 +175,7 @@
       },
       {
         "question": "Is Nowly open source?",
-        "answer": "Yes, the <strong>complete source code</strong> of Nowly is available on <a href='https://github.com/q-kimi/nowly'>GitHub</a>. You can browse the code, suggest improvements, report bugs, or contribute to the project's development."
+        "answer": "Yes, the <strong>complete source code</strong> of Nowly is available on <a href='https://github.com/nowly-presence/nowly'>GitHub</a>. You can browse the code, suggest improvements, report bugs, or contribute to the project's development."
       }
     ]
   },
@@ -267,7 +298,7 @@
       },
       {
         "title": "Contact",
-        "body": "For any questions regarding this Privacy Policy, please reach out via the <a href='https://github.com/q-kimi/nowly'>GitHub repository</a> or on <a href='https://ko-fi.com/qkimi_'>Ko-fi</a>."
+        "body": "For any questions regarding this Privacy Policy, please reach out through the <a href='/support'>support page</a> or on <a href='https://ko-fi.com/qkimi_'>Ko-fi</a>."
       }
     ]
   },
@@ -285,7 +316,7 @@
       },
       {
         "title": "License",
-        "body": "Nowly is distributed as <strong>open-source software</strong>. You are permitted to use, copy, modify, and redistribute it in accordance with the applicable license (available in the <a href='https://github.com/q-kimi/nowly'>GitHub repository</a>). This license does <strong>not</strong> apply to content from third-party platforms (YouTube, Twitch, etc.) that you choose to display via Nowly."
+        "body": "Nowly is distributed as <strong>open-source software</strong>. You are permitted to use, copy, modify, and redistribute it in accordance with the applicable license (available in the <a href='https://github.com/nowly-presence/nowly'>GitHub repository</a>). This license does <strong>not</strong> apply to content from third-party platforms (YouTube, Twitch, etc.) that you choose to display via Nowly."
       },
       {
         "title": "Responsible Use",
@@ -309,7 +340,7 @@
       },
       {
         "title": "Contact",
-        "body": "For any questions regarding these Terms of Service, please reach out via the <a href='https://github.com/q-kimi/nowly'>GitHub repository</a> or on <a href='https://ko-fi.com/qkimi_'>Ko-fi</a>."
+        "body": "For any questions regarding these Terms of Service, please reach out through the <a href='/support'>support page</a> or on <a href='https://ko-fi.com/qkimi_'>Ko-fi</a>."
       }
     ]
   },

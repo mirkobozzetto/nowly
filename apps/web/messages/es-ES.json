@@ -79,9 +79,7 @@
   "Footer": {
     "copyright": "© 2026 Nowly.",
     "trademark": "Discord es una marca registrada de",
-    "support": "Apoyar el proyecto",
-    "thanks": "¡Gracias!",
-    "redirect": "Redirigiendo en {countdown}s",
+    "support": "Patrocinar el proyecto",
     "openSource": "Código abierto",
     "authorAlt": "Autor",
     "languageLabel": "Mostrar el sitio en",
@@ -90,16 +88,49 @@
     "spanish": "Español",
     "about": "Acerca de",
     "faq": "FAQ",
+    "help": "Soporte",
     "status": "Estado",
     "changelog": "Registro de cambios",
     "privacy": "Política de privacidad",
     "tos": "Términos del servicio"
   },
-  "KofiModal": {
+  "SupportPage": {
+    "badge": "Soporte",
+    "title": "¿Cómo podemos ayudar?",
+    "description": "Elige el formulario de GitHub correcto para darnos el contexto útil desde el inicio.",
+    "discord": {
+      "title": "Ticket de Discord",
+      "description": "Únete al servidor de Nowly y crea un ticket para hablar directamente con el staff."
+    },
+    "brokenPresence": {
+      "title": "Presence rota",
+      "description": "Informa de una plataforma que ya no detecta actividad, muestra información incorrecta o se borra sola."
+    },
+    "bugReport": {
+      "title": "Informar de un bug",
+      "description": "Informa de un problema en el sitio, la extensión, la API o la aplicación nativa."
+    },
+    "newPresence": {
+      "title": "Solicitar una presence",
+      "description": "Propón una nueva plataforma para añadir a la biblioteca de Nowly."
+    },
+    "featureRequest": {
+      "title": "Sugerir una mejora",
+      "description": "Comparte una idea para mejorar la experiencia, los ajustes o las herramientas de Nowly."
+    },
+    "blankIssue": {
+      "title": "Otra solicitud",
+      "description": "Abre una issue libre si tu tema no encaja en los formularios guiados."
+    },
+    "browseIssues": "Ver issues existentes"
+  },
+  "SponsorModal": {
     "title": "El proyecto es gratuito",
     "description": "Vimos lo que había y pensamos: podemos hacer algo mejor, más completo, y con una interfaz que mola.",
-    "support": "Apoyarnos en Ko-fi",
-    "skip": "No, gracias. Descargar directamente"
+    "supportTitle": "Apóyanos en",
+    "supportKofi": "Ko-fi",
+    "skipDownload": "No, gracias. Descargar directamente",
+    "close": "Cerrar"
   },
   "Ads": {
     "label": "Publicidad",
@@ -124,7 +155,7 @@
       },
       {
         "question": "¿Qué plataformas son compatibles?",
-        "answer": "Nowly actualmente es compatible con <strong>YouTube</strong>, <strong>Twitch</strong>, <strong>Disney+</strong>, <strong>Apple TV+</strong> y <strong>Prime Video</strong>.<br /><br />Se añaden nuevas plataformas regularmente a través de las actualizaciones de la extensión. Estas presencias son creadas tanto por el <strong>equipo principal</strong> como por los <strong>colaboradores de la comunidad</strong>. Cualquier persona puede proponer o crear una nueva presencia — consulta el repositorio de <a href='https://github.com/q-kimi/nowly'>GitHub</a> para contribuir.<br /><br />Visita la <strong>biblioteca</strong> para ver la lista completa y el estado de desarrollo de cada presencia."
+        "answer": "Nowly actualmente es compatible con <strong>YouTube</strong>, <strong>Twitch</strong>, <strong>Disney+</strong>, <strong>Apple TV+</strong> y <strong>Prime Video</strong>.<br /><br />Se añaden nuevas plataformas regularmente a través de las actualizaciones de la extensión. Estas presencias son creadas tanto por el <strong>equipo principal</strong> como por los <strong>colaboradores de la comunidad</strong>. Cualquier persona puede proponer o crear una nueva presencia — consulta el repositorio de <a href='https://github.com/nowly-presence/nowly'>GitHub</a> para contribuir.<br /><br />Visita la <strong>biblioteca</strong> para ver la lista completa y el estado de desarrollo de cada presencia."
       },
       {
         "question": "¿Cómo funciona la conexión con Discord?",
@@ -144,7 +175,7 @@
       },
       {
         "question": "¿Nowly es de código abierto?",
-        "answer": "Sí, el <strong>código fuente completo</strong> de Nowly está disponible en <a href='https://github.com/q-kimi/nowly'>GitHub</a>. Puedes explorar el código, sugerir mejoras, reportar errores o contribuir al desarrollo del proyecto."
+        "answer": "Sí, el <strong>código fuente completo</strong> de Nowly está disponible en <a href='https://github.com/nowly-presence/nowly'>GitHub</a>. Puedes explorar el código, sugerir mejoras, reportar errores o contribuir al desarrollo del proyecto."
       }
     ]
   },
@@ -267,7 +298,7 @@
       },
       {
         "title": "Contacto",
-        "body": "Para cualquier pregunta sobre esta politica de privacidad, puedes contactarnos a traves del <a href='https://github.com/q-kimi/nowly'>repositorio de GitHub</a> o en <a href='https://ko-fi.com/qkimi_'>Ko-fi</a>."
+        "body": "Para cualquier pregunta sobre esta politica de privacidad, puedes contactarnos a traves de la pagina de <a href='/support'>soporte</a> o en <a href='https://ko-fi.com/qkimi_'>Ko-fi</a>."
       }
     ]
   },
@@ -285,7 +316,7 @@
       },
       {
         "title": "Licencia",
-        "body": "Nowly se distribuye como <strong>software open source</strong>. Puedes usarlo, copiarlo, modificarlo y redistribuirlo de acuerdo con la licencia aplicable, disponible en el <a href='https://github.com/q-kimi/nowly'>repositorio de GitHub</a>. Esta licencia no se aplica al contenido de plataformas de terceros (YouTube, Twitch, etc.) que decidas mostrar mediante Nowly."
+        "body": "Nowly se distribuye como <strong>software open source</strong>. Puedes usarlo, copiarlo, modificarlo y redistribuirlo de acuerdo con la licencia aplicable, disponible en el <a href='https://github.com/nowly-presence/nowly'>repositorio de GitHub</a>. Esta licencia no se aplica al contenido de plataformas de terceros (YouTube, Twitch, etc.) que decidas mostrar mediante Nowly."
       },
       {
         "title": "Uso responsable",
@@ -309,7 +340,7 @@
       },
       {
         "title": "Contacto",
-        "body": "Para cualquier pregunta sobre estos terminos del servicio, puedes contactarnos a traves del <a href='https://github.com/q-kimi/nowly'>repositorio de GitHub</a> o en <a href='https://ko-fi.com/qkimi_'>Ko-fi</a>."
+        "body": "Para cualquier pregunta sobre estos terminos del servicio, puedes contactarnos a traves de la pagina de <a href='/support'>soporte</a> o en <a href='https://ko-fi.com/qkimi_'>Ko-fi</a>."
       }
     ]
   },
