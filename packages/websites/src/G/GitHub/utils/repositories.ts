@@ -69,11 +69,11 @@ export const isPrivateRepository = (): boolean => {
 }
 
 export const getRepositorySection = (pathname: string): string | undefined => {
-  const [, , section] = getPathSegments(pathname)
+  const [, , section, subSection, extraSection] = getPathSegments(pathname)
 
   if (!section) return "Code"
-  if (section === "issues") return "Issues"
-  if (section === "pulls") return "Pull requests"
+  if (section === "issues") return getIssueSection(subSection)
+  if (section === "pulls" || section === "pull") return getPullRequestSection(subSection, extraSection)
   if (section === "actions") return "Actions"
   if (section === "projects") return "Projects"
   if (section === "security") return "Security"
@@ -89,8 +89,12 @@ export const getRepositorySection = (pathname: string): string | undefined => {
   if (section === "edit") return "Editing a file"
   if (section === "commit") return "Viewing a commit"
   if (section === "commits") return "Viewing commits"
-  if (section === "compare") return "Comparing changes"
+  if (section === "compare") return "Creating a pull request"
   if (section === "milestones") return "Milestones"
+  if (section === "labels") return "Labels"
+  if (section === "branches") return "Branches"
+  if (section === "tags") return "Tags"
+  if (section === "forks") return "Forks"
 
   return titleCase(section.replace(/-/g, " "))
 }
@@ -103,7 +107,54 @@ const createRepositoryInfo = (owner: string, repo: string): RepositoryInfo => ({
 
 const getRepositoryDetails = (section: string | undefined): string => {
   if (!section || section === "Code") return "Browsing repository"
-  return `Browsing repository [${section}]`
+
+  const repositorySectionDetails: Record<string, string> = {
+    "Issues": "Viewing repository issues",
+    "Pull requests": "Viewing repository pull requests",
+    "Actions": "Viewing repository actions",
+    "Projects": "Viewing repository projects",
+    "Security": "Viewing repository security",
+    "Pulse": "Viewing repository pulse",
+    "Insights": "Viewing repository insights",
+    "Wiki": "Viewing repository wiki",
+    "Discussions": "Viewing repository discussions",
+    "Releases": "Viewing repository releases",
+    "Packages": "Viewing repository packages",
+    "Repository settings": "Viewing repository settings",
+    "Milestones": "Viewing repository milestones",
+    "Labels": "Viewing repository labels",
+    "Branches": "Viewing repository branches",
+    "Tags": "Viewing repository tags",
+    "Forks": "Viewing repository forks",
+  }
+
+  return repositorySectionDetails[section] || section
+}
+
+const getIssueSection = (issuePath: string | undefined): string => {
+  if (!issuePath) return "Issues"
+  if (issuePath === "new") return "Creating an issue"
+  if (issuePath === "templates" || issuePath === "choose") return "Choosing an issue template"
+  if (issuePath === "assigned") return "Assigned issues"
+  if (issuePath === "created_by") return "Created issues"
+  if (/^\d+$/.test(issuePath)) return `Viewing issue #${issuePath}`
+  return "Issues"
+}
+
+const getPullRequestSection = (
+  pullPath: string | undefined,
+  viewPath: string | undefined,
+): string => {
+  if (!pullPath) return "Pull requests"
+  if (/^\d+$/.test(pullPath)) return getPullRequestView(pullPath, viewPath)
+  return "Pull requests"
+}
+
+const getPullRequestView = (pullNumber: string, viewPath: string | undefined): string => {
+  if (viewPath === "changes" || viewPath === "files") return `Reviewing changes in pull request #${pullNumber}`
+  if (viewPath === "commits") return `Viewing commits in pull request #${pullNumber}`
+  if (viewPath === "checks") return `Viewing checks in pull request #${pullNumber}`
+  return `Viewing pull request #${pullNumber}`
 }
 
 const equalsIgnoreCase = (a: string, b: string): boolean => a.localeCompare(b, undefined, { sensitivity: "accent" }) === 0
