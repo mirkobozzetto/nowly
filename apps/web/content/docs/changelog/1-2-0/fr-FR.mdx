@@ -21,6 +21,11 @@ description: Refonte UI/UX de l'extension avec nouveau lecteur, composants natif
     ["Panneau de debug conditionnel", "DebugPanel masqué dans les builds Chrome Web Store (vérification update_url). Affiché uniquement dans la vue Réglages avec un header repliable — plus de bannière séparée. Vérifier MAJ devient inactif en mode dev.", "Pas de fuite de debug en production. UI plus propre : le header sert aussi de notice. Pas de fausses mises à jour en développement."],
     ["Barre de progression", "Affichée uniquement pour les catégories music, streaming, tv et anime. Masquée pour les présences 'other'.", "La barre de progression reste pertinente — pas de timer inutile pour les présences non-média."],
     ["Consentement analytics", "Écran d'onboarding repensé avec une grille compacte : 6 éléments non collectés (X) et 1 élément collecté (✓). Bouton 'Partager' centré, 'Non merci' en texte cliquable.", "Communication plus claire sur la vie privée. Moins intimidant que l'ancien mur de texte."],
+    ["Support Firefox", "Chrome et Firefox disposent maintenant de chemins de build séparés, d'un packaging store, de l'injection native userScripts, du support des pages CSP strictes et de manifests hôte pour les IDs Firefox de production.", "Nowly est prêt pour une distribution navigateur plus large sans fragiliser l'injection des présences."],
+    ["Durcissement API", "Auth, analytics, notes, proxy d'images, synchronisation de présences et génération de changelog IA ont été renforcés avec validation, nonce, redirections plus sûres, caches bornés et prompts protégés.", "Les endpoints publics résistent mieux aux entrées invalides, aux URLs hostiles et aux abus."],
+    ["Web, légal et consentement", "Ajout des pages mentions légales/cookies, bannière cookies, gestion du consentement avec export/suppression, page équipe, footer catégorisé, CTA navigateur dynamique et corrections de statut.", "Le site public couvre mieux les sujets de release, confiance, confidentialité, support et équipe."],
+    ["Hôte natif et release tooling", "La vérification manuelle des mises à jour redémarre d'abord le pont natif. Les logs hôte sont plus clairs, les erreurs IPC Discord sont journalisées, les logs tournent, et les archives extension passent par tar.", "Les mises à jour et diagnostics locaux sont plus fiables sur les installations et artefacts de release."],
+    ["Qualité interne", "Les utilitaires partagés passent dans @nowly/shared, les types/background helpers extension sont découpés, les primitives UI remplacent les éléments bruts, le README est enrichi, et les assets YouTube Music sont rafraîchis.", "Le code est plus maintenable et la documentation de release reflète toute la portée de la branche."],
   ]}
 />
 
@@ -50,6 +55,8 @@ Les deux supportent la prop `id` pour le lien de label via `htmlFor`.
 
 La fonctionnalité snooze permet de mettre en pause l'activité Discord pour une durée définie. Un bottom sheet avec un stepper `[−] [minutes] [+]` (pas de 5 minutes, plage 5–240 minutes) permet une sélection rapide de la durée. Quand le snooze est actif, la barre d'actions affiche une icône Soleil au lieu du Flocon.
 
+Le badge de l'activité affiche aussi le temps de gel restant, par exemple `Gelé · 14:32`, pour savoir quand l'activité Discord reprendra.
+
 Le réveil n'envoie que `CLEAR_ACTIVITY` à Discord — l'activité Nowly reste visible avec un badge "Snoozé". Le désnoozage renvoie l'activité stockée à Discord.
 
 ## Planning
@@ -77,6 +84,32 @@ Le `DebugPanel` n'est rendu que dans les extensions **décompressées** (`!chrom
 Dans les builds Chrome Web Store (`update_url` présent), le panneau de debug n'est jamais rendu.
 
 De plus, **Vérifier les mises à jour** est automatiquement désactivé en mode décompressé — l'appel devient inactif pour éviter les fausses notifications de mise à jour causées par l'absence de métadonnées de version dans les présences en développement.
+
+## Firefox et packaging
+
+L'extension dispose maintenant de chemins de build séparés pour Chrome et Firefox. Les builds Firefox retirent les champs Chromium-only du manifest, déclarent correctement la permission `userScripts`, utilisent un ID Gecko dédié et s'appuient sur l'API native `userScripts` pour injecter les présences. Les pages avec CSP strictes sont couvertes par ce nouveau chemin d'injection, et les installateurs/manifests de l'hôte natif connaissent les IDs Firefox de développement et de production.
+
+Le packaging store a aussi été ajouté pour produire les archives Chrome et Firefox. Le flux utilise désormais `tar.exe` au lieu de PowerShell `Compress-Archive`, afin de garder des artefacts cohérents depuis les scripts de l'extension.
+
+## Sécurité API et pipeline release
+
+Plusieurs surfaces publiques de l'API ont été durcies. L'auth utilise maintenant un nonce CSRF OAuth et renvoie le JWT via le fragment d'URL. Les payloads analytics et notes sont validés et bornés. Le proxy d'images bloque les cibles privées pour éviter les SSRF et borne son cache. La synchronisation des présences passe par un pipeline dédié avec des schémas Zod partagés, et la génération de changelog nettoie ses entrées avant de les envoyer à OpenAI.
+
+Le nouveau package `@nowly/shared` centralise les constantes, le JSON canonique, les helpers de formatage et les schémas utilisés par l'API et les outils de release.
+
+## Analytics, consentement et web public
+
+Analytics enregistre maintenant une dimension `source`, et l'extension expose des logs analytics réservés au mode décompressé. Les utilisateurs peuvent gérer leur consentement depuis le site avec des flux d'export et de suppression liés à leur appareil.
+
+Le site public ajoute les pages mentions légales et cookies, une bannière cookies, un footer catégorisé, une page équipe avec liens sociaux, la détection dynamique du navigateur dans le CTA, des corrections de date sur la page statut, des ancres de titres plus cohérentes et plusieurs polishs UI sur navigation, boutons, logos et cartes de présences.
+
+## Hôte natif et diagnostics
+
+L'extension peut redémarrer l'hôte de messagerie native avant de vérifier les versions de l'hôte, et les Réglages incluent une vérification manuelle de mise à jour. L'hôte natif journalise plus clairement les changements d'activité, remonte les erreurs IPC Discord et effectue une rotation des logs pour éviter les fichiers non bornés.
+
+## Documentation, repo et assets
+
+Le README documente maintenant plus largement l'architecture du projet, le flux de développement, les étapes d'installation, le chemin de release de l'hôte natif et le workflow des présences. Les liens de dépôt ont migré vers l'organisation `nowly-presence`, les clés de traduction ont été normalisées en kebab-case, les doublons de locales ont été nettoyés et les icônes YouTube Music ont été rafraîchies.
 
 ## Style des présences inactives
 

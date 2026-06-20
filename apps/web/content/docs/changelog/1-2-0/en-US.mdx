@@ -21,6 +21,11 @@ description: UI/UX overhaul of the extension with a redesigned player, native co
     ["Conditional debug panel", "DebugPanel hidden in Chrome Web Store builds (update_url check). Shown only in the Settings view with a collapsible header — no separate banner. Check Updates becomes a no-op in unpacked builds to avoid false update indicators.", "No debug leaks to production users. Cleaner UI: the header doubles as the notice. Dev users won't see phantom updates."],
     ["Progress bar", "Only shown for music, streaming, tv, and anime categories. Hidden for 'other' presences.", "Progress bar stays relevant — no meaningless timers for non-media presences."],
     ["Analytics consent", "Redesigned onboarding step with a compact grid showing 6 items we don't collect (X) and 1 item we do (✓). 'Share' button centered, 'No thanks' as plain text link.", "Clearer privacy communication. Less intimidating than the previous wall of text."],
+    ["Firefox support", "Chrome and Firefox now have separate build paths, store packaging, native userScripts injection, CSP-strict page support, and host manifests for production Firefox IDs.", "Nowly is ready for a broader browser rollout without compromising presence injection reliability."],
+    ["API hardening", "Auth, analytics, ratings, image proxy, presence sync, and AI changelog generation were tightened with validation, nonce checks, safer redirects, bounded caches, and injection-resistant prompts.", "Public endpoints are more predictable and safer under malformed input or hostile URLs."],
+    ["Web, legal, and consent", "Added legal notice and cookies pages, cookie banner, consent management with export/delete flows, Team page, categorized footer, dynamic browser CTA, and status page fixes.", "The public site now covers release, trust, privacy, support, and team surfaces more completely."],
+    ["Native host and release tooling", "Manual host update checks restart the native bridge first. Host logging is clearer, Discord IPC errors are logged, logs rotate, and extension archives are packaged with tar-based scripts.", "Updates and diagnostics are more reliable across local installs and release artifacts."],
+    ["Internal quality", "Shared utilities moved to @nowly/shared, extension types/background helpers were split, UI primitives replaced raw elements, README/docs were expanded, and YouTube Music assets were refreshed.", "The codebase is easier to maintain while the release documentation matches the actual branch scope."],
   ]}
 />
 
@@ -50,6 +55,8 @@ Both support `id` prop for label linking via `htmlFor`.
 
 The snooze feature lets users pause Discord activity for a set duration. A bottom sheet with a `[−] [minutes] [+]` stepper (5-minute steps, range 5–240 minutes) allows quick duration selection. When snoozed, the action bar shows a Sun icon instead of the Snowflake.
 
+The activity badge also shows the remaining freeze time, for example `Snoozed · 14:32`, so users can see when Discord activity will resume.
+
 Clearing a snooze only posts `CLEAR_ACTIVITY` to Discord — the Nowly activity stays visible with a "Snoozed" badge. Unsnoozing resends the stored activity to Discord.
 
 ## Planning
@@ -77,6 +84,32 @@ The `DebugPanel` is only rendered in **unpacked** extensions (`!chrome.runtime.g
 In Chrome Web Store builds (`update_url` present), the debug panel is never rendered.
 
 Additionally, **Check Updates** is automatically disabled in unpacked builds — it becomes a no-op and never fetches presence versions. This prevents phantom "update available" badges caused by missing version metadata in development presences.
+
+## Firefox and packaging
+
+The extension now has separate Chrome and Firefox build paths. Firefox builds remove Chromium-only manifest fields, declare the `userScripts` permission correctly, use a dedicated Gecko ID, and rely on the native `userScripts` API for presence injection. CSP-strict pages are handled by the new injection path, and the native host installers/manifests know both development and production Firefox extension IDs.
+
+Store release packaging was also added for Chrome and Firefox archives. The packaging flow now uses `tar.exe` instead of PowerShell `Compress-Archive`, which keeps artifacts consistent from the extension scripts.
+
+## API security and release pipeline
+
+Several public API surfaces were hardened. Auth now uses an OAuth CSRF nonce and delivers the JWT through the URL fragment. Analytics and rating payloads are validated and bounded. The image proxy blocks private-host SSRF targets and bounds its cache. Presence sync moved into a dedicated pipeline with shared Zod schemas, and changelog generation sanitizes prompt inputs before sending them to OpenAI.
+
+The new `@nowly/shared` package centralizes constants, canonical JSON, formatting helpers, and schemas used by the API and release tooling.
+
+## Analytics, consent, and public web
+
+Analytics now records a `source` dimension and the extension exposes developer-only analytics logs in unpacked builds. Users can manage consent from the website with device-level export and deletion flows.
+
+The public site gained legal notice and cookies pages, a cookie banner, a categorized footer, a Team page with social links, dynamic browser detection on the CTA, status page date fixes, improved heading anchors, and small UI polish across navigation, buttons, logos, and presence cards.
+
+## Native host and diagnostics
+
+The extension can restart the native messaging host before checking host versions, and Settings now includes a manual host update check. The native host logs activity changes more clearly, reports Discord IPC error responses, and rotates logs to avoid unbounded files.
+
+## Documentation, repo, and assets
+
+The README now documents the project architecture, development flow, install steps, native host release path, and presence workflow in more detail. Repository links were migrated to the `nowly-presence` organization, translation keys were normalized to kebab-case, duplicate locale entries were cleaned up, and YouTube Music icons were refreshed.
 
 ## Inactive presence styling
 

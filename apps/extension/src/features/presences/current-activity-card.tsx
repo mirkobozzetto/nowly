@@ -54,7 +54,30 @@ const useRealtimeProgress = (
   };
 };
 
+const useCountdown = (targetTimestamp: number | undefined): string | null => {
+  const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    if (!targetTimestamp || targetTimestamp <= Date.now()) return;
+    const tick = () => setNow(Date.now());
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [targetTimestamp]);
+
+  if (!targetTimestamp || targetTimestamp <= now) return null;
+  return formatTime(Math.ceil((targetTimestamp - now) / 1000));
+};
+
 export const CurrentActivityCard: FC<Props> = ({ activity, isLoading, presences }): ReactElement => {
+  const presence = activity ? presences[activity.slug] : null;
+  const snoozeUntil = activity ? presence?.snoozeUntil : undefined;
+  const progress = useRealtimeProgress(
+    activity?.presence.startTime,
+    activity?.presence.endTime,
+  );
+  const snoozeRemaining = useCountdown(snoozeUntil);
+
   if (isLoading) {
     return (
       <section className="rounded-lg border border-border bg-card-2 p-3">
@@ -69,20 +92,14 @@ export const CurrentActivityCard: FC<Props> = ({ activity, isLoading, presences 
     );
   }
 
-  const presence = activity ? presences[activity.slug] : null;
   const hasActivity = Boolean(activity);
   const largeImage = activity?.presence.largeImage;
   const hasLargeImage = Boolean(largeImage);
   const category = presence?.metadata.category as MediaCategory | undefined;
   const title = getActivityTitle(activity, t("nothing-playing"));
   const subtitle = getActivitySubtitle(activity, presence?.metadata.name ?? "0:00 / 0:00");
-  const progress = useRealtimeProgress(
-    activity?.presence.startTime,
-    activity?.presence.endTime,
-  );
-
   const showProgressBar = hasProgress(category) && progress;
-  const isSnoozed = activity ? Boolean(presences[activity.slug]?.snoozeUntil && presences[activity.slug].snoozeUntil! > Date.now()) : false;
+  const isSnoozed = Boolean(snoozeRemaining);
 
   if (!hasActivity) {
     return (
@@ -137,7 +154,7 @@ export const CurrentActivityCard: FC<Props> = ({ activity, isLoading, presences 
           {isSnoozed ? (
             <span className="mt-1 inline-flex items-center gap-1 rounded-md bg-card-2 px-1.5 py-0.5 text-[10px] text-muted-foreground">
               <Snowflake className="h-3 w-3" />
-              {t("snoozed")}
+              {t("snoozed")} {"\u00b7"} {snoozeRemaining}
             </span>
           ) : null}
         </div>

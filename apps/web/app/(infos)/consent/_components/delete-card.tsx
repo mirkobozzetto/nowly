@@ -42,7 +42,7 @@ export const DeleteCard: FC<Props> = ({ deviceId, onDeleted }) => {
       {status === "confirm" ? (
         <div className="flex flex-wrap items-center gap-3 rounded-lg border border-warning/20 bg-warning/5 p-4">
           <p className="w-full text-sm font-medium text-foreground">{t("delete-confirm")}</p>
-          <Button variant="destructive" size="sm" onClick={handleDelete} disabled={status === "loading"}>
+          <Button variant="destructive" size="sm" onClick={handleDelete}>
             {t("delete-button")}
           </Button>
           <Button variant="ghost" size="sm" onClick={() => setStatus("idle")}>
