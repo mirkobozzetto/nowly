@@ -1,7 +1,8 @@
 {
   "name": "Netflix",
   "author": {
-    "name": "KiMi"
+    "name": "KiMi",
+    "github": "q-kimi"
   },
   "url": ["netflix.com", "www.netflix.com"],
   "regExp": "^https?://(www\\.)?netflix\\.com/",
