@@ -105,7 +105,7 @@ presence.on("UpdateData", async (ctx) => {
       return
     }
 
-    if (hostname !== "github.com" || pathname === "/" || pathname === "") {
+    if (hostname !== "github.com") {
       presence.clearActivity()
       return
     }

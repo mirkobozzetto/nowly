@@ -6,7 +6,7 @@ export const handleDashboardPage = async (
   pathname: string,
   search: string,
 ): Promise<boolean> => {
-  if (pathname === "/feed") {
+  if (pathname === "/" || pathname === "" || pathname === "/feed") {
     await setLogoActivity(presence, "Browsing feed")
     return true
   }
