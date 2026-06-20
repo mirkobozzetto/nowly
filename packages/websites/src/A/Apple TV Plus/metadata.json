@@ -6,7 +6,7 @@
   },
   "url": ["tv.apple.com", "apple.com/tv"],
   "regExp": "^https?://(tv\\.apple\\.com|www\\.apple\\.com/tv)",
-  "color": "#F4F8F9",
+  "color": "#555555",
   "category": "streaming",
   "description": {
     "en-US": "Watch award-winning Apple Original series, movies, and documentaries on Apple TV+.",
