@@ -6,7 +6,7 @@
   },
   "url": ["cinepulse.ws", "www.cinepulse.ws"],
   "regExp": "^https?://(?:www\\.)?cinepulse\\.ws",
-  "color": "#090201",
+  "color": "#EF7A7A",
   "category": "streaming",
   "description": {
     "en-US": "Watch movies and series on Cinepulse.",
