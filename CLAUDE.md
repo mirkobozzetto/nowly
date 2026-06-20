@@ -81,10 +81,10 @@ pnpm presence:rebuild      # Clean + build
 
 ### Admin/Publishing
 ```bash
-pnpm admin                 # Interactive admin CLI menu
-pnpm admin push            # Publish presences to API (requires PRESENCE_SIGNING_PRIVATE_KEY)
-pnpm admin:r2-sync         # Sync assets to Cloudflare R2 CDN
-pnpm admin:host-publish    # Publish native host binaries & installer to CDN
+pnpm internal-cli          # Interactive admin CLI menu
+pnpm internal-cli push     # Publish presences to API (requires PRESENCE_SIGNING_PRIVATE_KEY)
+pnpm internal-cli r2:sync  # Sync assets to Cloudflare R2 CDN
+pnpm internal-cli host:publish # Publish native host binaries & installer to CDN
 ```
 
 ## Key Architectural Patterns
@@ -166,7 +166,7 @@ Settings use `PresenceSetting` types (boolean, input, select, slider) with multi
 2. Implement `Presence.on('UpdateData')` listener, call `setActivity()`
 3. Define `Settings` via `Presence.Settings({...})` for user configuration
 4. `pnpm presence:build` — CLI validates metadata, bundles script
-5. `pnpm admin push` — publish to API (requires signing key)
+5. `pnpm internal-cli push` — publish to API (requires signing key)
 
 ### Running Full Local Stack
 ```bash

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { uploadAllToR2, uploadHostReleaseToR2 } from "@nowly/websites/cli/r2"
+import { minifyVersionBundlesOnR2, optimizeAssetsOnR2, uploadAllToR2, uploadHostReleaseToR2 } from "@nowly/websites/cli/r2"
 import { registerPush } from "@nowly/websites/cli/commands/push"
 import { logger } from "@nowly/websites/cli/logger"
 import { existsSync } from "fs"
@@ -9,7 +9,7 @@ import { Command } from "commander"
 import "dotenv/config"
 
 const program = new Command()
-  .name("nowly-admin")
+  .name("internal-cli")
   .description("Nowly admin CLI — internal commands for releases, CDN sync, and publishing")
   .version("1.0.0")
 
@@ -94,7 +94,7 @@ async function main() {
     logger.raw(chalk.cyan(chalk.bold("  ⚡ Nowly Admin CLI")))
     logger.raw(chalk.dim(`  ${"─".repeat(40)}`))
     logger.newline()
-    logger.info("Usage: pnpm admin <command>")
+    logger.info("Usage: pnpm internal-cli <command>")
     logger.newline()
     logger.raw(chalk.dim("  Commands:"))
     logger.raw(chalk.dim("    push           Build and push presence(s) to API"))

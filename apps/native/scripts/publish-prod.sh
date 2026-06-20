@@ -40,7 +40,7 @@ echo ""
 # Publish to CDN via internal CLI
 cd "$MONOREPO_ROOT"
 
-pnpm admin host:publish \
+pnpm internal-cli host:publish \
   --release-version "$VERSION" \
   --installer "$RELEASE_DIR/nowly-setup.exe" \
   --portable "$RELEASE_DIR/nowly-windows.zip" \

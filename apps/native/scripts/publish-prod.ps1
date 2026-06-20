@@ -44,14 +44,14 @@ Write-Host ""
 # Publish to CDN via internal CLI
 Push-Location $MonorepoRoot
 try {
-  & pnpm admin host:publish `
+  & pnpm internal-cli host:publish `
     --release-version $Version `
     --installer (Join-Path $ReleaseDir 'nowly-setup.exe') `
     --portable (Join-Path $ReleaseDir 'nowly-windows.zip') `
     --linux (Join-Path $ReleaseDir 'nowly-linux.tar.gz') `
     --macos (Join-Path $ReleaseDir 'nowly-macos.tar.gz')
   if ($LASTEXITCODE -ne 0) {
-    throw "pnpm admin host:publish failed with exit code $LASTEXITCODE"
+    throw "pnpm internal-cli host:publish failed with exit code $LASTEXITCODE"
   }
 } finally {
   Pop-Location
