@@ -11,6 +11,7 @@ export type RepositoryInfo = {
 export const handleRepositoryPage = async (
   presence: PresenceInstance,
   pathname: string,
+  href: string,
   owner: string,
   repo: string,
   showPrivateRepositories: boolean,
@@ -33,10 +34,34 @@ export const handleRepositoryPage = async (
     largeImageKey: image || Assets.Logo,
     largeImageText: repository.name,
     type: PresenceType.Watching,
-    buttons: isPrivate ? undefined : [createButton("View repository", `https://github.com/${repository.owner}/${repository.repo}`)],
+    buttons: isPrivate ? undefined : getRepositoryButtons(pathname, href, repository),
   })
 
   return true
+}
+
+const getRepositoryButtons = (
+  pathname: string,
+  href: string,
+  repository: RepositoryInfo,
+): Array<{ label: string, url: string }> => {
+  const buttons = []
+  const contextual = getRepositoryContextButton(pathname, href)
+
+  if (contextual) buttons.push(contextual)
+  buttons.push(createButton("View repository", `https://github.com/${repository.owner}/${repository.repo}`))
+
+  return buttons.slice(0, 2)
+}
+
+const getRepositoryContextButton = (
+  pathname: string,
+  href: string,
+): { label: string, url: string } | undefined => {
+  const [, , section, subSection] = getPathSegments(pathname)
+  if (section === "pull" && subSection && /^\d+$/.test(subSection)) return createButton("View pull request", href)
+  if (section === "issues" && subSection && /^\d+$/.test(subSection)) return createButton("View issue", href)
+  return undefined
 }
 
 export const getRepositoryInfo = (owner: string, repo: string): RepositoryInfo | undefined => {

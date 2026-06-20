@@ -23,7 +23,7 @@ export const handleGitHub = async (
   if (await handleProductPage(presence, pathname)) return
 
   if (first && second && !isGitHubReservedPath(first)) {
-    const handled = await handleRepositoryPage(presence, pathname, first, second, showPrivateRepositories)
+    const handled = await handleRepositoryPage(presence, pathname, href, first, second, showPrivateRepositories)
     if (handled) return
   }
 
