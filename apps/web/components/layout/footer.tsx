@@ -7,6 +7,7 @@ import { PROJECT_REPOSITORY_URL } from "@/lib/constants";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { FC, ReactElement } from "react";
 import { FooterLinks } from "./footer-links";
 import { LocaleSelector } from "./locale-selector";
@@ -14,6 +15,9 @@ import { SupportButton } from "./support-button";
 
 export const Footer: FC = (): ReactElement => {
   const t = useTranslations("footer");
+  const pathname = usePathname();
+  const isTeamPage = pathname === "/team";
+  const teamAvatarClass = isTeamPage ? "grayscale opacity-30 brightness-50 transition duration-200 group-hover/avatar:opacity-100 group-hover/avatar:brightness-100 group-hover/avatar:grayscale-0" : undefined;
 
   return (
     <footer className="py-12 border-t border-border text-dim-foreground text-sm">
@@ -26,6 +30,7 @@ export const Footer: FC = (): ReactElement => {
                   <AvatarImage
                     src="https://avatars.githubusercontent.com/u/51194216?v=4"
                     alt={t("author-alt")}
+                    className={teamAvatarClass}
                   />
                 </Avatar>
 
@@ -33,6 +38,7 @@ export const Footer: FC = (): ReactElement => {
                   <AvatarImage
                     src="https://avatars.githubusercontent.com/steellgold?v=4"
                     alt="steellgold"
+                    className={teamAvatarClass}
                   />
                 </Avatar>
               </AvatarGroup>

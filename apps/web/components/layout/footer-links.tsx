@@ -17,6 +17,7 @@ export const FooterLinks: FC = (): ReactElement => {
       label: t("category-product"),
       links: [
         { href: "/about", label: t("about") },
+        { href: "/team", label: t("team") },
         { href: "/faq", label: t("faq") },
         { href: "/support", label: t("help") },
         { href: "/status", label: t("status") },
