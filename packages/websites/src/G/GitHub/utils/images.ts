@@ -8,12 +8,20 @@ export const getMetaImage = (): string | undefined =>
 
 export const getAvatarImage = (username?: string): string | undefined => {
   const candidates = [
-    document.querySelector<HTMLImageElement>(".avatar-user")?.src,
-    document.querySelector<HTMLImageElement>(".avatar")?.src,
-    username ? `https://github.com/${encodeURIComponent(username)}.png?size=512` : undefined,
+    username ? getGitHubAvatarImage(username) : undefined,
+    ...getScopedAvatarCandidates(username),
+    username ? undefined : document.querySelector<HTMLImageElement>(".avatar-user")?.src,
+    username ? undefined : document.querySelector<HTMLImageElement>(".avatar")?.src,
   ]
 
   return normalizeAvatarUrl(candidates.find((candidate) => candidate?.startsWith("https://")))
+}
+
+export const getGitHubAvatarImage = (username: string): string | undefined => {
+  const normalized = normalizeUsername(username)
+  if (!normalized) return undefined
+
+  return normalizeAvatarUrl(`https://github.com/${encodeURIComponent(normalized)}.png?size=512`)
 }
 
 export const toDiscordImage = async (imageUrl: string | undefined): Promise<string | undefined> => {
@@ -43,4 +51,29 @@ const normalizeAvatarUrl = (imageUrl: string | undefined): string | undefined =>
   }
 
   return imageUrl
+}
+
+const getScopedAvatarCandidates = (username: string | undefined): Array<string | undefined> => {
+  const normalized = normalizeUsername(username)
+  if (!normalized) return []
+
+  const selectors = [
+    `a[href="/${cssEscape(normalized)}"] img.avatar`,
+    `a[href="/${cssEscape(normalized)}"] img.avatar-user`,
+    `img[alt="@${cssEscape(normalized)}"]`,
+    `[data-login="${cssEscape(normalized)}"] img.avatar`,
+    `[data-hovercard-url*="/users/${cssEscape(normalized)}/"] img.avatar`,
+  ]
+
+  return selectors.map((selector) => document.querySelector<HTMLImageElement>(selector)?.src)
+}
+
+const normalizeUsername = (username: string | undefined): string | undefined => {
+  const normalized = username?.replace(/^@/, "").trim()
+  return normalized || undefined
+}
+
+const cssEscape = (value: string): string => {
+  if (typeof CSS !== "undefined" && CSS.escape) return CSS.escape(value)
+  return value.replace(/["\\]/g, "\\$&")
 }

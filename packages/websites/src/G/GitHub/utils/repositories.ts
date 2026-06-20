@@ -1,6 +1,6 @@
 import { PresenceType, type PresenceInstance } from "@nowly/presence"
 import { createButton, getPathSegments, getTitle } from "./dom"
-import { getAvatarImage, toDiscordImage } from "./images"
+import { getAvatarImage, getGitHubAvatarImage, toDiscordImage } from "./images"
 
 export type RepositoryInfo = {
   owner: string
@@ -27,12 +27,18 @@ export const handleRepositoryPage = async (
 
   const image = await toDiscordImage(getAvatarImage(owner))
   const section = getRepositorySection(pathname)
+  const pullRequestAuthor = getPullRequestAuthor(pathname)
+  const pullRequestAuthorImage = pullRequestAuthor
+    ? await toDiscordImage(getAvatarImage(pullRequestAuthor) || getGitHubAvatarImage(pullRequestAuthor))
+    : undefined
 
   await presence.setActivity({
     details: getRepositoryDetails(section),
     state: repository.name,
-    largeImageKey: image || Assets.Logo,
-    largeImageText: repository.name,
+    largeImageKey: pullRequestAuthorImage || image || Assets.Logo,
+    largeImageText: pullRequestAuthor || repository.name,
+    smallImageKey: pullRequestAuthorImage && image ? image : undefined,
+    smallImageText: pullRequestAuthorImage && image ? repository.owner : undefined,
     type: PresenceType.Watching,
     buttons: isPrivate ? undefined : getRepositoryButtons(pathname, href, repository),
   })
@@ -180,6 +186,33 @@ const getPullRequestView = (pullNumber: string, viewPath: string | undefined): s
   if (viewPath === "commits") return `Viewing commits in pull request #${pullNumber}`
   if (viewPath === "checks") return `Viewing checks in pull request #${pullNumber}`
   return `Viewing pull request #${pullNumber}`
+}
+
+const getPullRequestAuthor = (pathname: string): string | undefined => {
+  const [, , section, pullNumber] = getPathSegments(pathname)
+  if (section !== "pull" || !pullNumber || !/^\d+$/.test(pullNumber)) return undefined
+
+  const candidates = [
+    document.querySelector<HTMLElement>(".gh-header-meta .author")?.textContent,
+    document.querySelector<HTMLElement>(".gh-header-meta a[data-hovercard-type='user']")?.textContent,
+    document.querySelector<HTMLElement>("a.author[data-hovercard-type='user']")?.textContent,
+    document.querySelector<HTMLElement>("[data-hovercard-type='user'].author")?.textContent,
+    document.querySelector<HTMLAnchorElement>(".timeline-comment-header a.author")?.getAttribute("href"),
+    document.querySelector<HTMLImageElement>(".timeline-comment-avatar img.avatar")?.alt,
+  ]
+
+  for (const candidate of candidates) {
+    const username = normalizeGitHubUsername(candidate)
+    if (username) return username
+  }
+
+  return undefined
+}
+
+const normalizeGitHubUsername = (value: string | undefined | null): string | undefined => {
+  const username = value?.trim().replace(/^@/, "").replace(/^\//, "").split("/")[0]
+  if (!username || !/^[a-z\d](?:[a-z\d-]{0,37}[a-z\d])?$/i.test(username)) return undefined
+  return username
 }
 
 const equalsIgnoreCase = (a: string, b: string): boolean => a.localeCompare(b, undefined, { sensitivity: "accent" }) === 0
