@@ -1,5 +1,5 @@
 import { PresenceType, type PresenceInstance } from "@nowly/presence"
-import { createButton, cssEscape, getPathSegments, getTitle } from "./dom"
+import { createButton, getPathSegments, getTitle } from "./dom"
 import { getAvatarImage, toDiscordImage } from "./images"
 
 export type RepositoryInfo = {
@@ -50,9 +50,6 @@ export const getRepositoryInfo = (owner: string, repo: string): RepositoryInfo |
     return createRepositoryInfo(fromTitle[1], fromTitle[2])
   }
 
-  const repoLink = document.querySelector<HTMLAnchorElement>(`a[href="/${cssEscape(owner)}/${cssEscape(repo)}"]`)
-  if (!repoLink && !document.querySelector("[data-testid='repository-container-header']")) return undefined
-
   return createRepositoryInfo(owner, repo)
 }
 
@@ -89,6 +86,7 @@ export const getRepositorySection = (pathname: string): string | undefined => {
   if (section === "settings") return "Repository settings"
   if (section === "blob") return "Viewing a file"
   if (section === "tree") return "Browsing files"
+  if (section === "edit") return "Editing a file"
   if (section === "commit") return "Viewing a commit"
   if (section === "commits") return "Viewing commits"
   if (section === "compare") return "Comparing changes"

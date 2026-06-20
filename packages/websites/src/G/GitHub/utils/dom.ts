@@ -23,11 +23,6 @@ export const createButton = (label: string, url: string): { label: string, url: 
   url: normalizeUrl(url).split("?")[0] || url,
 })
 
-export const cssEscape = (value: string): string => {
-  if (typeof CSS !== "undefined" && CSS.escape) return CSS.escape(value)
-  return value.replace(/["\\]/g, "\\$&")
-}
-
 export const getVisibleText = (selector: string): string | undefined =>
   document.querySelector(selector)?.textContent?.trim() || undefined
 

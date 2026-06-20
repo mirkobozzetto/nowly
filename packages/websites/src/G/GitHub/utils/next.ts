@@ -1,6 +1,5 @@
 import { PresenceType, type PresenceInstance } from "@nowly/presence"
 import { createButton, getPathSegments, getTitle } from "./dom"
-import { getMetaImage, toDiscordImage } from "./images"
 import { ProductAssets } from "./products"
 
 export const handleGitHubNext = async (
@@ -44,12 +43,10 @@ const setNextActivity = async (
   state?: string,
   href?: string,
 ): Promise<void> => {
-  const image = await toDiscordImage(getMetaImage())
-
   await presence.setActivity({
     details,
     state,
-    largeImageKey: image || ProductAssets.GitHubNextLogo,
+    largeImageKey: ProductAssets.GitHubNextLogo,
     largeImageText: "GitHub Next",
     type: PresenceType.Watching,
     buttons: href ? [createButton("View on GitHub Next", href)] : undefined,
