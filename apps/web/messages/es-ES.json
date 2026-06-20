@@ -90,6 +90,7 @@
     "category-product": "Producto",
     "category-legal": "Legal",
     "about": "Acerca de",
+    "team": "Equipo",
     "faq": "FAQ",
     "help": "Soporte",
     "status": "Estado",
@@ -134,6 +135,19 @@
       "description": "Abre una issue libre si tu tema no encaja en los formularios guiados."
     },
     "browseIssues": "Ver issues existentes"
+  },
+  "team-page": {
+    "badge": "Equipo",
+    "title": "Las personas detrás de Nowly",
+    "description": "Nowly está construido por dos personas que quieren una experiencia de Discord Rich Presence más limpia, simple y agradable.",
+    "emptyBio": "Sin bio de GitHub por ahora.",
+    "followers": "seguidores",
+    "following": "siguiendo",
+    "links": {
+      "github": "GitHub",
+      "website": "Sitio web",
+      "twitter": "X"
+    }
   },
   "sponsor-modal": {
     "title": "El proyecto es gratuito",
