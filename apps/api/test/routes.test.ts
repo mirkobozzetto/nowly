@@ -693,7 +693,7 @@ describe("Image Proxy Routes", () => {
     globalThis.fetch = originalFetch
   })
 
-  it("GET /image-proxy rejects non-TikTok CDN URLs", async () => {
+  it("GET /image-proxy rejects unsupported CDN URLs", async () => {
     const res = await app.inject({
       method: "GET",
       url: `/image-proxy?url=${encodeURIComponent("https://example.com/image.jpg")}`,
@@ -872,6 +872,44 @@ describe("Image Proxy Routes", () => {
     expect(res.statusCode).toBe(200)
     expect(res.headers["content-type"]).toBe("image/webp")
     expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([4, 5, 6]))
+  })
+
+  it("GET /image-proxy supports CANAL+ CDN images", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue(new Response(new Uint8Array([7, 8, 9]), {
+      status: 200,
+      headers: { "content-type": "image/jpeg", "content-length": "3" },
+    }))
+
+    const url = "https://thumb.canalplus.pro/bran/unsafe/512x512/filters:quality(80)/image/02/4/cinema.68024.jpg"
+    const res = await app.inject({
+      method: "GET",
+      url: `/image-proxy?service=canalplus&url=${encodeURIComponent(url)}`,
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.headers["content-type"]).toBe("image/jpeg")
+    expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([7, 8, 9]))
+    const fetchMock = vi.mocked(globalThis.fetch)
+    expect(fetchMock.mock.calls[0][0]).toBe(url)
+  })
+
+  it("GET /image-proxy supports GitHub images", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue(new Response(new Uint8Array([10, 11, 12]), {
+      status: 200,
+      headers: { "content-type": "image/png", "content-length": "3" },
+    }))
+
+    const url = "https://avatars.githubusercontent.com/u/9919?s=512"
+    const res = await app.inject({
+      method: "GET",
+      url: `/image-proxy?service=github&url=${encodeURIComponent(url)}`,
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.headers["content-type"]).toBe("image/png")
+    expect(Buffer.from(res.rawPayload)).toEqual(Buffer.from([10, 11, 12]))
+    const fetchMock = vi.mocked(globalThis.fetch)
+    expect(fetchMock.mock.calls[0][0]).toBe(url)
   })
 
   it("GET /image-proxy rejects URLs that do not match the explicit service", async () => {
