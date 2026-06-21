@@ -21,26 +21,14 @@ const settings = Presence.Settings({
 
 const presence = new Presence(settings)
 
-export const Brands = Presence.Assets({
-  ComedyCentral: "/brands/comedycentral_logo.png",
-  MTV: "/brands/mtv_logo.png",
-  Nickelodeon: "/brands/nickelodeon_logo.png",
-  Originals: "/brands/originals_logo.png",
-  Showtime: "/brands/showtime_logo.png",
-  Smithsonian: "/brands/smithsonian_logo.png",
-})
-
 presence.on("UpdateData", async (ctx) => {
   const { pathname, href } = document.location
   const video = findVideo()
   const isLive = pathname.includes("/live-tv/")
-  // Watch routes: /shows/video/{id}/ and /movies/video/{id}/ (a movie page IS a /video/
-  // route, so it also hosts an autoplay-muted hero trailer). Detail pages like
-  // /shows/{slug}/ have no /video/ segment.
+  const playerArea = document.querySelector(".video__player-area")
   const onWatchRoute = /\/(?:shows|movies)\/video\//.test(pathname) || isLive
-  // Background hero/trailer videos autoplay muted — ignore them so only real,
-  // user-started playback (with sound) counts as "watching".
-  const isWatching = !!video && video.duration > 0 && !video.muted && onWatchRoute
+
+  const isWatching = !!video && onWatchRoute && (!!playerArea || video.duration > 0)
 
   if (isWatching && video) {
     const { title, episode } = getPlayerMetadata()

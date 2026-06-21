@@ -1,12 +1,15 @@
 import type { PresenceInstance } from "@nowly/presence"
 import { PresenceType } from "@nowly/presence"
-import { getOgTitle, getSearchQuery } from "./player"
+import { getBrand } from "./brands"
+import { getDetailCover, getOgTitle, getSearchQuery } from "./player"
 
 export const handleBrowsingActivity = async (
   presence: PresenceInstance,
   pathname: string,
 ): Promise<void> => {
-  if (pathname === "/" || pathname.startsWith("/home")) {
+  if (/\/(?:shows|movies)\/video\//.test(pathname)) {
+    presence.clearActivity()
+  } else if (pathname === "/" || pathname.startsWith("/home")) {
     await presence.setActivity({
       details: "Browsing home",
       largeImageKey: Assets.Logo,
@@ -34,21 +37,24 @@ export const handleBrowsingActivity = async (
     await presence.setActivity({
       details: "Viewing a show",
       state: getOgTitle(),
-      largeImageKey: Assets.Logo,
+      largeImageKey: getDetailCover() || Assets.Logo,
+      largeImageText: getOgTitle(),
       type: PresenceType.Watching,
     })
   } else if (pathname.startsWith("/movies/")) {
     await presence.setActivity({
       details: "Viewing a movie",
       state: getOgTitle(),
-      largeImageKey: Assets.Logo,
+      largeImageKey: getDetailCover() || Assets.Logo,
+      largeImageText: getOgTitle(),
       type: PresenceType.Watching,
     })
   } else if (pathname.startsWith("/collections/")) {
     await presence.setActivity({
       details: "Viewing a collection",
       state: getOgTitle(),
-      largeImageKey: Assets.Logo,
+      largeImageKey: getDetailCover() || Assets.Logo,
+      largeImageText: getOgTitle(),
       type: PresenceType.Watching,
     })
   } else if (pathname.startsWith("/live-tv")) {
@@ -57,7 +63,15 @@ export const handleBrowsingActivity = async (
       largeImageKey: Assets.Logo,
       type: PresenceType.Watching,
     })
-  } else if (pathname.startsWith("/sports") || pathname.startsWith("/brands")) {
+  } else if (pathname.startsWith("/brands")) {
+    const brand = getBrand(pathname)
+    await presence.setActivity({
+      details: brand ? `Browsing ${brand.name}` : "Browsing brands",
+      largeImageKey: brand?.logo || Assets.Logo,
+      largeImageText: brand?.name || "Paramount+",
+      type: PresenceType.Watching,
+    })
+  } else if (pathname.startsWith("/sports")) {
     await presence.setActivity({
       details: "Browsing",
       largeImageKey: Assets.Logo,
