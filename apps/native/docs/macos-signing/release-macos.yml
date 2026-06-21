@@ -1,0 +1,97 @@
+# Separate macOS signed + notarized release. Does not touch host-release.yml.
+# Copy this file into .github/workflows/ once the secrets below exist.
+#
+# Required GitHub Secrets (see README.md):
+#   APPLE_CERT_P12_BASE64   base64 of the Developer ID Application .p12 (cert + private key)
+#   APPLE_CERT_PASSWORD     password set when exporting the .p12
+#   KEYCHAIN_PASSWORD       any temp keychain password for the CI runner
+#   APPLE_API_KEY_P8        base64 of AuthKey_<KEYID>.p8 (App Store Connect API key)
+#   APPLE_API_KEY_ID        e.g. MHV46DCLJ2
+#   APPLE_API_ISSUER_ID     UUID from App Store Connect -> Integrations
+#
+# Cut a release:  git tag host-macos-v1.3.0 && git push origin host-macos-v1.3.0
+
+name: Host Release (macOS signed)
+
+on:
+  push:
+    tags:
+      - "host-macos-v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version, e.g. 1.3.0"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: Resolve version
+        id: ver
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${GITHUB_REF_NAME#host-macos-v}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Import Developer ID certificate
+        env:
+          APPLE_CERT_P12_BASE64: ${{ secrets.APPLE_CERT_P12_BASE64 }}
+          APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          CERT="$RUNNER_TEMP/cert.p12"
+          KEYCHAIN="$RUNNER_TEMP/build.keychain-db"
+          echo "$APPLE_CERT_P12_BASE64" | base64 --decode > "$CERT"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security import "$CERT" -P "$APPLE_CERT_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN"
+          security list-keychain -d user -s "$KEYCHAIN" login.keychain-db
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" >/dev/null
+          IDENTITY=$(security find-identity -v -p codesigning "$KEYCHAIN" | grep "Developer ID Application" | head -1 | sed -E 's/.*"(.*)"/\1/')
+          echo "SIGN_IDENTITY=$IDENTITY" >> "$GITHUB_ENV"
+
+      - name: Store notarytool credentials
+        env:
+          APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+        run: |
+          KEY="$RUNNER_TEMP/AuthKey.p8"
+          echo "$APPLE_API_KEY_P8" | base64 --decode > "$KEY"
+          xcrun notarytool store-credentials nowly-notary \
+            --key "$KEY" --key-id "$APPLE_API_KEY_ID" --issuer "$APPLE_API_ISSUER_ID"
+          echo "NOTARY_PROFILE=nowly-notary" >> "$GITHUB_ENV"
+
+      - name: Build + sign + notarize
+        run: bash apps/native/scripts/macos-release.sh "${{ steps.ver.outputs.version }}"
+
+      - name: Upload artifact (workflow_dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: NowlyHost-macos-dmg
+          path: apps/native/releases/${{ steps.ver.outputs.version }}/NowlyHost-macos.dmg
+
+      - name: Publish GitHub Release (tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            "apps/native/releases/${{ steps.ver.outputs.version }}/NowlyHost-macos.dmg" \
+            --title "Nowly Host macOS ${{ steps.ver.outputs.version }}" \
+            --notes "Signed + notarized Developer ID macOS build."
