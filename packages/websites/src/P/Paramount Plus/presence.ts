@@ -21,6 +21,15 @@ const settings = Presence.Settings({
 
 const presence = new Presence(settings)
 
+export const Brands = Presence.Assets({
+  ComedyCentral: "/brands/comedycentral_logo.png",
+  MTV: "/brands/mtv_logo.png",
+  Nickelodeon: "/brands/nickelodeon_logo.png",
+  Originals: "/brands/originals_logo.png",
+  Showtime: "/brands/showtime_logo.png",
+  Smithsonian: "/brands/smithsonian_logo.png",
+})
+
 presence.on("UpdateData", async (ctx) => {
   const { pathname, href } = document.location
   const video = findVideo()
