@@ -52,9 +52,22 @@ echo "   ✔ nowly-host-darwin-universal ($(du -h "$UNIVERSAL" | cut -f1))"
 echo "=== Step 3/4: Create .app bundle ==="
 bash "$SCRIPT_DIR/macos-bundle.sh" "$VERSION" "universal" "$ICON_SOURCE"
 
+# --------------- Step 3.5: Sign .app (Developer ID) ---------------
+# Gated on SIGN_IDENTITY: unset => unsigned build, same as before.
+if [ -n "${SIGN_IDENTITY:-}" ]; then
+  echo "=== Step 3.5: Sign .app ==="
+  bash "$SCRIPT_DIR/macos-sign.sh" "$DIST_DIR/Nowly Host.app"
+fi
+
 # --------------- Step 4: Create DMG ---------------
 echo "=== Step 4/4: Create DMG ==="
 bash "$SCRIPT_DIR/macos-dmg.sh" "universal"
+
+# --------------- Step 4.5: Sign + notarize DMG ---------------
+if [ -n "${SIGN_IDENTITY:-}" ]; then
+  echo "=== Step 4.5: Sign + notarize DMG ==="
+  bash "$SCRIPT_DIR/macos-sign.sh" "$DIST_DIR/NowlyHost-macos.dmg"
+fi
 
 cp "$DIST_DIR/NowlyHost-macos.dmg" "$RELEASE_DIR/"
 
