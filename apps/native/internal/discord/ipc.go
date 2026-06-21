@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"os"
 	"runtime"
 	"time"
@@ -63,7 +64,7 @@ func (c *Client) Connect() error {
 	c.Close()
 	c.log("discord connect opening %s", ipcPath())
 
-	conn, err := os.OpenFile(ipcPath(), os.O_RDWR, 0)
+	conn, err := dialIPC()
 	if err != nil {
 		c.log("discord connect open failed: %v", err)
 		return err
@@ -228,6 +229,15 @@ func (c *Client) log(format string, args ...any) {
 		return
 	}
 	c.logger.Printf(format, args...)
+}
+
+// dialIPC connects to the Discord IPC endpoint. On Unix it is a domain socket
+// (net.Dial); on Windows it is a named pipe that opens as a file.
+func dialIPC() (io.ReadWriteCloser, error) {
+	if runtime.GOOS == "windows" {
+		return os.OpenFile(ipcPath(), os.O_RDWR, 0)
+	}
+	return net.Dial("unix", ipcPath())
 }
 
 func ipcPath() string {
