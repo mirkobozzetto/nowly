@@ -1,17 +1,22 @@
-import { canonicalJson } from "@nowly/shared";
 import type { PresenceRelease } from "@/shared/types";
+import { canonicalJson } from "@nowly/shared";
 
 const IS_UNPACKED = (): boolean => {
   try { return !chrome.runtime.getManifest().update_url } catch { return false }
 }
 
-const PRESENCE_SIGNING_PUBLIC_KEY = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEDhuTFou1XhQRUFR6I-DTR6K2mUJkMUjgJxVMBw9EshH49oo1atlfPDHiQKj2WnuqdTS05H0D-TvVjmjz9wFvFg";
+const PRESENCE_SIGNING_PUBLIC_KEY = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE5ai7_TuIx7BJF-wAGWidRzj8EVf0OxL-QUp8Ta2m-L91HRVljUTwYfF_ijWVyGF3-5gQvQ4GsQGiSVDknDe_LA";
 
-const base64UrlToBytes = (value: string): Uint8Array => {
+const base64UrlToArrayBuffer = (value: string): ArrayBuffer => {
   const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
   const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
   const binary = atob(padded);
-  return Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  const buffer = new ArrayBuffer(binary.length);
+  const bytes = new Uint8Array(buffer);
+  for (let index = 0; index < binary.length; index++) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+  return buffer;
 };
 
 const sha256Base64Url = async (input: string): Promise<string> => {
@@ -34,7 +39,7 @@ const signedPayload = (release: PresenceRelease): string =>
 const verifySignature = async (release: PresenceRelease): Promise<boolean> => {
   const publicKey = await crypto.subtle.importKey(
     "spki",
-    base64UrlToBytes(PRESENCE_SIGNING_PUBLIC_KEY),
+    base64UrlToArrayBuffer(PRESENCE_SIGNING_PUBLIC_KEY),
     { name: "ECDSA", namedCurve: "P-256" },
     false,
     ["verify"],
@@ -43,7 +48,7 @@ const verifySignature = async (release: PresenceRelease): Promise<boolean> => {
   return crypto.subtle.verify(
     { name: "ECDSA", hash: "SHA-256" },
     publicKey,
-    base64UrlToBytes(release.signature),
+    base64UrlToArrayBuffer(release.signature),
     new TextEncoder().encode(signedPayload(release)),
   );
 };
