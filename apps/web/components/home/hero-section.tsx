@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
 import { useState } from "react";
-import { CompanionWindow } from "./companion-window";
+import { ExtensionPreview } from "./extension-preview";
 
 export const HeroSection: FC = (): ReactElement => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -47,7 +47,7 @@ export const HeroSection: FC = (): ReactElement => {
 
             {/* Visual */}
             <div className="hidden min-w-0 lg:block">
-              <CompanionWindow />
+        <ExtensionPreview />
             </div>
           </div>
         </div>
