@@ -14,7 +14,7 @@ const server = Fastify({ logger: true })
 await server.register(cors, {
   origin: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "x-user-token"],
+  allowedHeaders: ["Content-Type", "Authorization", "x-user-token", "x-device-token"],
 })
 
 server.get("/health", async () => {

@@ -17,6 +17,7 @@ export const serverEnv = createEnv({
     PRESENCE_SIGNING_PRIVATE_KEY: required,
     API_SECRET_KEY: required.optional(),
     ANALYTICS_ALLOWED_DISCORD_IDS: z.string().trim().optional(),
+    DEVICE_TOKEN_SECRET: required.optional(),
     OPENAI_API_KEY: required.optional(),
   },
   runtimeEnv: process.env,
