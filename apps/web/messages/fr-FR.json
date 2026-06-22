@@ -24,6 +24,31 @@
     "coming-soon-badge": "Bientôt",
     "more-to-discover": "Encore à découvrir"
   },
+  "stats-section": {
+    "section-label": "Statistiques",
+    "title": "Nowly en chiffres",
+    "description": "Un aperçu anonyme de l'usage réel de Nowly, basé sur les installations et les présences actives.",
+    "items": {
+      "total-users": {
+        "label": "Utilisateurs",
+        "description": "Appareils ayant synchronisé Nowly au moins une fois."
+      },
+      "active-users": {
+        "label": "Actifs maintenant",
+        "description": "Utilisateurs avec au moins une présence active récemment."
+      },
+      "active-presences": {
+        "label": "Présences actives",
+        "description": "Présences actuellement détectées sur les appareils actifs."
+      },
+      "installed-presences": {
+        "label": "Présences installées",
+        "description": "Présences installées et encore activées dans Nowly."
+      }
+    },
+    "footnote": "Les compteurs actifs expirent automatiquement après quelques minutes sans signal.",
+    "unavailable": "Les statistiques sont temporairement indisponibles."
+  },
   "steps-section": {
     "section-label": "Comment ça marche",
     "title": "Aussi simple que ça",
@@ -161,7 +186,13 @@
     "label": "Publicité",
     "placeholder": "Emplacement publicitaire réservé. Ajoutez le data-ad-slot AdSense pour activer les annonces.",
     "card-title": "Sponsor",
-    "card-description": "Un emplacement discret pour soutenir Nowly sans interrompre la navigation."
+    "card-description": "Un emplacement discret pour soutenir Nowly sans interrompre la navigation.",
+    "adblock-title": "Publicités Nowly",
+    "adblock-status": "Soutien optionnel",
+    "adblock-message-title": "Envie de soutenir Nowly ?",
+    "adblock-message": "Les publicités aident à financer l'hébergement et le développement. Si vous aimez Nowly, autoriser les pubs sur ce site est une manière simple de nous aider. Aucun accès n'est bloqué si vous gardez votre bloqueur actif : c'est votre choix.",
+    "adblock-dismiss": "J'ai compris",
+    "adblock-close": "Fermer l'avertissement adblock"
   },
   "faq-page": {
     "badge": "FAQ",
@@ -646,8 +677,8 @@
     "macos-details": "macOS 11+, Intel ou Apple Silicon",
     "linux-details": "Linux 2.6.32+ / glibc 2.17+",
     "download-for": "Télécharger pour {platform}",
-    "win-download-installer": "Télécharger l'installeur",
-    "win-download-portable": "Version portable (.zip)",
+    "win-download-installer": "Installeur Windows (.exe)",
+    "win-download-portable": "Archive portable Windows (.zip)",
     "download-archive": "Télécharger l'archive (.tar.gz)",
     "chip-open-source": "Open source",
     "chip-lightweight": "Faible empreinte",
@@ -671,15 +702,17 @@
       }
     ],
     "guide-title": "Guide d'installation",
-    "step1-title": "Téléchargez l'installateur",
-    "step1-desc": "Cliquez sur le bouton de téléchargement ci-dessus pour obtenir la dernière version de Nowly Host.",
-    "step2-title": "Exécutez l'installateur",
-    "step2-desc": "Ouvrez le fichier téléchargé et suivez l'assistant d'installation. Aucune permission spéciale n'est requise.",
-    "step3-title": "Installez l'extension navigateur",
-    "step3-desc": "Rendez-vous dans la bibliothèque pour installer l'extension Nowly dans votre navigateur.",
-    "step3-link": "Aller à la bibliothèque",
-    "step4-title": "Profitez",
-    "step4-desc": "Une fois les deux installés, Nowly fonctionne automatiquement. Ouvrez une plateforme compatible et votre statut Discord se mettra à jour en temps réel.",
+    "step1-title": "Téléchargez le fichier adapté",
+    "step1-desc": "Choisissez l'installeur recommandé pour votre système. La version portable est là si vous préférez garder les fichiers sans assistant.",
+    "step2-title": "Ouvrez le fichier téléchargé",
+    "step2-desc": "Lancez Nowly Host et suivez l'installation. Sur Windows, lisez le message SmartScreen ci-dessous si une protection apparaît.",
+    "step3-title": "Installez une présence",
+    "step3-desc": "Depuis la bibliothèque, ajoutez une présence comme YouTube pour tester que l'extension et Nowly Host communiquent bien.",
+    "step3-link": "Ouvrir la bibliothèque",
+    "step4-title": "Vérifiez Discord",
+    "step4-desc": "Gardez Discord Desktop ouvert, lancez un site compatible, puis vérifiez que votre statut se met à jour automatiquement.",
+    "windows-protect-title": "Alerte Windows SmartScreen",
+    "windows-protect-description": "Windows peut afficher « Windows a protégé votre ordinateur » parce que l'installateur est récent. Cliquez sur Informations complémentaires puis Exécuter quand même uniquement si vous avez téléchargé Nowly Host depuis cette page.",
     "req-title": "Configuration requise",
     "req-os": "Système d'exploitation",
     "req-arch": "Architecture",
@@ -689,6 +722,30 @@
     "req-storage-windows-value": "Installateur 3,71 Mo / Portable 1,82 Mo",
     "req-storage-macos-value": "3,38 Mo",
     "req-storage-linux-value": "1,76 Mo"
+  },
+  "data-collected-page": {
+    "badge": "Analytiques",
+    "title": "Données collectées par les analytiques anonymes",
+    "description": "Ce que Nowly envoie si vous activez les analytiques anonymes, et ce qui n'est jamais collecté.",
+    "intro": "Les analytiques anonymes sont optionnelles. Elles nous aident à savoir si l'installation fonctionne, quelles présences sont utilisées et où Nowly mérite de l'attention. Elles ne sont pas nécessaires pour utiliser Rich Presence.",
+    "sections": [
+      {
+        "title": "Collecté uniquement si vous acceptez",
+        "body": "Si vous choisissez de partager des analytiques anonymes, Nowly peut envoyer :<ul><li>Un ID d'appareil anonyme généré localement, sans lien avec votre nom, email ou compte Discord.</li><li>Votre navigateur, système d'exploitation, langue, version de l'extension et version de Nowly Host.</li><li>La liste des présences installées et des sessions d'activité de haut niveau, comme la plateforme et la durée.</li><li>Des événements d'installation et de consentement, pour repérer les étapes d'onboarding cassées.</li></ul>"
+      },
+      {
+        "title": "Jamais collecté",
+        "body": "Nowly ne collecte pas les URLs des pages, les titres des pages, les recherches, les titres des contenus regardés, les adresses IP brutes, les IDs Discord, les messages Discord ni votre token Discord."
+      },
+      {
+        "title": "Pourquoi cela aide",
+        "body": "Ces statistiques montrent quelles présences ont besoin de maintenance, si Nowly Host se connecte correctement et quelles étapes d'onboarding échouent le plus souvent. Les corrections sont donc plus ciblées."
+      },
+      {
+        "title": "Votre contrôle",
+        "body": "Vous pouvez refuser pendant l'onboarding, changer votre choix plus tard dans les réglages de l'extension, puis exporter ou supprimer les données analytiques depuis la page <a href='/consent'>Données et confidentialité</a>."
+      }
+    ]
   },
   "consent-page": {
     "badge": "Confidentialité",

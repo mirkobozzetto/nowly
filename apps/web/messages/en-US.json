@@ -24,6 +24,31 @@
     "coming-soon-badge": "Coming Soon",
     "more-to-discover": "More to discover"
   },
+  "stats-section": {
+    "section-label": "Statistics",
+    "title": "Nowly in numbers",
+    "description": "An anonymous snapshot of real Nowly usage, based on installs and active presences.",
+    "items": {
+      "total-users": {
+        "label": "Users",
+        "description": "Devices that synced Nowly at least once."
+      },
+      "active-users": {
+        "label": "Active now",
+        "description": "Users with at least one recently active presence."
+      },
+      "active-presences": {
+        "label": "Active presences",
+        "description": "Presences currently detected on active devices."
+      },
+      "installed-presences": {
+        "label": "Installed presences",
+        "description": "Presences installed and still enabled in Nowly."
+      }
+    },
+    "footnote": "Active counters expire automatically after a few minutes without a signal.",
+    "unavailable": "Statistics are temporarily unavailable."
+  },
   "steps-section": {
     "section-label": "How it works",
     "title": "It's that simple",
@@ -161,7 +186,13 @@
     "label": "Advertisement",
     "placeholder": "Reserved ad placement. Add the AdSense data-ad-slot to enable ads.",
     "card-title": "Sponsor",
-    "card-description": "A subtle placement that supports Nowly without interrupting browsing."
+    "card-description": "A subtle placement that supports Nowly without interrupting browsing.",
+    "adblock-title": "Nowly ads",
+    "adblock-status": "Optional support",
+    "adblock-message-title": "Want to support Nowly?",
+    "adblock-message": "Ads help pay for hosting and development. If you like Nowly, allowing ads on this site is a simple way to help. Nothing is blocked if you keep your ad blocker enabled: it is your choice.",
+    "adblock-dismiss": "I understand",
+    "adblock-close": "Close adblock notice"
   },
   "faq-page": {
     "badge": "FAQ",
@@ -646,8 +677,8 @@
     "macos-details": "macOS 11+, Intel or Apple Silicon",
     "linux-details": "Linux 2.6.32+ / glibc 2.17+",
     "download-for": "Download for {platform}",
-    "win-download-installer": "Download Installer",
-    "win-download-portable": "Portable Version (.zip)",
+    "win-download-installer": "Windows installer (.exe)",
+    "win-download-portable": "Windows portable archive (.zip)",
     "download-archive": "Download Archive (.tar.gz)",
     "chip-open-source": "Open source",
     "chip-lightweight": "Low footprint",
@@ -671,15 +702,17 @@
       }
     ],
     "guide-title": "Installation Guide",
-    "step1-title": "Download the installer",
-    "step1-desc": "Click the download button above to get the latest version of Nowly Host.",
-    "step2-title": "Run the installer",
-    "step2-desc": "Open the downloaded file and follow the setup wizard. No special permissions are required.",
-    "step3-title": "Install the browser extension",
-    "step3-desc": "Head over to the library to install the Nowly extension in your browser.",
-    "step3-link": "Go to Library",
-    "step4-title": "Enjoy",
-    "step4-desc": "Once both are installed, Nowly works automatically. Open a supported platform and your Discord status will update in real time.",
+    "step1-title": "Download the right file",
+    "step1-desc": "Choose the recommended installer for your system. The portable build is available if you prefer keeping the files without a setup wizard.",
+    "step2-title": "Open the downloaded file",
+    "step2-desc": "Run Nowly Host and follow the setup. On Windows, read the SmartScreen note below if a protection prompt appears.",
+    "step3-title": "Install a presence",
+    "step3-desc": "From the library, add a presence like YouTube to test that the extension and Nowly Host communicate correctly.",
+    "step3-link": "Open the library",
+    "step4-title": "Check Discord",
+    "step4-desc": "Keep Discord Desktop open, start a supported website, then check that your status updates automatically.",
+    "windows-protect-title": "Windows SmartScreen warning",
+    "windows-protect-description": "Windows may show “Windows protected your PC” because the installer is recent. Click More info, then Run anyway only if you downloaded Nowly Host from this page.",
     "req-title": "System Requirements",
     "req-os": "Operating System",
     "req-arch": "Architecture",
@@ -689,6 +722,30 @@
     "req-storage-windows-value": "Installer 3.71 MB / Portable 1.82 MB",
     "req-storage-macos-value": "3.38 MB",
     "req-storage-linux-value": "1.76 MB"
+  },
+  "data-collected-page": {
+    "badge": "Analytics",
+    "title": "Data collected by anonymous analytics",
+    "description": "What Nowly sends if you enable anonymous analytics, and what it never collects.",
+    "intro": "Anonymous analytics are optional. They help us understand whether setup works, which presences are used, and where Nowly needs attention. They are not required to use Rich Presence.",
+    "sections": [
+      {
+        "title": "Collected only if you accept",
+        "body": "If you choose to share anonymous analytics, Nowly may send:<ul><li>An anonymous device ID generated locally, not linked to your name, email, or Discord account.</li><li>Your browser, operating system, language, extension version, and Nowly Host version.</li><li>The list of installed presences and high-level activity sessions, such as platform and duration.</li><li>Setup and consent events, so we can find broken onboarding steps.</li></ul>"
+      },
+      {
+        "title": "Never collected",
+        "body": "Nowly does not collect page URLs, page titles, searches, watched content titles, raw IP addresses, Discord IDs, Discord messages, or your Discord token."
+      },
+      {
+        "title": "Why this helps",
+        "body": "These stats show which presences need maintenance, whether Nowly Host connects reliably, and which onboarding steps fail most often. That makes fixes less guesswork and more focused."
+      },
+      {
+        "title": "Your control",
+        "body": "You can decline during onboarding, change your choice later in the extension settings, and export or delete analytics data from the <a href='/consent'>Data & Privacy</a> page."
+      }
+    ]
   },
   "consent-page": {
     "badge": "Privacy",
