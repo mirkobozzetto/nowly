@@ -1,6 +1,7 @@
 {
   "name": "@nowly/env",
   "version": "0.0.1",
+  "license": "BUSL-1.1",
   "private": true,
   "type": "module",
   "exports": {

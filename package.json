@@ -3,6 +3,8 @@
   "private": true,
   "packageManager": "pnpm@10.17.1",
   "version": "1.0.0",
+  "license": "BUSL-1.1",
+  "author": "Anthony Lejeune",
   "description": "Presence monorepo",
   "scripts": {
     "dev:api": "pnpm --filter @nowly/api dev",

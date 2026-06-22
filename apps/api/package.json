@@ -1,6 +1,7 @@
 {
   "name": "@nowly/api",
   "version": "1.0.0",
+  "license": "BUSL-1.1",
   "private": true,
   "type": "module",
   "scripts": {
