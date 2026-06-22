@@ -8,6 +8,8 @@ let status = "not connected";
 let connecting = false;
 let discordConnected = false;
 let version: string | undefined;
+let lastAutoConnectAttemptAt = 0;
+const AUTO_CONNECT_RETRY_MS = 5000;
 const responseListeners = new Set<(message: NativeResponse) => void>();
 
 export const mapPresenceData = (data: PresenceData): PresencePayload => ({
@@ -32,7 +34,12 @@ export const onNativeResponse = (listener: (message: NativeResponse) => void): (
 };
 
 export const refreshNativeStatus = (): { connected: boolean; status: string; discordConnected: boolean; version?: string } => {
-  postNative({ type: "PING" });
+  if (nativePort) {
+    postNative({ type: "PING" });
+  } else if (!connecting && Date.now() - lastAutoConnectAttemptAt >= AUTO_CONNECT_RETRY_MS) {
+    lastAutoConnectAttemptAt = Date.now();
+    connectNative({ silent: true });
+  }
   return getNativeStatus();
 };
 
@@ -77,14 +84,16 @@ export const restartNative = (): { connected: boolean; status: string; discordCo
   return getNativeStatus();
 };
 
-export const connectNative = (): void => {
+export const connectNative = (options: { silent?: boolean } = {}): void => {
   if (nativePort) return;
   if (connecting) return;
 
   try {
     connecting = true;
     nativePort = chrome.runtime.connectNative(NATIVE_HOST);
-    status = "connecting";
+    if (!options.silent) {
+      status = "connecting";
+    }
   } catch (error) {
     nativePort = null;
     connecting = false;
