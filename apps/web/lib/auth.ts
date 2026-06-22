@@ -20,9 +20,6 @@ export const clearToken = (): void => {
   localStorage.removeItem(TOKEN_KEY);
 };
 
-// SEC-01: the API now returns the JWT in the URL fragment (`#token=...`) so it
-// never reaches the server or the Referer header. Read it from the hash, with a
-// fallback to the legacy query parameter for backwards compatibility.
 export const getTokenFromUrl = (): string | null => {
   if (typeof window === "undefined") return null;
   const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : window.location.hash;

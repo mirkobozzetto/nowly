@@ -144,7 +144,7 @@ export const HostContent: FC = (): ReactElement => {
       */}
 
       <HostTrust />
-      <HostGuide />
+      <HostGuide platform={activePlatform} />
       <HostRequirements platform={activePlatform} />
     </>
   );
