@@ -1,34 +1,17 @@
-import { Button } from "@/components/ui/button";
 import { sendMessage } from "@/lib/messages";
 import { t } from "@/shared/i18n";
-import type { AnalyticsLogEntry, AnalyticsLogLevel, AnalyticsLogType } from "@/shared/types";
-import { Check, Copy, Trash2 } from "lucide-react";
+import type { AnalyticsLogEntry } from "@/shared/types";
 import type { FC, ReactElement } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-type Filter = "all" | AnalyticsLogType;
-type Feedback = "copied" | "cleared" | null;
-
-const filters: Filter[] = ["all", "analytics", "api", "presence", "native"];
-
-const levelClass: Record<AnalyticsLogLevel, string> = {
-  info: "border-border-light bg-card-2 text-muted-foreground",
-  success: "border-success/30 bg-success/10 text-success",
-  warn: "border-yellow-500/30 bg-yellow-500/10 text-yellow-300",
-  error: "border-destructive/30 bg-destructive/10 text-destructive",
-};
-
-const formatTime = (timestamp: number): string =>
-  new Intl.DateTimeFormat(undefined, {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  }).format(new Date(timestamp));
+import { AnalyticsLogFilterTabs } from "./analytics-log-filter-tabs";
+import { AnalyticsLogRow } from "./analytics-log-row";
+import { AnalyticsLogToolbar } from "./analytics-log-toolbar";
+import type { AnalyticsLogFeedback, AnalyticsLogFilter } from "./analytics-logs.model";
 
 export const AnalyticsLogsView: FC = (): ReactElement => {
   const [logs, setLogs] = useState<AnalyticsLogEntry[]>([]);
-  const [filter, setFilter] = useState<Filter>("all");
-  const [feedback, setFeedback] = useState<Feedback>(null);
+  const [filter, setFilter] = useState<AnalyticsLogFilter>("all");
+  const [feedback, setFeedback] = useState<AnalyticsLogFeedback>(null);
   const feedbackTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -56,7 +39,7 @@ export const AnalyticsLogsView: FC = (): ReactElement => {
     [filter, logs],
   );
 
-  const showFeedback = useCallback((nextFeedback: Exclude<Feedback, null>): void => {
+  const showFeedback = useCallback((nextFeedback: Exclude<AnalyticsLogFeedback, null>): void => {
     if (feedbackTimerRef.current) window.clearTimeout(feedbackTimerRef.current);
     setFeedback(nextFeedback);
     feedbackTimerRef.current = window.setTimeout(() => setFeedback(null), 1400);
@@ -74,67 +57,16 @@ export const AnalyticsLogsView: FC = (): ReactElement => {
     void navigator.clipboard.writeText(JSON.stringify(visibleLogs, null, 2)).then(() => showFeedback("copied"));
   }, [showFeedback, visibleLogs]);
 
-  const copyConfirmed = feedback === "copied";
-  const clearConfirmed = feedback === "cleared";
-
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-3">
-      <div className="flex items-center justify-between gap-2 rounded-lg border border-border bg-card p-3">
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-foreground">{t("analytics-logs-title")}</p>
-          <p className="text-xs text-muted-foreground">{t("analytics-logs-description")}</p>
-        </div>
-        <div className="flex items-center gap-1">
-          <Button
-            variant="unstyled"
-            size="none"
-            onClick={copyLogs}
-            className={`flex h-8 items-center gap-1 rounded-md border px-2 text-xs transition-all ${
-              copyConfirmed
-                ? "animate-pulse border-success/40 bg-success/10 text-success"
-                : "border-border bg-card-2 text-muted-foreground hover:text-foreground"
-            }`}
-            title={t("analytics-logs-copy-title")}
-          >
-            {copyConfirmed ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-            {copyConfirmed ? t("analytics-logs-copied") : t("analytics-logs-copy-json")}
-          </Button>
-          <Button
-            variant="unstyled"
-            size="none"
-            onClick={clearLogs}
-            className={`flex h-8 items-center gap-1 rounded-md border px-2 text-xs transition-all ${
-              clearConfirmed
-                ? "animate-pulse border-success/40 bg-success/10 text-success"
-                : "border-border bg-card-2 text-muted-foreground hover:text-foreground"
-            }`}
-            title={t("analytics-logs-clear-title")}
-          >
-            {clearConfirmed ? <Check className="h-3.5 w-3.5" /> : <Trash2 className="h-3.5 w-3.5" />}
-            {clearConfirmed ? t("analytics-logs-cleared") : t("analytics-logs-clear")}
-          </Button>
-        </div>
-      </div>
+      <AnalyticsLogToolbar
+        clearConfirmed={feedback === "cleared"}
+        copyConfirmed={feedback === "copied"}
+        onClear={clearLogs}
+        onCopy={copyLogs}
+      />
 
-      <div role="tablist" className="flex gap-1 overflow-x-auto">
-        {filters.map((item) => (
-          <Button
-            key={item}
-            role="tab"
-            aria-selected={filter === item}
-            variant="unstyled"
-            size="none"
-            onClick={() => setFilter(item)}
-            className={
-              filter === item
-                ? "shrink-0 rounded-md bg-accent px-2.5 py-1 text-xs font-semibold text-background"
-                : "shrink-0 rounded-md border border-border bg-card px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground"
-            }
-          >
-            {item}
-          </Button>
-        ))}
-      </div>
+      <AnalyticsLogFilterTabs filter={filter} onFilterChange={setFilter} />
 
       <div className="min-h-0 flex-1 overflow-y-auto rounded-lg border border-border bg-card">
         {visibleLogs.length === 0 ? (
@@ -144,22 +76,7 @@ export const AnalyticsLogsView: FC = (): ReactElement => {
         ) : (
           <div className="divide-y divide-border">
             {visibleLogs.map((log) => (
-              <article key={log.id} className="space-y-2 p-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="truncate text-xs font-semibold text-foreground">{log.message}</p>
-                    <p className="text-[11px] text-muted-foreground">{formatTime(log.at)} · {log.type}</p>
-                  </div>
-                  <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase ${levelClass[log.level]}`}>
-                    {log.level}
-                  </span>
-                </div>
-                {log.payload ? (
-                  <pre className="max-h-24 overflow-auto rounded-md bg-background p-2 text-[11px] leading-relaxed text-muted-foreground">
-                    {JSON.stringify(log.payload, null, 2)}
-                  </pre>
-                ) : null}
-              </article>
+              <AnalyticsLogRow key={log.id} log={log} />
             ))}
           </div>
         )}
