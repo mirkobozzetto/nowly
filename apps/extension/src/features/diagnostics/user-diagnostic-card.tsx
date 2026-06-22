@@ -6,7 +6,7 @@ import type { CurrentActivity, InstalledPresences, UserScriptsStatus } from "@/s
 import { CheckCircle2, Clipboard, ExternalLink, LoaderCircle, XCircle } from "lucide-react";
 import type { FC, ReactElement, ReactNode } from "react";
 import { useMemo, useState } from "react";
-import { buildDiagnosticSnapshot, YOUTUBE_TEST_URL, isHostChecking } from "./diagnostic-status";
+import { buildDiagnosticSnapshot, isHostChecking, YOUTUBE_TEST_URL } from "./diagnostic-status";
 
 type Props = {
   activity: CurrentActivity | null;
@@ -17,7 +17,6 @@ type Props = {
 };
 
 type RowStatus = "loading" | "success" | "error";
-type MessageKey = Parameters<typeof t>[0];
 
 const siteUrl = (path: string): string => `${WEB_BASE_URL.replace(/\/$/, "")}${path}`;
 
@@ -49,6 +48,7 @@ const StatusRow: FC<{
     <span className="mt-0.5 shrink-0">
       <StatusIcon status={status} />
     </span>
+
     <div className="min-w-0 flex-1">
       <p className="text-xs font-semibold text-foreground">{label}</p>
       <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">{message}</p>
@@ -91,6 +91,7 @@ export const UserDiagnosticCard: FC<Props> = ({
     : isHostChecking(nativeStatus)
       ? "loading"
       : "error";
+
   const discordStatus: RowStatus = snapshot.discordConnected
     ? "success"
     : hostStatus === "loading"
@@ -126,6 +127,7 @@ export const UserDiagnosticCard: FC<Props> = ({
             {t("diagnostic-description")}
           </p>
         </div>
+
         <Button
           variant="unstyled"
           size="none"
@@ -143,6 +145,7 @@ export const UserDiagnosticCard: FC<Props> = ({
           label={t("diagnostic-extension-installed")}
           message={t("diagnostic-extension-installed-message")}
         />
+
         <StatusRow
           status={snapshot.userScriptsActive ? "success" : "error"}
           label={t("diagnostic-user-scripts-active")}
@@ -156,6 +159,7 @@ export const UserDiagnosticCard: FC<Props> = ({
             </SmallAction>
           ) : undefined}
         />
+
         <StatusRow
           status={hostStatus}
           label={t("diagnostic-host-detected")}
@@ -164,7 +168,7 @@ export const UserDiagnosticCard: FC<Props> = ({
             : hostStatus === "loading"
               ? t("diagnostic-host-checking-message")
               : t("diagnostic-host-missing-message")}
-          action={!snapshot.hostDetected ? (
+          action={!snapshot.hostDetected && hostStatus !== "loading" ? (
             <>
               <SmallAction onClick={() => openUrl(siteUrl("/host"))}>
                 {t("diagnostic-install-host")}
@@ -174,6 +178,7 @@ export const UserDiagnosticCard: FC<Props> = ({
             </>
           ) : undefined}
         />
+
         <StatusRow
           status={discordStatus}
           label={t("diagnostic-discord-connected")}
@@ -186,6 +191,7 @@ export const UserDiagnosticCard: FC<Props> = ({
             <SmallAction onClick={onConnectNative}>{t("diagnostic-check-connection")}</SmallAction>
           ) : undefined}
         />
+
         <StatusRow
           status={snapshot.presenceInstalled ? "success" : "error"}
           label={t("diagnostic-presence-installed")}
@@ -199,6 +205,7 @@ export const UserDiagnosticCard: FC<Props> = ({
             </SmallAction>
           ) : undefined}
         />
+
         <StatusRow
           status={snapshot.activityDetected ? "success" : "error"}
           label={t("diagnostic-activity-detected")}
