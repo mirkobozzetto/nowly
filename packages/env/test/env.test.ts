@@ -1,8 +1,8 @@
 import { createEnv } from "@t3-oss/env-core"
 import { describe, expect, it } from "vitest"
 import { z } from "zod"
-import { clientEnv } from "../src/client"
 import { cliEnv } from "../src/cli"
+import { clientEnv } from "../src/client"
 
 describe("@nowly/env", () => {
   it("provides public config", () => {
