@@ -21,6 +21,7 @@ export const PresenceDetailClient: FC<Props> = ({ presence }): ReactElement => {
         extDetected={status.extDetected}
         needsUpdate={status.needsUpdate}
         installedVersion={status.installedVersion}
+        diagnostic={status.diagnostic}
         loading={status.loading}
         totalInstalls={status.totalInstalls}
         savedRating={status.savedRating}

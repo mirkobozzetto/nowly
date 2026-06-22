@@ -4,6 +4,7 @@ import type { Presence } from "@/lib/data/presences";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import type { ExtensionDiagnostic } from "./extension-diagnostic";
 import { EXT_SOURCE, nextId } from "./utils";
 
 type UsePresenceStatusReturn = {
@@ -14,6 +15,7 @@ type UsePresenceStatusReturn = {
   totalInstalls: number
   savedRating: number
   deviceId: string | null
+  diagnostic: ExtensionDiagnostic | null
   needsUpdate: boolean
   pendingVersion: string | null
   handleInstall: () => Promise<void>
@@ -38,6 +40,7 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
   const [totalInstalls] = useState(presence.totalInstalls);
   const [savedRating, setSavedRating] = useState(0);
   const [deviceId, setDeviceId] = useState<string | null>(null);
+  const [diagnostic, setDiagnostic] = useState<ExtensionDiagnostic | null>(null);
 
   const [pendingVersion, setPendingVersion] = useState<string | null>(null);
   const [showUninstallConfirm, setShowUninstallConfirm] = useState(false);
@@ -78,6 +81,15 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
           { source: EXT_SOURCE, type: "GET_USER_RATINGS", messageId: nextId() },
           "*",
         );
+
+        window.postMessage(
+          { source: EXT_SOURCE, type: "GET_DIAGNOSTIC", messageId: nextId() },
+          "*",
+        );
+      }
+
+      if (msg.source === EXT_SOURCE && msg.type === "GET_DIAGNOSTIC_RESULT") {
+        setDiagnostic((msg.payload ?? null) as ExtensionDiagnostic | null);
       }
 
       if (msg.source === EXT_SOURCE && msg.type === "USER_RATINGS") {
@@ -118,6 +130,10 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
             });
           }
           toast.success(t("install-success", { platform: presence.name }));
+          window.postMessage(
+            { source: EXT_SOURCE, type: "GET_DIAGNOSTIC", messageId: nextId() },
+            "*",
+          );
         } else {
           setIsInstalled(false);
           setInstalledVersion(null);
@@ -131,6 +147,10 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
           setIsInstalled(false);
           setInstalledVersion(null);
           toast.success(t("uninstall-success", { platform: presence.name }));
+          window.postMessage(
+            { source: EXT_SOURCE, type: "GET_DIAGNOSTIC", messageId: nextId() },
+            "*",
+          );
         }
       }
     };
@@ -146,7 +166,6 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
   const handleInstall = useCallback(async (): Promise<void> => {
     if (!extDetected) {
       toast.info(t("ext-not-detected"));
-      setIsInstalled((current) => !current);
       return;
     }
 
@@ -265,6 +284,7 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
     totalInstalls,
     savedRating,
     deviceId,
+    diagnostic,
     needsUpdate,
     pendingVersion,
     handleInstall,
