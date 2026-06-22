@@ -40,7 +40,7 @@ export const StatsSection: FC = (): ReactElement => {
   return (
     <section className="border-b border-border py-20">
       <div className="relative z-2 mx-auto w-full max-w-300 min-w-0 px-6">
-        <div className="mb-10 max-w-150">
+        <div className="mb-10">
           <span className="mb-4 block text-xs font-bold uppercase tracking-widest text-accent">
             {t("section-label")}
           </span>
