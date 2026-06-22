@@ -2,7 +2,7 @@
   "navbar": {
     "marketplace": "Biblioteca",
     "docs": "Documentación",
-    "download-desktop": "Descargar aplicación",
+    "download-desktop": "Descargar Nowly Host",
     "download-for": "Descargar para {browser}",
     "download-short": "Descargar"
   },
@@ -47,7 +47,7 @@
     "title": "Empieza ahora",
     "description": "Sin suscripción. Ligero y seguro.",
     "download-for": "Descargar para {browser}",
-    "download-desktop": "Descargar aplicación",
+    "download-desktop": "Descargar Nowly Host",
     "coming-soon": "Próximamente",
     "firefox-status": "Próximamente",
     "extension": "Descargar extensión",
@@ -65,11 +65,11 @@
     "items": [
       {
         "question": "¿Qué es Nowly?",
-        "answer": "Nowly muestra automáticamente lo que estás viendo en tu estado de Discord mediante una extensión de navegador y una app nativa."
+        "answer": "Nowly muestra automáticamente lo que estás viendo en tu estado de Discord mediante una extensión de navegador y una Nowly Host."
       },
       {
         "question": "¿Mis datos pasan por vuestros servidores?",
-        "answer": "Tu actividad de Rich Presence, no — va localmente a la aplicación nativa y luego directamente a Discord. Solo las valoraciones que publiques voluntariamente (opt-in) se almacenan en el servidor."
+        "answer": "Tu actividad de Rich Presence, no — va localmente a Nowly Host y luego directamente a Discord. Solo las valoraciones que publiques voluntariamente (opt-in) se almacenan en el servidor."
       },
       {
         "question": "¿Qué plataformas son compatibles?",
@@ -120,7 +120,7 @@
     },
     "bugReport": {
       "title": "Informar de un bug",
-      "description": "Informa de un problema en el sitio, la extensión, la API o la aplicación nativa."
+      "description": "Informa de un problema en el sitio, la extensión, la API o Nowly Host."
     },
     "newPresence": {
       "title": "Solicitar una presence",
@@ -168,7 +168,7 @@
     "items": [
       {
         "question": "¿Qué es Nowly?",
-        "answer": "Nowly es una extensión de navegador que actualiza automáticamente tu <strong>estado de Discord (Rich Presence)</strong> con lo que estás viendo en tus plataformas de streaming favoritas. Se compone de una extensión para Chromium, un host de mensajería nativo para Windows y un sitio web. Todo el proyecto es de <strong>código abierto</strong> y <strong>gratuito</strong>."
+        "answer": "Nowly es una extensión de navegador que actualiza automáticamente tu <strong>estado de Discord (Rich Presence)</strong> con lo que estás viendo en tus plataformas favoritas. Se compone de una extensión para Chromium, <strong>Nowly Host</strong> y un sitio web. Todo el proyecto es de <strong>código abierto</strong> y <strong>gratuito</strong>."
       },
       {
         "question": "¿Nowly es gratuito?",
@@ -176,7 +176,7 @@
       },
       {
         "question": "¿Cómo instalo Nowly?",
-        "answer": "La instalación consta de dos pasos:<br /><strong>Paso 1:</strong> instala la extensión desde <a href='https://chromewebstore.google.com/detail/nowly/kmnlnfldimgneaopdihplkebobckcjpf'>Chrome Web Store</a>.<br /><strong>Paso 2:</strong> descarga y ejecuta el <strong>instalador de Windows</strong> (la aplicación nativa que se comunica con Discord).<br />Una vez instalados ambos, Nowly funciona automáticamente en segundo plano. No necesitas configurar nada más."
+        "answer": "La instalación sigue un flujo guiado:<br /><strong>Paso 1:</strong> instala la extensión desde <a href='https://chromewebstore.google.com/detail/nowly/kmnlnfldimgneaopdihplkebobckcjpf'>Chrome Web Store</a>.<br /><strong>Paso 2:</strong> descarga y ejecuta <strong>Nowly Host</strong> para Windows o Linux.<br />Luego abre Discord Desktop, instala una presencia y prueba en un sitio compatible."
       },
       {
         "question": "¿Qué plataformas son compatibles?",
@@ -184,19 +184,19 @@
       },
       {
         "question": "¿Cómo funciona la conexión con Discord?",
-        "answer": "La <strong>aplicación nativa</strong> de Nowly se comunica directamente con el cliente de <a href='https://discord.com'>Discord</a> instalado en tu ordenador mediante una conexión IPC local. <strong>Ningún dato pasa por nuestros servidores.</strong> Nowly simplemente envía la información de tu actividad actual (título, plataforma, duración) a Discord, que la muestra en tu perfil."
+        "answer": "<strong>Nowly Host</strong> se comunica directamente con el cliente de <a href='https://discord.com'>Discord</a> instalado en tu ordenador mediante una conexión IPC local. <strong>Ningún dato pasa por nuestros servidores.</strong> Nowly simplemente envía la información de tu actividad actual (título, plataforma, duración) a Discord, que la muestra en tu perfil."
       },
       {
         "question": "¿Comparten mis datos con servidores de terceros?",
-        "answer": "<strong>Tu actividad de Rich Presence, no.</strong> La extensión detecta el contenido en tu navegador y lo transmite a la aplicación nativa, que lo envía directamente a <a href='https://discord.com'>Discord</a> mediante comunicación local — nuestros servidores no intervienen. Sin embargo, si publicas una valoración sobre una presencia (se requiere inicio de sesión con Discord), tu ID de Discord, tu nota y tu comentario se almacenan en el servidor. <a href='/privacy'>Las analytics son opcionales</a> y están desactivadas por defaut."
+        "answer": "<strong>Tu actividad de Rich Presence, no.</strong> La extensión detecta el contenido en tu navegador y lo transmite a Nowly Host, que lo envía directamente a <a href='https://discord.com'>Discord</a> mediante comunicación local ? nuestros servidores no intervienen. Sin embargo, si publicas una valoración sobre una presencia, tu ID de Discord, tu nota y tu comentario se almacenan en el servidor. <a href='/privacy'>Las analytics son opcionales</a> y están desactivadas por defecto."
       },
       {
         "question": "¿Por qué no se actualiza mi estado de Discord?",
-        "answer": "Varias razones posibles:<ul><li>¿Está <a href='https://discord.com'>Discord</a> ejecutándose en tu ordenador?</li><li>¿Está la aplicación nativa de Nowly instalada y en ejecución?</li><li>¿Está la extensión activada en tu navegador?</li><li>¿Está la presencia para tu plataforma instalada desde la biblioteca?</li></ul><br /><br />También puedes abrir el <strong>panel lateral</strong> de la extensión para ver los mensajes de depuración."
+        "answer": "Varias razones posibles:<ul><li>¿Está <a href='https://discord.com'>Discord</a> ejecutándose en tu ordenador?</li><li>¿Nowly Host está instalado y detectado?</li><li>¿La extensión está activada en tu navegador?</li><li>¿Los scripts de usuario están activos?</li><li>¿La presencia correspondiente está instalada desde la biblioteca?</li></ul><br />Abre el panel lateral de la extensión para ver el diagnóstico de Nowly."
       },
       {
         "question": "¿Cómo desinstalo Nowly?",
-        "answer": "Para desinstalar la extensión, haz clic derecho en el icono de Nowly en tu navegador y selecciona 'Eliminar de Chrome'. Para desinstalar la aplicación nativa, ejecuta el programa desinstalador disponible en la carpeta de instalación o usa el Panel de control de Windows."
+        "answer": "Para desinstalar la extensión, haz clic derecho en el icono de Nowly en tu navegador y selecciona 'Eliminar de Chrome'. Para desinstalar Nowly Host, ejecuta el programa desinstalador disponible en la carpeta de instalación o usa el Panel de control de Windows."
       },
       {
         "question": "¿Nowly es de código abierto?",
@@ -215,7 +215,7 @@
       },
       {
         "title": "Un enfoque local",
-        "body": "El flujo local se mantiene constante: tu navegador detecta la actividad, la app nativa la envía a Discord, sin pasar por nuestros servidores*."
+        "body": "El flujo local se mantiene constante: tu navegador detecta la actividad, Nowly Host la envía a Discord, sin pasar por nuestros servidores*."
       },
       {
         "title": "Un proyecto comunitario",
@@ -271,8 +271,8 @@
         "description": "Catálogo de plataformas compatibles y sus metadatos asociados."
       },
       "cdn": {
-        "title": "Descargas del host",
-        "description": "Manifest y archivos usados para distribuir la aplicación nativa de Nowly."
+        "title": "Descargas dNowly Host",
+        "description": "Manifest y archivos usados para distribuir Nowly Host."
       }
     }
   },
@@ -283,15 +283,15 @@
     "sections": [
       {
         "title": "Funcionamiento general",
-        "body": "Nowly se compone de tres partes: una <strong>extensión de navegador</strong>, una <strong>aplicación nativa</strong> y un <strong>sitio web</strong> (biblioteca). La extensión detecta el contenido multimedia en tu navegador y lo transmite a la aplicación nativa, que lo envía directamente al cliente de Discord instalado en tu equipo mediante comunicación local (IPC). Estos datos de actividad no pasan por nuestros servidores."
+        "body": "Nowly se compone de tres partes: una <strong>extensión de navegador</strong>, una <strong>Nowly Host</strong> y un <strong>sitio web</strong> (biblioteca). La extensión detecta el contenido multimedia en tu navegador y lo transmite a Nowly Host, que lo envía directamente al cliente de Discord instalado en tu equipo mediante comunicación local (IPC). Estos datos de actividad no pasan por nuestros servidores."
       },
       {
         "title": "Datos procesados localmente (extensión)",
         "body": "La extensión del navegador almacena los siguientes datos localmente en <code>chrome.storage.local</code> — nunca salen de tu dispositivo:<ul><li>Presencias instaladas (metadatos, paquetes firmados, estado de activación).</li><li>Actividad actual (título del contenido, plataforma, duración, miniatura).</li><li>Registro de depuración (marcas de tiempo, acciones, URL visitadas).</li><li>Estado de onboarding y una <strong>copia local</strong> de tu perfil de Discord (ID, nombre de usuario, avatar) usada solo para mostrar la interfaz.</li><li>Preferencias de visualización y ajustes por presencia.</li></ul>Puedes borrar estos datos desinstalando la extensión o usando las opciones de restablecimiento."
       },
       {
-        "title": "Datos procesados localmente (aplicación nativa)",
-        "body": "La aplicación nativa de Nowly escribe un archivo de log local en <code>%LOCALAPPDATA%\\NowlyClient\\nowly-host.log</code>, con marcas de tiempo e información de actividad enviada a Discord. Este archivo permanece en tu dispositivo, puede eliminarse en cualquier momento y <strong>nunca</strong> se envía a nuestros servidores."
+        "title": "Datos procesados localmente (Nowly Host)",
+        "body": "Nowly Host escribe un archivo de log local en <code>%LOCALAPPDATA%\\NowlyClient\\nowly-host.log</code>, con marcas de tiempo e información de actividad enviada a Discord. Este archivo permanece en tu dispositivo, puede eliminarse en cualquier momento y <strong>nunca</strong> se envía a nuestros servidores."
       },
       {
         "title": "Datos en el servidor — Autenticación y valoraciones",
@@ -299,7 +299,7 @@
       },
       {
         "title": "Datos en el servidor — Analytics (opt-in)",
-        "body": "La extensión te ofrece, durante la instalación, activar <strong>analytics anónimas</strong> (desactivadas por defecto). Si las activas, se recopila lo siguiente:<ul><li>Un identificador de dispositivo anónimo (UUID generado localmente, sin vínculo con tu identidad).</li><li>Navegador, sistema operativo, idioma, versión de la extensión y de la aplicación nativa.</li><li>Presencias instaladas y sesiones de actividad (duración, plataforma).</li></ul>Estos datos solo sirven para mejorar el servicio y medir la popularidad de las presencias. Puedes <strong>revocar tu consentimiento</strong> en cualquier momento desde los ajustes de la extensión — todos los datos asociados a tu identificador de dispositivo serán eliminados."
+        "body": "La extensión te ofrece, durante la instalación, activar <strong>analytics anónimas</strong> (desactivadas por defecto). Si las activas, se recopila lo siguiente:<ul><li>Un identificador de dispositivo anónimo (UUID generado localmente, sin vínculo con tu identidad).</li><li>Navegador, sistema operativo, idioma, versión de la extensión y de Nowly Host.</li><li>Presencias instaladas y sesiones de actividad (duración, plataforma).</li></ul>Estos datos solo sirven para mejorar el servicio y medir la popularidad de las presencias. Puedes <strong>revocar tu consentimiento</strong> en cualquier momento desde los ajustes de la extensión — todos los datos asociados a tu identificador de dispositivo serán eliminados."
       },
       {
         "title": "Comunicación con Discord",
@@ -337,11 +337,11 @@
     "sections": [
       {
         "title": "Aceptación de los términos",
-        "body": "Al descargar, instalar o usar Nowly (la extensión de navegador, la aplicación nativa, el sitio web y cualquier software asociado), aceptas sin reservas estos términos del servicio. Si <strong>no estás de acuerdo</strong>, no uses el software."
+        "body": "Al descargar, instalar o usar Nowly (la extensión de navegador, Nowly Host, el sitio web y cualquier software asociado), aceptas sin reservas estos términos del servicio. Si <strong>no estás de acuerdo</strong>, no uses el software."
       },
       {
         "title": "Descripción del servicio",
-        "body": "Nowly es una herramienta <strong>gratuita y de código abierto</strong> que detecta contenido multimedia en tu navegador y actualiza automáticamente tu estado de Discord (Rich Presence) mediante comunicación local con el cliente de Discord. El servicio incluye:<ul><li>Una <strong>extensión Chromium</strong> que detecta y transmite tu actividad.</li><li>Una <strong>aplicación nativa</strong> que actúa como puente hacia Discord.</li><li>Un <strong>sitio web</strong> (biblioteca) para descubrir e instalar presencias.</li><li>Un <strong>SDK para desarrolladores</strong> y herramientas para crear presencias personalizadas.</li></ul>"
+        "body": "Nowly es una herramienta <strong>gratuita y de código abierto</strong> que detecta contenido multimedia en tu navegador y actualiza automáticamente tu estado de Discord (Rich Presence) mediante comunicación local con el cliente de Discord. El servicio incluye:<ul><li>Una <strong>extensión Chromium</strong> que detecta y transmite tu actividad.</li><li>Una <strong>Nowly Host</strong> que actúa como puente hacia Discord.</li><li>Un <strong>sitio web</strong> (biblioteca) para descubrir e instalar presencias.</li><li>Un <strong>SDK para desarrolladores</strong> y herramientas para crear presencias personalizadas.</li></ul>"
       },
       {
         "title": "Edad mínima",
@@ -353,7 +353,7 @@
       },
       {
         "title": "Uso responsable",
-        "body": "Te comprometes a usar Nowly de acuerdo con las leyes aplicables y los <a href='https://discord.com/terms'>términos de servicio de Discord</a>. En particular, no debes:<ul><li>Usar Nowly para mostrar contenido ilícito, de odio, difamatorio o que vulnere derechos de terceros.</li><li>Publicar en las valoraciones contenido ilícito o datos personales de terceros.</li><li>Intentar eludir los mecanismos de seguridad de la extensión o de la aplicación nativa.</li><li>Distribuir presencias modificadas, falsificadas o no firmadas a través de la infraestructura oficial.</li><li>Usar Nowly de forma que viole los términos de Discord o de cualquier plataforma que utilices.</li><li>Enviar solicitudes automáticas abusivas a la API.</li></ul>"
+        "body": "Te comprometes a usar Nowly de acuerdo con las leyes aplicables y los <a href='https://discord.com/terms'>términos de servicio de Discord</a>. En particular, no debes:<ul><li>Usar Nowly para mostrar contenido ilícito, de odio, difamatorio o que vulnere derechos de terceros.</li><li>Publicar en las valoraciones contenido ilícito o datos personales de terceros.</li><li>Intentar eludir los mecanismos de seguridad de la extensión o de Nowly Host.</li><li>Distribuir presencias modificadas, falsificadas o no firmadas a través de la infraestructura oficial.</li><li>Usar Nowly de forma que viole los términos de Discord o de cualquier plataforma que utilices.</li><li>Enviar solicitudes automáticas abusivas a la API.</li></ul>"
       },
       {
         "title": "Valoraciones y comentarios",
@@ -395,7 +395,7 @@
     "sections": [
       {
         "title": "Editor",
-        "body": "El sitio web <strong>nowly.me</strong>, la extensión de navegador Nowly y la aplicación nativa asociada son publicados por:<br/><br/>Editor: <strong>{publisherName}</strong><br/>Situación: Autónomo (micro-empresa)<br/>SIREN: <strong>{publisherSiren}</strong><br/>Dirección: <strong>{publisherAddress}</strong><br/>IVA: No aplicable — exención de IVA (art. 293 B del CGI francés)<br/>Email: <a href='mailto:{publisherEmail}'>{publisherEmail}</a>"
+        "body": "El sitio web <strong>nowly.me</strong>, la extensión de navegador Nowly y Nowly Host son publicados por:<br/><br/>Editor: <strong>{publisherName}</strong><br/>Situación: Autónomo (micro-empresa)<br/>SIREN: <strong>{publisherSiren}</strong><br/>Dirección: <strong>{publisherAddress}</strong><br/>IVA: No aplicable — exención de IVA (art. 293 B del CGI francés)<br/>Email: <a href='mailto:{publisherEmail}'>{publisherEmail}</a>"
       },
       {
         "title": "Director de publicación",
@@ -406,8 +406,8 @@
         "body": "Todos los servicios en línea (sitio web, API y base de datos PostgreSQL) están alojados por:<br/><br/><strong>Railway Corporation</strong><br/>2261 Market Street #4667<br/>San Francisco, CA 94114 — Estados Unidos<br/><a href='https://railway.com'>railway.com</a><br/><br/>Región de datos: <strong>{dataRegion}</strong>"
       },
       {
-        "title": "Alojamiento — CDN y aplicación nativa",
-        "body": "Los recursos estáticos (miniaturas, instalador de Windows, binarios de la aplicación nativa) se distribuyen a través de:<br/><br/><strong>Cloudflare, Inc.</strong><br/>101 Townsend St, San Francisco, CA 94107 — Estados Unidos<br/><a href='https://cloudflare.com'>cloudflare.com</a>"
+        "title": "Alojamiento — CDN y Nowly Host",
+        "body": "Los recursos estáticos (miniaturas, instalador de Windows, binarios de Nowly Host) se distribuyen a través de:<br/><br/><strong>Cloudflare, Inc.</strong><br/>101 Townsend St, San Francisco, CA 94107 — Estados Unidos<br/><a href='https://cloudflare.com'>cloudflare.com</a>"
       },
       {
         "title": "Distribución de la extensión",
@@ -580,7 +580,22 @@
     "rate-login-desc1": "Inicia sesión con Discord para valorar y comentar. Solo guardamos tu avatar, nombre de usuario e ID de Discord.",
     "rate-login-desc2": "Tu identidad ayuda a prevenir abusos. ¿Quieres mantenerte privado? Marca « Publicar anónimamente » — cifraremos tu ID para que nadie pueda rastrear el comentario.",
     "rate-login-button": "Iniciar sesión con Discord",
-    "rate-review-desc": "Comparte tu experiencia y ayuda a otros a elegir mejores presencias."
+    "rate-review-desc": "Comparte tu experiencia y ayuda a otros a elegir mejores presencias.",
+    "extension-missing-title": "Extensión Nowly no detectada",
+    "extension-missing-description": "Instala la extensión Nowly para añadir esta presencia desde la biblioteca. Si ya está instalada, recarga esta página.",
+    "extension-install-action": "Instalar extensión",
+    "presence-installed-title": "Presencia instalada",
+    "presence-installed-youtube-description": "Presencia instalada. Abre YouTube para iniciar la prueba.",
+    "presence-installed-description": "Presencia instalada. Abre una URL compatible con {platform} para empezar.",
+    "diagnostic-host-missing-message": "Nowly Host no está detectado. Instálalo desde la página de Nowly Host y comprueba la conexión.",
+    "diagnostic-discord-closed-message": "Nowly Host está instalado pero Discord Desktop no está abierto.",
+    "test-youtube-action": "Probar con YouTube",
+    "open-supported-site-action": "Abrir sitio compatible",
+    "presence-not-installed-title": "Instalar esta presencia",
+    "youtube-test-description": "YouTube es la presencia de prueba recomendada para comprobar Nowly rápidamente.",
+    "presence-not-installed-description": "Instala {platform} y abre una URL compatible para detectar actividad.",
+    "install-youtube-action": "Instalar presencia de YouTube",
+    "youtube-test-cta": "Probar con YouTube"
   },
   "version-updates-card": {
     "version-title": "Versión {version}",
@@ -599,10 +614,10 @@
     "back-to-home": "Volver al inicio"
   },
   "host-page": {
-    "badge": "Aplicación nativa",
-    "title": "Descargar la aplicación host",
-    "description": "El host nativo es el puente entre tu navegador y Discord. Funciona en segundo plano y mantiene tu Rich Presence sincronizada.",
-    "card-title": "Descargar host para",
+    "badge": "Nowly Host",
+    "title": "Descargar Nowly Host",
+    "description": "Nowly Host es el puente entre tu navegador y Discord. Funciona en segundo plano y mantiene tu Rich Presence sincronizada.",
+    "card-title": "Descargar Nowly Host para",
     "card-version": "Versión {version} — {details}",
     "platform-select-label": "Seleccionar plataforma",
     "windows-details": "Windows 10/11, 64-bit",
@@ -617,16 +632,16 @@
     "chip-open-source-desc": "Código fuente e historial del proyecto en GitHub.",
     "chip-lightweight-desc": "Pequeño, silencioso y pensado para no molestar.",
     "trust-badge": "Confianza",
-    "trust-title": "¿Qué hace exactamente la aplicación host?",
+    "trust-title": "¿Qué hace Nowly Host?",
     "trust-description": "Solo actúa como puente local entre tu navegador y Discord. Permite que Nowly actualice tu Rich Presence sin enviar tu actividad a nuestros servidores.",
     "trust-items": [
       {
         "title": "Procesamiento local",
-        "description": "La extensión detecta la actividad en tu navegador y la aplicación host la procesa directamente en tu equipo."
+        "description": "La extensión detecta la actividad en tu navegador y Nowly Host la procesa directamente en tu equipo."
       },
       {
         "title": "Conexión directa con Discord",
-        "description": "La aplicación se comunica con el cliente de Discord instalado en tu ordenador mediante una conexión local."
+        "description": "Nowly Host se comunica con Discord Desktop mediante una conexión local."
       },
       {
         "title": "Sin recopilación oculta",
@@ -635,7 +650,7 @@
     ],
     "guide-title": "Guía de instalación",
     "step1-title": "Descarga el instalador",
-    "step1-desc": "Haz clic en el botón de descarga de arriba para obtener la última versión de la aplicación host de Nowly.",
+    "step1-desc": "Haz clic en el botón de descarga de arriba para obtener la última versión de Nowly Host.",
     "step2-title": "Ejecuta el instalador",
     "step2-desc": "Abre el archivo descargado y sigue el asistente de instalación. No se requieren permisos especiales.",
     "step3-title": "Instala la extensión del navegador",
