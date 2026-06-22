@@ -3,7 +3,7 @@ import { Switch } from "@/components/ui/switch";
 import { assetUrl } from "@/shared/api";
 import { t } from "@/shared/i18n";
 import type { StoredPresence } from "@/shared/types";
-import { BellRing, Calendar } from "lucide-react";
+import { Calendar, ExternalLink } from "lucide-react";
 import type { FC, MouseEvent, ReactElement } from "react";
 import { PresenceSettingsPanel } from "./presence-settings-panel";
 
@@ -21,8 +21,40 @@ type Props = {
 export const PresenceListItem: FC<Props> = ({ onOpenMarketplace, onRemove, onSchedule, onToggle, presence, showSchedule, slug, updateAvailable }): ReactElement | null => {
   if (!presence?.metadata) return null;
 
+  const visibleUpdate = updateAvailable;
+
+  const openUpdate = (event: MouseEvent): void => {
+    event.stopPropagation();
+    onOpenMarketplace(slug);
+  };
+
   return (
     <article className="group relative overflow-hidden bg-card-2 transition-colors first:rounded-t-lg last:rounded-b-lg hover:bg-card-hover">
+      {visibleUpdate ? (
+        <div className="flex h-8 items-center gap-2 border-b border-border bg-card px-1.5">
+          <span className="inline-flex h-5 shrink-0 items-center rounded-md border border-accent/20 bg-accent/10 px-1.5 text-[10px] font-semibold tabular-nums text-accent">
+            {t("version", { version: visibleUpdate })}
+          </span>
+
+          <button
+            type="button"
+            onClick={openUpdate}
+            className="min-w-0 flex-1 truncate text-left text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {t("presence-update-available")}
+          </button>
+
+          <Button
+            variant="unstyled"
+            size="none"
+            onClick={openUpdate}
+            className="inline-flex h-6 shrink-0 items-center gap-1 rounded-md border border-border bg-card-2 px-2 text-[11px] font-semibold text-foreground transition-colors hover:bg-card-hover"
+          >
+            {t("presence-update-action")}
+            <ExternalLink className="h-3 w-3" />
+          </Button>
+        </div>
+      ) : null}
       <div className="flex items-center gap-3 px-3 py-2.5">
         <div
           className={`flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg transition-all duration-300 ${
@@ -44,32 +76,10 @@ export const PresenceListItem: FC<Props> = ({ onOpenMarketplace, onRemove, onSch
               className="h-1.5 w-1.5 rounded-full"
               style={{ backgroundColor: presence.enabled ? presence.metadata.color : "var(--color-dim-foreground)" }}
             />
+
             <span className="truncate">
               {presence.enabled ? t("enabled") : t("disabled")}
               {presence.metadata.version ? ` - ${t("version", { version: presence.metadata.version })}` : ""}
-              {updateAvailable ? (
-                <Button
-                  variant="unstyled"
-                  size="none"
-                  onClick={(event: MouseEvent) => {
-                    event.stopPropagation();
-                    onOpenMarketplace(slug);
-                  }}
-                  className="ml-1.5 inline-flex items-center gap-0.5 rounded px-1 py-0.5 text-[10px] font-medium transition-colors"
-                  style={{
-                    backgroundColor: `${presence.metadata.color}26`,
-                    color: presence.metadata.color,
-                  }}
-                  onPointerEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = `${presence.metadata.color}40`;
-                  }}
-                  onPointerLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = `${presence.metadata.color}26`;
-                  }}
-                >
-                  <BellRing className="h-3 w-3" /> {updateAvailable}
-                </Button>
-              ) : null}
             </span>
           </div>
         </div>
