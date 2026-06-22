@@ -10,22 +10,32 @@ type Props = {
 };
 
 export const NativeStatusButton: FC<Props> = ({ nativeStatus, onConnect }): ReactElement => {
-  const connected = nativeStatus.connected;
+  const connected = Boolean(nativeStatus.connected || nativeStatus.discordConnected);
   const isConnecting = nativeStatus.status === "connecting";
   const Icon = connected ? Wifi : WifiOff;
+  const label = nativeStatus.discordConnected
+    ? t("diagnostic-discord-connected-message")
+    : connected
+      ? t("diagnostic-discord-closed-short")
+      : t("native-disconnected");
+  const iconClass = nativeStatus.discordConnected
+    ? "h-3.5 w-3.5 text-accent"
+    : connected
+      ? "h-3.5 w-3.5 text-amber-400"
+      : "h-3.5 w-3.5 text-destructive";
 
   return (
     <Button
       variant="unstyled"
       size="none"
       aria-label={t("connect-native")}
-      title={nativeStatus.status}
+      title={label}
       onClick={onConnect}
       disabled={isConnecting}
       className="group flex h-9 items-center gap-2 rounded-lg border border-border bg-card-2 px-2.5 text-xs text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground disabled:cursor-wait disabled:opacity-70"
     >
-      <Icon className={connected ? "h-3.5 w-3.5 text-accent" : "h-3.5 w-3.5 text-destructive"} />
-      <span>{connected ? t("native-connected") : t("native-disconnected")}</span>
+      <Icon className={iconClass} />
+      <span>{label}</span>
       <RefreshCw className={`h-3.5 w-3.5 ${isConnecting ? "animate-spin" : "opacity-60 group-hover:opacity-100"}`} />
     </Button>
   );

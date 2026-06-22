@@ -13,7 +13,7 @@ import { useOnboardingState } from "@/hooks/use-onboarding-state";
 import { sendMessage } from "@/lib/messages";
 import { WEB_BASE_URL } from "@/shared/constants";
 import type { FC, ReactElement } from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const App: FC = (): ReactElement => {
   const { activity, checkHostUpdate, checkUpdates, connectNative, debug, entries, hostVersionInfo, isCheckingHostVersion, isCheckingUpdates, isLoading, isUnpacked, nativeStatus, presences, removePresence, togglePresence, updates, settings, setSettings } =
@@ -24,6 +24,16 @@ const App: FC = (): ReactElement => {
   const [snoozeSheetOpen, setSnoozeSheetOpen] = useState(false);
   const [scheduleSheetOpen, setScheduleSheetOpen] = useState(false);
   const [scheduleSlug, setScheduleSlug] = useState<string | null>(null);
+  const liveNativeStatus = onboardingNativeStatus.status === "unknown" && nativeStatus.status !== "unknown"
+    ? nativeStatus
+    : onboardingNativeStatus;
+  const developerModeEnabled = settings.developerMode ?? isUnpacked;
+
+  useEffect(() => {
+    if (activeView === "analyticsLogs" && !developerModeEnabled) {
+      setActiveView("activity");
+    }
+  }, [activeView, developerModeEnabled]);
 
   const onOpenMarketplace = useCallback((slug: string): void => {
     void chrome.tabs.create({ url: `${WEB_BASE_URL}/library/${slug}` });
@@ -45,8 +55,8 @@ const App: FC = (): ReactElement => {
   return (
     <main className="relative min-h-screen bg-background text-foreground">
       <div className="flex min-h-screen w-full min-w-0 flex-col gap-4 p-3">
-        <Header nativeStatus={nativeStatus} />
-        <SidepanelNav activeView={activeView} onChange={setActiveView} showAnalyticsLogs={isUnpacked} />
+        <Header nativeStatus={liveNativeStatus} />
+        <SidepanelNav activeView={activeView} onChange={setActiveView} showAnalyticsLogs={developerModeEnabled} />
 
         {activeView === "activity" ? (
           <section className="flex min-h-0 flex-1 flex-col gap-3">
@@ -74,7 +84,7 @@ const App: FC = (): ReactElement => {
               onUnsnoozeClick={handleUnsnooze}
             />
           </section>
-        ) : activeView === "analyticsLogs" && isUnpacked ? (
+        ) : activeView === "analyticsLogs" && developerModeEnabled ? (
           <AnalyticsLogsView />
         ) : (
           <SettingsView
@@ -83,7 +93,7 @@ const App: FC = (): ReactElement => {
             isCheckingHostVersion={isCheckingHostVersion}
             isLoading={isLoading}
             localePreference={localePreference}
-            nativeStatus={nativeStatus}
+            nativeStatus={liveNativeStatus}
             onCheckHostUpdate={checkHostUpdate}
             onLocaleChange={setLocalePreference}
             settings={settings}
@@ -108,7 +118,9 @@ const App: FC = (): ReactElement => {
       />
 
       <OnboardingOverlay
-        nativeStatus={onboardingNativeStatus}
+        activity={activity}
+        nativeStatus={liveNativeStatus}
+        presences={presences}
         userScripts={userScripts}
         onboardingCompleted={onboarding.onboardingCompleted}
         localePreference={localePreference}

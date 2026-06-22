@@ -7,6 +7,7 @@ export type ExtensionSettings = {
   separateActivePresence: boolean;
   showPlayer: boolean;
   analyticsConsent?: boolean;
+  developerMode?: boolean;
   customApiBaseUrl?: string;
   scheduleEnabled?: boolean;
   globalSchedule?: PresenceSchedule;

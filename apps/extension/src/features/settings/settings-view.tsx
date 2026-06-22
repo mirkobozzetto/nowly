@@ -33,13 +33,6 @@ type Props = {
   onSettingsChange: (partial: Partial<ExtensionSettings>) => void;
 };
 
-const localeOptions: Array<{ label: string; value: LocalePreference }> = [
-  { label: "Auto", value: "browser" },
-  { label: "Français", value: "fr" },
-  { label: "English", value: "en" },
-  { label: "Español", value: "es" },
-];
-
 export const SettingsView: FC<Props> = ({
   debug,
   hostVersionInfo,
@@ -53,12 +46,18 @@ export const SettingsView: FC<Props> = ({
   onSettingsChange,
 }): ReactElement => {
   const [isUnpacked, setIsUnpacked] = useState(false);
+  const localeOptions: Array<{ label: string; value: LocalePreference }> = [
+    { label: t("locale-auto"), value: "browser" },
+    { label: t("locale-fr"), value: "fr" },
+    { label: t("locale-en"), value: "en" },
+    { label: t("locale-es"), value: "es" },
+  ];
 
   useEffect(() => {
     try { setIsUnpacked(!chrome.runtime.getManifest().update_url) } catch { setIsUnpacked(false) }
   }, []);
 
-  const hasDebugIssue = debug || (nativeStatus.status !== "connected" && nativeStatus.status !== "ok");
+  const developerModeEnabled = settings.developerMode ?? isUnpacked;
 
   if (isLoading) {
     return (
@@ -144,14 +143,28 @@ export const SettingsView: FC<Props> = ({
 
       <section className="rounded-lg border border-border bg-card p-4">
         <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("features")}</h2>
-        <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("schedule-feature-description")}</p>
-        <Label unstyled className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card-2 px-3 py-2">
-          <span className="text-xs font-medium text-foreground">{t("schedule-feature")}</span>
-          <Switch
-            checked={settings.scheduleEnabled !== false}
-            onChange={(checked) => onSettingsChange({ scheduleEnabled: checked })}
-          />
-        </Label>
+        <div className="grid gap-2">
+          <Label unstyled className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card-2 px-3 py-2">
+            <span className="min-w-0">
+              <span className="block text-xs font-medium text-foreground">{t("schedule-feature")}</span>
+              <span className="mt-0.5 block text-[11px] leading-4 text-muted-foreground">{t("schedule-feature-description")}</span>
+            </span>
+            <Switch
+              checked={settings.scheduleEnabled !== false}
+              onChange={(checked) => onSettingsChange({ scheduleEnabled: checked })}
+            />
+          </Label>
+          <Label unstyled className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card-2 px-3 py-2">
+            <span className="min-w-0">
+              <span className="block text-xs font-medium text-foreground">{t("developer-mode")}</span>
+              <span className="mt-0.5 block text-[11px] leading-4 text-muted-foreground">{t("developer-mode-description")}</span>
+            </span>
+            <Switch
+              checked={developerModeEnabled}
+              onChange={(checked) => onSettingsChange({ developerMode: checked })}
+            />
+          </Label>
+        </div>
       </section>
 
       <section className="rounded-lg border border-border bg-card p-4">
@@ -178,7 +191,7 @@ export const SettingsView: FC<Props> = ({
         </a>
       </section>
 
-      {isUnpacked && hasDebugIssue ? (
+      {developerModeEnabled ? (
         <DebugPanel
           debug={debug}
           nativeStatus={nativeStatus}

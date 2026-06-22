@@ -89,7 +89,7 @@ export const connectNative = (): void => {
     nativePort = null;
     connecting = false;
     connected = false;
-    status = error instanceof Error ? error.message : "native host unavailable";
+    status = error instanceof Error ? error.message : "Nowly Host unavailable";
     return;
   }
 

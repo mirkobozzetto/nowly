@@ -19,7 +19,12 @@ type Props = {
 
 export const DebugPanel: FC<Props> = ({ debug, nativeStatus, settings, onSettingsChange }): ReactElement => {
   const [open, setOpen] = useState(false);
-  const hasNativeIssue = nativeStatus.status !== "connected" && nativeStatus.status !== "ok";
+  const hasNativeIssue = !nativeStatus.connected || !nativeStatus.discordConnected;
+  const nativeIssueMessage = !nativeStatus.connected
+    ? t("diagnostic-host-missing-message")
+    : !nativeStatus.discordConnected
+      ? t("diagnostic-discord-closed-message")
+      : nativeStatus.status;
   const updatedAt = formatRelativeTime(debug?.updatedAt);
   const [apiUrl, setApiUrl] = useState("");
   const [saved, setSaved] = useState(false);
@@ -63,14 +68,14 @@ export const DebugPanel: FC<Props> = ({ debug, nativeStatus, settings, onSetting
               {updatedAt ? <span className="text-dim-foreground"> - {updatedAt}</span> : null}
             </p>
           ) : (
-            <p className="text-dim-foreground">idle</p>
+            <p className="text-dim-foreground">{t("debug-idle")}</p>
           )}
 
           {hasNativeIssue && (
-            <p className="mt-1 break-words">
-              <span className="font-semibold text-foreground">native</span>
+            <p className="mt-1 wrap-break-words">
+              <span className="font-semibold text-foreground">{t("debug-native-label")}</span>
               {" - "}
-              {nativeStatus.status}
+              {nativeIssueMessage}
             </p>
           )}
 

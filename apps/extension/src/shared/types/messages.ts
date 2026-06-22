@@ -3,12 +3,14 @@ export type WebMessageType =
   | "UPDATE_PRESENCE"
   | "UNINSTALL_PRESENCE"
   | "GET_INSTALLED"
+  | "GET_DIAGNOSTIC"
   | "SAVE_USER_RATING"
   | "GET_USER_RATINGS";
 
 export type ExtensionMessageType =
   | "GET_PRESENCES"
   | "GET_INSTALLED"
+  | "GET_DIAGNOSTIC"
   | "GET_NATIVE_STATUS"
   | "GET_USER_SCRIPTS_STATUS"
   | "CONNECT_NATIVE"

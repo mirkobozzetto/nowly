@@ -1,4 +1,5 @@
 import type { NativeStatus } from "@/lib/messages";
+import { t } from "@/shared/i18n";
 import type { PresenceDebug } from "@/shared/types";
 import { Activity } from "lucide-react";
 import type { FC, ReactElement } from "react";
@@ -9,7 +10,14 @@ type Props = {
 };
 
 export const DebugNotice: FC<Props> = ({ debug, nativeStatus }): ReactElement | null => {
-  if (!debug && nativeStatus.status === "connected") return null;
+  const hasNativeIssue = !nativeStatus.connected || !nativeStatus.discordConnected;
+  const nativeIssueMessage = !nativeStatus.connected
+    ? t("diagnostic-host-missing-message")
+    : !nativeStatus.discordConnected
+      ? t("diagnostic-discord-closed-message")
+      : nativeStatus.status;
+
+  if (!debug && !hasNativeIssue) return null;
 
   return (
     <section className="rounded-lg border border-border bg-card-2 px-3 py-2.5">
@@ -23,11 +31,11 @@ export const DebugNotice: FC<Props> = ({ debug, nativeStatus }): ReactElement | 
               {debug.message}
             </p>
           )}
-          {nativeStatus.status !== "connected" && nativeStatus.status !== "ok" && (
+          {hasNativeIssue && (
             <p className="truncate">
-              <span className="font-semibold text-foreground">native</span>
+              <span className="font-semibold text-foreground">{t("debug-native-label")}</span>
               {" - "}
-              {nativeStatus.status}
+              {nativeIssueMessage}
             </p>
           )}
         </div>

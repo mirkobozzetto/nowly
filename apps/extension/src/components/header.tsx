@@ -7,16 +7,16 @@ type Props = {
 };
 
 const statusColor = (ns: NativeStatus): string => {
-  if (ns.discordConnected || ns.status === "connected" || ns.status === "ok") return "bg-accent";
-  if (ns.connected && !ns.discordConnected) return "bg-accent";
+  if (ns.discordConnected) return "bg-accent";
+  if (ns.connected && !ns.discordConnected) return "bg-amber-400";
   if (ns.status === "connecting") return "bg-muted-foreground";
   return "bg-red-500";
 };
 
 const statusText = (ns: NativeStatus): string => {
-  if (ns.discordConnected) return t("native-connected");
-  if (ns.connected && !ns.discordConnected) return "Discord disconnected";
-  if (ns.status === "connecting") return t("native-disconnected");
+  if (ns.discordConnected) return t("diagnostic-discord-connected-message");
+  if (ns.connected && !ns.discordConnected) return t("diagnostic-discord-closed-short");
+  if (ns.status === "connecting") return t("diagnostic-host-checking-short");
   return t("native-disconnected");
 };
 

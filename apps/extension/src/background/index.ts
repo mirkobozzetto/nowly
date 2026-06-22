@@ -1,6 +1,6 @@
 import { BUNDLED_PRESENCES } from "@/generated/bundled-presences";
 import { API_BASE_URL, CDN_BASE_URL, WEB_BASE_URL } from "@/shared/constants";
-import type { ExtensionMessage, ExtensionSettings, InstalledPresences, PresenceData, PresenceDebug, PresenceRelease, PresenceSchedule, StoredPresence } from "@/shared/types";
+import type { ExtensionMessage, ExtensionSettings, InstalledPresences, PresenceData, PresenceDebug, PresenceRelease, PresenceSchedule, StoredPresence, UserScriptsStatus } from "@/shared/types";
 import { addAnalyticsLog, clearAnalyticsLogs, getAnalyticsLogs, sanitizeLogPayload } from "./analytics-log";
 import { browserName, osName } from "./device-info";
 import { connectNative, getNativeStatus, mapPresenceData, onNativeResponse, postNative, reconnectNative, restartNative } from "./native";
@@ -31,6 +31,17 @@ const updateContentScriptsOrigin = async (): Promise<void> => {
 };
 
 const respond = <T>(sendResponse: (response?: T) => void, value: T): void => sendResponse(value);
+
+const getUserScriptsStatus = async (): Promise<UserScriptsStatus> => {
+  const available = Boolean((chrome as unknown as { userScripts?: unknown }).userScripts);
+  return {
+    enabled: available,
+    requiresUserToggle: true,
+    reason: available
+      ? undefined
+      : "chrome.userScripts unavailable. Enable Developer Mode / Allow User Scripts for this extension.",
+  };
+};
 
 const getActiveDeviceId = async (): Promise<string> => {
   if (cachedDeviceId) return cachedDeviceId;
@@ -447,6 +458,11 @@ const handleActivityUpdate = async (
   const presences = await getPresences();
   const stored = presences[slug];
   if (!stored?.release) return { ok: false };
+  if (!stored.enabled) {
+    const current = await getCurrentActivity();
+    if (current?.slug === slug) await handleClearActivity(slug);
+    return { ok: false };
+  }
 
   if (await isSnoozed(stored)) {
     postNative({ type: "CLEAR_ACTIVITY" });
@@ -544,6 +560,21 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
       });
       return false;
 
+    case "GET_DIAGNOSTIC":
+      Promise.all([getPresences(), getCurrentActivity(), getUserScriptsStatus()]).then(([presences, activity, userScripts]) => {
+        const nativeStatus = getNativeStatus();
+        const visible = visiblePresences(presences);
+        respond(sendResponse, {
+          extensionInstalled: true,
+          userScriptsActive: userScripts.enabled,
+          hostDetected: Boolean(nativeStatus.connected || nativeStatus.discordConnected),
+          discordConnected: Boolean(nativeStatus.discordConnected),
+          presenceInstalled: Object.keys(visible).length > 0,
+          activityDetected: Boolean(activity),
+        });
+      });
+      return true;
+
     case "CONNECT_NATIVE":
       void trackAnalytics("native_reconnect", { payload: { source: "extension" } });
       respond(sendResponse, reconnectNative());
@@ -636,6 +667,10 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
 
         await unregisterPresenceScript(slug);
         await removeActiveSlug(slug, "disabled");
+        const current = await getCurrentActivity();
+        if (current?.slug === slug || activeSlugs.size === 0) {
+          await handleClearActivity(slug);
+        }
         addAnalyticsLog("info", "presence", "presence disabled", { slug });
         try {
           const response = await fetch(`${getEffectiveApiUrl()}/presences/active/${encodeURIComponent(deviceId)}/${encodeURIComponent(slug)}`, {
