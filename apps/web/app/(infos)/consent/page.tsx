@@ -16,6 +16,7 @@ const ConsentPage = () => {
   const t = useTranslations("consent-page");
   const searchParams = useSearchParams();
   const deviceId = useMemo(() => searchParams.get("deviceId")?.trim() ?? "", [searchParams]);
+  const token = useMemo(() => searchParams.get("token")?.trim() ?? "", [searchParams]);
   const [consentStatus, setConsentStatus] = useState<ConsentStatus>("loading");
 
   useEffect(() => {
@@ -24,7 +25,10 @@ const ConsentPage = () => {
       return;
     }
 
-    fetch(`${API_BASE_URL}/analytics/device/${encodeURIComponent(deviceId)}/export`, { cache: "no-store" })
+    fetch(`${API_BASE_URL}/analytics/device/${encodeURIComponent(deviceId)}/export`, {
+      cache: "no-store",
+      headers: token ? { "X-Device-Token": token } : undefined,
+    })
       .then((res) => {
         if (!res.ok) throw new Error("Device not found");
         return res.json();
@@ -33,7 +37,7 @@ const ConsentPage = () => {
         setConsentStatus(data.device?.analyticsConsent ? "granted" : "denied");
       })
       .catch(() => setConsentStatus("error"));
-  }, [deviceId]);
+  }, [deviceId, token]);
 
   return (
     <PageLayout>
@@ -55,8 +59,8 @@ const ConsentPage = () => {
         ) : (
           <div className="grid gap-4">
             <ConsentStatusCard consentStatus={consentStatus} deviceId={deviceId} />
-            <ExportCard deviceId={deviceId} />
-            <DeleteCard deviceId={deviceId} onDeleted={() => setConsentStatus("denied")} />
+            <ExportCard deviceId={deviceId} token={token} />
+            <DeleteCard deviceId={deviceId} token={token} onDeleted={() => setConsentStatus("denied")} />
           </div>
         )}
       </main>

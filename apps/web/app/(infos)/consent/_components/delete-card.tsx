@@ -8,12 +8,13 @@ import { useCallback, useState, type FC } from "react";
 
 type Props = {
   deviceId: string;
+  token: string;
   onDeleted: () => void;
 };
 
 type Status = "idle" | "loading" | "confirm" | "done" | "error";
 
-export const DeleteCard: FC<Props> = ({ deviceId, onDeleted }) => {
+export const DeleteCard: FC<Props> = ({ deviceId, token, onDeleted }) => {
   const t = useTranslations("consent-page");
   const [status, setStatus] = useState<Status>("idle");
 
@@ -22,13 +23,14 @@ export const DeleteCard: FC<Props> = ({ deviceId, onDeleted }) => {
     fetch(`${API_BASE_URL}/analytics/device/${encodeURIComponent(deviceId)}`, {
       method: "DELETE",
       cache: "no-store",
+      headers: token ? { "X-Device-Token": token } : undefined,
     })
       .then((res) => {
         setStatus(res.ok ? "done" : "error");
         if (res.ok) onDeleted();
       })
       .catch(() => setStatus("error"));
-  }, [deviceId, onDeleted]);
+  }, [deviceId, token, onDeleted]);
 
   return (
     <section className="rounded-lg border border-border bg-card p-6">

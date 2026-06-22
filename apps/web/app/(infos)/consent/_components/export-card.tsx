@@ -8,17 +8,21 @@ import { useCallback, useState, type FC } from "react";
 
 type Props = {
   deviceId: string;
+  token: string;
 };
 
 type Status = "idle" | "loading" | "done" | "error";
 
-export const ExportCard: FC<Props> = ({ deviceId }) => {
+export const ExportCard: FC<Props> = ({ deviceId, token }) => {
   const t = useTranslations("consent-page");
   const [status, setStatus] = useState<Status>("idle");
 
   const handleExport = useCallback(() => {
     setStatus("loading");
-    fetch(`${API_BASE_URL}/analytics/device/${encodeURIComponent(deviceId)}/export`, { cache: "no-store" })
+    fetch(`${API_BASE_URL}/analytics/device/${encodeURIComponent(deviceId)}/export`, {
+      cache: "no-store",
+      headers: token ? { "X-Device-Token": token } : undefined,
+    })
       .then((res) => {
         if (!res.ok) throw new Error("Export failed");
         return res.json();
@@ -34,7 +38,7 @@ export const ExportCard: FC<Props> = ({ deviceId }) => {
         setStatus("done");
       })
       .catch(() => setStatus("error"));
-  }, [deviceId]);
+  }, [deviceId, token]);
 
   return (
     <section className="rounded-lg border border-border bg-card p-6">
