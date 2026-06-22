@@ -1,34 +1,60 @@
 ---
 title: Troubleshooting
-description: Fix common Nowly installation, extension detection, native host, and Discord Rich Presence issues.
+description: Fix missing Nowly Host, closed Discord Desktop, missing presences, missing activity, unsupported URLs, and permission issues.
 ---
 
-## Discord Status Does Not Update
+## Start With the Diagnostic
 
-Check these items first:
+Open the extension side panel and read each row independently:
 
-- Discord desktop is running.
-- The Nowly host app is installed.
-- The Nowly browser extension is enabled.
-- The presence for the current website is installed.
-- The current URL matches the presence supported URLs.
+- Extension installed
+- User scripts active
+- Nowly Host detected
+- Discord connected
+- Presence installed
+- Activity detected
 
-## Extension Not Detected
+Do not rely on a single global status. The missing row is the next thing to fix.
 
-Reload the page after installing or enabling the extension. Browser content scripts usually need a page refresh before they are available.
+## Nowly Host Is Not Detected
 
-## Native Host Not Found
+Message shown: **Nowly Host is not detected.**
 
-The native host app is separate from the browser extension. If the extension panel reports that the host is missing, reinstall the host app for your operating system.
+Install Nowly Host from the [Nowly Host page](/host), then click **Check connection** in the extension. If you just installed it, close and reopen the extension side panel.
 
-## Presence Not Running
+## Discord Desktop Is Closed
 
-The presence only runs on supported URLs. Check the Supported URLs section on the presence detail page and compare it with the current browser URL.
+Message shown: **Nowly Host is installed but Discord Desktop is not open.**
 
-## Discord IPC Issues
+Open Discord Desktop, wait a few seconds, then click **Check connection**. Browser Discord cannot receive local Rich Presence updates.
 
-Nowly sends activity to the Discord desktop client through local IPC. If Discord was started after Nowly, reload the active tab or restart the browser.
+## No Presence Is Installed
 
-<CalloutWarning>
-Nowly cannot update Discord Rich Presence if the Discord desktop app is closed.
-</CalloutWarning>
+Install a presence from the library. For the fastest test, install the [YouTube presence](/library/youtube), then open YouTube.
+
+## No Activity Is Detected
+
+Make sure:
+
+- the matching presence is installed and enabled
+- the current URL is supported by that presence
+- user scripts are active
+- the page was reloaded after installing the presence
+
+## URL Is Not Supported
+
+Open the presence detail page and compare your current URL with the **Supported URLs** list. If the site changed its address or layout, report the presence from the support page.
+
+## Permissions Are Missing
+
+Open your browser extension settings and check:
+
+- Nowly is enabled
+- user scripts are allowed
+- site access is allowed for the current site
+
+After changing permissions, reload the website tab and reopen the extension side panel.
+
+## Copy a Support Diagnostic
+
+The extension diagnostic includes a **Copy support** button. It copies the state of Nowly Host, Discord, presences, and activity without exposing technical logs.

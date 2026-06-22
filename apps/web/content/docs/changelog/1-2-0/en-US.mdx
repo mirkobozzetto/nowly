@@ -17,14 +17,14 @@ description: UI/UX overhaul of the extension with a redesigned player, native co
     ["Presence settings", "Settings open in a bottom Sheet with configuration options and an Uninstall button. Labels linked to switches via htmlFor.", "Cleaner interface, more accessible (click label to toggle), uninstall always available."],
     ["Snooze", "Per-presence snooze with a bottom sheet stepper ([−] [time] [+], 5min steps, 5–240min). Snowflake icon to snooze, Sun icon to clear. Only posts CLEAR_ACTIVITY on unsnooze — activity stays visible with 'Snoozed' badge.", "Pause Discord activity without losing Nowly state. Quick stepper, clear affordance."],
     ["Planning", "Schedule per-presence or globally via day buttons (Sun–Sat) with optional time range. All-day mode hides start/end times. Global via action bar, per-presence via Calendar button on list items.", "Full control over when a presence shows on Discord. All-day mode simplifies setup."],
-    ["Settings reorganization", "Header simplified with colored bullet + companion status. Connection/host card removed. Data management merged with analytics. Update card shown conditionally with accent styling. Action bar only appears on the Activity tab.", "Cleaner settings with less clutter. Host update stands out when available. No distraction from action buttons while configuring."],
+    ["Settings reorganization", "Header simplified with colored bullet + Nowly Host status. Connection/host card removed. Data management merged with analytics. Update card shown conditionally with accent styling. Action bar only appears on the Activity tab.", "Cleaner settings with less clutter. Host update stands out when available. No distraction from action buttons while configuring."],
     ["Conditional debug panel", "DebugPanel hidden in Chrome Web Store builds (update_url check). Shown only in the Settings view with a collapsible header — no separate banner. Check Updates becomes a no-op in unpacked builds to avoid false update indicators.", "No debug leaks to production users. Cleaner UI: the header doubles as the notice. Dev users won't see phantom updates."],
     ["Progress bar", "Only shown for music, streaming, tv, and anime categories. Hidden for 'other' presences.", "Progress bar stays relevant — no meaningless timers for non-media presences."],
     ["Analytics consent", "Redesigned onboarding step with a compact grid showing 6 items we don't collect (X) and 1 item we do (✓). 'Share' button centered, 'No thanks' as plain text link.", "Clearer privacy communication. Less intimidating than the previous wall of text."],
     ["Firefox support", "Chrome and Firefox now have separate build paths, store packaging, native userScripts injection, CSP-strict page support, and host manifests for production Firefox IDs.", "Nowly is ready for a broader browser rollout without compromising presence injection reliability."],
     ["API hardening", "Auth, analytics, ratings, image proxy, presence sync, and AI changelog generation were tightened with validation, nonce checks, safer redirects, bounded caches, and injection-resistant prompts.", "Public endpoints are more predictable and safer under malformed input or hostile URLs."],
     ["Web, legal, and consent", "Added legal notice and cookies pages, cookie banner, consent management with export/delete flows, Team page, categorized footer, dynamic browser CTA, and status page fixes.", "The public site now covers release, trust, privacy, support, and team surfaces more completely."],
-    ["Native host and release tooling", "Manual host update checks restart the native bridge first. Host logging is clearer, Discord IPC errors are logged, logs rotate, and extension archives are packaged with tar-based scripts.", "Updates and diagnostics are more reliable across local installs and release artifacts."],
+    ["Nowly Host and release tooling", "Manual host update checks restart the native bridge first. Host logging is clearer, Discord IPC errors are logged, logs rotate, and extension archives are packaged with tar-based scripts.", "Updates and diagnostics are more reliable across local installs and release artifacts."],
     ["Internal quality", "Shared utilities moved to @nowly/shared, extension types/background helpers were split, UI primitives replaced raw elements, README/docs were expanded, and YouTube Music assets were refreshed.", "The codebase is easier to maintain while the release documentation matches the actual branch scope."],
   ]}
 />
@@ -70,7 +70,7 @@ Planning can be disabled entirely via the "Additional Features" section in setti
 ## Settings reorganization
 
 The settings panel has been streamlined:
-- **Header**: Connection status is now a colored bullet + companion status text. The connection/host card is removed.
+- **Header**: Connection status is now a colored bullet + Nowly Host status text. The connection/host card is removed.
 - **Update card**: Only shown when `hostVersionInfo.updateAvailable` is true, styled with accent tint (`bg-accent/5`, `border-accent/20`).
 - **Data management**: Merged with analytics consent under a single "Data & Privacy" card.
 - **Check Updates**: Moved from the activity footer to the action bar, with a 30-second client-side rate limit. Automatically disabled in unpacked builds.
@@ -87,7 +87,7 @@ Additionally, **Check Updates** is automatically disabled in unpacked builds —
 
 ## Firefox and packaging
 
-The extension now has separate Chrome and Firefox build paths. Firefox builds remove Chromium-only manifest fields, declare the `userScripts` permission correctly, use a dedicated Gecko ID, and rely on the native `userScripts` API for presence injection. CSP-strict pages are handled by the new injection path, and the native host installers/manifests know both development and production Firefox extension IDs.
+The extension now has separate Chrome and Firefox build paths. Firefox builds remove Chromium-only manifest fields, declare the `userScripts` permission correctly, use a dedicated Gecko ID, and rely on the native `userScripts` API for presence injection. CSP-strict pages are handled by the new injection path, and Nowly Host installers/manifests know both development and production Firefox extension IDs.
 
 Store release packaging was also added for Chrome and Firefox archives. The packaging flow now uses `tar.exe` instead of PowerShell `Compress-Archive`, which keeps artifacts consistent from the extension scripts.
 
@@ -103,13 +103,13 @@ Analytics now records a `source` dimension and the extension exposes developer-o
 
 The public site gained legal notice and cookies pages, a cookie banner, a categorized footer, a Team page with social links, dynamic browser detection on the CTA, status page date fixes, improved heading anchors, and small UI polish across navigation, buttons, logos, and presence cards.
 
-## Native host and diagnostics
+## Nowly Host and diagnostics
 
-The extension can restart the native messaging host before checking host versions, and Settings now includes a manual host update check. The native host logs activity changes more clearly, reports Discord IPC error responses, and rotates logs to avoid unbounded files.
+The extension can restart Nowly Host before checking host versions, and Settings now includes a manual host update check. Nowly Host logs activity changes more clearly, reports Discord IPC error responses, and rotates logs to avoid unbounded files.
 
 ## Documentation, repo, and assets
 
-The README now documents the project architecture, development flow, install steps, native host release path, and presence workflow in more detail. Repository links were migrated to the `nowly-presence` organization, translation keys were normalized to kebab-case, duplicate locale entries were cleaned up, and YouTube Music icons were refreshed.
+The README now documents the project architecture, development flow, install steps, Nowly Host release path, and presence workflow in more detail. Repository links were migrated to the `nowly-presence` organization, translation keys were normalized to kebab-case, duplicate locale entries were cleaned up, and YouTube Music icons were refreshed.
 
 ## Inactive presence styling
 

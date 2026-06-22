@@ -24,7 +24,7 @@ description: Renovación de la UI/UX de la extensión con nuevo reproductor, com
     ["Soporte Firefox", "Chrome y Firefox ahora tienen rutas de build separadas, packaging para tiendas, inyección userScripts nativa, soporte para páginas con CSP estricta y manifests del host para IDs Firefox de producción.", "Nowly queda listo para una distribución de navegador más amplia sin debilitar la fiabilidad de la inyección de presencias."],
     ["Endurecimiento API", "Auth, analytics, valoraciones, proxy de imágenes, sincronización de presencias y changelog con IA se reforzaron con validación, nonce, redirecciones más seguras, cachés acotadas y prompts resistentes a inyección.", "Los endpoints públicos son más predecibles frente a entradas inválidas, URLs hostiles y abuso."],
     ["Web, legal y consentimiento", "Se añadieron aviso legal y cookies, banner de cookies, gestión de consentimiento con exportación/eliminación, página de equipo, footer categorizado, CTA dinámico por navegador y correcciones de estado.", "El sitio público cubre mejor release, confianza, privacidad, soporte y equipo."],
-    ["Host nativo y release tooling", "La verificación manual de actualización reinicia primero el puente nativo. Los logs del host son más claros, los errores IPC de Discord se registran, los logs rotan y los archivos de extensión se empaquetan con tar.", "Las actualizaciones y diagnósticos son más fiables en instalaciones locales y artefactos de release."],
+    ["Nowly Host y release tooling", "La verificación manual de actualización reinicia primero el puente nativo. Los logs del host son más claros, los errores IPC de Discord se registran, los logs rotan y los archivos de extensión se empaquetan con tar.", "Las actualizaciones y diagnósticos son más fiables en instalaciones locales y artefactos de release."],
     ["Calidad interna", "Las utilidades compartidas pasan a @nowly/shared, los tipos/helpers de background se separan, las primitivas UI sustituyen elementos brutos, el README se amplía y los assets de YouTube Music se actualizan.", "El código es más mantenible y la documentación de release refleja todo el alcance de la rama."],
   ]}
 />
@@ -87,7 +87,7 @@ Además, **Verificar actualizaciones** se desactiva automáticamente en modo des
 
 ## Firefox y empaquetado
 
-La extensión ahora tiene rutas de build separadas para Chrome y Firefox. Los builds de Firefox eliminan campos exclusivos de Chromium del manifest, declaran correctamente el permiso `userScripts`, usan un ID Gecko dedicado y se apoyan en la API nativa `userScripts` para inyectar presencias. Las páginas con CSP estricta quedan cubiertas por esta nueva ruta de inyección, y los instaladores/manifests del host nativo conocen los IDs Firefox de desarrollo y producción.
+La extensión ahora tiene rutas de build separadas para Chrome y Firefox. Los builds de Firefox eliminan campos exclusivos de Chromium del manifest, declaran correctamente el permiso `userScripts`, usan un ID Gecko dedicado y se apoyan en la API nativa `userScripts` para inyectar presencias. Las páginas con CSP estricta quedan cubiertas por esta nueva ruta de inyección, y los instaladores/manifests del Nowly Host conocen los IDs Firefox de desarrollo y producción.
 
 También se añadió packaging de tienda para crear archivos Chrome y Firefox. El flujo ahora usa `tar.exe` en lugar de PowerShell `Compress-Archive`, manteniendo artefactos consistentes desde los scripts de la extensión.
 
@@ -103,13 +103,13 @@ Analytics ahora registra una dimensión `source`, y la extensión muestra logs d
 
 El sitio público añade páginas de aviso legal y cookies, banner de cookies, footer categorizado, página de equipo con enlaces sociales, detección dinámica del navegador en el CTA, correcciones de fecha en la página de estado, anchors de títulos más coherentes y polish UI en navegación, botones, logos y tarjetas de presencias.
 
-## Host nativo y diagnósticos
+## Nowly Host y diagnósticos
 
-La extensión puede reiniciar el host de mensajería nativa antes de verificar versiones del host, y Ajustes incluye una verificación manual de actualización. El host nativo registra con más claridad los cambios de actividad, muestra errores IPC de Discord y rota logs para evitar archivos sin límite.
+La extensión puede reiniciar el Nowly Host antes de verificar versiones del host, y Ajustes incluye una verificación manual de actualización. El Nowly Host registra con más claridad los cambios de actividad, muestra errores IPC de Discord y rota logs para evitar archivos sin límite.
 
 ## Documentación, repo y assets
 
-El README documenta con más detalle la arquitectura del proyecto, el flujo de desarrollo, los pasos de instalación, la ruta de release del host nativo y el workflow de presencias. Los enlaces del repositorio migraron a la organización `nowly-presence`, las claves de traducción se normalizaron a kebab-case, se limpiaron duplicados de locales y se actualizaron los iconos de YouTube Music.
+El README documenta con más detalle la arquitectura del proyecto, el flujo de desarrollo, los pasos de instalación, la ruta de release del Nowly Host y el workflow de presencias. Los enlaces del repositorio migraron a la organización `nowly-presence`, las claves de traducción se normalizaron a kebab-case, se limpiaron duplicados de locales y se actualizaron los iconos de YouTube Music.
 
 ## Estilo de presencias inactivas
 
