@@ -35,10 +35,6 @@ export type AnalyticsRecordResult = {
   rejected: number
 }
 
-// SEC-05: the rate-limit state lives in-memory (no Redis in this deployment),
-// so it is bounded to avoid unbounded growth from many distinct device ids and
-// is reset on restart. For multi-instance deployments this should move to a
-// shared store (e.g. Redis).
 const MAX_RATE_LIMIT_BUCKETS = 50_000
 const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>()
 

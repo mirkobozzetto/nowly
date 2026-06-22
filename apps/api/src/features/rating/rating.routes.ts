@@ -6,7 +6,7 @@ import {
   removeUserRating, setUserRating,
   submitRating,
 } from "@/features/presence/presence.repository"
-import { submitComment, getComments } from "@/features/rating/rating.repository"
+import { getComments, submitComment } from "@/features/rating/rating.repository"
 import { ratingCommentBodySchema } from "@nowly/shared/schemas"
 import type { FastifyInstance, FastifyRequest } from "fastify"
 
@@ -14,8 +14,6 @@ export const register = async (app: FastifyInstance): Promise<void> => {
   await app.register(ratingRoutes, { prefix: "/presences" })
 }
 
-// SEC-10: accept the user JWT from either the standard `Authorization` header
-// or the legacy `x-user-token` header so every route uses one consistent path.
 const getBearerUser = (request: FastifyRequest): DiscordUser | null => {
   const header = request.headers.authorization ?? (request.headers["x-user-token"] as string | undefined)
   if (!header?.startsWith("Bearer ")) return null
@@ -26,7 +24,6 @@ export const ratingRoutes = async (fastify: FastifyInstance) => {
   fastify.post<{ Params: { slug: string } }>("/:slug/comments", async (request, reply) => {
     const slug = request.params.slug.toLowerCase()
 
-    // SEC-06 / SEC-07: validate body and cap comment length via shared schema.
     const parsed = ratingCommentBodySchema.safeParse(request.body)
     if (!parsed.success) {
       return reply.status(400).send({ error: "Rating must be an integer between 1 and 5" })

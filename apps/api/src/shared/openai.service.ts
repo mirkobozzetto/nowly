@@ -1,5 +1,5 @@
-import { buildLocaleObject, buildLocalizedValue, type LocaleString, LocaleRecordSchema } from "@nowly/locales"
 import { serverEnv } from "@nowly/env/server"
+import { buildLocaleObject, LocaleRecordSchema } from "@nowly/locales"
 import { z } from "zod"
 
 const ChangelogSchema = LocaleRecordSchema(z.string().min(1))
@@ -16,10 +16,6 @@ interface ChangelogContext {
   diffSummary?: string
 }
 
-// SEC-12: changelog inputs come from PR titles / diffs / contributor-supplied
-// metadata and are interpolated into the LLM prompt. Neutralize prompt-injection
-// attempts by stripping control characters, collapsing whitespace, defusing code
-// fences and capping length so untrusted text cannot rewrite the instructions.
 const sanitizePromptInput = (value: string | undefined, max = 500): string => {
   if (!value) return ""
   return value

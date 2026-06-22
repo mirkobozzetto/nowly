@@ -1,8 +1,8 @@
-import { isValidRedirect, signToken, verifyToken, type DiscordUser } from "./auth.service"
 import { serverEnv } from "@nowly/env/server"
 import { randomBytes } from "crypto"
 import "dotenv/config"
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
+import { isValidRedirect, signToken, verifyToken, type DiscordUser } from "./auth.service"
 
 const OAUTH_STATE_COOKIE = "nowly_oauth_state"
 const OAUTH_STATE_MAX_AGE_SECONDS = 600
@@ -38,9 +38,6 @@ const clearStateCookie = (reply: FastifyReply): void => {
   reply.header("Set-Cookie", `${OAUTH_STATE_COOKIE}=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0`)
 }
 
-// SEC-03: the OAuth `state` carries the redirect plus a random nonce. The nonce
-// is mirrored in an HttpOnly cookie and re-checked on the callback, so a forged
-// authorization request that the victim did not initiate is rejected.
 const encodeState = (redirect: string, nonce: string): string =>
   Buffer.from(JSON.stringify({ r: redirect, n: nonce })).toString("base64url")
 
@@ -80,7 +77,6 @@ const discordCallback = async (request: FastifyRequest, reply: FastifyReply) => 
   const query = request.query as { code?: string; state?: string }
   const fallbackRedirect = serverEnv.FRONTEND_URL || "/"
 
-  // SEC-03: validate the state/nonce pair before trusting anything else.
   const state = decodeState(query.state)
   const cookieNonce = parseCookies(request.headers.cookie)[OAUTH_STATE_COOKIE]
   clearStateCookie(reply)
@@ -139,9 +135,6 @@ const discordCallback = async (request: FastifyRequest, reply: FastifyReply) => 
 
   const token = signToken(user)
 
-  // SEC-01: deliver the JWT in the URL fragment instead of the query string.
-  // Fragments are never sent to the server (no access/proxy logs) and are not
-  // included in the Referer header on subsequent navigation.
   return reply.redirect(`${redirect}#token=${token}`)
 }
 
