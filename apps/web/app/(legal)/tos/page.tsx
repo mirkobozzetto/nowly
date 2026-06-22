@@ -29,7 +29,9 @@ const Page = (): ReactElement => {
 
   return (
     <StructuredContentPage
+      badge={t("badge")}
       title={t("title")}
+      description={t("description")}
       lastUpdated={t("last-updated")}
       items={items}
     />
@@ -37,4 +39,5 @@ const Page = (): ReactElement => {
 };
 
 export { generateMetadata };
+
 export default Page;

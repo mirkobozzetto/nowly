@@ -11,10 +11,10 @@ type PageSection = {
 const generateMetadata = (): Metadata => {
   return {
     title: "Cookie Policy — Nowly",
-    description: "How Nowly uses cookies on nowly.me. No tracking or advertising cookies are placed.",
+    description: "How Nowly uses cookies on nowly.me, including necessary cookies and optional Google AdSense advertising technologies.",
     openGraph: {
       title: "Cookie Policy — Nowly",
-      description: "How Nowly uses cookies on nowly.me. No tracking or advertising cookies are placed.",
+      description: "How Nowly uses cookies on nowly.me, including necessary cookies and optional Google AdSense advertising technologies.",
     },
   };
 };
@@ -29,7 +29,9 @@ const Page = (): ReactElement => {
 
   return (
     <StructuredContentPage
+      badge={t("badge")}
       title={t("title")}
+      description={t("description")}
       lastUpdated={t("last-updated")}
       intro={t.raw("intro") as string}
       items={items}

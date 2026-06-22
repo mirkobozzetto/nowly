@@ -102,14 +102,14 @@
     "data-management": "Données et confidentialité"
   },
   "cookie-banner": {
-    "message": "Ce site utilise uniquement des cookies strictement nécessaires (session & langue). Aucun suivi, aucune publicité.",
+    "message": "Ce site utilise des cookies strictement nécessaires. Des technologies publicitaires peuvent être utilisées si les annonces sont activées.",
     "learn-more": "En savoir plus",
     "dismiss": "Compris"
   },
   "support-page": {
     "badge": "Support",
-    "title": "Comment pouvons-nous aider ?",
-    "description": "Choisissez le bon formulaire GitHub pour nous donner le contexte utile dès le départ.",
+    "title": "Besoin d'aide ?",
+    "description": "Version New Amsterdam : dites-nous comment on peut aider, avec le bon contexte dès le départ.",
     "discord": {
       "title": "Ticket Discord",
       "description": "Rejoignez le serveur Nowly et créez un ticket pour discuter directement avec le staff."
@@ -164,39 +164,41 @@
     "card-description": "Un emplacement discret pour soutenir Nowly sans interrompre la navigation."
   },
   "faq-page": {
-    "title": "FAQ",
+    "badge": "FAQ",
+    "title": "Questions fréquentes",
+    "description": "Les réponses rapides aux questions les plus courantes sur Nowly, l'installation et la confidentialité.",
     "items": [
       {
         "question": "Qu'est-ce que Nowly ?",
-        "answer": "Nowly est une extension navigateur qui met automatiquement à jour votre <strong>statut Discord (Rich Presence)</strong> avec ce que vous regardez sur vos plateformes préférées. Elle se compose d'une extension Chromium, de <strong>Nowly Host</strong> et d'un site web. L'ensemble est <strong>open source</strong> et <strong>gratuit</strong>."
+        "answer": "Nowly met automatiquement à jour votre <strong>statut Discord (Rich Presence)</strong> avec ce que vous regardez ou écoutez sur des sites compatibles. Le projet repose sur :<ul><li>une extension navigateur pour Chrome, Edge, Brave et Firefox ;</li><li><strong>Nowly Host</strong> pour Windows, macOS et Linux ;</li><li>une bibliothèque web de présences.</li></ul>L'ensemble est <strong>open source</strong> et <strong>gratuit</strong>."
       },
       {
         "question": "Est-ce que Nowly est gratuit ?",
-        "answer": "Oui, Nowly est <strong>entièrement gratuit</strong>. Le projet est développé par <strong>deux personnes</strong> sur leur temps libre. Si vous souhaitez soutenir le projet, vous pouvez faire un don via <a href='https://ko-fi.com/qkimi_'>Ko-fi</a>, mais cela reste facultatif — toutes les fonctionnalités sont et resteront gratuites."
+        "answer": "Oui, Nowly est <strong>entièrement gratuit</strong>. Le projet est développé par <strong>deux personnes</strong> sur leur temps libre. Si vous souhaitez aider, vous pouvez soutenir le projet via <a href='https://ko-fi.com/qkimi_'>Ko-fi</a> ou <a href='https://github.com/sponsors/nowly-presence'>GitHub Sponsors</a>. C'est facultatif : les fonctionnalités restent gratuites."
       },
       {
         "question": "Comment installer Nowly ?",
-        "answer": "L'installation se fait en deux étapes :<br /><strong>Étape 1 :</strong> installez l'extension depuis le <a href='https://chromewebstore.google.com/detail/nowly/kmnlnfldimgneaopdihplkebobckcjpf'>Chrome Web Store</a>.<br /><strong>Étape 2 :</strong> téléchargez et exécutez <strong>Nowly Host</strong> pour Windows ou Linux.<br />Une fois les deux installés, ouvrez Discord Desktop puis installez une présence depuis la bibliothèque."
+        "answer": "L'installation se fait en quelques étapes :<ol><li>Installez l'extension depuis le <a href='https://chromewebstore.google.com/detail/nowly/kmnlnfldimgneaopdihplkebobckcjpf'>Chrome Web Store</a> ou depuis la version adaptée à votre navigateur.</li><li>Téléchargez puis exécutez <strong>Nowly Host</strong> pour Windows, macOS ou Linux.</li><li>Ouvrez Discord Desktop.</li><li>Installez une présence depuis la <a href='/library'>bibliothèque</a>.</li></ol>"
       },
       {
         "question": "Quelles plateformes sont compatibles ?",
-        "answer": "Nowly prend actuellement en charge <strong>YouTube</strong>, <strong>Twitch</strong>, <strong>Disney+</strong>, <strong>Apple TV+</strong> et <strong>Prime Video</strong>.<br /><br />De nouvelles plateformes sont régulièrement ajoutées via les mises à jour de l'extension. Ces présences sont créées à la fois par <strong>l'équipe principale</strong> et par les <strong>contributeurs de la communauté</strong>. N'importe qui peut proposer ou créer une nouvelle présence — consultez le dépôt <a href='https://github.com/nowly-presence/nowly'>GitHub</a> pour contribuer.<br /><br />Rendez-vous dans la <strong>bibliothèque</strong> pour voir la liste complète et l'état d'avancement de chaque présence."
+        "answer": "Nowly prend déjà en charge plusieurs plateformes, par exemple <strong>YouTube</strong>, <strong>Twitch</strong> et d'autres services de streaming. Pour éviter une liste vite dépassée, consultez la <a href='/library'>bibliothèque</a> pour voir toutes les présences disponibles, ainsi que celles en cours.<br /><br />Les présences sont ajoutées dynamiquement par la communauté ou par l'équipe sur son temps libre. <strong>Aucune mise à jour de l'extension n'est nécessaire</strong> pour recevoir une nouvelle présence disponible dans la bibliothèque."
       },
       {
         "question": "Comment fonctionne la connexion avec Discord ?",
-        "answer": "<strong>Nowly Host</strong> communique directement avec le client <a href='https://discord.com'>Discord</a> installé sur votre ordinateur via une connexion locale IPC. <strong>Aucune donnée ne transite par nos serveurs.</strong> Nowly se contente d'envoyer les informations de votre activité actuelle (titre, plateforme, durée) à Discord, qui les affiche sur votre profil."
+        "answer": "<strong>Nowly Host</strong> communique directement avec le client <a href='https://discord.com'>Discord</a> installé sur votre ordinateur via une connexion locale IPC*. <strong>Aucune donnée ne transite par nos serveurs</strong> pour afficher votre Rich Presence. Nowly envoie seulement les informations d'activité nécessaires à Discord : titre, plateforme, durée, état de lecture.<br /><br />* <strong>IPC</strong> signifie communication locale entre deux applications sur votre ordinateur."
       },
       {
         "question": "Mes données sont-elles envoyées à vos serveurs ?",
-        "answer": "<strong>Votre activité Rich Presence, non.</strong> L'extension détecte le contenu dans votre navigateur et le transmet à Nowly Host, qui l'envoie directement à <a href='https://discord.com'>Discord</a> via une communication locale ? sans passer par nos serveurs. En revanche, si vous publiez un avis sur une présence, votre identifiant Discord, votre note et votre commentaire sont stockés côté serveur. Les <a href='/privacy'>analytics sont optionnelles</a> et désactivées par défaut."
+        "answer": "<strong>Votre activité Rich Presence, non.</strong> Elle reste locale : l'extension la transmet à Nowly Host, qui l'envoie directement à <a href='https://discord.com'>Discord</a>.<ul><li><strong>Avis et commentaires :</strong> si vous publiez un avis sur une présence, la note et le commentaire sont stockés côté serveur.</li><li><strong>Publication anonyme :</strong> vous pouvez publier anonymement pour éviter d'afficher votre identité Discord publiquement.</li><li><strong>Analytics :</strong> elles sont <a href='/privacy'>optionnelles</a>, désactivées par défaut, et servent uniquement à améliorer Nowly.</li></ul>"
       },
       {
         "question": "Pourquoi mon statut Discord ne se met pas à jour ?",
-        "answer": "Plusieurs raisons possibles :<ul><li><a href='https://discord.com'>Discord</a> est-il bien lancé sur votre ordinateur ?</li><li>Nowly Host est-il installé et détecté ?</li><li>L'extension est-elle activée dans votre navigateur ?</li><li>Les scripts utilisateur sont-ils actifs ?</li><li>La présence correspondant à votre plateforme est-elle installée ?</li></ul><br />Ouvrez le panneau latéral de l'extension pour voir le diagnostic Nowly."
+        "answer": "Plusieurs raisons possibles :<ul><li><a href='https://discord.com'>Discord</a> Desktop est-il bien lancé ?</li><li>Nowly Host est-il installé et détecté ?</li><li>L'extension est-elle activée dans votre navigateur ?</li><li>Les scripts utilisateur et les permissions du navigateur sont-ils actifs ?</li><li>La présence correspondant à votre plateforme est-elle installée ?</li></ul>Ouvrez le panneau latéral de l'extension pour voir le diagnostic Nowly."
       },
       {
         "question": "Comment désinstaller Nowly ?",
-        "answer": "Pour désinstaller l'extension, faites un clic droit sur l'icône Nowly dans votre navigateur puis sélectionnez « Supprimer de Chrome ». Pour désinstaller Nowly Host, exécutez le programme de désinstallation disponible dans le dossier d'installation ou utilisez le Panneau de configuration Windows."
+        "answer": "Vous pouvez supprimer Nowly en deux parties :<ul><li><strong>Extension :</strong> supprimez Nowly depuis la page de gestion des extensions de votre navigateur. Après suppression, vous êtes automatiquement redirigé vers une page qui retire votre appareil des compteurs actifs.</li><li><strong>Analytics :</strong> si vous les aviez activées, cette page vous propose aussi de supprimer les données analytics liées à votre appareil.</li><li><strong>Nowly Host :</strong> désinstallez l'application depuis les réglages de votre système, que vous soyez sur Windows, macOS ou Linux.</li></ul>"
       },
       {
         "question": "Est-ce que Nowly est open source ?",
@@ -277,7 +279,9 @@
     }
   },
   "privacy-page": {
+    "badge": "Confidentialité",
     "title": "Politique de confidentialité",
+    "description": "Découvrez comment Nowly traite vos données, ce qui reste local et ce qui dépend de votre consentement.",
     "last-updated": "Dernière mise à jour : 18 juin 2026.",
     "intro": "Nowly est conçu avec la confidentialité comme priorité. L'activité Rich Presence est traitée <strong>entièrement en local</strong> sur votre machine — elle ne transite jamais par nos serveurs. Certaines fonctionnalités optionnelles (avis, analytics) impliquent un traitement côté serveur, décrit ci-dessous.",
     "sections": [
@@ -319,11 +323,11 @@
       },
       {
         "title": "Services tiers",
-        "body": "Nowly utilise les services tiers suivants :<ul><li><strong>Railway</strong> (États-Unis) : hébergement du site web, de l'API et de la base de données PostgreSQL. Les transferts vers les États-Unis sont encadrés par les <strong>Clauses Contractuelles Types (CCT)</strong> de la Commission européenne. <a href='https://railway.com/legal/privacy'>Politique de confidentialité Railway</a>.</li><li><strong>Cloudflare</strong> (États-Unis) : distribution des ressources statiques (miniatures, installateur natif) via CDN. Les transferts sont encadrés par les <strong>Clauses Contractuelles Types (CCT)</strong> et le <strong>Data Privacy Framework UE/UK–États-Unis</strong>.</li><li><strong>Chrome Web Store / Google</strong> : distribution de l'extension navigateur.</li><li><strong>Ko-fi</strong> : dons facultatifs — Nowly ne partage aucune donnée personnelle avec Ko-fi.</li><li><strong>Discord</strong> : authentification OAuth (scope « identify ») et affichage Rich Presence via communication locale.</li><li><strong>OpenAI</strong> : génération automatique de notes de version. Seuls des titres de pull requests et des diffs de code sont transmis — aucune donnée utilisateur.</li></ul>L'extension permet, pour les utilisateurs avancés, de configurer une <strong>URL d'API personnalisée</strong> pointant vers une instance auto-hébergée. Dans ce cas, vos données sont envoyées au serveur que vous avez configuré : la présente politique de confidentialité ne s'applique pas à ce serveur, sur lequel Nowly n'exerce aucun contrôle."
+        "body": "Nowly utilise les services tiers suivants :<ul><li><strong>Railway</strong> (États-Unis) : hébergement du site web, de l'API et de la base de données PostgreSQL. Les transferts vers les États-Unis sont encadrés par les <strong>Clauses Contractuelles Types (CCT)</strong> de la Commission européenne. <a href='https://railway.com/legal/privacy'>Politique de confidentialité Railway</a>.</li><li><strong>Cloudflare</strong> (États-Unis) : distribution des ressources statiques (miniatures, installateur natif) via CDN. Les transferts sont encadrés par les <strong>Clauses Contractuelles Types (CCT)</strong> et le <strong>Data Privacy Framework UE/UK–États-Unis</strong>.</li><li><strong>Chrome Web Store / Google</strong> : distribution de l'extension navigateur.</li><li><strong>Google AdSense</strong> : affichage éventuel d'annonces sur le site. Google peut utiliser des cookies ou technologies similaires selon ses propres règles et vos choix de consentement.</li><li><strong>Ko-fi</strong> : dons facultatifs — Nowly ne partage aucune donnée personnelle avec Ko-fi.</li><li><strong>Discord</strong> : authentification OAuth (scope « identify ») et affichage Rich Presence via communication locale.</li><li><strong>OpenAI</strong> : génération automatique de notes de version. Seuls des titres de pull requests et des diffs de code sont transmis — aucune donnée utilisateur.</li></ul>L'extension permet, pour les utilisateurs avancés, de configurer une <strong>URL d'API personnalisée</strong> pointant vers une instance auto-hébergée. Dans ce cas, vos données sont envoyées au serveur que vous avez configuré : la présente politique de confidentialité ne s'applique pas à ce serveur, sur lequel Nowly n'exerce aucun contrôle."
       },
       {
         "title": "Cookies",
-        "body": "Le site Nowly utilise uniquement des cookies <strong>strictement nécessaires</strong> :<ul><li><code>nowly_oauth_state</code> : cookie technique HttpOnly, durée de vie 10 minutes, utilisé pour la protection CSRF lors de la connexion Discord.</li><li><code>locale</code> : cookie de préférence linguistique, non partagé avec des tiers.</li></ul>Aucun cookie de suivi ni publicitaire n'est déposé. Consultez notre <a href='/cookies'>Politique de cookies</a> pour plus de détails."
+        "body": "Le site Nowly utilise des cookies <strong>strictement nécessaires</strong> :<ul><li><code>nowly_oauth_state</code> : cookie technique HttpOnly, durée de vie 10 minutes, utilisé pour la protection CSRF lors de la connexion Discord.</li><li><code>locale</code> : cookie de préférence linguistique, non partagé avec des tiers.</li></ul>Lorsque les annonces sont activées, Google AdSense peut également utiliser des cookies ou technologies similaires. Consultez notre <a href='/cookies'>Politique de cookies</a> pour plus de détails."
       },
       {
         "title": "Proxy d'images",
@@ -344,7 +348,9 @@
     ]
   },
   "tos-page": {
+    "badge": "Légal",
     "title": "Conditions d'utilisation",
+    "description": "Les règles d'utilisation de Nowly, de l'extension navigateur, de Nowly Host et du site web.",
     "last-updated": "Dernière mise à jour : 18 juin 2026.",
     "sections": [
       {
@@ -402,7 +408,9 @@
     ]
   },
   "legal-notice-page": {
+    "badge": "Légal",
     "title": "Mentions légales",
+    "description": "Les informations obligatoires sur l'éditeur, l'hébergement et les droits liés à Nowly.",
     "last-updated": "En vigueur depuis le 18 juin 2026 — requises par le droit français (LCEN, art. 6-III).",
     "sections": [
       {
@@ -440,9 +448,11 @@
     ]
   },
   "cookies-page": {
+    "badge": "Cookies",
     "title": "Politique de cookies",
+    "description": "Les cookies utilisés par nowly.me, y compris les technologies publicitaires éventuelles liées à Google AdSense.",
     "last-updated": "Dernière mise à jour : 18 juin 2026.",
-    "intro": "Cette page décrit les cookies et technologies similaires utilisés sur <strong>nowly.me</strong>. Nowly ne dépose <strong>aucun</strong> cookie de suivi, de profilage ou publicitaire.",
+    "intro": "Cette page décrit les cookies et technologies similaires utilisés sur <strong>nowly.me</strong>. Nowly utilise des cookies nécessaires et peut charger des technologies publicitaires Google AdSense lorsque les annonces sont activées.",
     "sections": [
       {
         "title": "Cookies strictement nécessaires",
@@ -458,7 +468,7 @@
       },
       {
         "title": "Cookies publicitaires",
-        "body": "Nowly n'affiche <strong>aucune publicité</strong> et ne dépose aucun cookie publicitaire. Aucun réseau publicitaire tiers n'est actif sur ce site."
+        "body": "Nowly peut afficher des publicités via <strong>Google AdSense</strong> lorsque les emplacements publicitaires sont activés. Dans ce cas, Google peut utiliser des cookies ou technologies similaires pour mesurer la diffusion, limiter la répétition des annonces et, selon vos réglages ou votre consentement, personnaliser les annonces. Tant que les annonces ne sont pas activées, aucun cookie publicitaire n'est déposé par Nowly."
       },
       {
         "title": "Gestion et suppression des cookies",
@@ -681,7 +691,8 @@
     "req-storage-linux-value": "1,76 Mo"
   },
   "consent-page": {
-    "title": "Gérer vos données",
+    "badge": "Confidentialité",
+    "title": "Données et confidentialité",
     "intro": "Votre vie privée compte. Depuis cette page, vous pouvez consulter l'état de votre consentement analytique, exporter vos données ou les supprimer.",
     "consent-status": "État du consentement",
     "consent-granted": "Le consentement analytique est actif. Votre appareil partage des données d'utilisation anonymes.",
