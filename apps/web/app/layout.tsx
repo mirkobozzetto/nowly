@@ -1,3 +1,4 @@
+import { AdblockNotice } from "@/components/layout/adblock-notice";
 import { CookieBanner } from "@/components/layout/cookie-banner";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
@@ -42,6 +43,7 @@ const Layout = async ({ children }: PropsWithChildren): Promise<ReactElement> =>
             </div>
 
             <Toaster />
+            <AdblockNotice enabled={ADSENSE_ENABLED && process.env.NODE_ENV !== "development"} />
             <CookieBanner />
           </Providers>
         </NextIntlClientProvider>
