@@ -1,0 +1,80 @@
+import { CDN_BASE_URL } from "@/shared/constants";
+import type { InstalledPresences, StoredPresence } from "@/shared/types";
+import { addAnalyticsLog } from "./analytics-log";
+import { trackAnalytics } from "./analytics-tracker";
+import { getEffectiveApiUrl } from "./api-state";
+import { presenceInjector } from "./presence-injection";
+import { createPresenceRuntime } from "./presence-runtime";
+import { verifyPresenceRelease } from "./release-security";
+import { getPresenceSettings, setDebug } from "./storage";
+import { RegisteredUserScript, toMatchPatterns, userScriptId } from "./user-scripts";
+
+export const unregisterPresenceScript = async (slug: string): Promise<void> => {
+  try {
+    await presenceInjector.unregister(userScriptId(slug));
+  } catch {
+    // The script may not be registered yet.
+  }
+};
+
+export const getPresenceRuntime = async (slug: string, name: string, bundle: string): Promise<string> => {
+  const allSettings = await getPresenceSettings();
+  const presenceSettings = allSettings[slug] ?? {};
+  return createPresenceRuntime(slug, name, bundle, presenceSettings, getEffectiveApiUrl(), CDN_BASE_URL);
+};
+
+export const registerPresenceScript = async (slug: string, presence: StoredPresence): Promise<{ ok: boolean; error?: string }> => {
+  if (!presence.release) return { ok: false, error: "presence release is not signed" };
+  const verified = await verifyPresenceRelease(presence.release, slug);
+  if (!verified.ok) return verified;
+
+  const metadata = presence.release.metadata;
+  const matches = toMatchPatterns(metadata.url);
+  if (!matches.length) return { ok: false, error: "presence has no valid URL patterns" };
+  if (!presence.release.bundle?.trim()) return { ok: false, error: "presence has no bundle" };
+
+  try {
+    addAnalyticsLog("info", "presence", "register presence script", { slug, version: presence.release.version });
+    await unregisterPresenceScript(slug);
+    const code = await getPresenceRuntime(slug, metadata.name, presence.release.bundle);
+
+    const script: RegisteredUserScript = {
+      id: userScriptId(slug),
+      matches,
+      js: [{ code }],
+      runAt: metadata.runAt ?? "document_idle",
+      allFrames: false,
+      world: metadata.world === "main" ? "MAIN" : "USER_SCRIPT",
+    };
+    await presenceInjector.register(script);
+    return { ok: true };
+  } catch (error) {
+    addAnalyticsLog("error", "presence", "register presence script failed", {
+      slug,
+      error: error instanceof Error ? error.message : "failed to register presence user script",
+    });
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "failed to register presence user script",
+    };
+  }
+};
+
+export const syncPresenceScripts = async (presences: InstalledPresences): Promise<void> => {
+  for (const [slug, presence] of Object.entries(presences)) {
+    if (!presence.enabled) {
+      await unregisterPresenceScript(slug);
+      continue;
+    }
+
+    const result = await registerPresenceScript(slug, presence);
+    if (!result.ok) {
+      await setDebug({
+        stage: "userScripts",
+        message: `[${slug}] ${result.error ?? "failed to register presence"}`,
+        updatedAt: Date.now(),
+      });
+      void trackAnalytics("presence_error", { slug, payload: { stage: "userScripts" } });
+    }
+  }
+};
