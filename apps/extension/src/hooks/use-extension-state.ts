@@ -18,6 +18,7 @@ type ExtensionState = {
   nativeStatus: NativeStatus;
   presences: InstalledPresences;
   removePresence: (slug: string) => void;
+  resetOnboardingForDev: () => Promise<void>;
   togglePresence: (slug: string, enabled: boolean) => void;
   updates: Record<string, string>;
   settings: ExtensionSettings;
@@ -163,6 +164,11 @@ export const useExtensionState = (): ExtensionState => {
     });
   }, []);
 
+  const resetOnboardingForDev = useCallback(async (): Promise<void> => {
+    const next = await sendMessage<ExtensionSettings>("RESET_ONBOARDING_FOR_DEV");
+    if (next) setSettingsState(next);
+  }, []);
+
   return {
     activity,
     checkUpdates: refreshUpdates,
@@ -178,6 +184,7 @@ export const useExtensionState = (): ExtensionState => {
     nativeStatus,
     presences,
     removePresence,
+    resetOnboardingForDev,
     togglePresence,
     updates,
     settings,

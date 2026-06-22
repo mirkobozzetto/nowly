@@ -6,18 +6,19 @@ import type { NativeStatus } from "@/lib/messages";
 import { API_BASE_URL } from "@/shared/constants";
 import { t } from "@/shared/i18n";
 import type { ExtensionSettings, PresenceDebug } from "@/shared/types";
-import { ChevronDown, Terminal } from "lucide-react";
+import { ChevronDown, RotateCcw, Terminal } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useEffect, useState } from "react";
 
 type Props = {
   debug: PresenceDebug | null;
   nativeStatus: NativeStatus;
+  onForceShowOnboarding: () => Promise<void>;
   settings: ExtensionSettings;
   onSettingsChange: (partial: Partial<ExtensionSettings>) => void;
 };
 
-export const DebugPanel: FC<Props> = ({ debug, nativeStatus, settings, onSettingsChange }): ReactElement => {
+export const DebugPanel: FC<Props> = ({ debug, nativeStatus, onForceShowOnboarding, settings, onSettingsChange }): ReactElement => {
   const [open, setOpen] = useState(false);
   const hasNativeIssue = !nativeStatus.connected || !nativeStatus.discordConnected;
   const nativeIssueMessage = !nativeStatus.connected
@@ -80,12 +81,34 @@ export const DebugPanel: FC<Props> = ({ debug, nativeStatus, settings, onSetting
           )}
 
           <div className="mt-3 border-t border-border pt-3">
+            <p className="font-semibold text-foreground">{t("developer-onboarding-reset-title")}</p>
+
+            <p className="mb-2 text-[10px] leading-4 text-dim-foreground">
+              {t("developer-onboarding-reset-description")}
+            </p>
+
+            <Button
+              variant="unstyled"
+              size="none"
+              onClick={() => {
+                void onForceShowOnboarding();
+              }}
+              className="inline-flex h-8 w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-card-2 px-2.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              {t("developer-onboarding-reset-action")}
+            </Button>
+          </div>
+
+          <div className="mt-3 border-t border-border pt-3">
             <Label unstyled className="text-[11px] font-medium text-dim-foreground">
               {t("api-base-url")}
             </Label>
+
             <p className="mb-1.5 text-[10px] leading-4 text-dim-foreground">
               {t("api-base-url-description")}
             </p>
+
             <div className="flex gap-1.5">
               <Input
                 unstyled
@@ -96,6 +119,7 @@ export const DebugPanel: FC<Props> = ({ debug, nativeStatus, settings, onSetting
                 placeholder={API_BASE_URL}
                 className="min-w-0 flex-1 rounded-lg border border-border bg-card-2 px-2.5 py-1.5 text-[11px] text-foreground outline-none transition-colors placeholder:text-dim-foreground focus:border-border-light"
               />
+
               <Button
                 variant="unstyled"
                 size="none"
@@ -108,6 +132,7 @@ export const DebugPanel: FC<Props> = ({ debug, nativeStatus, settings, onSetting
                   t("save")
                 )}
               </Button>
+
               {apiUrl.trim() && (
                 <Button
                   variant="unstyled"

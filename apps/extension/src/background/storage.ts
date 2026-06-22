@@ -41,12 +41,14 @@ export const setDebug = (debug: PresenceDebug): Promise<void> =>
   chrome.storage.local.set({ [DEBUG_KEY]: debug });
 
 export type OnboardingState = {
+  devReplayOnboarding: boolean;
   onboardingCompleted: boolean;
   nativeSeenConnectedOnce: boolean;
   nativeProfile?: DiscordProfileSnapshot | null;
 };
 
 const DEFAULT_ONBOARDING: OnboardingState = {
+  devReplayOnboarding: false,
   onboardingCompleted: false,
   nativeSeenConnectedOnce: false,
   nativeProfile: null,
@@ -93,6 +95,11 @@ export const getSettings = async (): Promise<ExtensionSettings> => {
 export const setSettings = async (partial: Partial<ExtensionSettings>): Promise<ExtensionSettings> => {
   const current = await getSettings();
   const next = { ...current, ...partial } satisfies ExtensionSettings;
+  for (const key of Object.keys(partial) as Array<keyof ExtensionSettings>) {
+    if (partial[key] === undefined) {
+      delete (next as Partial<ExtensionSettings>)[key];
+    }
+  }
   await chrome.storage.local.set({ [SETTINGS_KEY]: next });
   return next;
 };

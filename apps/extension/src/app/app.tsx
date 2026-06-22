@@ -16,7 +16,7 @@ import type { FC, ReactElement } from "react";
 import { useCallback, useEffect, useState } from "react";
 
 const App: FC = (): ReactElement => {
-  const { activity, checkHostUpdate, checkUpdates, connectNative, debug, entries, hostVersionInfo, isCheckingHostVersion, isCheckingUpdates, isLoading, isUnpacked, nativeStatus, presences, removePresence, togglePresence, updates, settings, setSettings } =
+  const { activity, checkHostUpdate, checkUpdates, connectNative, debug, entries, hostVersionInfo, isCheckingHostVersion, isCheckingUpdates, isLoading, isUnpacked, nativeStatus, presences, removePresence, resetOnboardingForDev, togglePresence, updates, settings, setSettings } =
     useExtensionState();
   const { localePreference, setLocalePreference } = useLocalePreference();
   const { onboarding, setOnboarding, nativeStatus: onboardingNativeStatus, userScripts } = useOnboardingState();
@@ -95,6 +95,7 @@ const App: FC = (): ReactElement => {
             localePreference={localePreference}
             nativeStatus={liveNativeStatus}
             onCheckHostUpdate={checkHostUpdate}
+            onForceShowOnboarding={resetOnboardingForDev}
             onLocaleChange={setLocalePreference}
             settings={settings}
             onSettingsChange={setSettings}
@@ -122,14 +123,15 @@ const App: FC = (): ReactElement => {
         nativeStatus={liveNativeStatus}
         presences={presences}
         userScripts={userScripts}
+        devReplayOnboarding={onboarding.devReplayOnboarding}
         onboardingCompleted={onboarding.onboardingCompleted}
         localePreference={localePreference}
         onLocaleChange={setLocalePreference}
         onConnectNative={() => {
           connectNative();
         }}
-        onComplete={() => setOnboarding({ onboardingCompleted: true })}
-        onSkipTour={() => setOnboarding({ onboardingCompleted: true })}
+        onComplete={() => setOnboarding({ devReplayOnboarding: false, onboardingCompleted: true })}
+        onSkipTour={() => setOnboarding({ devReplayOnboarding: false, onboardingCompleted: true })}
         settings={settings}
         onSettingsChange={setSettings}
       />

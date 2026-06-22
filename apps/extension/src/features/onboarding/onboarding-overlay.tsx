@@ -3,18 +3,20 @@ import { LocaleFlag } from "@/components/locale-flag";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { buildDiagnosticSnapshot, isHostChecking, YOUTUBE_TEST_URL } from "@/features/diagnostics/diagnostic-status";
+import { DiscordIcon } from "@/lib/icons";
 import type { NativeStatus } from "@/lib/messages";
 import { WEB_BASE_URL } from "@/shared/constants";
 import { resolveLocale, t, type LocalePreference } from "@/shared/i18n";
 import type { CurrentActivity, ExtensionSettings, InstalledPresences, UserScriptsStatus } from "@/shared/types";
-import { BarChart3, Check, CheckCircle2, ChevronDown, ExternalLink, LoaderCircle, Lock, MessageCircle, MonitorDown, Puzzle, ShoppingBag, Youtube, X } from "lucide-react";
+import { BadgeInfo, BarChart3, Check, CheckCircle2, ChevronDown, ExternalLink, Lock, MonitorDown, Puzzle, ShoppingBag, X, Youtube } from "lucide-react";
 import type { ComponentType, FC, ReactElement, ReactNode } from "react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Props = {
   activity: CurrentActivity | null;
   nativeStatus: NativeStatus;
   userScripts: UserScriptsStatus;
+  devReplayOnboarding?: boolean;
   onboardingCompleted: boolean;
   localePreference: LocalePreference;
   onLocaleChange: (locale: LocalePreference) => void;
@@ -31,6 +33,7 @@ type StepStatus = "loading" | "success" | "error";
 
 type GuidedStep = {
   actions?: ReactNode;
+  details?: ReactNode;
   icon: ComponentType<{ className?: string }>;
   message: string;
   status: StepStatus;
@@ -55,14 +58,6 @@ const marketplaceLocale = (preference: LocalePreference): string => {
   return "en-US";
 };
 
-const PanelShell: FC<{ children: ReactElement; className?: string }> = ({ children, className = "" }) => (
-  <div className="pointer-events-auto absolute inset-0 z-50 flex min-h-screen items-center justify-center overflow-y-auto bg-accent/10 p-6 backdrop-blur-md">
-    <section className={`w-full max-w-[520px] rounded-lg border border-border bg-card/95 p-5 shadow-[0_18px_50px_rgba(0,0,0,.55)] ${className}`}>
-      {children}
-    </section>
-  </div>
-);
-
 const requestUserScriptsPermission = (): void => {
   void chrome.permissions.request({ permissions: ["userScripts"] }).catch(() => {
     // Declined or unavailable: the step stays until the permission is granted.
@@ -85,9 +80,31 @@ const ActionButton: FC<{ children: ReactNode; onClick: () => void; primary?: boo
     onClick={onClick}
     className={
       primary
-        ? "inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-background transition-opacity hover:opacity-90"
-        : "inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card-2 px-3 text-xs font-semibold text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
+        ? "inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-background transition-opacity hover:opacity-90"
+        : "inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border bg-card-2 px-4 text-sm font-semibold text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
     }
+  >
+    {children}
+  </Button>
+);
+
+const QuietActionButton: FC<{ children: ReactNode; onClick: () => void }> = ({ children, onClick }) => (
+  <Button
+    variant="unstyled"
+    size="none"
+    onClick={onClick}
+    className="inline-flex h-8 items-center justify-center rounded-lg px-2 text-xs font-medium text-dim-foreground transition-colors hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+  >
+    {children}
+  </Button>
+);
+
+const LinkActionButton: FC<{ children: ReactNode; onClick: () => void }> = ({ children, onClick }) => (
+  <Button
+    variant="unstyled"
+    size="none"
+    onClick={onClick}
+    className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-medium text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
   >
     {children}
   </Button>
@@ -95,47 +112,24 @@ const ActionButton: FC<{ children: ReactNode; onClick: () => void; primary?: boo
 
 const StepIcon: FC<{ icon: ComponentType<{ className?: string }>; status: StepStatus }> = ({ icon: Icon, status }) => (
   <div className={`mx-auto flex h-12 w-12 items-center justify-center rounded-lg ${status === "success" ? "bg-success/10 text-success" : "bg-accent/10 text-accent"}`}>
-    {status === "loading" ? <LoaderCircle className="h-6 w-6 animate-spin" /> : <Icon className="h-6 w-6" />}
+    <Icon className="h-6 w-6" />
   </div>
 );
 
-const AnalyticsConsentGate: FC<{ onAccept: () => void; onDecline: () => void }> = ({ onAccept, onDecline }) => (
-  <PanelShell>
-    <div className="text-center">
-      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10 text-accent">
-        <BarChart3 className="h-6 w-6" />
+const AnalyticsChecklist: FC = () => (
+  <div className="mt-5 grid grid-cols-2 gap-1.5 text-left">
+    {notCollectedItems.map((key) => (
+      <div key={key} className="flex items-center gap-2 rounded-lg border border-border bg-card-2 px-2.5 py-2">
+        <X className="h-3.5 w-3.5 shrink-0 text-red-400" />
+        <span className="text-xs text-muted-foreground">{t(key)}</span>
       </div>
-      <h1 className="mt-4 text-lg font-semibold text-foreground">{t("onboarding-analytics-title")}</h1>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">{t("onboarding-analytics-help")}</p>
-
-      <div className="mt-5 grid grid-cols-2 gap-1.5 text-left">
-        {notCollectedItems.map((key) => (
-          <div key={key} className="flex items-center gap-2 rounded-lg border border-border bg-card-2 px-2.5 py-2">
-            <X className="h-3.5 w-3.5 shrink-0 text-red-400" />
-            <span className="text-xs text-muted-foreground">{t(key)}</span>
-          </div>
-        ))}
-        <div className="col-span-2 flex items-center justify-center gap-2 rounded-lg border border-border bg-card-2 px-2.5 py-2">
-          <Check className="h-3.5 w-3.5 shrink-0 text-accent" />
-          <span className="text-xs text-foreground">{t("analytics-collect-usage")}</span>
-        </div>
-      </div>
-
-      <p className="mt-3 text-xs leading-5 text-dim-foreground">{t("onboarding-analytics-delete")}</p>
-
-      <div className="mt-4 flex flex-col items-center gap-3">
-        <ActionButton primary onClick={onAccept}>{t("onboarding-analytics-accept")}</ActionButton>
-        <Button
-          variant="unstyled"
-          size="none"
-          onClick={onDecline}
-          className="text-xs text-muted-foreground underline decoration-dotted underline-offset-2 transition-colors hover:text-foreground"
-        >
-          {t("onboarding-analytics-decline")}
-        </Button>
-      </div>
+    ))}
+    <div className="col-span-2 flex items-center justify-center gap-2 rounded-lg border border-border bg-card-2 px-2.5 py-2">
+      <Check className="h-3.5 w-3.5 shrink-0 text-accent" />
+      <span className="text-xs text-foreground">{t("analytics-collect-usage")}</span>
     </div>
-  </PanelShell>
+    <p className="col-span-2 text-center text-xs leading-5 text-dim-foreground">{t("onboarding-analytics-delete")}</p>
+  </div>
 );
 
 const stepDotClass = (active: boolean, done: boolean): string => {
@@ -148,6 +142,7 @@ export const OnboardingOverlay: FC<Props> = ({
   activity,
   nativeStatus,
   userScripts,
+  devReplayOnboarding = false,
   onboardingCompleted,
   localePreference,
   onLocaleChange,
@@ -186,6 +181,8 @@ export const OnboardingOverlay: FC<Props> = ({
     : snapshot.youtubePresenceInstalled
       ? "error"
       : "loading";
+  const analyticsConsentDecided = settings.analyticsConsent !== undefined;
+  const showHostActions = snapshot.userScriptsActive && !snapshot.hostDetected && hostStatus !== "loading";
 
   const steps: GuidedStep[] = [
     {
@@ -201,6 +198,12 @@ export const OnboardingOverlay: FC<Props> = ({
       message: snapshot.userScriptsActive
         ? t("onboarding-step-user-scripts-success")
         : t("onboarding-step-user-scripts-error"),
+      details: !snapshot.userScriptsActive ? (
+        <div className="mt-4 space-y-2 rounded-lg border border-border bg-card-2 p-3 text-left">
+          <p className="text-xs leading-5 text-muted-foreground">{t("onboarding-user-scripts-gate-body")}</p>
+          <p className="text-xs leading-5 text-dim-foreground">{t("onboarding-user-scripts-gate-privacy")}</p>
+        </div>
+      ) : undefined,
       actions: !snapshot.userScriptsActive ? (
         import.meta.env.BROWSER === "firefox" ? (
           <ActionButton primary onClick={requestUserScriptsPermission}>
@@ -223,7 +226,7 @@ export const OnboardingOverlay: FC<Props> = ({
         : hostStatus === "loading" && snapshot.userScriptsActive
           ? t("onboarding-step-host-loading")
           : t("onboarding-step-host-error"),
-      actions: snapshot.userScriptsActive && !snapshot.hostDetected ? (
+      actions: showHostActions ? (
         <div className="flex flex-wrap justify-center gap-2">
           <ActionButton primary onClick={() => openUrl(siteUrl("/host"))}>
             {t("diagnostic-install-host")}
@@ -234,7 +237,7 @@ export const OnboardingOverlay: FC<Props> = ({
       ) : undefined,
     },
     {
-      icon: MessageCircle,
+      icon: DiscordIcon,
       status: discordStatus,
       title: t("onboarding-step-discord-title"),
       message: snapshot.discordConnected
@@ -278,31 +281,106 @@ export const OnboardingOverlay: FC<Props> = ({
         </ActionButton>
       ) : undefined,
     },
+    {
+      icon: BarChart3,
+      status: snapshot.youtubeActivityDetected
+        ? analyticsConsentDecided
+          ? "success"
+          : "error"
+        : "loading",
+      title: t("onboarding-analytics-title"),
+      message: analyticsConsentDecided
+        ? t("onboarding-step-analytics-success")
+        : snapshot.youtubeActivityDetected
+          ? t("onboarding-analytics-help")
+          : t("onboarding-step-analytics-waiting"),
+      details: snapshot.youtubeActivityDetected && !analyticsConsentDecided ? <AnalyticsChecklist /> : undefined,
+      actions: snapshot.youtubeActivityDetected && !analyticsConsentDecided ? (
+        <div className="flex flex-col items-center gap-2">
+          <ActionButton primary onClick={() => onSettingsChange({ analyticsConsent: true })}>
+            {t("onboarding-analytics-accept")}
+          </ActionButton>
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+            <QuietActionButton onClick={() => onSettingsChange({ analyticsConsent: false })}>
+              {t("onboarding-analytics-decline")}
+            </QuietActionButton>
+            <LinkActionButton onClick={() => openUrl(siteUrl("/data-collected"))}>
+              <BadgeInfo className="h-3.5 w-3.5" />
+              {t("onboarding-analytics-learn-more")}
+            </LinkActionButton>
+          </div>
+        </div>
+      ) : undefined,
+    },
   ];
-
-  if (onboardingCompleted) return null;
-  if (snapshot.userScriptsActive && snapshot.hostDetected && settings.analyticsConsent === undefined) {
-    return (
-      <AnalyticsConsentGate
-        onAccept={() => onSettingsChange({ analyticsConsent: true })}
-        onDecline={() => onSettingsChange({ analyticsConsent: false })}
-      />
-    );
-  }
 
   const pendingIndex = steps.findIndex((step) => step.status !== "success");
   const allDone = pendingIndex === -1;
   const currentIndex = allDone ? steps.length : pendingIndex;
-  const currentStep: GuidedStep = allDone
+  const progressSteps = steps.slice(1);
+  const progressIndex = allDone ? progressSteps.length : Math.max(0, currentIndex - 1);
+  const [replayIndex, setReplayIndex] = useState(0);
+  const replayMaxIndex = Math.max(0, progressSteps.length - 1);
+  const clampedReplayIndex = Math.min(replayIndex, replayMaxIndex);
+  const activeProgressIndex = devReplayOnboarding ? clampedReplayIndex : progressIndex;
+  const canReplayPrevious = clampedReplayIndex > 0;
+  const canReplayNext = clampedReplayIndex < replayMaxIndex;
+  const [readyCountdown, setReadyCountdown] = useState(5);
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
+  useEffect(() => {
+    if (devReplayOnboarding) {
+      setReplayIndex(0);
+    }
+  }, [devReplayOnboarding]);
+
+  useEffect(() => {
+    if (!devReplayOnboarding) return;
+    setReplayIndex((current) => Math.min(current, replayMaxIndex));
+  }, [devReplayOnboarding, replayMaxIndex]);
+
+  useEffect(() => {
+    if (devReplayOnboarding || !allDone || onboardingCompleted) {
+      setReadyCountdown(5);
+      return;
+    }
+
+    setReadyCountdown(5);
+    const timer = window.setInterval(() => {
+      setReadyCountdown((current) => {
+        if (current <= 1) {
+          window.clearInterval(timer);
+          onCompleteRef.current();
+          return 0;
+        }
+
+        return current - 1;
+      });
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [allDone, devReplayOnboarding, onboardingCompleted]);
+
+  const replayStep = progressSteps[clampedReplayIndex] ?? steps[0];
+  const currentStep: GuidedStep = devReplayOnboarding
+    ? replayStep
+    : allDone
     ? {
       actions: undefined,
+      details: <p className="mt-2 text-xs leading-5 text-dim-foreground">{t("onboarding-ready-message")}</p>,
       icon: CheckCircle2,
       status: "success" as const,
       title: t("onboarding-ready-title"),
-      message: t("onboarding-ready-message"),
+      message: t("onboarding-ready-countdown", { seconds: String(readyCountdown) }),
     }
     : steps[pendingIndex];
   const CurrentIcon = currentStep.icon;
+
+  if (onboardingCompleted) return null;
 
   return (
     <div className="pointer-events-none absolute inset-0 z-50">
@@ -336,42 +414,76 @@ export const OnboardingOverlay: FC<Props> = ({
               <StepIcon icon={CurrentIcon} status={currentStep.status} />
               <h1 className="mt-4 text-lg font-semibold text-foreground">{currentStep.title}</h1>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">{currentStep.message}</p>
+              {currentStep.details}
               {currentStep.actions ? (
                 <div className="mt-5 flex justify-center">{currentStep.actions}</div>
               ) : null}
               <div className="mt-5 flex justify-center gap-1.5">
-                {steps.map((step, dotIndex) => (
-                  <span
-                    key={step.title}
-                    className={`h-1.5 rounded-full transition-all ${stepDotClass(dotIndex === currentIndex, step.status === "success")}`}
-                  />
-                ))}
-                {allDone ? <span className="h-1.5 w-5 rounded-full bg-accent transition-all" /> : null}
+                {progressSteps.map((step, dotIndex) => {
+                  const dotClassName = `h-1.5 rounded-full transition-all ${stepDotClass(dotIndex === activeProgressIndex, step.status === "success")}`;
+
+                  return devReplayOnboarding ? (
+                    <button
+                      key={step.title}
+                      type="button"
+                      aria-label={step.title}
+                      title={step.title}
+                      onClick={() => setReplayIndex(dotIndex)}
+                      className={`${dotClassName} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40`}
+                    />
+                  ) : (
+                    <span
+                      key={step.title}
+                      className={dotClassName}
+                    />
+                  );
+                })}
+                {!devReplayOnboarding && allDone ? <span className="h-1.5 w-5 rounded-full bg-accent transition-all" /> : null}
               </div>
             </div>
           </div>
 
-          <footer className="flex items-center justify-between gap-2 border-t border-border px-4 py-3">
-            <Button
-              variant="unstyled"
-              size="none"
-              onClick={onSkipTour}
-              className="rounded-lg border border-border bg-card-2 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
-            >
-              {t("onboarding-skip")}
-            </Button>
-            {allDone ? (
+          {devReplayOnboarding ? (
+            <footer className="flex items-center justify-between gap-2 border-t border-border px-4 py-3">
               <Button
                 variant="unstyled"
                 size="none"
-                onClick={onComplete}
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-accent px-3 text-xs font-semibold text-background transition-opacity hover:opacity-90"
+                disabled={!canReplayPrevious}
+                onClick={() => setReplayIndex((current) => Math.max(0, current - 1))}
+                className="rounded-lg border border-border bg-card-2 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-card-2 disabled:hover:text-muted-foreground"
+              >
+                {t("onboarding-previous")}
+              </Button>
+              <Button
+                variant="unstyled"
+                size="none"
+                onClick={onSkipTour}
+                className="rounded-lg border border-border bg-card-2 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
               >
                 {t("onboarding-finish")}
-                <CheckCircle2 className="h-3.5 w-3.5" />
               </Button>
-            ) : null}
-          </footer>
+              <Button
+                variant="unstyled"
+                size="none"
+                disabled={!canReplayNext}
+                onClick={() => setReplayIndex((current) => Math.min(replayMaxIndex, current + 1))}
+                className="rounded-lg border border-border bg-card-2 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-card-2 disabled:hover:text-muted-foreground"
+              >
+                {t("onboarding-next")}
+              </Button>
+            </footer>
+          ) : !allDone ? (
+            <footer className="flex items-center justify-between gap-2 border-t border-border px-4 py-3">
+              <Button
+                variant="unstyled"
+                size="none"
+                onClick={onSkipTour}
+                className="rounded-lg border border-border bg-card-2 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
+              >
+                {t("onboarding-skip")}
+              </Button>
+            </footer>
+          ) : null}
         </section>
       </div>
     </div>

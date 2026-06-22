@@ -1,16 +1,18 @@
-import { useEffect, useState } from "react";
-import type { DiscordProfileSnapshot } from "@/shared/types";
 import { sendMessage, type NativeStatus } from "@/lib/messages";
+import type { DiscordProfileSnapshot } from "@/shared/types";
+import { useEffect, useState } from "react";
 
 const ONBOARDING_KEY = "onboarding";
 
 export type OnboardingState = {
+  devReplayOnboarding: boolean;
   onboardingCompleted: boolean;
   nativeSeenConnectedOnce: boolean;
   nativeProfile?: DiscordProfileSnapshot | null;
 };
 
 const DEFAULT_ONBOARDING: OnboardingState = {
+  devReplayOnboarding: false,
   onboardingCompleted: false,
   nativeSeenConnectedOnce: false,
   nativeProfile: null,
@@ -81,5 +83,11 @@ export const useOnboardingState = (): {
     void writeOnboarding(partial).then((next) => setOnboardingState(next));
   };
 
-  return { onboarding, setOnboarding, nativeStatus, userScripts, refresh };
+  return {
+    onboarding,
+    setOnboarding,
+    nativeStatus,
+    userScripts,
+    refresh
+  };
 };

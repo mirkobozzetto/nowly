@@ -1,4 +1,5 @@
 import { LocaleFlag } from "@/components/locale-flag";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
@@ -28,10 +29,13 @@ type Props = {
   localePreference: LocalePreference;
   nativeStatus: NativeStatus;
   onCheckHostUpdate: () => Promise<void>;
+  onForceShowOnboarding: () => Promise<void>;
   onLocaleChange: (preference: LocalePreference) => void;
   settings: ExtensionSettings;
   onSettingsChange: (partial: Partial<ExtensionSettings>) => void;
 };
+
+const hostUpdateActionClassName = "inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors sm:flex-1";
 
 export const SettingsView: FC<Props> = ({
   debug,
@@ -41,6 +45,7 @@ export const SettingsView: FC<Props> = ({
   localePreference,
   nativeStatus,
   onCheckHostUpdate,
+  onForceShowOnboarding,
   onLocaleChange,
   settings,
   onSettingsChange,
@@ -102,25 +107,26 @@ export const SettingsView: FC<Props> = ({
           <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-accent">
             {t("host-update-available", { latestVersion: hostVersionInfo.latestVersion })}
           </h2>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <a
               href="https://nowly.me/host"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-9 items-center gap-2 rounded-lg border border-accent/20 bg-accent/10 px-3 text-xs font-medium text-accent transition-colors hover:bg-accent/20"
+              className={`${hostUpdateActionClassName} border border-accent/20 bg-accent/10 text-accent hover:bg-accent/20`}
             >
               {t("host-download-update")}
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
-            <button
-              type="button"
+            <Button
+              variant="unstyled"
+              size="none"
               onClick={() => { void onCheckHostUpdate(); }}
               disabled={isCheckingHostVersion}
-              className="inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card-2 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
+              className={`${hostUpdateActionClassName} border border-border bg-card-2 text-muted-foreground hover:bg-card-hover hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60`}
             >
               <RefreshCw className={`h-3.5 w-3.5 ${isCheckingHostVersion ? "animate-spin" : ""}`} />
               {t("host-check-update")}
-            </button>
+            </Button>
           </div>
         </section>
       ) : null}
@@ -177,11 +183,12 @@ export const SettingsView: FC<Props> = ({
       </section>
 
       <section className="rounded-lg border border-border bg-card p-4">
-        <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("data-management")}</h2>
-        <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("analytics-description")}</p>
-
-        <Label unstyled className="mb-3 flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card-2 px-3 py-2">
-          <span className="text-xs font-medium text-foreground">{t("analytics-consent")}</span>
+        <Label unstyled className="flex cursor-pointer items-start justify-between gap-3">
+          <span className="min-w-0">
+            <span className="block text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("data-management")}</span>
+            <span className="mt-2 block text-xs font-medium text-foreground">{t("analytics-consent")}</span>
+            <span className="mt-1 block text-[11px] leading-4 text-muted-foreground">{t("analytics-description")}</span>
+          </span>
           <Checkbox
             ariaLabel={t("analytics-consent")}
             checked={settings.analyticsConsent === true}
@@ -193,7 +200,7 @@ export const SettingsView: FC<Props> = ({
           href={consentUrl}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card-2 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
+          className="mt-3 inline-flex h-8 items-center gap-2 rounded-lg border border-border bg-card-2 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
         >
           {t("data-management")}
           <ExternalLink className="h-3.5 w-3.5" />
@@ -204,6 +211,7 @@ export const SettingsView: FC<Props> = ({
         <DebugPanel
           debug={debug}
           nativeStatus={nativeStatus}
+          onForceShowOnboarding={onForceShowOnboarding}
           settings={settings}
           onSettingsChange={onSettingsChange}
         />

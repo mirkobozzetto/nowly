@@ -3,15 +3,15 @@ import { API_BASE_URL, CDN_BASE_URL, WEB_BASE_URL } from "@/shared/constants";
 import type { ExtensionMessage, ExtensionSettings, InstalledPresences, PresenceData, PresenceDebug, PresenceRelease, PresenceSchedule, StoredPresence, UserScriptsStatus } from "@/shared/types";
 import { addAnalyticsLog, clearAnalyticsLogs, getAnalyticsLogs, sanitizeLogPayload } from "./analytics-log";
 import { browserName, osName } from "./device-info";
-import { connectNative, getNativeStatus, mapPresenceData, onNativeResponse, postNative, reconnectNative, restartNative } from "./native";
+import { connectNative, mapPresenceData, onNativeResponse, postNative, reconnectNative, refreshNativeStatus, restartNative } from "./native";
+import { presenceInjector } from "./presence-injection";
 import { createPresenceRuntime, USER_SCRIPT_MESSAGE_SOURCE } from "./presence-runtime";
 import { verifyPresenceRelease } from "./release-security";
+import { clearSnooze, getCurrentActivity, getDebug, getDeviceId, getDeviceToken, getPresences, getPresenceSettings, getSettings, setCurrentActivity, setDebug, setDeviceToken, setOnboarding, setPresences, setPresenceSchedule, setPresenceSettings, setSettings, snoozePresence } from "./storage";
 import {
   toMatchPatterns, userScriptId, visiblePresences,
   type RegisteredUserScript,
 } from "./user-scripts";
-import { presenceInjector } from "./presence-injection";
-import { clearSnooze, getCurrentActivity, getDebug, getDeviceId, getDeviceToken, getPresences, getPresenceSettings, getSettings, setCurrentActivity, setDebug, setDeviceToken, setPresences, setPresenceSchedule, setPresenceSettings, setSettings, snoozePresence } from "./storage";
 
 let customApiUrl: string | undefined;
 let cachedDeviceId: string | null = null;
@@ -558,7 +558,7 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
       return true;
 
     case "GET_NATIVE_STATUS":
-      respond(sendResponse, getNativeStatus());
+      respond(sendResponse, refreshNativeStatus());
       return false;
 
     case "GET_PRIVACY_LINKS":
@@ -588,7 +588,7 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
 
     case "GET_DIAGNOSTIC":
       Promise.all([getPresences(), getCurrentActivity(), getUserScriptsStatus()]).then(([presences, activity, userScripts]) => {
-        const nativeStatus = getNativeStatus();
+        const nativeStatus = refreshNativeStatus();
         const visible = visiblePresences(presences);
         respond(sendResponse, {
           extensionInstalled: true,
@@ -816,6 +816,16 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
         }
         respond(sendResponse, settings);
       }));
+      return true;
+
+    case "RESET_ONBOARDING_FOR_DEV":
+      void (async () => {
+        await setOnboarding({ devReplayOnboarding: true, onboardingCompleted: false });
+        const settings = await setSettings({ analyticsConsent: undefined });
+        await syncDeviceState();
+        addAnalyticsLog("info", "settings", "developer onboarding reset");
+        respond(sendResponse, settings);
+      })();
       return true;
 
     case "GET_PRESENCE_SETTINGS":
