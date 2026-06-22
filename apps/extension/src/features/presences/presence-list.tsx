@@ -1,14 +1,15 @@
-import { Skeleton } from "@/components/ui/skeleton";
 import { t } from "@/shared/i18n";
-import type { InstalledPresences, PresenceDisplayMode, PresenceMetadata } from "@/shared/types";
+import type { PresenceDisplayMode } from "@/shared/types";
 import type { FC } from "react";
 import { EmptyState } from "./empty-state";
-import { PresenceListItem } from "./presence-list-item";
+import { PresenceListSection } from "./presence-list-section";
+import { PresenceListSkeleton } from "./presence-list-skeleton";
+import { getCategoryLabel, groupByCategory, sortAlphabetically, type PresenceListEntry } from "./presence-list.model";
 
 type Props = {
   activeSlug: string | null;
   displayMode: PresenceDisplayMode;
-  entries: Array<[string, InstalledPresences[string]]>;
+  entries: PresenceListEntry[];
   isLoading: boolean;
   onOpenMarketplace: (slug: string) => void;
   onRemove: (slug: string) => void;
@@ -18,83 +19,6 @@ type Props = {
   showSchedule: boolean;
   updates: Record<string, string>;
 };
-
-type Category = PresenceMetadata["category"];
-type MessageKey = Parameters<typeof t>[0];
-
-const categoryLabelKeys: Record<Category, MessageKey> = {
-  ai: "categoryAi",
-  creator: "categoryCreator",
-  gaming: "categoryGaming",
-  learning: "categoryLearning",
-  music: "categoryMusic",
-  other: "categoryOther",
-  social: "categorySocial",
-  streaming: "categoryStreaming",
-  tools: "categoryTools",
-  video: "categoryVideo",
-};
-
-const getCategoryLabel = (category: Category): string => t(categoryLabelKeys[category]);
-
-const groupByCategory = (entries: Props["entries"]): Array<[Category, Props["entries"]]> => {
-  const groups = new Map<Category, Props["entries"]>();
-
-  for (const entry of entries) {
-    const [, presence] = entry;
-    const category = presence.metadata.category;
-    groups.set(category, [...(groups.get(category) ?? []), entry]);
-  }
-
-  return Array.from(groups.entries()).sort(([left], [right]) =>
-    getCategoryLabel(left).localeCompare(getCategoryLabel(right)),
-  );
-};
-
-const sortAlphabetically = (entries: Props["entries"]): Props["entries"] =>
-  [...entries].sort(([, a], [, b]) => a.metadata.name.localeCompare(b.metadata.name));
-
-const PresenceListSection: FC<{
-  entries: Props["entries"];
-  activeSlug: string | null;
-  onOpenMarketplace: (slug: string) => void;
-  onRemove: (slug: string) => void;
-  onSchedule: (slug: string) => void;
-  onToggle: (slug: string, enabled: boolean) => void;
-  showSchedule: boolean;
-  updates: Record<string, string>;
-}> = ({ entries, onOpenMarketplace, onRemove, onSchedule, onToggle, showSchedule, updates }) => (
-  <div className="overflow-hidden rounded-lg border border-border bg-card">
-    {entries.map(([slug, presence]) => (
-      <PresenceListItem
-        key={slug}
-        slug={slug}
-        presence={presence}
-        showSchedule={showSchedule}
-        onToggle={onToggle}
-        onRemove={onRemove}
-        onSchedule={onSchedule}
-        onOpenMarketplace={onOpenMarketplace}
-        updateAvailable={updates[slug]}
-      />
-    ))}
-  </div>
-);
-
-const PresenceListSkeleton: FC = () => (
-  <div className="overflow-hidden rounded-lg border border-border bg-card">
-    {Array.from({ length: 4 }).map((_, i) => (
-      <div key={i} className="flex items-center gap-3 border-b border-border p-3">
-        <Skeleton className="h-8 w-8 shrink-0" rounded="md" />
-        <div className="min-w-0 flex-1 space-y-1.5">
-          <Skeleton className="h-3.5 w-3/6" />
-          <Skeleton className="h-3 w-2/6" />
-        </div>
-        <Skeleton className="h-5 w-8 shrink-0" rounded="full" />
-      </div>
-    ))}
-  </div>
-);
 
 export const PresenceList: FC<Props> = ({
   activeSlug,
@@ -129,7 +53,6 @@ export const PresenceList: FC<Props> = ({
           <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1">
             <PresenceListSection
               entries={activeSorted}
-              activeSlug={activeSlug}
               onOpenMarketplace={onOpenMarketplace}
               onRemove={onRemove}
               onSchedule={onSchedule}
@@ -151,7 +74,6 @@ export const PresenceList: FC<Props> = ({
             </h2>
             <PresenceListSection
               entries={activeSorted}
-              activeSlug={activeSlug}
               onOpenMarketplace={onOpenMarketplace}
               onRemove={onRemove}
               onSchedule={onSchedule}
@@ -167,7 +89,6 @@ export const PresenceList: FC<Props> = ({
             </h2>
             <PresenceListSection
               entries={sortAlphabetically(disabledEntries)}
-              activeSlug={activeSlug}
               onOpenMarketplace={onOpenMarketplace}
               onRemove={onRemove}
               onSchedule={onSchedule}
@@ -198,7 +119,6 @@ export const PresenceList: FC<Props> = ({
 
               <PresenceListSection
                 entries={[...enabled, ...disabled]}
-                activeSlug={activeSlug}
                 onOpenMarketplace={onOpenMarketplace}
                 onRemove={onRemove}
                 onSchedule={onSchedule}
