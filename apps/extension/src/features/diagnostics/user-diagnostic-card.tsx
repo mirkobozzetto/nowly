@@ -1,12 +1,16 @@
 import { Button } from "@/components/ui/button";
 import type { NativeStatus } from "@/lib/messages";
-import { WEB_BASE_URL } from "@/shared/constants";
+import { extensionDetailsUrl, openUrl, siteUrl } from "@/shared/browser-links";
 import { t } from "@/shared/i18n";
 import type { CurrentActivity, InstalledPresences, UserScriptsStatus } from "@/shared/types";
-import { CheckCircle2, Clipboard, ExternalLink, LoaderCircle, XCircle } from "lucide-react";
-import type { FC, ReactElement, ReactNode } from "react";
-import { useMemo, useState } from "react";
+import { Clipboard, ExternalLink } from "lucide-react";
+import type { FC, ReactElement } from "react";
+import { useMemo } from "react";
 import { buildDiagnosticSnapshot, isHostChecking, YOUTUBE_TEST_URL } from "./diagnostic-status";
+import { SmallAction } from "./small-action";
+import type { RowStatus } from "./status-icon";
+import { StatusRow } from "./status-row";
+import { useSupportDiagnostic } from "./use-support-diagnostic";
 
 type Props = {
   activity: CurrentActivity | null;
@@ -16,61 +20,6 @@ type Props = {
   userScripts: UserScriptsStatus;
 };
 
-type RowStatus = "loading" | "success" | "error";
-
-const siteUrl = (path: string): string => `${WEB_BASE_URL.replace(/\/$/, "")}${path}`;
-
-const extensionDetailsUrl = (): string => `chrome://extensions/?id=${chrome.runtime.id}`;
-
-const openUrl = (url: string): void => {
-  void chrome.tabs.create({ url });
-};
-
-const StatusIcon: FC<{ status: RowStatus }> = ({ status }) => {
-  if (status === "loading") {
-    return <LoaderCircle className="h-4 w-4 animate-spin text-muted-foreground" />;
-  }
-
-  if (status === "success") {
-    return <CheckCircle2 className="h-4 w-4 text-success" />;
-  }
-
-  return <XCircle className="h-4 w-4 text-destructive" />;
-};
-
-const StatusRow: FC<{
-  action?: ReactNode;
-  label: string;
-  message: string;
-  status: RowStatus;
-}> = ({ action, label, message, status }) => (
-  <div className="flex items-start gap-2 rounded-lg border border-border bg-card-2 px-3 py-2">
-    <span className="mt-0.5 shrink-0">
-      <StatusIcon status={status} />
-    </span>
-
-    <div className="min-w-0 flex-1">
-      <p className="text-xs font-semibold text-foreground">{label}</p>
-      <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">{message}</p>
-      {action ? <div className="mt-2 flex flex-wrap gap-1.5">{action}</div> : null}
-    </div>
-  </div>
-);
-
-const SmallAction: FC<{
-  children: ReactNode;
-  onClick?: () => void;
-}> = ({ children, onClick }) => (
-  <Button
-    variant="unstyled"
-    size="none"
-    onClick={onClick}
-    className="inline-flex h-7 items-center gap-1 rounded-md border border-border bg-card px-2 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
-  >
-    {children}
-  </Button>
-);
-
 export const UserDiagnosticCard: FC<Props> = ({
   activity,
   nativeStatus,
@@ -78,13 +27,13 @@ export const UserDiagnosticCard: FC<Props> = ({
   presences,
   userScripts,
 }): ReactElement => {
-  const [copied, setCopied] = useState(false);
   const snapshot = useMemo(() => buildDiagnosticSnapshot({
     activity,
     nativeStatus,
     presences,
     userScripts,
   }), [activity, nativeStatus, presences, userScripts]);
+  const { copied, copySupportDiagnostic } = useSupportDiagnostic(snapshot);
 
   const hostStatus: RowStatus = snapshot.hostDetected
     ? "success"
@@ -97,22 +46,6 @@ export const UserDiagnosticCard: FC<Props> = ({
     : hostStatus === "loading"
       ? "loading"
       : "error";
-
-  const supportLines = [
-    `${t("diagnostic-extension-installed")}: ${snapshot.extensionInstalled ? t("diagnostic-status-ok") : t("diagnostic-status-missing")}`,
-    `${t("diagnostic-user-scripts-active")}: ${snapshot.userScriptsActive ? t("diagnostic-status-ok") : t("diagnostic-status-missing")}`,
-    `${t("diagnostic-host-detected")}: ${snapshot.hostDetected ? t("diagnostic-status-ok") : t("diagnostic-status-missing")}`,
-    `${t("diagnostic-discord-connected")}: ${snapshot.discordConnected ? t("diagnostic-status-ok") : t("diagnostic-status-missing")}`,
-    `${t("diagnostic-presence-installed")}: ${snapshot.presenceInstalled ? t("diagnostic-status-ok") : t("diagnostic-status-missing")}`,
-    `${t("diagnostic-activity-detected")}: ${snapshot.activityDetected ? t("diagnostic-status-ok") : t("diagnostic-status-missing")}`,
-  ];
-
-  const copySupportDiagnostic = (): void => {
-    void navigator.clipboard.writeText(supportLines.join("\n")).then(() => {
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1800);
-    });
-  };
 
   const youtubeInstalled = snapshot.youtubePresenceInstalled;
 
