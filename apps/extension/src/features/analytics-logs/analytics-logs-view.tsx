@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { sendMessage } from "@/lib/messages";
+import { t } from "@/shared/i18n";
 import type { AnalyticsLogEntry, AnalyticsLogLevel, AnalyticsLogType } from "@/shared/types";
-import { Copy, Trash2 } from "lucide-react";
+import { Check, Copy, Trash2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type Filter = "all" | AnalyticsLogType;
+type Feedback = "copied" | "cleared" | null;
 
 const filters: Filter[] = ["all", "analytics", "api", "presence", "native"];
 
@@ -26,6 +28,8 @@ const formatTime = (timestamp: number): string =>
 export const AnalyticsLogsView: FC = (): ReactElement => {
   const [logs, setLogs] = useState<AnalyticsLogEntry[]>([]);
   const [filter, setFilter] = useState<Filter>("all");
+  const [feedback, setFeedback] = useState<Feedback>(null);
+  const feedbackTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     void sendMessage<AnalyticsLogEntry[]>("GET_ANALYTICS_LOGS").then((entries) => {
@@ -43,46 +47,71 @@ export const AnalyticsLogsView: FC = (): ReactElement => {
     return () => chrome.runtime.onMessage.removeListener(onRuntimeMessage);
   }, []);
 
+  useEffect(() => () => {
+    if (feedbackTimerRef.current) window.clearTimeout(feedbackTimerRef.current);
+  }, []);
+
   const visibleLogs = useMemo(
     () => logs.filter((log) => filter === "all" || log.type === filter).slice().reverse(),
     [filter, logs],
   );
 
-  const clearLogs = useCallback((): void => {
-    void sendMessage<{ ok: boolean }>("CLEAR_ANALYTICS_LOGS").then(() => setLogs([]));
+  const showFeedback = useCallback((nextFeedback: Exclude<Feedback, null>): void => {
+    if (feedbackTimerRef.current) window.clearTimeout(feedbackTimerRef.current);
+    setFeedback(nextFeedback);
+    feedbackTimerRef.current = window.setTimeout(() => setFeedback(null), 1400);
   }, []);
 
+  const clearLogs = useCallback((): void => {
+    void sendMessage<{ ok: boolean }>("CLEAR_ANALYTICS_LOGS").then(() => {
+      setLogs([]);
+      showFeedback("cleared");
+    });
+  }, [showFeedback]);
+
   const copyLogs = useCallback((): void => {
-    void navigator.clipboard?.writeText(JSON.stringify(visibleLogs, null, 2));
-  }, [visibleLogs]);
+    if (!navigator.clipboard?.writeText) return;
+    void navigator.clipboard.writeText(JSON.stringify(visibleLogs, null, 2)).then(() => showFeedback("copied"));
+  }, [showFeedback, visibleLogs]);
+
+  const copyConfirmed = feedback === "copied";
+  const clearConfirmed = feedback === "cleared";
 
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-3">
       <div className="flex items-center justify-between gap-2 rounded-lg border border-border bg-card p-3">
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-foreground">Analytics logs</p>
-          <p className="text-xs text-muted-foreground">Dev only / unpacked only</p>
+          <p className="text-sm font-semibold text-foreground">{t("analytics-logs-title")}</p>
+          <p className="text-xs text-muted-foreground">{t("analytics-logs-description")}</p>
         </div>
         <div className="flex items-center gap-1">
           <Button
             variant="unstyled"
             size="none"
             onClick={copyLogs}
-            className="flex h-8 items-center gap-1 rounded-md border border-border bg-card-2 px-2 text-xs text-muted-foreground hover:text-foreground"
-            title="Copy visible logs as JSON"
+            className={`flex h-8 items-center gap-1 rounded-md border px-2 text-xs transition-all ${
+              copyConfirmed
+                ? "animate-pulse border-success/40 bg-success/10 text-success"
+                : "border-border bg-card-2 text-muted-foreground hover:text-foreground"
+            }`}
+            title={t("analytics-logs-copy-title")}
           >
-            <Copy className="h-3.5 w-3.5" />
-            JSON
+            {copyConfirmed ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            {copyConfirmed ? t("analytics-logs-copied") : t("analytics-logs-copy-json")}
           </Button>
           <Button
             variant="unstyled"
             size="none"
             onClick={clearLogs}
-            className="flex h-8 items-center gap-1 rounded-md border border-border bg-card-2 px-2 text-xs text-muted-foreground hover:text-foreground"
-            title="Clear logs"
+            className={`flex h-8 items-center gap-1 rounded-md border px-2 text-xs transition-all ${
+              clearConfirmed
+                ? "animate-pulse border-success/40 bg-success/10 text-success"
+                : "border-border bg-card-2 text-muted-foreground hover:text-foreground"
+            }`}
+            title={t("analytics-logs-clear-title")}
           >
-            <Trash2 className="h-3.5 w-3.5" />
-            Clear
+            {clearConfirmed ? <Check className="h-3.5 w-3.5" /> : <Trash2 className="h-3.5 w-3.5" />}
+            {clearConfirmed ? t("analytics-logs-cleared") : t("analytics-logs-clear")}
           </Button>
         </div>
       </div>
@@ -110,7 +139,7 @@ export const AnalyticsLogsView: FC = (): ReactElement => {
       <div className="min-h-0 flex-1 overflow-y-auto rounded-lg border border-border bg-card">
         {visibleLogs.length === 0 ? (
           <div className="flex h-full min-h-48 items-center justify-center p-6 text-center text-xs text-muted-foreground">
-            No logs yet.
+            {t("analytics-logs-empty")}
           </div>
         ) : (
           <div className="divide-y divide-border">
