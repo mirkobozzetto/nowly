@@ -9,6 +9,13 @@ export interface PresenceStats {
   lastUpdated: string | null
 }
 
+export interface GlobalPresenceStats {
+  totalUsers: number
+  activeUsers: number
+  activePresenceCount: number
+  installedPresenceCount: number
+}
+
 export interface VersionEntry {
   version: string
   changelog: string

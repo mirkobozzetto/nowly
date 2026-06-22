@@ -1,14 +1,16 @@
+import { requireAuth } from "@/features/auth/auth.middleware"
 import { buildLocaleObject } from "@nowly/locales"
 import { presenceActiveBodySchema, presencePutBodySchema } from "@nowly/shared/schemas"
-import { requireAuth } from "@/features/auth/auth.middleware"
+import type { FastifyInstance } from "fastify"
+import {
+  addVersion,
+  clearActiveDevice, clearActiveDevicesForDevice,
+  getAllPresenceSlugs, getGlobalPresenceStats, getPresenceMeta, getPresenceStats, getVersionHistory,
+  markActiveDevice,
+  setAdded, setUpdated, setVersion,
+} from "./presence.repository"
 import { buildRelease } from "./presence.service"
 import { processPresenceSync, type PresenceSyncBody } from "./presence.sync"
-import {
-  addVersion, getAllPresenceSlugs, getPresenceMeta, getPresenceStats, getVersionHistory,
-  setAdded, setUpdated, setVersion,
-  markActiveDevice, clearActiveDevice, clearActiveDevicesForDevice,
-} from "./presence.repository"
-import type { FastifyInstance } from "fastify"
 
 export const presenceRoutes = async (fastify: FastifyInstance) => {
   fastify.get("", async (_request, _reply) => {
@@ -33,6 +35,13 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
     }))
 
     return results.filter((result) => result !== null)
+  })
+
+  fastify.get("/stats", async (_request, reply) => {
+    const stats = await getGlobalPresenceStats()
+    return reply
+      .header("Cache-Control", "public, max-age=60, stale-while-revalidate=120")
+      .send(stats)
   })
 
   fastify.get<{ Params: { slug: string } }>("/:slug", async (request, reply) => {
@@ -109,9 +118,6 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
     return { ok: true, results }
   })
 
-  // SEC-04 / SEC-06: validate the body and require a deviceId. Active-user
-  // tracking is keyed by (slug, deviceId), so an anonymous call cannot bump
-  // counters for arbitrary presences.
   fastify.post("/active", async (request, reply) => {
     const parsed = presenceActiveBodySchema.safeParse(request.body)
     if (!parsed.success || !parsed.data.deviceId) {

@@ -1,8 +1,8 @@
-import cors from "@fastify/cors"
 import { imageProxyRoutes } from "@/features/image-proxy/image-proxy.routes"
 import { presenceRoutes } from "@/features/presence/presence.routes"
 import { ratingRoutes } from "@/features/rating/rating.routes"
 import { registryRoutes } from "@/features/registry/registry.routes"
+import cors from "@fastify/cors"
 import { getPresence } from "@nowly/websites"
 import Fastify from "fastify"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -12,6 +12,7 @@ const mockPresenceRepo = vi.hoisted(() => ({
   getPresenceMeta: vi.fn(),
   getVersion: vi.fn(),
   getPresenceStats: vi.fn(),
+  getGlobalPresenceStats: vi.fn(),
   incrementInstalls: vi.fn(),
   setActiveUsers: vi.fn(),
   markActiveDevice: vi.fn(),
@@ -148,6 +149,25 @@ describe("Registry Routes", () => {
     expect(body[0].rating).toBe(4.5)
     expect(body[0].ratingCount).toBe(100)
     expect(body[0].ratingDistribution).toEqual({ 5: 60, 4: 25, 3: 10, 2: 3, 1: 2 })
+  })
+
+  it("GET /presences/stats returns global public stats", async () => {
+    mockPresenceRepo.getGlobalPresenceStats.mockResolvedValue({
+      totalUsers: 1200,
+      activeUsers: 84,
+      activePresenceCount: 96,
+      installedPresenceCount: 2400,
+    })
+
+    const res = await app.inject({ method: "GET", url: "/presences/stats" })
+
+    expect(res.statusCode).toBe(200)
+    expect(JSON.parse(res.body)).toEqual({
+      totalUsers: 1200,
+      activeUsers: 84,
+      activePresenceCount: 96,
+      installedPresenceCount: 2400,
+    })
   })
 })
 
