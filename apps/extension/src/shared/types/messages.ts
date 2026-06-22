@@ -33,7 +33,8 @@ export type ExtensionMessageType =
   | "CLEAR_SNOOZE"
   | "SET_PRESENCE_SCHEDULE"
   | "GET_ANALYTICS_LOGS"
-  | "CLEAR_ANALYTICS_LOGS";
+  | "CLEAR_ANALYTICS_LOGS"
+  | "GET_PRIVACY_LINKS";
 
 export type UserScriptsStatus = {
   enabled: boolean;

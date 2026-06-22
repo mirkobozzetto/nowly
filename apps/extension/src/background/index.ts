@@ -11,7 +11,7 @@ import {
   type RegisteredUserScript,
 } from "./user-scripts";
 import { presenceInjector } from "./presence-injection";
-import { clearSnooze, getCurrentActivity, getDebug, getDeviceId, getPresences, getPresenceSettings, getSettings, setCurrentActivity, setDebug, setPresences, setPresenceSchedule, setPresenceSettings, setSettings, snoozePresence } from "./storage";
+import { clearSnooze, getCurrentActivity, getDebug, getDeviceId, getDeviceToken, getPresences, getPresenceSettings, getSettings, setCurrentActivity, setDebug, setDeviceToken, setPresences, setPresenceSchedule, setPresenceSettings, setSettings, snoozePresence } from "./storage";
 
 let customApiUrl: string | undefined;
 let cachedDeviceId: string | null = null;
@@ -49,10 +49,17 @@ const getActiveDeviceId = async (): Promise<string> => {
   return cachedDeviceId;
 };
 
+const buildDeviceUrl = async (path: string): Promise<string> => {
+  const deviceId = await getActiveDeviceId();
+  const params = new URLSearchParams({ deviceId });
+  const token = await getDeviceToken();
+  if (token) params.set("token", token);
+  return `${WEB_BASE_URL}${path}?${params.toString()}`;
+};
+
 const syncUninstallUrl = async (): Promise<void> => {
   try {
-    const deviceId = await getActiveDeviceId();
-    chrome.runtime.setUninstallURL(`${WEB_BASE_URL}/uninstall?deviceId=${encodeURIComponent(deviceId)}`);
+    chrome.runtime.setUninstallURL(await buildDeviceUrl("/uninstall"));
   } catch {
     // Best effort only.
   }
@@ -93,6 +100,21 @@ const syncDeviceState = async (
       }),
     });
     addAnalyticsLog(response.ok ? "success" : "warn", "api", "POST /devices/sync result", { status: response.status });
+    if (response.ok) {
+      try {
+        const data = (await response.json()) as { deviceToken?: unknown };
+        if (typeof data.deviceToken === "string" && data.deviceToken) {
+          const existing = await getDeviceToken();
+          if (existing !== data.deviceToken) {
+            await setDeviceToken(data.deviceToken);
+            // Refresh the uninstall URL so the cleanup request carries the token.
+            await syncUninstallUrl();
+          }
+        }
+      } catch {
+        // Response body is best-effort; ignore parse failures.
+      }
+    }
   } catch (error) {
     addAnalyticsLog("error", "api", "POST /devices/sync failed", {
       error: error instanceof Error ? error.message : String(error),
@@ -538,6 +560,10 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage, sender, sendRes
     case "GET_NATIVE_STATUS":
       respond(sendResponse, getNativeStatus());
       return false;
+
+    case "GET_PRIVACY_LINKS":
+      buildDeviceUrl("/consent").then((consentUrl) => respond(sendResponse, { consentUrl }));
+      return true;
 
     case "GET_USER_SCRIPTS_STATUS":
       if (import.meta.env.BROWSER === "firefox") {

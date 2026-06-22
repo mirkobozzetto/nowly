@@ -7,6 +7,7 @@ const ONBOARDING_KEY = "onboarding";
 const SETTINGS_KEY = "settings";
 const PRESENCE_SETTINGS_KEY = "presenceSettings";
 const DEVICE_ID_KEY = "deviceId";
+const DEVICE_TOKEN_KEY = "deviceToken";
 
 export const DEFAULT_SETTINGS: ExtensionSettings = {
   presenceDisplayMode: "category" as PresenceDisplayMode,
@@ -106,6 +107,18 @@ export const getDeviceId = async (): Promise<string> => {
   const deviceId = crypto.randomUUID();
   await chrome.storage.local.set({ [DEVICE_ID_KEY]: deviceId });
   return deviceId;
+};
+
+// Per-device capability token issued by the API on /devices/sync. Required to
+// export or delete this device's analytics and to run the uninstall cleanup.
+export const getDeviceToken = async (): Promise<string | null> => {
+  const result = await chrome.storage.local.get(DEVICE_TOKEN_KEY);
+  const value = result[DEVICE_TOKEN_KEY];
+  return typeof value === "string" && value.trim() ? value : null;
+};
+
+export const setDeviceToken = async (token: string): Promise<void> => {
+  await chrome.storage.local.set({ [DEVICE_TOKEN_KEY]: token });
 };
 
 export const snoozePresence = async (slug: string, durationMs: number): Promise<StoredPresence | null> => {
