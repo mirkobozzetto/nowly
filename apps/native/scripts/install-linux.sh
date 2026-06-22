@@ -33,7 +33,7 @@ if [ ! -f "$BINARY_SRC" ]; then
   exit 1
 fi
 
-echo "Installing Nowly Native Host for Linux..."
+echo "Installing Nowly Host for Linux..."
 
 mkdir -p "$INSTALL_DIR"
 cp "$BINARY_SRC" "${INSTALL_DIR}/${BINARY_NAME}"
@@ -42,7 +42,7 @@ chmod 755 "${INSTALL_DIR}/${BINARY_NAME}"
 MANIFEST=$(cat <<MANIFEST_END
 {
   "name": "${HOST_NAME}",
-  "description": "Nowly Native Messaging Host",
+  "description": "Nowly Host",
   "path": "${INSTALL_DIR}/${BINARY_NAME}",
   "type": "stdio",
   "allowed_origins": [

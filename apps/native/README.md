@@ -1,6 +1,6 @@
-# Nowly Native Host
+# Nowly Host
 
-Chromium Native Messaging host for Discord Rich Presence integration.
+Nowly Host bridges the Chromium extension with Discord Rich Presence.
 
 ## Contract
 
@@ -136,7 +136,7 @@ git push origin host-v1.0.0
 
 The `Host Release` GitHub Action then builds and publishes automatically.
 
-The extension checks `https://cdn.nowly.me/installer/latest.json` for updates. Once the workflow updates `latest.json`, users with an older native host see the update prompt.
+The extension checks `https://cdn.nowly.me/installer/latest.json` for updates. Once the workflow updates `latest.json`, users with an older Nowly Host version see the update prompt.
 
 ### Manual publish
 

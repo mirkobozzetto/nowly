@@ -13,7 +13,7 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 MONOREPO_ROOT="$(cd "$ROOT_DIR/../.." && pwd)"
 RELEASE_DIR="$ROOT_DIR/releases/$VERSION"
 
-echo "=== Publishing Nowly Native Host v$VERSION to CDN ==="
+echo "=== Publishing Nowly Host v$VERSION to CDN ==="
 echo ""
 
 # Check all required files exist

@@ -4,7 +4,7 @@
 
 Open-source Discord Rich Presence for the modern web.
 
-Automatically display what you're watching, listening to, reading, or doing on Discord through a browser extension and a lightweight native host.
+Automatically display what you're watching, listening to, reading, or doing on Discord through a browser extension and a lightweight Nowly Host.
 
 [Features](#features) -
 [Architecture](#architecture) - 
@@ -19,12 +19,12 @@ Automatically display what you're watching, listening to, reading, or doing on D
 
 Nowly is an open-source alternative to PreMiD.
 
-It detects activity directly from supported websites, transforms it into a standardized presence format, and sends it to Discord through a local native host.
+It detects activity directly from supported websites, transforms it into a standardized presence format, and sends it to Discord through a local Nowly Host.
 
 The project is built around three independent layers:
 
 - Browser extension
-- Native host (Local process)
+- Nowly Host (Local process)
 - Presence registry
 
 This separation keeps the system maintainable, scalable, and easy to contribute to.
@@ -65,7 +65,7 @@ This separation keeps the system maintainable, scalable, and easy to contribute 
          │
          ▼
 ┌─────────────────┐
-│ Native Host     │
+│ Nowly Host     │
 │ (Local Process) │
 └────────┬────────┘
          │
@@ -77,9 +77,9 @@ This separation keeps the system maintainable, scalable, and easy to contribute 
 
 The extension detects activity from websites.
 
-Website-specific presence scripts generate standardized activity payloads which are sent to a local native host. The native host communicates with Discord through IPC and updates the user's Rich Presence.
+Website-specific presence scripts generate standardized activity payloads which are sent to a local Nowly Host. Nowly Host communicates with Discord through IPC and updates the user's Rich Presence.
 
-**No activity data is sent to any external server.** The extension and native host run entirely on the user's machine.
+**No activity data is sent to any external server.** The extension and Nowly Host run entirely on the user's machine.
 
 ---
 
@@ -205,9 +205,9 @@ Then import:
 apps/extension/dist/[chrome|firefox]
 ```
 
-## Native Host
+## Nowly Host
 
-The native host is responsible for communicating with Discord through IPC and receiving activity updates from the browser extension.
+Nowly Host is responsible for communicating with Discord through IPC and receiving activity updates from the browser extension.
 
 ```bash
 cd apps/native
@@ -215,11 +215,11 @@ make build
 ```
 
 > [!NOTE]
-> Unless you're developing the native host itself, you do not need separate host installations for development and production builds.
+> Unless you're developing Nowly Host itself, you do not need separate host installations for development and production builds.
 >
 > The host downloaded from `https://nowly.me/host` works with Chrome development builds, Chrome production builds, Firefox development builds, and future Firefox production builds.
 >
-> Native messaging authorization is based on the browser extension ID. When developing the extension, keep a fixed extension key so the generated extension ID remains stable. If the extension ID changes, the native host will reject requests because the ID no longer matches the registered allowed extensions.
+> Native messaging authorization is based on the browser extension ID. When developing the extension, keep a fixed extension key so the generated extension ID remains stable. If the extension ID changes, Nowly Host will reject requests because the ID no longer matches the registered allowed extensions.
 
 ---
 
@@ -305,7 +305,7 @@ Presences:
 pnpm presence validate
 ```
 
-Native host:
+Nowly Host:
 
 ```bash
 cd apps/native

@@ -11,7 +11,7 @@ $RootDir = Split-Path -Parent $ScriptDir
 $MonorepoRoot = Resolve-Path (Join-Path $RootDir '..\..')
 $ReleaseDir = Join-Path (Join-Path $RootDir 'releases') $Version
 
-Write-Host "=== Publishing Nowly Native Host v$Version to CDN ==="
+Write-Host "=== Publishing Nowly Host v$Version to CDN ==="
 Write-Host ""
 
 # Check all required files exist

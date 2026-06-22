@@ -1,7 +1,7 @@
-; Nowly Native Host Installer
+; Nowly Host Installer
 ; Inno Setup script
 
-#define MyAppName "Nowly Native Host"
+#define MyAppName "Nowly Host"
 #define MyAppPublisher "Nowly"
 #define MyAppURL "https://nowly.me"
 #define MyAppExeName "nowly-host.exe"

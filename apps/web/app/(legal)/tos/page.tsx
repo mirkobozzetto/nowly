@@ -11,10 +11,10 @@ type PageSection = {
 const generateMetadata = (): Metadata => {
   return {
     title: "Terms of Service — Nowly",
-    description: "Terms of Service for Nowly. Please read before using the browser extension, native application and website.",
+    description: "Terms of Service for Nowly. Please read before using the browser extension, Nowly Host and website.",
     openGraph: {
       title: "Terms of Service — Nowly",
-      description: "Terms of Service for Nowly. Please read before using the browser extension, native application and website.",
+      description: "Terms of Service for Nowly. Please read before using the browser extension, Nowly Host and website.",
     },
   };
 };

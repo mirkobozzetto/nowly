@@ -111,7 +111,7 @@ program
 
 program
   .command("host:publish")
-  .description("Upload Nowly native host release artifacts to Cloudflare R2")
+  .description("Upload Nowly Host release artifacts to Cloudflare R2")
   .requiredOption("--release-version <version>", "Host release version")
   .option("--installer <path>", "Path to nowly setup executable")
   .option("--portable <path>", "Path to Windows portable zip archive")
@@ -170,7 +170,7 @@ async function main() {
     logger.raw(chalk.dim("    r2:sync        Upload presence assets to CDN"))
     logger.raw(chalk.dim("    r2:minify-version-bundles  Minify historical versioned bundles on R2"))
     logger.raw(chalk.dim("    r2:optimize-assets  Optimize image assets on R2"))
-    logger.raw(chalk.dim("    host:publish   Publish native host release"))
+    logger.raw(chalk.dim("    host:publish   Publish Nowly Host release"))
     logger.newline()
   } else {
     await program.parseAsync()
