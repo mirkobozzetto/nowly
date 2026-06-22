@@ -24,13 +24,13 @@ const Layout = async ({ children }: PropsWithChildren): Promise<ReactElement> =>
       className={`${instrumentSans.variable} ${geist.variable} bg-background scroll-smooth`}
     >
       <head>
-        {ADSENSE_ENABLED && process.env.NODE_ENV !== "development" && (
+        {ADSENSE_ENABLED && ADSENSE_CLIENT_ID ? (
           <script
             async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
             crossOrigin="anonymous"
           />
-        )}
+        ) : null}
       </head>
 
       <body className="font-sans antialiased">
@@ -43,7 +43,7 @@ const Layout = async ({ children }: PropsWithChildren): Promise<ReactElement> =>
             </div>
 
             <Toaster />
-            <AdblockNotice enabled={ADSENSE_ENABLED && process.env.NODE_ENV !== "development"} />
+            <AdblockNotice enabled={ADSENSE_ENABLED && Boolean(ADSENSE_CLIENT_ID)} />
             <CookieBanner />
           </Providers>
         </NextIntlClientProvider>

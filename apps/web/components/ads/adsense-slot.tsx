@@ -29,7 +29,7 @@ export const AdSenseSlot: FC<Props> = ({
   minHeight = "180px",
   showLabel = true,
 }): ReactElement => {
-  if (!ADSENSE_ENABLED || process.env.NODE_ENV === "development") {
+  if (!ADSENSE_ENABLED || !ADSENSE_CLIENT_ID) {
     return <></>;
   }
 
