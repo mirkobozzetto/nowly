@@ -7,6 +7,7 @@ import { useEffect, useState, type FC, type ReactElement } from "react";
 
 const STORAGE_KEY = "nowly_adblock_notice_dismissed";
 const DETECTION_DELAY_MS = 1800;
+const DISMISS_DELAY_MS = 3000;
 
 type Props = {
   enabled: boolean
@@ -30,7 +31,7 @@ const markDismissed = (): void => {
 
 const createAdBait = (): HTMLDivElement => {
   const bait = document.createElement("div");
-  bait.className = "adsbox adsbygoogle ad-banner ad-placement advertisement pub_300x250 textads banner_ads";
+  bait.className = "adsbox ad-banner ad-placement advertisement pub_300x250 textads banner_ads";
   bait.setAttribute("aria-hidden", "true");
   bait.style.cssText = [
     "position:absolute",
@@ -58,16 +59,23 @@ const isAdBaitBlocked = (bait: HTMLDivElement): boolean => {
 export const AdblockNotice: FC<Props> = ({ enabled }): ReactElement | null => {
   const t = useTranslations("ads");
   const [visible, setVisible] = useState(false);
+  const [canDismiss, setCanDismiss] = useState(false);
 
   useEffect(() => {
-    if (!enabled || wasDismissed()) return;
+    const forceFromUrl = new URLSearchParams(window.location.search).get("adblockNotice") === "1";
+
+    if (!enabled && !forceFromUrl) return;
+
+    if (forceFromUrl) {
+      setVisible(true);
+      return;
+    }
+
+    if (wasDismissed()) return;
 
     const bait = createAdBait();
     const timer = window.setTimeout(() => {
-      const adsenseScript = document.querySelector<HTMLScriptElement>("script[src*='pagead2.googlesyndication.com']");
-      const adsenseScriptBlocked = Boolean(adsenseScript && !window.adsbygoogle);
-
-      if (isAdBaitBlocked(bait) || adsenseScriptBlocked) {
+      if (isAdBaitBlocked(bait)) {
         setVisible(true);
       }
 
@@ -80,7 +88,23 @@ export const AdblockNotice: FC<Props> = ({ enabled }): ReactElement | null => {
     };
   }, [enabled]);
 
+  useEffect(() => {
+    if (!visible) {
+      setCanDismiss(false);
+      return;
+    }
+
+    setCanDismiss(false);
+    const timer = window.setTimeout(() => {
+      setCanDismiss(true);
+    }, DISMISS_DELAY_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [visible]);
+
   const dismiss = (): void => {
+    if (!canDismiss) return;
+
     markDismissed();
     setVisible(false);
   };
@@ -90,36 +114,32 @@ export const AdblockNotice: FC<Props> = ({ enabled }): ReactElement | null => {
   return (
     <aside
       aria-live="polite"
-      className="fixed bottom-24 right-4 z-40 w-[calc(100vw-2rem)] max-w-sm overflow-hidden rounded-2xl border border-border bg-background/95 shadow-2xl shadow-black/30 backdrop-blur-sm sm:bottom-6"
+      className="fixed bottom-6 right-4 z-40 w-[calc(100vw-2rem)] max-w-sm rounded-2xl border border-border bg-background/95 shadow-2xl shadow-black/30 backdrop-blur-sm"
     >
-      <div className="flex items-center gap-3 border-b border-border px-4 py-3">
-        <span className="size-2.5 shrink-0 rounded-full bg-accent shadow-[0_0_16px_rgba(34,211,238,0.65)]" />
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold text-foreground">{t("adblock-title")}</p>
-          <p className="text-xs text-muted-foreground">{t("adblock-status")}</p>
+      <div className="flex items-start gap-3 p-4">
+        <div className="flex min-w-0 flex-1 items-start gap-3">
+          <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg border border-accent/20 bg-accent/10 text-accent">
+            <BadgeInfo className="size-4" />
+          </span>
+
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-foreground">{t("adblock-message-title")}</p>
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">{t("adblock-message")}</p>
+          </div>
         </div>
+
         <Button
           variant="ghost"
-          size="icon-sm"
+          size="icon"
           onClick={dismiss}
           aria-label={t("adblock-close")}
-          className="text-muted-foreground hover:text-foreground"
+          aria-hidden={!canDismiss}
+          tabIndex={canDismiss ? 0 : -1}
+          className={`-mr-2 -mt-2 shrink-0 text-muted-foreground transition-opacity hover:text-foreground hover:opacity-100 focus-visible:opacity-100 ${
+            canDismiss ? "opacity-40" : "pointer-events-none opacity-0"
+          }`}
         >
           <X className="size-4" />
-        </Button>
-      </div>
-
-      <div className="p-4">
-        <div className="rounded-xl border border-border bg-card-2 p-4">
-          <div className="mb-2 flex items-center gap-2">
-            <BadgeInfo className="size-4 text-accent" />
-            <p className="text-sm font-semibold text-foreground">{t("adblock-message-title")}</p>
-          </div>
-          <p className="text-sm leading-6 text-muted-foreground">{t("adblock-message")}</p>
-        </div>
-
-        <Button variant="secondary" size="sm" onClick={dismiss} className="mt-3 w-full">
-          {t("adblock-dismiss")}
         </Button>
       </div>
     </aside>
