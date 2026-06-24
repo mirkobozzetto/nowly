@@ -24,7 +24,7 @@ const statusText = (ns: NativeStatus): string => {
 export const Header: FC<Props> = ({ nativeStatus, supporter = false }): ReactElement => (
   <header className="flex items-center justify-between gap-3">
     <img
-      src={chrome.runtime.getURL(supporter ? "app_title_white_donator.png" : "app_title_white.png")}
+      src={supporter ? "https://cdn.nowly.me/assets/app_title_donator.png" : "https://cdn.nowly.me/assets/app_title.png"}
       alt="Nowly"
       className="h-8 w-auto min-w-0"
     />

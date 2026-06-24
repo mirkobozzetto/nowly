@@ -96,7 +96,7 @@ export const SupporterPassEmail = ({
 
           <Section style={headerSectionStyle}>
             <Img
-              src="https://nowly.me/app_title_dark.png"
+              src="https://cdn.nowly.me/assets/app_title_dark.png"
               width="160"
               height="45"
               alt="Nowly"

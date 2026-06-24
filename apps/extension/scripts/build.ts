@@ -146,10 +146,6 @@ const copyStatic = () => {
       join(DIST, "icons", `icon${size}.png`),
     )
   }
-  const defaultLogo = join(ROOT, "..", "web", "public", "app_title_white.png")
-  const donatorLogo = join(ROOT, "..", "web", "public", "app_title_white_donator.png")
-  copyFileSync(defaultLogo, join(DIST, "app_title_white.png"))
-  copyFileSync(existsSync(donatorLogo) ? donatorLogo : defaultLogo, join(DIST, "app_title_white_donator.png"))
   cpSync(join(ROOT, "_locales"), join(DIST, "_locales"), { recursive: true })
 }
 
