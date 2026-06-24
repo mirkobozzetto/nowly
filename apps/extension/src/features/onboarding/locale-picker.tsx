@@ -3,7 +3,7 @@ import { Select } from "@/components/ui/select";
 import { t, type LocalePreference } from "@/shared/i18n";
 import { ChevronDown } from "lucide-react";
 import { useMemo, type FC } from "react";
-import { marketplaceLocale } from "./onboarding.utils";
+import { marketplaceLocale } from "@/features/onboarding/onboarding.utils";
 
 type Props = {
   localePreference: LocalePreference;

@@ -1,9 +1,9 @@
 import type { ExtensionSettings } from "@/shared/types";
-import { addAnalyticsLog } from "../analytics/analytics-log";
-import { trackAnalytics } from "../analytics/analytics-tracker";
-import { setCustomApiUrl } from "../services/background-context";
-import { syncDeviceState } from "../services/device-sync";
-import { getSettings, setOnboarding, setSettings } from "../services/storage";
+import { addAnalyticsLog } from "@/background/analytics/analytics-log";
+import { trackAnalytics } from "@/background/analytics/analytics-tracker";
+import { setCustomApiUrl } from "@/background/services/background-context";
+import { syncDeviceState } from "@/background/services/device-sync";
+import { getSettings, setOnboarding, setSettings } from "@/background/services/storage";
 
 export const updateSettings = async (partial: Partial<ExtensionSettings>): Promise<ExtensionSettings> => {
   const previousSettings = await getSettings();

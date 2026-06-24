@@ -1,10 +1,10 @@
 import { t } from "@/shared/i18n";
 import type { PresenceDisplayMode } from "@/shared/types";
 import type { FC } from "react";
-import { EmptyState } from "./empty-state";
-import { PresenceListSection } from "./presence-list-section";
-import { PresenceListSkeleton } from "./presence-list-skeleton";
-import { getCategoryLabel, groupByCategory, sortAlphabetically, type PresenceListEntry } from "./presence-list.model";
+import { EmptyState } from "@/features/presences/empty-state";
+import { PresenceListSection } from "@/features/presences/presence-list-section";
+import { PresenceListSkeleton } from "@/features/presences/presence-list-skeleton";
+import { getCategoryLabel, groupByCategory, sortAlphabetically, type PresenceListEntry } from "@/features/presences/presence-list.model";
 
 type Props = {
   activeSlug: string | null;

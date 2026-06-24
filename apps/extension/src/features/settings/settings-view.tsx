@@ -12,10 +12,10 @@ import type { ExtensionSettings, PresenceDebug } from "@/shared/types";
 import { ChevronDown, ExternalLink, RefreshCw } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useEffect, useState } from "react";
-import { DebugPanel } from "./debug-panel";
-import { DisplaySettings } from "./display-settings";
-import { ThemeSelector } from "./theme-selector";
-import { ThemeUpsellCard } from "./theme-upsell-card";
+import { DebugPanel } from "@/features/settings/debug-panel";
+import { DisplaySettings } from "@/features/settings/display-settings";
+import { ThemeSelector } from "@/features/settings/theme-selector";
+import { ThemeUpsellCard } from "@/features/settings/theme-upsell-card";
 
 type HostVersionInfo = {
   currentVersion?: string;

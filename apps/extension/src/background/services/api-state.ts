@@ -1,6 +1,6 @@
 import { API_BASE_URL, WEB_BASE_URL } from "@/shared/constants";
-import { getCustomApiUrl, setCustomApiUrl } from "./background-context";
-import { getSettings } from "./storage";
+import { getCustomApiUrl, setCustomApiUrl } from "@/background/services/background-context";
+import { getSettings } from "@/background/services/storage";
 
 export const getEffectiveApiUrl = (): string => getCustomApiUrl()?.replace(/\/$/, "") || API_BASE_URL;
 

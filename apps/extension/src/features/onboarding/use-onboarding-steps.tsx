@@ -3,12 +3,12 @@ import { DiscordIcon } from "@/lib/icons";
 import { extensionDetailsUrl, openUrl, siteUrl } from "@/shared/browser-links";
 import { t } from "@/shared/i18n";
 import { BadgeInfo, BarChart3, ExternalLink, Lock, MonitorDown, Puzzle, ShoppingBag, Youtube } from "lucide-react";
-import { ActionButton } from "./action-button";
-import { AnalyticsChecklist } from "./analytics-checklist";
-import { LinkActionButton } from "./link-action-button";
-import type { GuidedStep, OnboardingOverlayProps, StepStatus } from "./onboarding.types";
-import { requestUserScriptsPermission } from "./onboarding.utils";
-import { QuietActionButton } from "./quiet-action-button";
+import { ActionButton } from "@/features/onboarding/action-button";
+import { AnalyticsChecklist } from "@/features/onboarding/analytics-checklist";
+import { LinkActionButton } from "@/features/onboarding/link-action-button";
+import type { GuidedStep, OnboardingOverlayProps, StepStatus } from "@/features/onboarding/onboarding.types";
+import { requestUserScriptsPermission } from "@/features/onboarding/onboarding.utils";
+import { QuietActionButton } from "@/features/onboarding/quiet-action-button";
 
 type UseOnboardingStepsProps = Pick<
   OnboardingOverlayProps,

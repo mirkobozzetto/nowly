@@ -1,4 +1,4 @@
-import { API_BASE_URL, CDN_BASE_URL } from "./constants";
+import { API_BASE_URL, CDN_BASE_URL } from "@/shared/constants";
 
 const ASSET_EXT: Record<string, string> = {
   logo: ".png",

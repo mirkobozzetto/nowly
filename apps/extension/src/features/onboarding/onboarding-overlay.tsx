@@ -3,12 +3,12 @@ import { t } from "@/shared/i18n";
 import { CheckCircle2 } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useEffect, useRef, useState } from "react";
-import { LocalePicker } from "./locale-picker";
-import { OnboardingFooter } from "./onboarding-footer";
-import type { GuidedStep, OnboardingOverlayProps } from "./onboarding.types";
-import { ProgressDots } from "./progress-dots";
-import { StepIcon } from "./step-icon";
-import { useOnboardingSteps } from "./use-onboarding-steps";
+import { LocalePicker } from "@/features/onboarding/locale-picker";
+import { OnboardingFooter } from "@/features/onboarding/onboarding-footer";
+import type { GuidedStep, OnboardingOverlayProps } from "@/features/onboarding/onboarding.types";
+import { ProgressDots } from "@/features/onboarding/progress-dots";
+import { StepIcon } from "@/features/onboarding/step-icon";
+import { useOnboardingSteps } from "@/features/onboarding/use-onboarding-steps";
 
 export const OnboardingOverlay: FC<OnboardingOverlayProps> = ({
   activity,

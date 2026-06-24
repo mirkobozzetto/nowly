@@ -1,5 +1,5 @@
 import type { ComponentType, FC } from "react";
-import type { StepStatus } from "./onboarding.types";
+import type { StepStatus } from "@/features/onboarding/onboarding.types";
 
 type Props = {
   icon: ComponentType<{ className?: string }>;

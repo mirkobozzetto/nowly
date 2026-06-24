@@ -6,7 +6,7 @@ import type { CurrentActivity, InstalledPresences } from "@/shared/types";
 import { Disc3, Snowflake } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useEffect, useState } from "react";
-import VinylAnimation from "./vinyl-animation";
+import VinylAnimation from "@/features/presences/vinyl-animation";
 
 type Props = {
   activity: CurrentActivity | null;

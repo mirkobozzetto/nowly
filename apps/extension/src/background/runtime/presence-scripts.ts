@@ -1,13 +1,13 @@
 import { CDN_BASE_URL } from "@/shared/constants";
 import type { InstalledPresences, StoredPresence } from "@/shared/types";
-import { addAnalyticsLog } from "../analytics/analytics-log";
-import { trackAnalytics } from "../analytics/analytics-tracker";
-import { getEffectiveApiUrl } from "../services/api-state";
-import { presenceInjector } from "./presence-injection";
-import { createPresenceRuntime } from "./presence-runtime";
-import { verifyPresenceRelease } from "../services/release-security";
-import { getPresenceSettings, setDebug } from "../services/storage";
-import { RegisteredUserScript, toMatchPatterns, userScriptId } from "./user-scripts";
+import { addAnalyticsLog } from "@/background/analytics/analytics-log";
+import { trackAnalytics } from "@/background/analytics/analytics-tracker";
+import { getEffectiveApiUrl } from "@/background/services/api-state";
+import { presenceInjector } from "@/background/runtime/presence-injection";
+import { createPresenceRuntime } from "@/background/runtime/presence-runtime";
+import { verifyPresenceRelease } from "@/background/services/release-security";
+import { getPresenceSettings, setDebug } from "@/background/services/storage";
+import { RegisteredUserScript, toMatchPatterns, userScriptId } from "@/background/runtime/user-scripts";
 
 export const unregisterPresenceScript = async (slug: string): Promise<void> => {
   try {

@@ -1,6 +1,6 @@
 import { t } from "@/shared/i18n";
 import { useCallback, useMemo, useState } from "react";
-import type { buildDiagnosticSnapshot } from "./diagnostic-status";
+import type { buildDiagnosticSnapshot } from "@/features/diagnostics/diagnostic-status";
 
 type DiagnosticSnapshot = ReturnType<typeof buildDiagnosticSnapshot>;
 

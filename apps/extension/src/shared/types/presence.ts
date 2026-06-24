@@ -1,4 +1,4 @@
-import type { PresencePayload } from "./native";
+import type { PresencePayload } from "@/shared/types/native";
 
 export type PresenceData = {
   name?: string;

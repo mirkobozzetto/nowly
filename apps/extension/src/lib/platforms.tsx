@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { AppleIcon, LinuxIcon, WindowsIcon } from "./icons";
+import { AppleIcon, LinuxIcon, WindowsIcon } from "@/lib/icons";
 
 export type Platform = {
   name: string;

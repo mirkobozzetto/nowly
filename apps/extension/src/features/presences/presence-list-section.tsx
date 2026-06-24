@@ -1,6 +1,6 @@
 import type { FC } from "react";
-import { PresenceListItem } from "./presence-list-item";
-import type { PresenceListEntry } from "./presence-list.model";
+import { PresenceListItem } from "@/features/presences/presence-list-item";
+import type { PresenceListEntry } from "@/features/presences/presence-list.model";
 
 type Props = {
   entries: PresenceListEntry[];

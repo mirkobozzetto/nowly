@@ -6,11 +6,11 @@ import type { CurrentActivity, InstalledPresences, UserScriptsStatus } from "@/s
 import { Clipboard, ExternalLink } from "lucide-react";
 import type { FC, ReactElement } from "react";
 import { useMemo } from "react";
-import { buildDiagnosticSnapshot, isHostChecking, YOUTUBE_TEST_URL } from "./diagnostic-status";
-import { SmallAction } from "./small-action";
-import type { RowStatus } from "./status-icon";
-import { StatusRow } from "./status-row";
-import { useSupportDiagnostic } from "./use-support-diagnostic";
+import { buildDiagnosticSnapshot, isHostChecking, YOUTUBE_TEST_URL } from "@/features/diagnostics/diagnostic-status";
+import { SmallAction } from "@/features/diagnostics/small-action";
+import type { RowStatus } from "@/features/diagnostics/status-icon";
+import { StatusRow } from "@/features/diagnostics/status-row";
+import { useSupportDiagnostic } from "@/features/diagnostics/use-support-diagnostic";
 
 type Props = {
   activity: CurrentActivity | null;

@@ -1,7 +1,7 @@
 import { sendMessage, type NativeStatus } from "@/lib/messages";
 import type { CurrentActivity, ExtensionSettings, InstalledPresences, PresenceDebug, SupporterStatus } from "@/shared/types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useHostVersion, type HostVersionInfo } from "./use-host-version";
+import { useHostVersion, type HostVersionInfo } from "@/hooks/use-host-version";
 
 type ExtensionState = {
   activity: CurrentActivity | null;

@@ -1,10 +1,10 @@
-import { getPresenceVersion } from "../managers/activity-manager";
-import { addAnalyticsLog } from "../analytics/analytics-log";
-import { flushAnalytics, trackAnalytics } from "../analytics/analytics-tracker";
-import { getEffectiveApiUrl } from "./api-state";
-import { getActiveSlugsSnapshot, hasActiveSlugs } from "./background-context";
-import { getActiveDeviceId, syncDeviceState } from "./device-sync";
-import { postNative } from "./native";
+import { getPresenceVersion } from "@/background/managers/activity-manager";
+import { addAnalyticsLog } from "@/background/analytics/analytics-log";
+import { flushAnalytics, trackAnalytics } from "@/background/analytics/analytics-tracker";
+import { getEffectiveApiUrl } from "@/background/services/api-state";
+import { getActiveSlugsSnapshot, hasActiveSlugs } from "@/background/services/background-context";
+import { getActiveDeviceId, syncDeviceState } from "@/background/services/device-sync";
+import { postNative } from "@/background/services/native";
 
 export const registerAlarmHandlers = (): void => {
   chrome.alarms.create("native-heartbeat", { periodInMinutes: 1 });

@@ -1,15 +1,15 @@
 import type { ExtensionMessage, ExtensionSettings, PresenceData, PresenceDebug, PresenceSchedule, UserScriptsStatus } from "@/shared/types";
-import { handleActivityUpdate, handleClearActivity } from "../managers/activity-manager";
-import { clearAnalyticsLogs, getAnalyticsLogs } from "../analytics/analytics-log";
-import { trackAnalytics, trackExtensionOpen } from "../analytics/analytics-tracker";
-import { getEffectiveApiUrl } from "./api-state";
-import { buildDeviceUrl, getActiveDeviceId } from "./device-sync";
-import { postNative, reconnectNative, refreshNativeStatus, restartNative } from "./native";
-import { checkUpdates, installPresence, togglePresence, uninstallPresence } from "../managers/presence-manager";
-import { registerPresenceScript } from "../runtime/presence-scripts";
-import { resetOnboardingForDev, updateSettings } from "../managers/settings-manager";
-import { clearSnooze, dismissSupporterThankYou, getCurrentActivity, getDebug, getPresenceSettings, getPresences, getSettings, getSupporterStatus, setDebug, setPresenceSchedule, setPresenceSettings, setSupporterStatus, snoozePresence } from "./storage";
-import { visiblePresences } from "../runtime/user-scripts";
+import { handleActivityUpdate, handleClearActivity } from "@/background/managers/activity-manager";
+import { clearAnalyticsLogs, getAnalyticsLogs } from "@/background/analytics/analytics-log";
+import { trackAnalytics, trackExtensionOpen } from "@/background/analytics/analytics-tracker";
+import { getEffectiveApiUrl } from "@/background/services/api-state";
+import { buildDeviceUrl, getActiveDeviceId } from "@/background/services/device-sync";
+import { postNative, reconnectNative, refreshNativeStatus, restartNative } from "@/background/services/native";
+import { checkUpdates, installPresence, togglePresence, uninstallPresence } from "@/background/managers/presence-manager";
+import { registerPresenceScript } from "@/background/runtime/presence-scripts";
+import { resetOnboardingForDev, updateSettings } from "@/background/managers/settings-manager";
+import { clearSnooze, dismissSupporterThankYou, getCurrentActivity, getDebug, getPresenceSettings, getPresences, getSettings, getSupporterStatus, setDebug, setPresenceSchedule, setPresenceSettings, setSupporterStatus, snoozePresence } from "@/background/services/storage";
+import { visiblePresences } from "@/background/runtime/user-scripts";
 
 const respond = <T>(sendResponse: (response?: T) => void, value: T): void => sendResponse(value);
 

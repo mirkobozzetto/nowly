@@ -3,10 +3,10 @@ import { t } from "@/shared/i18n";
 import type { AnalyticsLogEntry } from "@/shared/types";
 import type { FC, ReactElement } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AnalyticsLogFilterTabs } from "./analytics-log-filter-tabs";
-import { AnalyticsLogRow } from "./analytics-log-row";
-import { AnalyticsLogToolbar } from "./analytics-log-toolbar";
-import type { AnalyticsLogFeedback, AnalyticsLogFilter } from "./analytics-logs.model";
+import { AnalyticsLogFilterTabs } from "@/features/analytics-logs/analytics-log-filter-tabs";
+import { AnalyticsLogRow } from "@/features/analytics-logs/analytics-log-row";
+import { AnalyticsLogToolbar } from "@/features/analytics-logs/analytics-log-toolbar";
+import type { AnalyticsLogFeedback, AnalyticsLogFilter } from "@/features/analytics-logs/analytics-logs.model";
 
 export const AnalyticsLogsView: FC = (): ReactElement => {
   const [logs, setLogs] = useState<AnalyticsLogEntry[]>([]);

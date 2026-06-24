@@ -50,7 +50,7 @@ export type UserScriptsStatus = {
 };
 
 export type WebMessage = {
-  source: typeof import("../constants").EXT_WEB_SOURCE;
+  source: typeof import("@/shared/constants").EXT_WEB_SOURCE;
   type: WebMessageType | "PING";
   payload?: unknown;
   messageId?: string;

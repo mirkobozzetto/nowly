@@ -1,8 +1,8 @@
 export type { LocaleShort as Locale } from "@nowly/locales";
 
-export * from "./native";
-export * from "./presence";
-export * from "./analytics";
-export * from "./settings";
-export * from "./messages";
-export * from "./supporter";
+export * from "@/shared/types/native";
+export * from "@/shared/types/presence";
+export * from "@/shared/types/analytics";
+export * from "@/shared/types/settings";
+export * from "@/shared/types/messages";
+export * from "@/shared/types/supporter";

@@ -5,7 +5,7 @@ import { t } from "@/shared/i18n";
 import type { StoredPresence } from "@/shared/types";
 import { Calendar, ExternalLink } from "lucide-react";
 import type { FC, MouseEvent, ReactElement } from "react";
-import { PresenceSettingsPanel } from "./presence-settings-panel";
+import { PresenceSettingsPanel } from "@/features/presences/presence-settings-panel";
 
 type Props = {
   onOpenMarketplace: (slug: string) => void;

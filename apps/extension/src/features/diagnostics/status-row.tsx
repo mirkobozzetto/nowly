@@ -1,5 +1,5 @@
 import type { FC, ReactNode } from "react";
-import { StatusIcon, type RowStatus } from "./status-icon";
+import { StatusIcon, type RowStatus } from "@/features/diagnostics/status-icon";
 
 type Props = {
   action?: ReactNode;

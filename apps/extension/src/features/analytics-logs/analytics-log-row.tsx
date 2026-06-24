@@ -1,6 +1,6 @@
 import type { AnalyticsLogEntry } from "@/shared/types";
 import type { FC } from "react";
-import { formatTime, levelClass } from "./analytics-logs.model";
+import { formatTime, levelClass } from "@/features/analytics-logs/analytics-logs.model";
 
 type Props = {
   log: AnalyticsLogEntry;

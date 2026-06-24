@@ -1,13 +1,13 @@
 import type { InstalledPresences } from "@/shared/types";
-import { handleClearActivity, handleRemovedTab, restoreActivityBadge } from "../managers/activity-manager";
-import { addAnalyticsLog } from "../analytics/analytics-log";
-import { trackAnalytics } from "../analytics/analytics-tracker";
-import { initializeCustomApiUrl } from "./api-state";
-import { syncDeviceState, syncUninstallUrl } from "./device-sync";
-import { connectNative, onNativeResponse } from "./native";
-import { installBundledPresences } from "../managers/presence-manager";
-import { syncPresenceScripts } from "../runtime/presence-scripts";
-import { getPresences, setDebug } from "./storage";
+import { handleClearActivity, handleRemovedTab, restoreActivityBadge } from "@/background/managers/activity-manager";
+import { addAnalyticsLog } from "@/background/analytics/analytics-log";
+import { trackAnalytics } from "@/background/analytics/analytics-tracker";
+import { initializeCustomApiUrl } from "@/background/services/api-state";
+import { syncDeviceState, syncUninstallUrl } from "@/background/services/device-sync";
+import { connectNative, onNativeResponse } from "@/background/services/native";
+import { installBundledPresences } from "@/background/managers/presence-manager";
+import { syncPresenceScripts } from "@/background/runtime/presence-scripts";
+import { getPresences, setDebug } from "@/background/services/storage";
 
 type ChromeWithSidePanel = typeof chrome & {
   sidePanel?: {

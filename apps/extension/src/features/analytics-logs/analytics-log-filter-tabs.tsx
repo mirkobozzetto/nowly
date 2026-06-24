@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import type { FC } from "react";
-import { filters, type AnalyticsLogFilter } from "./analytics-logs.model";
+import { filters, type AnalyticsLogFilter } from "@/features/analytics-logs/analytics-logs.model";
 
 type Props = {
   filter: AnalyticsLogFilter;

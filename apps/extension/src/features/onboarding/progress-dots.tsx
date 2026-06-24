@@ -1,6 +1,6 @@
 import type { FC } from "react";
-import type { GuidedStep } from "./onboarding.types";
-import { stepDotClass } from "./onboarding.utils";
+import type { GuidedStep } from "@/features/onboarding/onboarding.types";
+import { stepDotClass } from "@/features/onboarding/onboarding.utils";
 
 type Props = {
   activeIndex: number;

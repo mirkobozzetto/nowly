@@ -1,4 +1,4 @@
-import type { RegisteredUserScript, ChromeWithUserScripts } from "./user-scripts";
+import type { RegisteredUserScript, ChromeWithUserScripts } from "@/background/runtime/user-scripts";
 
 export interface PresenceInjector {
   register(script: RegisteredUserScript): Promise<void>;

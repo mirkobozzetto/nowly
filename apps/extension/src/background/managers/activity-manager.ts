@@ -1,5 +1,5 @@
 import type { PresenceData, StoredPresence } from "@/shared/types";
-import { trackAnalytics } from "../analytics/analytics-tracker";
+import { trackAnalytics } from "@/background/analytics/analytics-tracker";
 import {
   addActiveSlugToState,
   clearActiveSlugsFromState,
@@ -11,10 +11,10 @@ import {
   removeActiveSlugFromState,
   setActiveSessionStartedAt,
   setActiveTabId,
-} from "../services/background-context";
-import { mapPresenceData, postNative } from "../services/native";
-import { verifyPresenceRelease } from "../services/release-security";
-import { getCurrentActivity, getPresences, getSettings, setCurrentActivity, setDebug } from "../services/storage";
+} from "@/background/services/background-context";
+import { mapPresenceData, postNative } from "@/background/services/native";
+import { verifyPresenceRelease } from "@/background/services/release-security";
+import { getCurrentActivity, getPresences, getSettings, setCurrentActivity, setDebug } from "@/background/services/storage";
 
 const clampText = (value: string | undefined, maxLength: number): string | undefined => {
   if (!value) return undefined;

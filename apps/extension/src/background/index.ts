@@ -1,7 +1,7 @@
-import { registerAlarmHandlers } from "./services/alarms";
-import { initializeBackground, registerLifecycleHandlers } from "./services/lifecycle";
-import { registerRuntimeMessageRouter } from "./services/message-router";
-import { registerPresenceRuntimeBridge } from "./runtime/presence-runtime-bridge";
+import { registerAlarmHandlers } from "@/background/services/alarms";
+import { initializeBackground, registerLifecycleHandlers } from "@/background/services/lifecycle";
+import { registerRuntimeMessageRouter } from "@/background/services/message-router";
+import { registerPresenceRuntimeBridge } from "@/background/runtime/presence-runtime-bridge";
 
 registerRuntimeMessageRouter();
 registerPresenceRuntimeBridge();

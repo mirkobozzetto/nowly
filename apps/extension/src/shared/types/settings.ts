@@ -1,4 +1,4 @@
-import type { PresenceSchedule } from "./presence";
+import type { PresenceSchedule } from "@/shared/types/presence";
 
 export type PresenceDisplayMode = "category" | "alphabetical";
 export type AccentTheme = "default" | "donator" | "fleuri" | "violet" | "vert" | "orange";

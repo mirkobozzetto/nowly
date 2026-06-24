@@ -1,9 +1,9 @@
 import { WEB_BASE_URL } from "@/shared/constants";
-import { addAnalyticsLog } from "../analytics/analytics-log";
-import { getEffectiveApiUrl } from "./api-state";
-import { getCachedDeviceId, setCachedDeviceId } from "./background-context";
-import { browserName, osName } from "./device-info";
-import { getDeviceId, getDeviceToken, getPresences, getSettings, setDeviceToken } from "./storage";
+import { addAnalyticsLog } from "@/background/analytics/analytics-log";
+import { getEffectiveApiUrl } from "@/background/services/api-state";
+import { getCachedDeviceId, setCachedDeviceId } from "@/background/services/background-context";
+import { browserName, osName } from "@/background/services/device-info";
+import { getDeviceId, getDeviceToken, getPresences, getSettings, setDeviceToken } from "@/background/services/storage";
 
 type SyncPresence = {
   slug: string;
