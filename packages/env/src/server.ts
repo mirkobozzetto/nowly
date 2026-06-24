@@ -22,6 +22,8 @@ export const serverEnv = createEnv({
     SUPPORT_PASS_DEFAULT_MAX_DEVICES: z.coerce.number().int().positive().default(5),
     KOFI_WEBHOOK_TOKEN: required.optional(),
     GITHUB_SPONSORS_WEBHOOK_SECRET: required.optional(),
+    DISCORD_WEBHOOK_SUCCESS_URL: z.string().trim().url().optional(),
+    DISCORD_WEBHOOK_FAILURE_URL: z.string().trim().url().optional(),
     AWS_ACCESS_KEY_ID: required.optional(),
     AWS_SECRET_ACCESS_KEY: required.optional(),
     AWS_REGION: required.optional(),
