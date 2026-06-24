@@ -158,6 +158,20 @@ export const hasAdFreeAccess = async (deviceId: string | undefined): Promise<boo
   return count > 0
 }
 
+export const verifySupporterCode = async (code: string): Promise<{ valid: boolean; maxDevices?: number }> => {
+  if (!hasDatabase()) return { valid: false }
+
+  const pass = await getPrisma().supporterPass.findUnique({
+    where: { codeHash: hashSupporterCode(code) },
+    select: { status: true, maxDevices: true },
+  })
+
+  if (!pass) return { valid: false }
+  if (pass.status !== "active") return { valid: false }
+
+  return { valid: true, maxDevices: pass.maxDevices }
+}
+
 export const redeemSupporterCodeForDevice = async (code: string, deviceId: string): Promise<RedeemResult> => {
   const cleanDeviceId = cleanText(deviceId, 120)
   if (!cleanDeviceId || !hasDatabase()) return { ok: false, error: "database_unavailable" }

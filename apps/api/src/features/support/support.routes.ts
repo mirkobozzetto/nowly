@@ -14,6 +14,7 @@ import {
   hasAdFreeAccess,
   recordDonationAndCreatePass,
   redeemSupporterCodeForDevice,
+  verifySupporterCode,
 } from "./support.repository"
 import { sendSupporterPassEmail } from "./support-email"
 
@@ -149,6 +150,16 @@ export const supportRoutes = async (fastify: FastifyInstance) => {
   })
 
   fastify.addHook("preParsing", rawBodyHook)
+
+  fastify.get("/support/verify-code", async (request, reply) => {
+    const { code } = request.query as { code?: string }
+    if (!code || typeof code !== "string") {
+      return reply.status(400).send({ valid: false, error: "missing_code" })
+    }
+    const result = await verifySupporterCode(code)
+    if (!result.valid) return reply.send({ valid: false })
+    return reply.send({ valid: true, maxDevices: result.maxDevices })
+  })
 
   fastify.get("/ads/status", async (request, reply) => {
     const parsed = adsStatusQuerySchema.safeParse(request.query)
