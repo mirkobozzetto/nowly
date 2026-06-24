@@ -151,8 +151,8 @@ const copyStatic = () => {
 
 resetGeneratedPresences()
 
-await buildPage("sidepanel", "app")
-await buildScript("background", join(ROOT, "src", "background", "index.ts"))
-await buildScript("content", join(ROOT, "src", "content", "index.ts"))
+await buildPage("sidepanel", "entrypoints/sidepanel")
+await buildScript("background", join(ROOT, "src", "entrypoints", "background", "index.ts"))
+await buildScript("content", join(ROOT, "src", "entrypoints", "content", "index.ts"))
 copyManifest()
 copyStatic()
