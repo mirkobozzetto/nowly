@@ -28,7 +28,7 @@ describe("supporter pass email", () => {
     vi.stubEnv("AWS_ACCESS_KEY_ID", "aws-key")
     vi.stubEnv("AWS_SECRET_ACCESS_KEY", "aws-secret")
     vi.stubEnv("AWS_REGION", "eu-west-3")
-    vi.stubEnv("SUPPORT_EMAIL_FROM", "Nowly <support@nowly.me>")
+    vi.stubEnv("SUPPORT_EMAIL_FROM", "Nowly <no-reply@nowly.me>")
     vi.stubEnv("SUPPORT_EMAIL_REPLY_TO", "contact@nowly.me")
     vi.stubEnv("SUPPORT_REDEEM_URL", "https://nowly.me/support/redeem")
 
