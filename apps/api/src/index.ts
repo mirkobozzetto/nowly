@@ -4,6 +4,7 @@ import { authRoutes } from "@/features/auth/auth.routes"
 import { imageProxyRoutes } from "@/features/image-proxy/image-proxy.routes"
 import { presenceRoutes } from "@/features/presence/presence.routes"
 import { ratingRoutes } from "@/features/rating/rating.routes"
+import { securityRoutes } from "@/features/security/security.routes"
 import { statusRoutes } from "@/features/status/status.routes"
 import { supportRoutes } from "@/features/support/support.routes"
 import cors from "@fastify/cors"
@@ -34,6 +35,7 @@ await server.register(imageProxyRoutes)
 await server.register(assetsRoutes, { prefix: "/presences" })
 await server.register(presenceRoutes, { prefix: "/presences" })
 await server.register(ratingRoutes, { prefix: "/presences" })
+await server.register(securityRoutes, { prefix: "/security" })
 await server.register(supportRoutes)
 
 const port = serverEnv.PORT
