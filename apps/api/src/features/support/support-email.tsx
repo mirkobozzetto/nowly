@@ -9,6 +9,7 @@ import {
   Heading,
   Hr,
   Html,
+  Img,
   Link,
   Preview,
   Section,
@@ -18,6 +19,16 @@ import { render } from "@react-email/render"
 import type { CSSProperties, ReactElement } from "react"
 
 const YELLOW = "#FEE961"
+const ACCENT = "#22D3EE"
+const BG_BODY = "#F4F4F5"
+const BG_CARD = "#FFFFFF"
+const BG_SURFACE = "#FAFAFA"
+const BORDER = "rgba(0, 0, 0, 0.08)"
+const TEXT_PRIMARY = "#18181B"
+const TEXT_SECONDARY = "#52525B"
+const TEXT_MUTED = "#71717A"
+const TEXT_FOOTER = "#A1A1AA"
+
 const redeemUrl = (): string =>
   serverEnv.SUPPORT_REDEEM_URL ?? `${serverEnv.FRONTEND_URL.replace(/\/$/, "")}/support/redeem`
 
@@ -75,49 +86,110 @@ export const SupporterPassEmail = ({
   const providerLabel = provider === "github" ? "GitHub Sponsors" : provider === "kofi" ? "Ko-fi" : "Nowly"
 
   return (
-    <Html lang="fr">
+    <Html lang="en">
       <Head />
-      <Preview>Merci pour votre donation. Voici votre clé donateur Nowly.</Preview>
-      <Body style={styles.body}>
-        <Container style={styles.container}>
-          <Section style={styles.hero}>
-            <Text style={styles.brand}>Nowly</Text>
-            <Heading style={styles.title}>Merci.</Heading>
-            <Text style={styles.lead}>
-              {name ? `Merci ${name}. ` : ""}
-              Quel que soit le montant de votre donation, votre soutien nous touche sincèrement et nous aide à continuer Nowly.
+
+      <Preview>Thank you for your donation. Here is your Nowly supporter pass key.</Preview>
+
+      <Body style={bodyStyle}>
+        <Container style={containerStyle}>
+
+          <Section style={headerSectionStyle}>
+            <Img
+              src="https://nowly.me/app_title_dark.png"
+              width="160"
+              height="45"
+              alt="Nowly"
+              style={logoStyle}
+            />
+          </Section>
+
+          <Section style={boxStyle}>
+            <table cellPadding="0" cellSpacing="0" style={tableStyle}>
+              <tr>
+                <td align="center" style={titleCellStyle}>
+                  <Heading style={titleStyle}>Wow, you&apos;re incredible!</Heading>
+                </td>
+              </tr>
+
+              <tr>
+                <td style={contentCellStyle}>
+                  <Text style={greetingStyle}>
+                    Dear{name ? ` ${name}` : " supporter"},
+                  </Text>
+                  <Text style={bodyTextStyle}>
+                    Thank you for your donation. No matter the amount, your support means a lot and helps us keep building Nowly. Here is your supporter pass key:
+                  </Text>
+
+                  <table cellPadding="0" cellSpacing="0" style={detailTableStyle}>
+                    <tr>
+                      <td style={detailLabelStyle}>Donation via</td>
+                      <td style={detailValueStyle}>{providerLabel}</td>
+                    </tr>
+                    {donation && (
+                      <tr>
+                        <td style={detailLabelStyle}>Amount</td>
+                        <td style={detailValueStyle}>{donation}</td>
+                      </tr>
+                    )}
+                  </table>
+
+                  <Text style={codeLabelStyle}>Your supporter key</Text>
+                  <Text style={codeStyle}>{code}</Text>
+
+                  <Button href={activationUrl} style={buttonStyle}>
+                    Activate the key
+                  </Button>
+
+                  <Text style={helpTextStyle}>
+                    Go to the Nowly Discord server and use the <strong style={strongStyle}>/donator</strong> command with your key as command argument.
+                  </Text>
+                </td>
+              </tr>
+
+              <tr>
+                <td style={helpRowStyle}>
+                    <Text style={helpFooterStyle}>
+                      If you have any problems with the activation, please visit our{" "}
+                      <Link href="https://nowly.me/support" style={linkBoldStyle}>support page</Link>.
+                    </Text>
+                </td>
+              </tr>
+            </table>
+          </Section>
+
+          <Hr style={hrStyle} />
+
+          <Section style={footerSectionStyle}>
+            <table cellPadding="0" cellSpacing="0" style={socialTableStyle}>
+              <tr>
+                <td style={socialCellStyle}>
+                  <Link href="https://github.com/nowly-presence/nowly" style={socialLinkStyle}>
+                    <Img src="https://cdn.simpleicons.org/github/A1A1AA" width="24" height="24" alt="GitHub" style={socialIconStyle} />
+                  </Link>
+                </td>
+                <td style={socialCellStyle}>
+                  <Link href="https://discord.gg/MnZap7czgB" style={socialLinkStyle}>
+                    <Img src="https://cdn.simpleicons.org/discord/A1A1AA" width="24" height="24" alt="Discord" style={socialIconStyle} />
+                  </Link>
+                </td>
+              </tr>
+            </table>
+
+            <Text style={footerTextStyle}>
+              If you have any questions, feel free to message us at{" "}
+              <Link href="mailto:contact@nowly.me" style={linkBoldStyle}>contact@nowly.me</Link>.
+            </Text>
+
+            <Text style={footerTextStyle}>
+              You are receiving this email because you made a donation to Nowly.
+            </Text>
+
+            <Text style={footerCopyStyle}>
+              Copyright &copy; {new Date().getFullYear()} Nowly. All rights reserved.
             </Text>
           </Section>
 
-          <Section style={styles.card}>
-            <Text style={styles.label}>Votre clé donateur</Text>
-            <Text style={styles.code}>{code}</Text>
-            {donation ? (
-              <Text style={styles.meta}>
-                Donation reçue via {providerLabel} : {donation}
-              </Text>
-            ) : (
-              <Text style={styles.meta}>Donation reçue via {providerLabel}.</Text>
-            )}
-
-            <Button href={activationUrl} style={styles.button}>
-              Activer la clé
-            </Button>
-
-            <Text style={styles.help}>
-              Ouvrez ce lien avec le navigateur où l'extension Nowly est installée. Une fois la clé activée, l'extension
-              affichera votre ID d'appareil pour réclamer le rôle Discord avec la commande <strong>/donator</strong>.
-            </Text>
-          </Section>
-
-          <Hr style={styles.hr} />
-
-          <Text style={styles.footer}>
-            Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :{" "}
-            <Link href={activationUrl} style={styles.link}>
-              {activationUrl}
-            </Link>
-          </Text>
         </Container>
       </Body>
     </Html>
@@ -144,7 +216,7 @@ export const sendSupporterPassEmail = async (input: SupporterPassEmailInput): Pr
       from: serverEnv.SUPPORT_EMAIL_FROM,
       to,
       replyTo: serverEnv.SUPPORT_EMAIL_REPLY_TO,
-      subject: "Votre clé donateur Nowly",
+      subject: "Your Nowly supporter pass key",
       html,
       text,
       headers: {
@@ -164,112 +236,204 @@ export const sendSupporterPassEmail = async (input: SupporterPassEmailInput): Pr
   }
 }
 
-const styles = {
-  body: {
-    margin: 0,
-    backgroundColor: "#090A0D",
-    color: "#F7F7F2",
-    fontFamily: "Inter, Arial, sans-serif",
-  },
-  container: {
-    width: "100%",
-    maxWidth: "600px",
-    margin: "0 auto",
-    padding: "40px 18px",
-  },
-  hero: {
-    borderRadius: "18px",
-    padding: "34px 28px",
-    backgroundColor: "#131418",
-    backgroundImage: `radial-gradient(circle at 50% 0%, ${YELLOW}4D 0, rgba(254,233,97,0) 45%)`,
-    border: "1px solid rgba(254, 233, 97, 0.28)",
-    boxShadow: "0 24px 70px rgba(0, 0, 0, 0.42)",
-  },
-  brand: {
-    margin: "0 0 28px",
-    color: YELLOW,
-    fontSize: "14px",
-    fontWeight: 700,
-    letterSpacing: "0",
-  },
-  title: {
-    margin: "0",
-    color: "#FFFFFF",
-    fontSize: "42px",
-    lineHeight: "46px",
-    fontWeight: 750,
-    letterSpacing: "0",
-  },
-  lead: {
-    margin: "18px 0 0",
-    color: "#D9D8CF",
-    fontSize: "16px",
-    lineHeight: "26px",
-  },
-  card: {
-    marginTop: "18px",
-    borderRadius: "14px",
-    padding: "26px",
-    backgroundColor: "#111216",
-    border: "1px solid rgba(255, 255, 255, 0.10)",
-  },
-  label: {
-    margin: "0 0 10px",
-    color: "#AFAEA7",
-    fontSize: "13px",
-    lineHeight: "20px",
-    fontWeight: 700,
-  },
-  code: {
-    margin: "0",
-    padding: "16px 14px",
-    borderRadius: "10px",
-    backgroundColor: "#07080A",
-    border: "1px solid rgba(254, 233, 97, 0.32)",
-    color: YELLOW,
-    fontFamily: "Consolas, Menlo, monospace",
-    fontSize: "20px",
-    lineHeight: "26px",
-    fontWeight: 700,
-    textAlign: "center",
-  },
-  meta: {
-    margin: "14px 0 0",
-    color: "#BEBDB5",
-    fontSize: "14px",
-    lineHeight: "22px",
-  },
-  button: {
-    display: "block",
-    marginTop: "22px",
-    padding: "14px 18px",
-    borderRadius: "10px",
-    backgroundColor: YELLOW,
-    color: "#08090C",
-    fontSize: "15px",
-    lineHeight: "20px",
-    fontWeight: 800,
-    textAlign: "center",
-    textDecoration: "none",
-  },
-  help: {
-    margin: "18px 0 0",
-    color: "#D9D8CF",
-    fontSize: "14px",
-    lineHeight: "23px",
-  },
-  hr: {
-    margin: "26px 0 18px",
-    borderColor: "rgba(255, 255, 255, 0.10)",
-  },
-  footer: {
-    margin: 0,
-    color: "#8D8C86",
-    fontSize: "12px",
-    lineHeight: "20px",
-  },
-  link: {
-    color: YELLOW,
-    textDecoration: "underline",
-  },
-} satisfies Record<string, CSSProperties>
+const bodyStyle: CSSProperties = {
+  margin: 0,
+  padding: 0,
+  backgroundColor: BG_BODY,
+  color: TEXT_SECONDARY,
+  fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+  fontSize: "15px",
+  lineHeight: "160%",
+  WebkitFontSmoothing: "antialiased",
+}
+
+const containerStyle: CSSProperties = {
+  width: "100%",
+  maxWidth: "640px",
+  margin: "0 auto",
+  padding: "32px 18px",
+}
+
+const headerSectionStyle: CSSProperties = {
+  padding: "0 0 24px",
+}
+
+const logoStyle: CSSProperties = {
+  display: "block",
+  margin: "0 auto",
+}
+
+const boxStyle: CSSProperties = {
+  backgroundColor: BG_CARD,
+  borderRadius: "12px",
+  border: `1px solid ${BORDER}`,
+}
+
+const tableStyle = {
+  borderCollapse: "collapse" as const,
+  width: "100%",
+}
+
+const titleCellStyle = {
+  padding: "32px 48px 0",
+}
+
+const titleStyle: CSSProperties = {
+  margin: 0,
+  color: TEXT_PRIMARY,
+  fontSize: "28px",
+  lineHeight: "126%",
+  fontWeight: 700,
+  textAlign: "center",
+}
+
+const contentCellStyle = {
+  padding: "24px 48px 0",
+}
+
+const greetingStyle: CSSProperties = {
+  margin: "0 0 16px",
+  color: TEXT_SECONDARY,
+}
+
+const bodyTextStyle: CSSProperties = {
+  margin: "0 0 20px",
+  color: TEXT_SECONDARY,
+}
+
+const detailTableStyle = {
+  borderCollapse: "collapse" as const,
+  width: "100%",
+  marginBottom: "20px",
+}
+
+const detailLabelStyle: CSSProperties = {
+  padding: "4px 12px 4px 0",
+  color: TEXT_MUTED,
+  fontSize: "13px",
+  fontWeight: 600,
+  textTransform: "uppercase" as const,
+  width: "1%",
+  whiteSpace: "nowrap" as const,
+}
+
+const detailValueStyle: CSSProperties = {
+  padding: "4px 0",
+  color: TEXT_PRIMARY,
+  fontSize: "15px",
+}
+
+const codeLabelStyle: CSSProperties = {
+  margin: "0 0 8px",
+  color: TEXT_MUTED,
+  fontSize: "13px",
+  fontWeight: 600,
+  textTransform: "uppercase" as const,
+}
+
+const codeStyle: CSSProperties = {
+  margin: "0",
+  padding: "14px 16px",
+  borderRadius: "8px",
+  backgroundColor: "#F4F4F5",
+  border: `1px solid ${BORDER}`,
+  color: TEXT_PRIMARY,
+  fontFamily: "Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace",
+  fontSize: "18px",
+  lineHeight: "26px",
+  fontWeight: 700,
+  textAlign: "center",
+  letterSpacing: "0.5px",
+}
+
+const buttonStyle: CSSProperties = {
+  display: "block",
+  width: "100%",
+  marginTop: "22px",
+  padding: "13px 18px",
+  borderRadius: "8px",
+  backgroundColor: YELLOW,
+  color: "#08090C",
+  fontSize: "15px",
+  lineHeight: "20px",
+  fontWeight: 600,
+  textAlign: "center",
+  textDecoration: "none",
+  boxSizing: "border-box",
+}
+
+const helpTextStyle: CSSProperties = {
+  margin: "18px 0 0",
+  color: TEXT_SECONDARY,
+  fontSize: "14px",
+  lineHeight: "23px",
+}
+
+const strongStyle: CSSProperties = {
+  fontWeight: 600,
+}
+
+const helpRowStyle = {
+  padding: "8px 48px 32px",
+}
+
+const helpFooterStyle: CSSProperties = {
+  margin: 0,
+  color: TEXT_MUTED,
+  fontSize: "13px",
+}
+
+const hrStyle: CSSProperties = {
+  margin: "28px 0 20px",
+  borderColor: BORDER,
+}
+
+const footerSectionStyle: CSSProperties = {
+  textAlign: "center",
+  padding: "0 0 20px",
+}
+
+const socialTableStyle = {
+  borderCollapse: "collapse" as const,
+  width: "auto",
+  margin: "0 auto",
+}
+
+const socialCellStyle = {
+  padding: "0 8px",
+}
+
+const socialLinkStyle: CSSProperties = {
+  textDecoration: "none",
+}
+
+const socialIconStyle: CSSProperties = {
+  display: "block",
+}
+
+const footerTextStyle: CSSProperties = {
+  margin: "6px 0 0",
+  color: TEXT_FOOTER,
+  fontSize: "12px",
+  lineHeight: "18px",
+  textAlign: "center",
+}
+
+const footerCopyStyle: CSSProperties = {
+  margin: "8px 0 0",
+  color: TEXT_FOOTER,
+  fontSize: "12px",
+  lineHeight: "20px",
+  textAlign: "center",
+}
+
+const linkStyle: CSSProperties = {
+  color: ACCENT,
+  textDecoration: "underline",
+}
+
+const linkBoldStyle: CSSProperties = {
+  color: TEXT_MUTED,
+  textDecoration: "underline",
+  fontWeight: 600,
+}
