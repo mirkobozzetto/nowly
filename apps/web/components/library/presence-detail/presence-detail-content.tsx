@@ -13,16 +13,11 @@ import { InstallVersionsCard } from "../install-versions-card";
 import { SettingsCard } from "../settings-card";
 import { StatsCard } from "../stats-card";
 import { SupportedUrlsCard } from "../supported-urls-card";
-import type { ExtensionDiagnostic } from "./extension-diagnostic";
-import { PresenceSetupCard } from "./presence-setup-card";
-
 type Props = {
   presence: Presence;
   isInstalled: boolean;
   extDetected: boolean;
   needsUpdate: boolean;
-  installedVersion: string | null;
-  diagnostic: ExtensionDiagnostic | null;
   loading: boolean;
   totalInstalls: number;
   savedRating: number;
@@ -36,7 +31,6 @@ export const PresenceDetailContent: FC<Props> = ({
   isInstalled,
   extDetected,
   needsUpdate,
-  diagnostic,
   loading,
   totalInstalls,
   savedRating,
@@ -76,14 +70,6 @@ export const PresenceDetailContent: FC<Props> = ({
               loading={loading}
               onInstall={onInstall}
               onUninstall={onUninstall}
-            />
-
-            <PresenceSetupCard
-              diagnostic={diagnostic}
-              extDetected={extDetected}
-              isInstalled={isInstalled}
-              onInstall={onInstall}
-              presence={presence}
             />
 
             <FeaturesCard platform={presence} locale={locale} />

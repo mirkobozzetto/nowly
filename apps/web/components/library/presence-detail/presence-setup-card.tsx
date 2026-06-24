@@ -5,7 +5,6 @@ import { PROJECT_EXTENSION_DOWNLOAD_URL } from "@/lib/constants";
 import type { Presence } from "@/lib/data/presences";
 import { ExternalLink } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 import type { FC, ReactElement } from "react";
 import type { ExtensionDiagnostic } from "./extension-diagnostic";
 
@@ -52,6 +51,8 @@ export const PresenceSetupCard: FC<Props> = ({
     );
   }
 
+  const supportedUrl = primarySupportedUrl(presence);
+
   if (isInstalled) {
     return (
       <Card size="sm" className="border-success/20 bg-success/5">
@@ -67,7 +68,7 @@ export const PresenceSetupCard: FC<Props> = ({
           <p className="mt-2 text-xs leading-5 text-muted-foreground">{t("diagnostic-discord-closed-message")}</p>
         ) : null}
         <a
-          href={primarySupportedUrl(presence)}
+          href={supportedUrl}
           target="_blank"
           rel="noreferrer"
           className="mt-3 inline-flex items-center gap-2 rounded-lg border border-success/20 bg-success/10 px-3 py-2 text-sm font-semibold text-success transition-colors hover:bg-success/20"
@@ -93,13 +94,16 @@ export const PresenceSetupCard: FC<Props> = ({
         >
           {isYoutube ? t("install-youtube-action") : t("install-action")}
         </button>
-        {!isYoutube ? (
-          <Link
-            href="/library/youtube"
+        {supportedUrl !== "https://youtube.com" ? (
+          <a
+            href={supportedUrl}
+            target="_blank"
+            rel="noreferrer"
             className="inline-flex items-center gap-2 rounded-lg border border-border bg-card-2 px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
           >
-            {t("youtube-test-cta")}
-          </Link>
+            {t("open-supported-site-action")}
+            <ExternalLink className="size-4" />
+          </a>
         ) : null}
       </div>
     </Card>
