@@ -64,10 +64,10 @@ describe("supporter pass email", () => {
     }))
     expect(renderMock).toHaveBeenCalledTimes(2)
     expect(sendMock).toHaveBeenCalledWith({
-      from: "Nowly <support@nowly.me>",
+      from: "Nowly <no-reply@nowly.me>",
       to: "donator@example.com",
       replyTo: "contact@nowly.me",
-      subject: "Votre clé donateur Nowly",
+      subject: "Your Nowly supporter pass key",
       html: "<html>html body</html>",
       text: "plain text body",
       headers: {

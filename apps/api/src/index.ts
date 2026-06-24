@@ -8,13 +8,16 @@ import { securityRoutes } from "@/features/security/security.routes"
 import { statusRoutes } from "@/features/status/status.routes"
 import { supportRoutes } from "@/features/support/support.routes"
 import cors from "@fastify/cors"
+import rateLimit from "@fastify/rate-limit"
 import { serverEnv } from "@nowly/env/server"
 import Fastify from "fastify"
 
 const server = Fastify({ logger: true })
 
+await server.register(rateLimit, { max: 100, timeWindow: "1 minute" })
+
 await server.register(cors, {
-  origin: true,
+  origin: serverEnv.FRONTEND_URL,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "x-user-token", "x-device-token"],
 })

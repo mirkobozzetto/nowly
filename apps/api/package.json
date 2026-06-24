@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@fastify/cors": "^11.2.0",
+    "@fastify/rate-limit": "^11.0.0",
     "@nowly/env": "workspace:*",
     "@nowly/locales": "workspace:*",
     "@nowly/presence": "workspace:*",

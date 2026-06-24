@@ -1,8 +1,9 @@
 import { getStatusReport, runStatusCheck } from "./status.service"
+import { serverEnv } from "@nowly/env/server"
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
 
 const requireCronAuth = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
-  const secret = process.env.STATUS_CRON_SECRET || process.env.CRON_SECRET
+  const secret = serverEnv.STATUS_CRON_SECRET
 
   if (!secret && process.env.NODE_ENV === "production") {
     reply.status(500).send({ error: "Missing STATUS_CRON_SECRET" })

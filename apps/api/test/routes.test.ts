@@ -1,7 +1,6 @@
 import { imageProxyRoutes } from "@/features/image-proxy/image-proxy.routes"
 import { presenceRoutes } from "@/features/presence/presence.routes"
 import { ratingRoutes } from "@/features/rating/rating.routes"
-import { registryRoutes } from "@/features/registry/registry.routes"
 import cors from "@fastify/cors"
 import { getPresence } from "@nowly/websites"
 import Fastify from "fastify"
@@ -84,7 +83,6 @@ vi.mock("@/shared/paths", () => ({
 async function buildApp() {
   const app = Fastify()
   await app.register(cors, { origin: true })
-  await app.register(registryRoutes, { prefix: "/presences" })
   await app.register(presenceRoutes, { prefix: "/presences" })
   await app.register(ratingRoutes, { prefix: "/presences" })
   await app.register(imageProxyRoutes)

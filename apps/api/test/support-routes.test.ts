@@ -27,11 +27,13 @@ describe("Support routes", () => {
   beforeEach(async () => {
     vi.clearAllMocks()
     mockSupportEmail.sendSupporterPassEmail.mockResolvedValue({ sent: true, id: "email-1" })
+    delete process.env.KOFI_WEBHOOK_TOKEN
     app = await buildApp()
   })
 
   afterEach(async () => {
     await app.close()
+    delete process.env.KOFI_WEBHOOK_TOKEN
   })
 
   it("GET /ads/status defaults to ads enabled without a deviceId", async () => {
