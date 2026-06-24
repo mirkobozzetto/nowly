@@ -2,14 +2,16 @@
 
 import { AdSenseSlot } from "@/components/ads/adsense-slot";
 import { ADSENSE_CLIENT_ID, ADSENSE_ENABLED, LIBRARY_AD_SLOT } from "@/lib/constants";
+import { useAdStatus } from "@/providers/ad-status-provider";
 import { Megaphone } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 
 export const MarketplaceAdCard: FC = (): ReactElement | null => {
   const t = useTranslations("ads");
+  const { loading, hasAds, adFree } = useAdStatus();
 
-  if (!ADSENSE_ENABLED || !ADSENSE_CLIENT_ID || !LIBRARY_AD_SLOT) {
+  if (!ADSENSE_ENABLED || !ADSENSE_CLIENT_ID || !LIBRARY_AD_SLOT || loading || !hasAds || adFree) {
     return null;
   }
 

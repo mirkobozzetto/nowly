@@ -161,6 +161,27 @@
     },
     "browseIssues": "Browse existing issues"
   },
+  "support-redeem-page": {
+    "badge": "Supporter",
+    "title": "Activate a supporter key",
+    "description": "Enter your Nowly key on this browser to remove ads from the site.",
+    "card-title": "Supporter key",
+    "card-description": "The key is linked to this browser's Nowly installation. You can reuse the same key on your other devices.",
+    "activate": "Activate key",
+    "activating": "Activating...",
+    "missing-code": "Enter a supporter key.",
+    "extension-missing-title": "Nowly extension not detected",
+    "extension-missing": "Install the Nowly extension or reload the page if it is already enabled. The extension only provides this device ID.",
+    "success-title": "Key activated",
+    "success": "This browser is now ad-free. Activated devices: {count}/{max}.",
+    "error-title": "Activation failed",
+    "invalid-code": "This supporter key is invalid.",
+    "inactive-code": "This supporter key is no longer active.",
+    "device-limit": "The device limit for this key has been reached.",
+    "network-error": "Could not reach the Nowly API. Try again in a moment.",
+    "timeout": "The extension did not respond in time. Reload the page and try again.",
+    "generic-error": "The key could not be activated."
+  },
   "team-page": {
     "badge": "Team",
     "title": "The people behind Nowly",

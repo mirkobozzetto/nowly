@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useAdStatus } from "@/providers/ad-status-provider";
 import { BadgeInfo, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, type FC, type ReactElement } from "react";
@@ -58,12 +59,14 @@ const isAdBaitBlocked = (bait: HTMLDivElement): boolean => {
 
 export const AdblockNotice: FC<Props> = ({ enabled }): ReactElement | null => {
   const t = useTranslations("ads");
+  const { loading, hasAds, adFree } = useAdStatus();
   const [visible, setVisible] = useState(false);
   const [canDismiss, setCanDismiss] = useState(false);
 
   useEffect(() => {
     const forceFromUrl = new URLSearchParams(window.location.search).get("adblockNotice") === "1";
 
+    if (loading || !hasAds || adFree) return;
     if (!enabled && !forceFromUrl) return;
 
     if (forceFromUrl) {
@@ -86,7 +89,7 @@ export const AdblockNotice: FC<Props> = ({ enabled }): ReactElement | null => {
       window.clearTimeout(timer);
       bait.remove();
     };
-  }, [enabled]);
+  }, [adFree, enabled, hasAds, loading]);
 
   useEffect(() => {
     if (!visible) {
@@ -109,7 +112,7 @@ export const AdblockNotice: FC<Props> = ({ enabled }): ReactElement | null => {
     setVisible(false);
   };
 
-  if (!visible) return null;
+  if (loading || !hasAds || adFree || !visible) return null;
 
   return (
     <aside

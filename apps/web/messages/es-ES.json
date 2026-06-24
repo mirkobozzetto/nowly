@@ -161,6 +161,27 @@
     },
     "browseIssues": "Ver issues existentes"
   },
+  "support-redeem-page": {
+    "badge": "Supporter",
+    "title": "Activar una clave supporter",
+    "description": "Introduce tu clave de Nowly en este navegador para quitar los anuncios del sitio.",
+    "card-title": "Clave supporter",
+    "card-description": "La clave queda vinculada a la instalación de Nowly de este navegador. Puedes reutilizar la misma clave en tus otros dispositivos.",
+    "activate": "Activar clave",
+    "activating": "Activando...",
+    "missing-code": "Introduce una clave supporter.",
+    "extension-missing-title": "Extensión de Nowly no detectada",
+    "extension-missing": "Instala la extensión de Nowly o recarga la página si ya está activa. La extensión solo proporciona el ID de este dispositivo.",
+    "success-title": "Clave activada",
+    "success": "Este navegador ya no mostrará anuncios. Dispositivos activados: {count}/{max}.",
+    "error-title": "No se pudo activar",
+    "invalid-code": "Esta clave supporter no es válida.",
+    "inactive-code": "Esta clave supporter ya no está activa.",
+    "device-limit": "Se ha alcanzado el límite de dispositivos para esta clave.",
+    "network-error": "No se pudo contactar con la API de Nowly. Inténtalo de nuevo en un momento.",
+    "timeout": "La extensión no respondió a tiempo. Recarga la página e inténtalo de nuevo.",
+    "generic-error": "No se pudo activar la clave."
+  },
   "team-page": {
     "badge": "Equipo",
     "title": "Las personas detrás de Nowly",
