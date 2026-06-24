@@ -1,4 +1,4 @@
-import { Header } from "@/components/header";
+import { Header } from "@/components/layout/header";
 import { t } from "@/shared/i18n";
 import { CheckCircle2 } from "lucide-react";
 import type { FC, ReactElement } from "react";

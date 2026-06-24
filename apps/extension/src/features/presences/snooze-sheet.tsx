@@ -1,4 +1,4 @@
-import { Sheet } from "@/components/sheet";
+import { Sheet } from "@/components/shared/sheet";
 import { Button } from "@/components/ui/button";
 import { sendMessage } from "@/lib/messages";
 import { t } from "@/shared/i18n";

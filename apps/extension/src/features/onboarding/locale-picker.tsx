@@ -1,4 +1,4 @@
-import { LocaleFlag } from "@/components/locale-flag";
+import { LocaleFlag } from "@/components/shared/locale-flag";
 import { Select } from "@/components/ui/select";
 import { t, type LocalePreference } from "@/shared/i18n";
 import { ChevronDown } from "lucide-react";

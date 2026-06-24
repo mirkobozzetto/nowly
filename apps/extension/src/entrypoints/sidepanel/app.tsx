@@ -1,6 +1,6 @@
-import { ActionBar } from "@/components/action-bar";
-import { Header } from "@/components/header";
-import { SidepanelNav, type SidepanelView } from "@/components/sidepanel-nav";
+import { ActionBar } from "@/components/layout/action-bar";
+import { Header } from "@/components/layout/header";
+import { SidepanelNav, type SidepanelView } from "@/components/layout/sidepanel-nav";
 import { AnalyticsLogsView } from "@/features/analytics-logs/analytics-logs-view";
 import { OnboardingOverlay } from "@/features/onboarding/onboarding-overlay";
 import { ActivityView } from "@/features/presences/activity-view";

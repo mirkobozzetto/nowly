@@ -1,4 +1,4 @@
-import { LocaleFlag } from "@/components/locale-flag";
+import { LocaleFlag } from "@/components/shared/locale-flag";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
