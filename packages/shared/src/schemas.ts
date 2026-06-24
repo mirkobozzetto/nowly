@@ -87,3 +87,24 @@ export const presencePutBodySchema = z.object({
   pr: z.string().trim().max(200).optional(),
 })
 export type PresencePutBody = z.infer<typeof presencePutBodySchema>
+
+/** GET /ads/status */
+export const adsStatusQuerySchema = z.object({
+  deviceId: z.string().trim().min(1).max(120).optional(),
+})
+export type AdsStatusQuery = z.infer<typeof adsStatusQuerySchema>
+
+/** POST /support/redeem-device */
+export const supportRedeemDeviceBodySchema = z.object({
+  code: z.string().trim().min(8).max(80),
+  deviceId: z.string().trim().min(1).max(120),
+})
+export type SupportRedeemDeviceBody = z.infer<typeof supportRedeemDeviceBodySchema>
+
+/** POST /support/passes (admin) */
+export const supportCreatePassBodySchema = z.object({
+  provider: z.string().trim().min(1).max(40).default("manual"),
+  providerRef: z.string().trim().max(160).optional(),
+  maxDevices: z.coerce.number().int().positive().max(50).optional(),
+})
+export type SupportCreatePassBody = z.infer<typeof supportCreatePassBodySchema>
