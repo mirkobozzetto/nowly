@@ -107,7 +107,7 @@ export const CurrentActivityCard: FC<Props> = ({ activity, isLoading, presences 
         <div
           className="pointer-events-none absolute inset-0"
           style={{
-            background: "linear-gradient(135deg, transparent, rgba(88,101,242,0.08), transparent, rgba(88,101,242,0.04), transparent)",
+            background: "linear-gradient(135deg, transparent, color-mix(in srgb, var(--accent) 10%, transparent), transparent, color-mix(in srgb, var(--accent) 5%, transparent), transparent)",
             backgroundSize: "400% 400%",
             animation: "gradient-drift 10s ease-in-out infinite",
           }}

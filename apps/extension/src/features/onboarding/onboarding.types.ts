@@ -16,6 +16,7 @@ export type OnboardingOverlayProps = {
   presences: InstalledPresences;
   settings: ExtensionSettings;
   onSettingsChange: (partial: Partial<ExtensionSettings>) => void;
+  supporter?: boolean;
 };
 
 export type StepStatus = "loading" | "success" | "error";

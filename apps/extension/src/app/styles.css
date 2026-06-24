@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-:root {
+:root, [data-theme="default"] {
   --background: #050505;
   --surface: #0a0a0c;
   --card: #111113;
@@ -16,6 +16,26 @@
   --border: rgba(255, 255, 255, 0.08);
   --border-light: rgba(255, 255, 255, 0.12);
   --radius: 0.5rem;
+}
+
+[data-theme="donator"] {
+  --accent: #FEE961;
+}
+
+[data-theme="fleuri"] {
+  --accent: #DA47D0;
+}
+
+[data-theme="violet"] {
+  --accent: #A78BFA;
+}
+
+[data-theme="vert"] {
+  --accent: #4ADE80;
+}
+
+[data-theme="orange"] {
+  --accent: #FB923C;
 }
 
 @theme inline {
@@ -81,4 +101,22 @@ button:disabled {
   100% {
     transform: translateX(100%);
   }
+}
+
+main[data-bg-anim="true"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, color-mix(in srgb, var(--accent) 8%, transparent), transparent, color-mix(in srgb, var(--accent) 4%, transparent), transparent);
+  background-size: 400% 400%;
+  animation: bg-gradient-drift 15s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes bg-gradient-drift {
+  0%, 100% { background-position: 0% 50%; }
+  25% { background-position: 100% 0%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
 }

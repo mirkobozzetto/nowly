@@ -5,7 +5,9 @@ export type WebMessageType =
   | "GET_INSTALLED"
   | "GET_DIAGNOSTIC"
   | "SAVE_USER_RATING"
-  | "GET_USER_RATINGS";
+  | "GET_USER_RATINGS"
+  | "GET_AD_STATUS"
+  | "REDEEM_SUPPORT_CODE";
 
 export type ExtensionMessageType =
   | "GET_PRESENCES"
@@ -27,6 +29,8 @@ export type ExtensionMessageType =
   | "CHECK_UPDATES"
   | "GET_SETTINGS"
   | "SET_SETTINGS"
+  | "GET_SUPPORTER_STATUS"
+  | "DISMISS_SUPPORTER_THANK_YOU"
   | "RESET_ONBOARDING_FOR_DEV"
   | "GET_PRESENCE_SETTINGS"
   | "SET_PRESENCE_SETTINGS"

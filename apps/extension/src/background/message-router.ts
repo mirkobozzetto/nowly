@@ -2,12 +2,13 @@ import type { ExtensionMessage, ExtensionSettings, PresenceData, PresenceDebug, 
 import { handleActivityUpdate, handleClearActivity } from "./activity-manager";
 import { clearAnalyticsLogs, getAnalyticsLogs } from "./analytics-log";
 import { trackAnalytics, trackExtensionOpen } from "./analytics-tracker";
-import { buildDeviceUrl } from "./device-sync";
+import { getEffectiveApiUrl } from "./api-state";
+import { buildDeviceUrl, getActiveDeviceId } from "./device-sync";
 import { postNative, reconnectNative, refreshNativeStatus, restartNative } from "./native";
 import { checkUpdates, installPresence, togglePresence, uninstallPresence } from "./presence-manager";
 import { registerPresenceScript } from "./presence-scripts";
 import { resetOnboardingForDev, updateSettings } from "./settings-manager";
-import { clearSnooze, getCurrentActivity, getDebug, getPresenceSettings, getPresences, getSettings, setDebug, setPresenceSchedule, setPresenceSettings, snoozePresence } from "./storage";
+import { clearSnooze, dismissSupporterThankYou, getCurrentActivity, getDebug, getPresenceSettings, getPresences, getSettings, getSupporterStatus, setDebug, setPresenceSchedule, setPresenceSettings, setSupporterStatus, snoozePresence } from "./storage";
 import { visiblePresences } from "./user-scripts";
 
 const respond = <T>(sendResponse: (response?: T) => void, value: T): void => sendResponse(value);
@@ -45,6 +46,28 @@ const respondWithUserScriptsStatus = (sendResponse: (response?: UserScriptsStatu
       : "chrome.userScripts unavailable. Enable Developer Mode / Allow User Scripts for this extension.",
   });
   return false;
+};
+
+const getFreshSupporterStatus = async () => {
+  const [deviceId, cached] = await Promise.all([getActiveDeviceId(), getSupporterStatus()]);
+
+  try {
+    const response = await fetch(`${getEffectiveApiUrl()}/ads/status?deviceId=${encodeURIComponent(deviceId)}`, {
+      cache: "no-store",
+    });
+    if (!response.ok) return { ...cached, deviceId };
+
+    const status = await response.json() as { hasAds?: unknown; adFree?: unknown };
+    const adFree = status.adFree === true;
+    return setSupporterStatus({
+      adFree,
+      hasAds: adFree ? false : status.hasAds !== false,
+      deviceId,
+      showThankYou: cached.showThankYou === true,
+    });
+  } catch {
+    return { ...cached, deviceId };
+  }
 };
 
 export const registerRuntimeMessageRouter = (): void => {
@@ -170,6 +193,14 @@ export const registerRuntimeMessageRouter = (): void => {
 
       case "SET_SETTINGS":
         updateSettings(message.payload as Partial<ExtensionSettings>).then((settings) => respond(sendResponse, settings));
+        return true;
+
+      case "GET_SUPPORTER_STATUS":
+        getFreshSupporterStatus().then((status) => respond(sendResponse, status));
+        return true;
+
+      case "DISMISS_SUPPORTER_THANK_YOU":
+        dismissSupporterThankYou().then((status) => respond(sendResponse, status));
         return true;
 
       case "RESET_ONBOARDING_FOR_DEV":

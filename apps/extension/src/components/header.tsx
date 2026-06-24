@@ -4,6 +4,7 @@ import type { FC, ReactElement } from "react";
 
 type Props = {
   nativeStatus?: NativeStatus;
+  supporter?: boolean;
 };
 
 const statusColor = (ns: NativeStatus): string => {
@@ -20,9 +21,13 @@ const statusText = (ns: NativeStatus): string => {
   return t("native-disconnected");
 };
 
-export const Header: FC<Props> = ({ nativeStatus }): ReactElement => (
+export const Header: FC<Props> = ({ nativeStatus, supporter = false }): ReactElement => (
   <header className="flex items-center justify-between gap-3">
-    <img src={chrome.runtime.getURL("app_title_white.png")} alt="Nowly" className="h-8 w-auto min-w-0" />
+    <img
+      src={chrome.runtime.getURL(supporter ? "app_title_white_donator.png" : "app_title_white.png")}
+      alt="Nowly"
+      className="h-8 w-auto min-w-0"
+    />
     {nativeStatus ? (
       <div className="flex items-center gap-2">
         <span role="status" aria-label={statusText(nativeStatus)} className={`inline-block h-2 w-2 rounded-full ${statusColor(nativeStatus)}`} />

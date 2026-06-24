@@ -5,3 +5,4 @@ export * from "./presence";
 export * from "./analytics";
 export * from "./settings";
 export * from "./messages";
+export * from "./supporter";

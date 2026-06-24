@@ -7,6 +7,7 @@ import { ActivityView } from "@/features/presences/activity-view";
 import { ScheduleSheet } from "@/features/presences/schedule-sheet";
 import { SnoozeSheet } from "@/features/presences/snooze-sheet";
 import { SettingsView } from "@/features/settings/settings-view";
+import { SupporterThankYouOverlay } from "@/features/supporter/supporter-thank-you-overlay";
 import { useExtensionState } from "@/hooks/use-extension-state";
 import { useLocalePreference } from "@/hooks/use-locale-preference";
 import { useOnboardingState } from "@/hooks/use-onboarding-state";
@@ -16,7 +17,7 @@ import type { FC, ReactElement } from "react";
 import { useCallback, useEffect, useState } from "react";
 
 const App: FC = (): ReactElement => {
-  const { activity, checkHostUpdate, checkUpdates, connectNative, debug, entries, hostVersionInfo, isCheckingHostVersion, isCheckingUpdates, isLoading, isUnpacked, nativeStatus, presences, removePresence, resetOnboardingForDev, togglePresence, updates, settings, setSettings } =
+  const { activity, checkHostUpdate, checkUpdates, connectNative, debug, dismissSupporterThankYou, entries, hostVersionInfo, isCheckingHostVersion, isCheckingUpdates, isLoading, isUnpacked, nativeStatus, presences, removePresence, resetOnboardingForDev, supporterStatus, togglePresence, updates, settings, setSettings } =
     useExtensionState();
   const { localePreference, setLocalePreference } = useLocalePreference();
   const { onboarding, setOnboarding, nativeStatus: onboardingNativeStatus, userScripts } = useOnboardingState();
@@ -53,9 +54,10 @@ const App: FC = (): ReactElement => {
   }, []);
 
   return (
-    <main className="relative min-h-screen bg-background text-foreground">
-      <div className="flex min-h-screen w-full min-w-0 flex-col gap-4 p-3">
-        <Header nativeStatus={liveNativeStatus} />
+    <main data-theme={settings.theme ?? "default"} data-bg-anim={settings.backgroundAnimation !== false} className="relative min-h-screen bg-background text-foreground">
+      <div className="relative z-1 flex min-h-screen w-full min-w-0 flex-col gap-4 p-3">
+        <Header nativeStatus={liveNativeStatus} supporter={supporterStatus.adFree} />
+        
         <SidepanelNav activeView={activeView} onChange={setActiveView} showAnalyticsLogs={developerModeEnabled} />
 
         {activeView === "activity" ? (
@@ -75,12 +77,14 @@ const App: FC = (): ReactElement => {
 
             <ActionBar
               activeSlug={activity?.slug ?? null}
+              backgroundAnimation={settings.backgroundAnimation !== false}
               isCheckingUpdates={isCheckingUpdates}
               isSnoozed={isSnoozed}
               scheduleEnabled={settings.scheduleEnabled !== false}
               onCheckUpdates={checkUpdates}
               onScheduleClick={() => handleScheduleOpen(null)}
               onSnoozeClick={() => setSnoozeSheetOpen(true)}
+              onToggleAnimation={() => setSettings({ backgroundAnimation: settings.backgroundAnimation === false ? true : false })}
               onUnsnoozeClick={handleUnsnooze}
             />
           </section>
@@ -88,6 +92,7 @@ const App: FC = (): ReactElement => {
           <AnalyticsLogsView />
         ) : (
           <SettingsView
+            adFree={supporterStatus.adFree}
             debug={debug}
             hostVersionInfo={hostVersionInfo}
             isCheckingHostVersion={isCheckingHostVersion}
@@ -134,6 +139,12 @@ const App: FC = (): ReactElement => {
         onSkipTour={() => setOnboarding({ devReplayOnboarding: false, onboardingCompleted: true })}
         settings={settings}
         onSettingsChange={setSettings}
+        supporter={supporterStatus.adFree}
+      />
+
+      <SupporterThankYouOverlay
+        status={supporterStatus}
+        onClose={dismissSupporterThankYou}
       />
     </main>
   );

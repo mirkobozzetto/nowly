@@ -14,6 +14,8 @@ import type { FC, ReactElement } from "react";
 import { useEffect, useState } from "react";
 import { DebugPanel } from "./debug-panel";
 import { DisplaySettings } from "./display-settings";
+import { ThemeSelector } from "./theme-selector";
+import { ThemeUpsellCard } from "./theme-upsell-card";
 
 type HostVersionInfo = {
   currentVersion?: string;
@@ -22,6 +24,7 @@ type HostVersionInfo = {
 };
 
 type Props = {
+  adFree: boolean;
   debug: PresenceDebug | null;
   hostVersionInfo: HostVersionInfo | null;
   isCheckingHostVersion: boolean;
@@ -38,6 +41,7 @@ type Props = {
 const hostUpdateActionClassName = "inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors sm:flex-1";
 
 export const SettingsView: FC<Props> = ({
+  adFree,
   debug,
   hostVersionInfo,
   isCheckingHostVersion,
@@ -155,6 +159,12 @@ export const SettingsView: FC<Props> = ({
       </section>
 
       <DisplaySettings settings={settings} onSettingsChange={onSettingsChange} />
+
+      {adFree ? (
+        <ThemeSelector settings={settings} onSettingsChange={onSettingsChange} />
+      ) : (
+        <ThemeUpsellCard />
+      )}
 
       <section className="rounded-lg border border-border bg-card p-4">
         <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("features")}</h2>
