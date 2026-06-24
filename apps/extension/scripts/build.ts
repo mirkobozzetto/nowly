@@ -1,6 +1,6 @@
 import react from "@vitejs/plugin-react"
 import "dotenv/config"
-import { copyFileSync, cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs"
+import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs"
 import { dirname, join, resolve } from "path"
 import { fileURLToPath } from "url"
 import { build } from "vite"
@@ -146,7 +146,10 @@ const copyStatic = () => {
       join(DIST, "icons", `icon${size}.png`),
     )
   }
-  copyFileSync(join(ROOT, "..", "web", "public", "app_title_white.png"), join(DIST, "app_title_white.png"))
+  const defaultLogo = join(ROOT, "..", "web", "public", "app_title_white.png")
+  const donatorLogo = join(ROOT, "..", "web", "public", "app_title_white_donator.png")
+  copyFileSync(defaultLogo, join(DIST, "app_title_white.png"))
+  copyFileSync(existsSync(donatorLogo) ? donatorLogo : defaultLogo, join(DIST, "app_title_white_donator.png"))
   cpSync(join(ROOT, "_locales"), join(DIST, "_locales"), { recursive: true })
 }
 
