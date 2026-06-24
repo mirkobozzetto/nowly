@@ -1,8 +1,8 @@
 import type { PresenceData } from "@/shared/types";
-import { handleActivityUpdate, handleClearActivity } from "./activity-manager";
-import { trackAnalytics } from "./analytics-tracker";
+import { handleActivityUpdate, handleClearActivity } from "../managers/activity-manager";
+import { trackAnalytics } from "../analytics/analytics-tracker";
 import { USER_SCRIPT_MESSAGE_SOURCE } from "./presence-runtime";
-import { setDebug } from "./storage";
+import { setDebug } from "../services/storage";
 
 export const registerPresenceRuntimeBridge = (): void => {
   chrome.runtime.onMessage.addListener((message, sender) => {

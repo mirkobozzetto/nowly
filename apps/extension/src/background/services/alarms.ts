@@ -1,6 +1,6 @@
-import { getPresenceVersion } from "./activity-manager";
-import { addAnalyticsLog } from "./analytics-log";
-import { flushAnalytics, trackAnalytics } from "./analytics-tracker";
+import { getPresenceVersion } from "../managers/activity-manager";
+import { addAnalyticsLog } from "../analytics/analytics-log";
+import { flushAnalytics, trackAnalytics } from "../analytics/analytics-tracker";
 import { getEffectiveApiUrl } from "./api-state";
 import { getActiveSlugsSnapshot, hasActiveSlugs } from "./background-context";
 import { getActiveDeviceId, syncDeviceState } from "./device-sync";

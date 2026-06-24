@@ -1,8 +1,8 @@
 import { addAnalyticsLog, sanitizeLogPayload } from "./analytics-log";
-import { getEffectiveApiUrl } from "./api-state";
-import { browserName, osName } from "./device-info";
-import { getActiveDeviceId } from "./device-sync";
-import { getSettings } from "./storage";
+import { getEffectiveApiUrl } from "../services/api-state";
+import { browserName, osName } from "../services/device-info";
+import { getActiveDeviceId } from "../services/device-sync";
+import { getSettings } from "../services/storage";
 
 type AnalyticsEvent = {
   key: string;

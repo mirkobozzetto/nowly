@@ -1,14 +1,14 @@
 import { BUNDLED_PRESENCES } from "@/generated/bundled-presences";
 import type { PresenceRelease, StoredPresence } from "@/shared/types";
 import { handleClearActivity, removeActiveSlug } from "./activity-manager";
-import { addAnalyticsLog } from "./analytics-log";
-import { trackAnalytics } from "./analytics-tracker";
-import { getEffectiveApiUrl } from "./api-state";
-import { hasActiveSlugs } from "./background-context";
-import { getActiveDeviceId, syncDeviceState } from "./device-sync";
-import { registerPresenceScript, unregisterPresenceScript } from "./presence-scripts";
-import { verifyPresenceRelease } from "./release-security";
-import { getCurrentActivity, getPresences, setPresences } from "./storage";
+import { addAnalyticsLog } from "../analytics/analytics-log";
+import { trackAnalytics } from "../analytics/analytics-tracker";
+import { getEffectiveApiUrl } from "../services/api-state";
+import { hasActiveSlugs } from "../services/background-context";
+import { getActiveDeviceId, syncDeviceState } from "../services/device-sync";
+import { registerPresenceScript, unregisterPresenceScript } from "../runtime/presence-scripts";
+import { verifyPresenceRelease } from "../services/release-security";
+import { getCurrentActivity, getPresences, setPresences } from "../services/storage";
 
 export const broadcastPresencesChanged = (): void => {
   chrome.runtime.sendMessage({ source: "PRESENCES_BACKGROUND", type: "PRESENCES_CHANGED" }).catch(() => {

@@ -1,15 +1,15 @@
 import type { ExtensionMessage, ExtensionSettings, PresenceData, PresenceDebug, PresenceSchedule, UserScriptsStatus } from "@/shared/types";
-import { handleActivityUpdate, handleClearActivity } from "./activity-manager";
-import { clearAnalyticsLogs, getAnalyticsLogs } from "./analytics-log";
-import { trackAnalytics, trackExtensionOpen } from "./analytics-tracker";
+import { handleActivityUpdate, handleClearActivity } from "../managers/activity-manager";
+import { clearAnalyticsLogs, getAnalyticsLogs } from "../analytics/analytics-log";
+import { trackAnalytics, trackExtensionOpen } from "../analytics/analytics-tracker";
 import { getEffectiveApiUrl } from "./api-state";
 import { buildDeviceUrl, getActiveDeviceId } from "./device-sync";
 import { postNative, reconnectNative, refreshNativeStatus, restartNative } from "./native";
-import { checkUpdates, installPresence, togglePresence, uninstallPresence } from "./presence-manager";
-import { registerPresenceScript } from "./presence-scripts";
-import { resetOnboardingForDev, updateSettings } from "./settings-manager";
+import { checkUpdates, installPresence, togglePresence, uninstallPresence } from "../managers/presence-manager";
+import { registerPresenceScript } from "../runtime/presence-scripts";
+import { resetOnboardingForDev, updateSettings } from "../managers/settings-manager";
 import { clearSnooze, dismissSupporterThankYou, getCurrentActivity, getDebug, getPresenceSettings, getPresences, getSettings, getSupporterStatus, setDebug, setPresenceSchedule, setPresenceSettings, setSupporterStatus, snoozePresence } from "./storage";
-import { visiblePresences } from "./user-scripts";
+import { visiblePresences } from "../runtime/user-scripts";
 
 const respond = <T>(sendResponse: (response?: T) => void, value: T): void => sendResponse(value);
 

@@ -1,5 +1,5 @@
 import { WEB_BASE_URL } from "@/shared/constants";
-import { addAnalyticsLog } from "./analytics-log";
+import { addAnalyticsLog } from "../analytics/analytics-log";
 import { getEffectiveApiUrl } from "./api-state";
 import { getCachedDeviceId, setCachedDeviceId } from "./background-context";
 import { browserName, osName } from "./device-info";
