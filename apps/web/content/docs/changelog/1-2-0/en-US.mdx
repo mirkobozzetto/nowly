@@ -26,6 +26,10 @@ description: UI/UX overhaul of the extension with a redesigned player, native co
     ["Web, legal, and consent", "Added legal notice and cookies pages, cookie banner, consent management with export/delete flows, Team page, categorized footer, dynamic browser CTA, and status page fixes.", "The public site now covers release, trust, privacy, support, and team surfaces more completely."],
     ["Nowly Host and release tooling", "Manual host update checks restart the native bridge first. Host logging is clearer, Discord IPC errors are logged, logs rotate, and extension archives are packaged with tar-based scripts.", "Updates and diagnostics are more reliable across local installs and release artifacts."],
     ["Internal quality", "Shared utilities moved to @nowly/shared, extension types/background helpers were split, UI primitives replaced raw elements, README/docs were expanded, and YouTube Music assets were refreshed.", "The codebase is easier to maintain while the release documentation matches the actual branch scope."],
+    ["Supporter Pass", "New supporter pass system with email delivery, Discord webhook notifications, ad-free status, and a dedicated redeem page. Supporter status is synced across devices with a thank-you overlay. Also includes a `GET /support/verify-code` endpoint and a redesigned light-theme email template.", "Monetization foundation: users can support the project and get ad-free browsing in return. The full flow handles pass activation, Discord alerts, and device syncing seamlessly."],
+    ["Security endpoint", "New `GET /security/public-key` endpoint derives the public key from `PRESENCE_SIGNING_PRIVATE_KEY` at runtime. The extension fetches it on startup with a hardcoded fallback.", "Enables key rotation without requiring extension updates. Backward compatible via the hardcoded fallback key."],
+    ["CDN migration", "All static assets (app logos, icons, titles) are now served from `cdn.nowly.me/assets/` instead of `nowly.me` or `chrome.runtime.getURL`. Legacy logo files removed from web/public and extension build scripts.", "Faster global delivery, reduced extension bundle size, and centralized asset management."],
+    ["Architecture refactor", "Entry points moved to `src/entrypoints/` (background, content, sidepanel). Background code reorganized into `managers/`, `services/`, `runtime/`, `analytics/` sub-directories. Components split into `layout/`, `shared/`, `ui/`. All relative imports replaced with `@/` path aliases.", "Cleaner codebase organization, easier navigation, and consistent import patterns across the entire extension."],
   ]}
 />
 
@@ -110,6 +114,29 @@ The extension can restart Nowly Host before checking host versions, and Settings
 ## Documentation, repo, and assets
 
 The README now documents the project architecture, development flow, install steps, Nowly Host release path, and presence workflow in more detail. Repository links were migrated to the `nowly-presence` organization, translation keys were normalized to kebab-case, duplicate locale entries were cleaned up, and YouTube Music icons were refreshed.
+
+## Supporter Pass
+
+A full supporter pass system was added, enabling users to purchase passes that grant ad-free browsing across all their devices. The backend handles pass creation, redemption, and device linking. Supporters are notified via a redesigned light-theme email template, and Discord webhooks alert the team on new activations. The `GET /support/verify-code` endpoint validates pass codes, and the web app includes a dedicated redeem page with ad-free integration.
+
+On the extension side, supporter status is synced via `chrome.storage`, drives a theme system with a donator logo variant, and shows a thank-you overlay on first activation. The nowly.me presence detail page was also simplified to better surface the setup flow.
+
+## Security endpoint
+
+A new `GET /security/public-key` route was added to the API. It derives the ECDSA P-256 public key from the `PRESENCE_SIGNING_PRIVATE_KEY` environment variable at runtime using `node:crypto`. The extension fetches this key on startup with a three-tier fallback: in-memory cache → `chrome.storage.local` → remote API → hardcoded constant. This allows key rotation without requiring an extension update, while remaining backward compatible for older extension versions that only know the hardcoded key.
+
+## CDN migration
+
+All static assets were migrated from `nowly.me` and `chrome.runtime.getURL()` to `https://cdn.nowly.me/assets/`. This covers the extension header logo, the web navbar logo, OG image assets (docs and presence pages), and the support email template logo. Legacy PNG files were removed from `web/public/`, and the logo copy logic was stripped from both extension build scripts (`build.ts`, `build-dev.ts`), reducing the extension bundle size.
+
+## Architecture refactor
+
+The extension source was reorganized for better maintainability:
+
+- **Entry points**: `src/app/` was moved to `src/entrypoints/sidepanel/`. Thin wrapper files in `src/entrypoints/background/` and `src/entrypoints/content/` delegate to the main modules, keeping the build entry points explicit while leaving the core logic untouched.
+- **Background**: The flat `src/background/` directory was split into `managers/` (activity-manager, presence-manager, settings-manager), `services/` (alarms, api-state, native, release-security, storage, etc.), `runtime/` (presence-runtime, presence-scripts, user-scripts, etc.), and `analytics/` (analytics-log, analytics-tracker).
+- **Components**: `src/components/` was reorganized into `layout/` (header, sidepanel-nav, action-bar), `shared/` (locale-flag, native-status-button, sheet, section-header), and the existing `ui/` (button, switch, checkbox, etc.).
+- **Imports**: All relative imports (`./` and `../`) across the entire extension source were replaced with `@/` path aliases, following a single consistent import pattern.
 
 ## Inactive presence styling
 

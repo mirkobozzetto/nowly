@@ -26,6 +26,10 @@ description: Refonte UI/UX de l'extension avec nouveau lecteur, composants natif
     ["Web, légal et consentement", "Ajout des pages mentions légales/cookies, bannière cookies, gestion du consentement avec export/suppression, page équipe, footer catégorisé, CTA navigateur dynamique et corrections de statut.", "Le site public couvre mieux les sujets de release, confiance, confidentialité, support et équipe."],
     ["Nowly Host et release tooling", "La vérification manuelle des mises à jour redémarre d'abord le pont natif. Les logs Nowly Host sont plus clairs, les erreurs IPC Discord sont journalisées, les logs tournent, et les archives extension passent par tar.", "Les mises à jour et diagnostics locaux sont plus fiables sur les installations et artefacts de release."],
     ["Qualité interne", "Les utilitaires partagés passent dans @nowly/shared, les types/background helpers extension sont découpés, les primitives UI remplacent les éléments bruts, le README est enrichi, et les assets YouTube Music sont rafraîchis.", "Le code est plus maintenable et la documentation de release reflète toute la portée de la branche."],
+    ["Pass Supporter", "Nouveau système de pass supporter avec email, notifications Discord, statut ad-free et page de validation dédiée. Le statut supporter est synchronisé entre appareils avec un overlay de remerciement. Inclut un endpoint `GET /support/verify-code` et un template email light redessiné.", "Base de monétisation : les utilisateurs peuvent soutenir le projet et naviguer sans publicité. Le flux complet gère l'activation du pass, les alertes Discord et la synchronisation."],
+    ["Endpoint sécurité", "Nouvel endpoint `GET /security/public-key` qui dérive la clé publique depuis `PRESENCE_SIGNING_PRIVATE_KEY` au runtime. L'extension la récupère au démarrage avec un fallback hardcodé.", "Permet la rotation de clé sans mise à jour de l'extension. Rétrocompatible via la clé de secours."],
+    ["Migration CDN", "Tous les assets statiques (logos, icônes, titres) sont servis depuis `cdn.nowly.me/assets/` au lieu de `nowly.me` ou `chrome.runtime.getURL`. Les fichiers legacy supprimés de web/public et des scripts de build.", "Livraison mondiale plus rapide, bundle d'extension réduit, gestion centralisée des assets."],
+    ["Refactor architecture", "Points d'entrée déplacés dans `src/entrypoints/`. Background découpé en `managers/`, `services/`, `runtime/`, `analytics/`. Composants réorganisés en `layout/`, `shared/`, `ui/`. Tous les imports relatifs remplacés par des alias `@/`.", "Code plus propre, navigation facilitée, imports cohérents dans toute l'extension."],
   ]}
 />
 
@@ -110,6 +114,29 @@ L'extension peut redémarrer Nowly Host avant de vérifier ses versions, et les 
 ## Documentation, repo et assets
 
 Le README documente maintenant plus largement l'architecture du projet, le flux de développement, les étapes d'installation, le chemin de release de Nowly Host et le workflow des présences. Les liens de dépôt ont migré vers l'organisation `nowly-presence`, les clés de traduction ont été normalisées en kebab-case, les doublons de locales ont été nettoyés et les icônes YouTube Music ont été rafraîchies.
+
+## Pass Supporter
+
+Un système complet de pass supporter a été ajouté, permettant aux utilisateurs d'acheter des passes qui offrent une navigation sans publicité sur tous leurs appareils. Le backend gère la création, la validation et le lien des passes aux appareils. Les supporters sont notifiés via un template email light redessiné, et des webhooks Discord alertent l'équipe sur les nouvelles activations. L'endpoint `GET /support/verify-code` valide les codes de pass, et l'application web inclut une page de validation dédiée avec intégration ad-free.
+
+Côté extension, le statut supporter est synchronisé via `chrome.storage`, pilote un système de thème avec variante donator logo, et affiche un overlay de remerciement à la première activation. La page de détail des présences sur nowly.me a aussi été simplifiée.
+
+## Endpoint sécurité
+
+Une nouvelle route `GET /security/public-key` a été ajoutée à l'API. Elle dérive la clé publique ECDSA P-256 depuis la variable d'environnement `PRESENCE_SIGNING_PRIVATE_KEY` avec `node:crypto`. L'extension récupère cette clé au démarrage avec un fallback à trois niveaux : cache mémoire → `chrome.storage.local` → API distante → constante hardcodée. Cela permet la rotation de clé sans mise à jour de l'extension, tout en restant rétrocompatible pour les versions plus anciennes.
+
+## Migration CDN
+
+Tous les assets statiques ont été migrés de `nowly.me` et `chrome.runtime.getURL()` vers `https://cdn.nowly.me/assets/`. Cela couvre le logo du header de l'extension, le logo de la navbar web, les assets OG image (pages docs et présence) et le logo du template email de support. Les fichiers PNG legacy ont été supprimés de `web/public/`, et la logique de copie des logos a été retirée des deux scripts de build (`build.ts`, `build-dev.ts`), réduisant la taille du bundle.
+
+## Refactor architecture
+
+Le code source de l'extension a été réorganisé pour une meilleure maintenabilité :
+
+- **Points d'entrée** : `src/app/` a été déplacé vers `src/entrypoints/sidepanel/`. Des wrappers fins dans `src/entrypoints/background/` et `src/entrypoints/content/` délèguent aux modules principaux.
+- **Background** : Le dossier plat `src/background/` a été découpé en `managers/`, `services/`, `runtime/` et `analytics/`.
+- **Composants** : `src/components/` a été réorganisé en `layout/`, `shared/` et `ui/`.
+- **Imports** : Tous les imports relatifs (`./` et `../`) ont été remplacés par des alias `@/` dans toute l'extension.
 
 ## Style des présences inactives
 
