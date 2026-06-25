@@ -22,18 +22,6 @@ const mockPrisma = vi.hoisted(() => ({
     deleteMany: vi.fn(),
     count: vi.fn(),
   },
-  rating: {
-    count: vi.fn(),
-    groupBy: vi.fn(),
-    findUnique: vi.fn(),
-    upsert: vi.fn(),
-    deleteMany: vi.fn(),
-  },
-  comment: {
-    create: vi.fn(),
-    findMany: vi.fn(),
-    delete: vi.fn(),
-  },
   supporterPass: {
     create: vi.fn(),
     findUnique: vi.fn(),
@@ -61,12 +49,6 @@ import {
   markActiveDevice,
   clearActiveDevice,
   clearActiveDevicesForDevice,
-  submitRating,
-  hasDiscordRated,
-  markDiscordRated,
-  getUserRating,
-  setUserRating,
-  removeUserRating,
   setUpdated,
   setAdded,
   setVersion,
@@ -77,11 +59,6 @@ import {
   getAllPresenceSlugs,
   getVersionHistory,
 } from "@/features/presence/presence.repository"
-
-import {
-  submitComment,
-  getComments,
-} from "@/features/rating/rating.repository"
 
 import {
   createSupporterPass,
@@ -96,7 +73,6 @@ describe("getPresenceStats", () => {
   it("returns defaults when no data", async () => {
     mockPrisma.presence.findUnique.mockResolvedValue(null)
     mockPrisma.devicePresence.count.mockResolvedValue(0)
-    mockPrisma.rating.groupBy.mockResolvedValue([])
     mockPrisma.presenceActiveDevice.deleteMany.mockResolvedValue({ count: 0 })
     mockPrisma.presenceActiveDevice.count.mockResolvedValue(0)
 
@@ -106,28 +82,6 @@ describe("getPresenceStats", () => {
     expect(stats.version).toBeNull()
     expect(stats.addedAt).toBeNull()
     expect(stats.lastUpdated).toBeNull()
-    expect(stats.rating).toBe(0)
-    expect(stats.ratingCount).toBe(0)
-    expect(stats.ratingDistribution).toEqual({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 })
-  })
-
-  it("computes weighted rating", async () => {
-    mockPrisma.presence.findUnique.mockResolvedValue(null)
-    mockPrisma.devicePresence.count.mockResolvedValue(0)
-    mockPrisma.rating.groupBy.mockResolvedValue([
-      { rating: 5, _count: { _all: 10 } },
-      { rating: 4, _count: { _all: 20 } },
-      { rating: 3, _count: { _all: 30 } },
-      { rating: 2, _count: { _all: 20 } },
-      { rating: 1, _count: { _all: 10 } },
-    ])
-    mockPrisma.presenceActiveDevice.deleteMany.mockResolvedValue({ count: 0 })
-    mockPrisma.presenceActiveDevice.count.mockResolvedValue(0)
-
-    const stats = await getPresenceStats("youtube")
-    expect(stats.ratingCount).toBe(90)
-    expect(stats.rating).toBe(3)
-    expect(stats.ratingDistribution).toEqual({ 5: 10, 4: 20, 3: 30, 2: 20, 1: 10 })
   })
 
   it("returns presence fields when present", async () => {
@@ -137,7 +91,6 @@ describe("getPresenceStats", () => {
       slug: "youtube", version: "1.2.3", addedAt, updatedAt,
     })
     mockPrisma.devicePresence.count.mockResolvedValue(100)
-    mockPrisma.rating.groupBy.mockResolvedValue([])
     mockPrisma.presenceActiveDevice.deleteMany.mockResolvedValue({ count: 0 })
     mockPrisma.presenceActiveDevice.count.mockResolvedValue(25)
 
@@ -152,7 +105,6 @@ describe("getPresenceStats", () => {
   it("returns active users from tracked devices when present", async () => {
     mockPrisma.presence.findUnique.mockResolvedValue(null)
     mockPrisma.devicePresence.count.mockResolvedValue(100)
-    mockPrisma.rating.groupBy.mockResolvedValue([])
     mockPrisma.presenceActiveDevice.deleteMany.mockResolvedValue({ count: 5 })
     mockPrisma.presenceActiveDevice.count.mockResolvedValue(7)
 
@@ -212,126 +164,6 @@ describe("markActiveDevice / clearActiveDevice", () => {
     await clearActiveDevicesForDevice("device-1")
     expect(mockPrisma.presenceActiveDevice.deleteMany).toHaveBeenCalledWith({
       where: { deviceId: "device-1" },
-    })
-  })
-})
-
-describe("submitRating", () => {
-  beforeEach(() => { vi.clearAllMocks() })
-
-  it("returns stats from getPresenceStats", async () => {
-    mockPrisma.presence.findUnique.mockResolvedValue(null)
-    mockPrisma.devicePresence.count.mockResolvedValue(0)
-    mockPrisma.rating.groupBy.mockResolvedValue([
-      { rating: 5, _count: { _all: 1 } },
-    ])
-    mockPrisma.presenceActiveDevice.deleteMany.mockResolvedValue({ count: 0 })
-    mockPrisma.presenceActiveDevice.count.mockResolvedValue(0)
-
-    const r = await submitRating("yt", 5)
-    expect(r.avg).toBe(5)
-    expect(r.count).toBe(1)
-    expect(r.distribution).toEqual({ 5: 1, 4: 0, 3: 0, 2: 0, 1: 0 })
-  })
-
-  it("computes correct average with multiple ratings", async () => {
-    mockPrisma.presence.findUnique.mockResolvedValue(null)
-    mockPrisma.devicePresence.count.mockResolvedValue(0)
-    mockPrisma.rating.groupBy.mockResolvedValue([
-      { rating: 5, _count: { _all: 5 } },
-      { rating: 4, _count: { _all: 3 } },
-      { rating: 3, _count: { _all: 1 } },
-    ])
-    mockPrisma.presenceActiveDevice.deleteMany.mockResolvedValue({ count: 0 })
-    mockPrisma.presenceActiveDevice.count.mockResolvedValue(0)
-
-    const r = await submitRating("yt", 4)
-    expect(r.avg).toBe(4.4)
-    expect(r.count).toBe(9)
-  })
-})
-
-describe("hasDiscordRated / markDiscordRated", () => {
-  beforeEach(() => vi.clearAllMocks())
-
-  it("returns true/false based on count", async () => {
-    mockPrisma.rating.count.mockResolvedValueOnce(0).mockResolvedValueOnce(1)
-    expect(await hasDiscordRated("yt", "discord_123")).toBe(false)
-    expect(await hasDiscordRated("yt", "discord_123")).toBe(true)
-    expect(mockPrisma.rating.count).toHaveBeenCalledWith({
-      where: { slug: "yt", discordUserId: "discord_123" },
-    })
-  })
-
-  it("markDiscordRated is a no-op", async () => {
-    await expect(markDiscordRated("yt", "discord_123")).resolves.toBeUndefined()
-  })
-})
-
-describe("getUserRating / setUserRating", () => {
-  beforeEach(() => vi.clearAllMocks())
-
-  it("returns null when no rating exists", async () => {
-    mockPrisma.rating.findUnique.mockResolvedValue(null)
-    expect(await getUserRating("yt", "discord_123")).toBeNull()
-  })
-
-  it("returns parsed rating", async () => {
-    mockPrisma.rating.findUnique.mockResolvedValue({
-      slug: "yt",
-      discordUserId: "discord_123",
-      rating: 4,
-      hasComment: true,
-      commentId: "cmt_1",
-    })
-    const r = await getUserRating("yt", "discord_123")
-    expect(r).toEqual({ rating: 4, hasComment: true, commentId: "cmt_1" })
-    expect(mockPrisma.rating.findUnique).toHaveBeenCalledWith({
-      where: { slug_discordUserId: { slug: "yt", discordUserId: "discord_123" } },
-    })
-  })
-
-  it("omits commentId when null in db", async () => {
-    mockPrisma.rating.findUnique.mockResolvedValue({
-      slug: "yt",
-      discordUserId: "discord_123",
-      rating: 5,
-      hasComment: false,
-      commentId: null,
-    })
-    const r = await getUserRating("yt", "discord_123")
-    expect(r).toEqual({ rating: 5, hasComment: false, commentId: undefined })
-  })
-
-  it("upserts rating fields", async () => {
-    mockPrisma.rating.upsert.mockResolvedValue({})
-    await setUserRating("yt", "discord_123", 5, true, "cmt_1")
-    expect(mockPrisma.rating.upsert).toHaveBeenCalledWith({
-      where: { slug_discordUserId: { slug: "yt", discordUserId: "discord_123" } },
-      create: { slug: "yt", discordUserId: "discord_123", rating: 5, hasComment: true, commentId: "cmt_1" },
-      update: { rating: 5, hasComment: true, commentId: "cmt_1", updatedAt: expect.any(Date) },
-    })
-  })
-
-  it("omits commentId when not provided", async () => {
-    mockPrisma.rating.upsert.mockResolvedValue({})
-    await setUserRating("yt", "discord_123", 3, false)
-    expect(mockPrisma.rating.upsert).toHaveBeenCalledWith({
-      where: { slug_discordUserId: { slug: "yt", discordUserId: "discord_123" } },
-      create: { slug: "yt", discordUserId: "discord_123", rating: 3, hasComment: false, commentId: undefined },
-      update: { rating: 3, hasComment: false, commentId: undefined, updatedAt: expect.any(Date) },
-    })
-  })
-})
-
-describe("removeUserRating", () => {
-  beforeEach(() => vi.clearAllMocks())
-
-  it("deletes rating by slug and discordId", async () => {
-    mockPrisma.rating.deleteMany.mockResolvedValue({ count: 1 })
-    await removeUserRating("yt", "discord_123")
-    expect(mockPrisma.rating.deleteMany).toHaveBeenCalledWith({
-      where: { slug: "yt", discordUserId: "discord_123" },
     })
   })
 })
@@ -495,64 +327,6 @@ describe("getAllPresenceSlugs", () => {
   it("returns empty when none", async () => {
     mockPrisma.presence.findMany.mockResolvedValue([])
     expect(await getAllPresenceSlugs()).toEqual([])
-  })
-})
-
-describe("submitComment / getComments", () => {
-  beforeEach(() => vi.clearAllMocks())
-
-  it("creates and returns a comment entry", async () => {
-    mockPrisma.comment.create.mockResolvedValue({})
-    const entry = await submitComment("yt", {
-      rating: 5, comment: "Great!", authorName: "User",
-    })
-    expect(entry.id).toBeDefined()
-    expect(entry.createdAt).toBeDefined()
-    expect(entry.rating).toBe(5)
-    expect(entry.comment).toBe("Great!")
-    expect(entry.authorName).toBe("User")
-    expect(mockPrisma.comment.create).toHaveBeenCalledWith({
-      data: {
-        id: entry.id,
-        slug: "yt",
-        rating: 5,
-        comment: "Great!",
-        authorName: "User",
-        authorId: undefined,
-        authorAvatar: undefined,
-        anonymous: false,
-        createdAt: expect.any(Date),
-      },
-    })
-  })
-
-  it("handles undefined optional fields in submitComment", async () => {
-    mockPrisma.comment.create.mockResolvedValue({})
-    const entry = await submitComment("yt", {
-      rating: 3, authorName: undefined, authorAvatar: undefined,
-      anonymous: undefined, authorId: undefined, comment: undefined,
-    })
-    expect(entry.authorName).toBeUndefined()
-  })
-
-  it("returns empty array when no comments", async () => {
-    mockPrisma.comment.findMany.mockResolvedValue([])
-    expect(await getComments("yt")).toEqual([])
-    expect(mockPrisma.comment.findMany).toHaveBeenCalledWith({
-      where: { slug: "yt" },
-      orderBy: { createdAt: "desc" },
-    })
-  })
-
-  it("fetches and returns comments in reverse order", async () => {
-    mockPrisma.comment.findMany.mockResolvedValue([
-      { id: "id1", rating: 5, comment: "Great", authorName: "A", authorId: null, authorAvatar: null, anonymous: false, createdAt: new Date("2024-01-02") },
-      { id: "id2", rating: 3, comment: "Ok", authorName: "B", authorId: null, authorAvatar: null, anonymous: false, createdAt: new Date("2024-01-01") },
-    ])
-    const comments = await getComments("yt")
-    expect(comments).toHaveLength(2)
-    expect(comments[0].id).toBe("id1")
-    expect(comments[1].rating).toBe(3)
   })
 })
 
