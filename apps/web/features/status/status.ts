@@ -39,7 +39,7 @@ const emptyServices: StatusServiceReport[] = [
 ];
 
 export const getFallbackStatusReport = (): StatusReport => ({
-  generatedAt: new Date().toISOString(),
+  generatedAt: "",
   checkIntervalHours: 1,
   overallStatus: "unknown",
   services: emptyServices,

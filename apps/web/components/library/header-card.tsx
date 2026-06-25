@@ -22,7 +22,7 @@ type Props = {
 };
 
 export const HeaderCard: FC<Props> = ({ presence, isInstalled, isExtDetected, locale, needsUpdate, loading, onInstall, onUninstall }): ReactElement => {
-  const tCategories = useTranslations("MarketplacePage");
+  const tCategories = useTranslations("marketplace-page");
   const categoryLabel = tCategories(`categories.${presence.category}`);
 
   return (
@@ -38,8 +38,6 @@ export const HeaderCard: FC<Props> = ({ presence, isInstalled, isExtDetected, lo
         isExtDetected={isExtDetected}
         needsUpdate={needsUpdate}
         loading={loading}
-        slug={presence.slug}
-        commentCount={presence.ratingCount}
         onInstall={onInstall}
         onUninstall={onUninstall}
       />

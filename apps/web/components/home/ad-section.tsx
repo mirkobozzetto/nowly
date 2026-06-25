@@ -1,9 +1,14 @@
+"use client";
+
 import { AdSenseSlot } from "@/components/ads/adsense-slot";
-import { ADSENSE_ENABLED, LANDING_AD_SLOT } from "@/lib/constants";
+import { ADSENSE_CLIENT_ID, ADSENSE_ENABLED, LANDING_AD_SLOT } from "@/lib/constants";
+import { useAdStatus } from "@/providers/ad-status-provider";
 import type { FC, ReactElement } from "react";
 
 export const AdSection: FC = (): ReactElement | null => {
-  if (!ADSENSE_ENABLED || process.env.NODE_ENV === "development") {
+  const { loading, hasAds, adFree } = useAdStatus();
+
+  if (!ADSENSE_ENABLED || !ADSENSE_CLIENT_ID || !LANDING_AD_SLOT || loading || !hasAds || adFree) {
     return null;
   }
 

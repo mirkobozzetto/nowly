@@ -9,11 +9,11 @@ type Props = {
 };
 
 export const SupportedUrlsCard: FC<Props> = ({ urls }): ReactElement => {
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
 
   return (
     <Card>
-      <CardTitle>{t("supportedUrls")}</CardTitle>
+      <CardTitle>{t("supported-urls")}</CardTitle>
       <div className="flex flex-wrap gap-2">
         {urls.map((url, index) => (
           <span

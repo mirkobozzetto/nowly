@@ -1,14 +1,28 @@
 import react from "@vitejs/plugin-react"
+import { createHash } from "crypto"
 import "dotenv/config"
 import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "fs"
-import { createHash } from "crypto"
 import { dirname, join, resolve } from "path"
 import { fileURLToPath } from "url"
 import { build } from "vite"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, "..")
-const DIST = join(ROOT, "dist")
+
+// Chrome extension IDs are 16 bytes encoded as base-a-p (a=0…p=15).
+// This derives the equivalent Firefox UUID from a Chrome ID so both browsers
+// share the same underlying key identity.
+const chromeIdToFirefoxUuid = (chromeId: string): string => {
+  const hex = Array.from({ length: chromeId.length / 2 }, (_, i) => {
+    const hi = chromeId.charCodeAt(i * 2) - 0x61      // 'a' = 0
+    const lo = chromeId.charCodeAt(i * 2 + 1) - 0x61
+    return (hi * 16 + lo).toString(16).padStart(2, "0")
+  }).join("")
+  return `{${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}}`
+}
+
+const BROWSER = (process.argv[2] ?? "chrome") as "chrome" | "firefox"
+const DIST = join(ROOT, "dist", BROWSER)
 const WEBSITES_PRESENCES = join(ROOT, "..", "..", "packages", "websites", "dist", "presences")
 const GENERATED_DIR = join(ROOT, "src", "generated")
 
@@ -20,6 +34,7 @@ const define = {
   "import.meta.env.VITE_WEB_BASE_URL": JSON.stringify(webBaseUrl),
   "import.meta.env.VITE_API_BASE_URL": JSON.stringify(apiBaseUrl),
   "import.meta.env.VITE_CDN_BASE_URL": JSON.stringify(cdnBaseUrl),
+  "import.meta.env.BROWSER": JSON.stringify(BROWSER),
 }
 
 const buildPage = async (name: string, source = name) => {
@@ -72,17 +87,49 @@ const buildScript = async (name: string, entry: string) => {
 
 const copyManifest = () => {
   const manifest = JSON.parse(readFileSync(join(ROOT, "manifest.json"), "utf-8"))
-  manifest.background.service_worker = "background.js"
-  delete manifest.background.type
+
+  // Common mutations for all browsers
   manifest.content_scripts[0].js = ["content.js"]
-  delete manifest.action.default_popup
-  manifest.side_panel.default_path = "sidepanel/index.html"
   manifest.icons = {
     16: "icons/icon16.png",
     48: "icons/icon48.png",
     128: "icons/icon128.png",
   }
   manifest.action.default_icon = { ...manifest.icons }
+
+  if (BROWSER === "firefox") {
+    manifest.background = { scripts: ["background.js"] }
+    delete manifest.minimum_chrome_version
+    // userScripts is an optional-only permission on Firefox — declare it in optional_permissions
+    // and request it at runtime (Firefox 136+ MV3 userScripts API).
+    manifest.permissions = manifest.permissions
+      .filter((p: string) => p !== "userScripts" && p !== "sidePanel")
+    manifest.optional_permissions = [...(manifest.optional_permissions ?? []), "userScripts"]
+    delete manifest.side_panel
+    delete manifest.action.default_popup
+    manifest.sidebar_action = {
+      default_icon: manifest.icons,
+      default_panel: "sidepanel/index.html",
+      default_title: "__MSG_extensionName__",
+    }
+    // The Chromium-only `key` is rejected by Firefox; its ID comes from gecko.id.
+    delete manifest.key
+    manifest.browser_specific_settings = {
+      gecko: {
+        id: chromeIdToFirefoxUuid("abbegmindbabanjcabnmcjmamaoffbam"),
+        strict_min_version: "136.0",
+        // Required by AMO — declare data collection practices.
+        // "none" = nothing collected/transmitted. Update if that changes.
+        data_collection_permissions: { required: ["none"] },
+      },
+    }
+  } else {
+    manifest.background.service_worker = "background.js"
+    delete manifest.background.type
+    delete manifest.action.default_popup
+    manifest.side_panel.default_path = "sidepanel/index.html"
+  }
+
   writeFileSync(join(DIST, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`)
 }
 
@@ -94,7 +141,6 @@ const copyStatic = () => {
       join(DIST, "icons", `icon${size}.png`),
     )
   }
-  copyFileSync(join(ROOT, "..", "web", "public", "app_title_white.png"), join(DIST, "app_title_white.png"))
   cpSync(join(ROOT, "_locales"), join(DIST, "_locales"), { recursive: true })
 }
 
@@ -196,9 +242,9 @@ const copyPresenceAssets = (): void => {
 }
 
 await generateBundledPresences()
-await buildPage("sidepanel", "app")
-await buildScript("background", join(ROOT, "src", "background", "index.ts"))
-await buildScript("content", join(ROOT, "src", "content", "index.ts"))
+await buildPage("sidepanel", "entrypoints/sidepanel")
+await buildScript("background", join(ROOT, "src", "entrypoints", "background", "index.ts"))
+await buildScript("content", join(ROOT, "src", "entrypoints", "content", "index.ts"))
 copyManifest()
 copyStatic()
 copyPresenceAssets()

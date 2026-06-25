@@ -3,9 +3,8 @@
 import { Spinner } from "@/components/ui/spinner";
 import { useOs } from "@/hooks/use-os";
 import { cn } from "@/lib/utils";
-import { Download, Trash2, Users } from "lucide-react";
+import { Download, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 import type { FC } from "react";
 
 type Props = {
@@ -13,8 +12,6 @@ type Props = {
   isExtDetected: boolean
   needsUpdate: boolean
   loading: boolean
-  slug: string
-  commentCount: number
   onInstall: () => void
   onUninstall: () => void
 };
@@ -24,12 +21,10 @@ export const PresenceHeaderActions: FC<Props> = ({
   isExtDetected,
   needsUpdate,
   loading,
-  slug,
-  commentCount,
   onInstall,
   onUninstall,
 }) => {
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
   const os = useOs();
   const isMobileOs = os === "android" || os === "ios";
 
@@ -54,7 +49,7 @@ export const PresenceHeaderActions: FC<Props> = ({
             )}
           >
             {loading ? <Spinner /> : <Download className="w-4 h-4" />}
-            {loading ? t("installing") : needsUpdate ? t("updateAction") : t("installAction")}
+            {loading ? t("installing") : needsUpdate ? t("update-action") : t("install-action")}
           </button>
         )}
 
@@ -64,18 +59,10 @@ export const PresenceHeaderActions: FC<Props> = ({
             className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-destructive/10 px-4 py-2 text-sm font-semibold text-destructive transition-all border border-destructive/20 hover:bg-destructive/20 sm:w-auto sm:py-1.5"
           >
             <Trash2 className="w-4 h-4" />
-            {t("uninstallAction")}
+            {t("uninstall-action")}
           </button>
         )}
       </div>
-
-      <Link
-        href={`/library/${slug}/comments`}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-transparent px-4 py-2 text-sm font-semibold text-muted-foreground transition-all hover:border-border-light hover:bg-card-2 hover:text-foreground sm:w-auto sm:py-1.5"
-      >
-        <Users className="w-4 h-4" />
-        {t("community")} ({commentCount})
-      </Link>
     </div>
   );
 };

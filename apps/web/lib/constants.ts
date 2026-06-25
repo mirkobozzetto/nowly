@@ -16,10 +16,10 @@ export const EXTENSION_ID = clientEnv.NEXT_PUBLIC_EXTENSION_ID;
 export const PROJECT_EXTENSION_DOWNLOAD_URL = `https://chromewebstore.google.com/detail/nowly/${EXTENSION_ID}`;
 export const PROJECT_EXTENSION_FILENAME = "Nowly-Extension.zip";
 
-export const ADSENSE_CLIENT_ID = "ca-pub-6330177306711077";
-export const ADSENSE_ENABLED = false;
-export const LANDING_AD_SLOT = "4584618586";
-export const LIBRARY_AD_SLOT = "8815663161";
+export const ADSENSE_CLIENT_ID = clientEnv.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+export const ADSENSE_ENABLED = clientEnv.NEXT_PUBLIC_ADSENSE_ENABLED;
+export const LANDING_AD_SLOT = clientEnv.NEXT_PUBLIC_ADSENSE_LANDING_SLOT;
+export const LIBRARY_AD_SLOT = clientEnv.NEXT_PUBLIC_ADSENSE_LIBRARY_SLOT;
 
 export const HOST_VERSION_URL = "https://nowly.me/host/version";
 

@@ -1,6 +1,7 @@
 "use client";
 
 import type { FC, ReactNode } from "react";
+import { AdStatusProvider } from "./ad-status-provider";
 import { QueryProvider } from "./query-provider";
 
 type Props = {
@@ -8,5 +9,9 @@ type Props = {
 };
 
 export const Providers: FC<Props> = ({ children }) => {
-  return <QueryProvider>{children}</QueryProvider>;
+  return (
+    <QueryProvider>
+      <AdStatusProvider>{children}</AdStatusProvider>
+    </QueryProvider>
+  );
 };

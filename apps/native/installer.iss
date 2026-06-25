@@ -1,7 +1,7 @@
-; Nowly Native Host Installer
+; Nowly Host Installer
 ; Inno Setup script
 
-#define MyAppName "Nowly Native Host"
+#define MyAppName "Nowly Host"
 #define MyAppPublisher "Nowly"
 #define MyAppURL "https://nowly.me"
 #define MyAppExeName "nowly-host.exe"
@@ -88,8 +88,8 @@ begin
 
     SaveStringToFile(ManifestPath, Manifest, False);
 
-    // Firefox manifest — uses allowed_extensions (UUID) instead of allowed_origins
-    // TODO: add prod extension ID alongside dev ID when available
+    // Firefox manifest — uses allowed_extensions instead of allowed_origins.
+    // Dev UUID is derived from the Chrome dev ID; prod ID is the AMO gecko.id.
     FirefoxManifestPath := ExpandConstant('{app}\{#HostName}-firefox.json');
     FirefoxManifest :=
       '{' + #13#10 +
@@ -98,7 +98,8 @@ begin
       '  "path": "' + HostPath + '",' + #13#10 +
       '  "type": "stdio",' + #13#10 +
       '  "allowed_extensions": [' + #13#10 +
-      '    "abbegmindbabanjcabnmcjmamaoffbam"' + #13#10 +
+      '    "{01146c8d-3101-0d92-01dc-29c0c0e5510c}",' + #13#10 +
+      '    "nowly@nowly.me"' + #13#10 +
       '  ]' + #13#10 +
       '}';
 

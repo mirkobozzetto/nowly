@@ -7,7 +7,9 @@ import { usePresences } from "@/hooks/use-presences";
 import { trackPublicAnalytics } from "@/lib/analytics-client";
 import { CATEGORIES } from "@/lib/data/categories";
 import { type PresenceCategory } from "@/lib/data/presences";
-import { AlertCircle, RefreshCcw } from "lucide-react";
+import { ADSENSE_ENABLED } from "@/lib/constants";
+import { useAdStatus } from "@/providers/ad-status-provider";
+import { AlertCircle, ChevronLeft, ChevronRight, RefreshCcw } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -19,12 +21,16 @@ type SortOption = "name-asc" | "name-desc" | "popular" | "recent";
 
 export const MarketplaceClient: FC = (): ReactElement => {
   const locale = useLocale();
-  const t = useTranslations("MarketplacePage");
+  const t = useTranslations("marketplace-page");
   const { data: presences, isLoading, isError, refetch } = usePresences();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<PresenceCategory[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>("popular");
+  const { hasAds, adFree } = useAdStatus();
+  const [currentPage, setCurrentPage] = useState(1);
   const lastFilterEventRef = useRef("");
+
+  const itemsPerPage = ADSENSE_ENABLED && hasAds && !adFree ? 8 : 9;
 
   const availableCategories = useMemo<PresenceCategory[]>(() => {
     if (!presences) return [];
@@ -82,6 +88,16 @@ export const MarketplaceClient: FC = (): ReactElement => {
     return result;
   }, [searchQuery, selectedCategories, sortBy, presences]);
 
+  const totalPages = Math.max(1, Math.ceil(filteredPresences.length / itemsPerPage));
+  const paginatedPresences = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredPresences.slice(start, start + itemsPerPage);
+  }, [filteredPresences, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategories, sortBy]);
+
   const toggleCategory = (category: PresenceCategory): void => {
     setSelectedCategories((prev) =>
       prev.includes(category)
@@ -126,7 +142,7 @@ export const MarketplaceClient: FC = (): ReactElement => {
 
         <MarketplaceSearch
           value={searchQuery}
-          placeholder={t("searchPlaceholder")}
+          placeholder={t("search-placeholder")}
           onChange={setSearchQuery}
         />
 
@@ -138,11 +154,61 @@ export const MarketplaceClient: FC = (): ReactElement => {
           onSortChange={setSortBy}
         />
 
-        <div className="text-sm text-dim-foreground mb-6">
-          {isLoading ? (
-            <Skeleton className="h-4 w-24 inline-block" />
-          ) : (
-            t("results", { count: filteredPresences.length })
+        <div className="flex items-center justify-between mb-6">
+          <div className="text-sm text-dim-foreground">
+            {isLoading ? (
+              <Skeleton className="h-4 w-24 inline-block" />
+            ) : (
+              t("results", { count: filteredPresences.length })
+            )}
+          </div>
+
+          {(totalPages > 1 || isLoading) && (
+            <div className="flex items-center gap-1">
+              {isLoading ? (
+                <>
+                  <Skeleton className="w-8 h-8 rounded-lg" />
+                  {Array.from({ length: 3 }, (_, i) => (
+                    <Skeleton key={i} className="w-8 h-8 rounded-lg" />
+                  ))}
+                  <Skeleton className="w-8 h-8 rounded-lg" />
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage <= 1}
+                    className="p-1.5 rounded-lg hover:bg-accent/10 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                    aria-label="Previous page"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => setCurrentPage(page)}
+                      className={`min-w-8 h-8 text-sm rounded-lg transition-colors ${
+                        page === currentPage
+                          ? "bg-accent text-accent-foreground font-medium"
+                          : "hover:bg-accent/10 text-dim-foreground"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage >= totalPages}
+                    className="p-1.5 rounded-lg hover:bg-accent/10 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                    aria-label="Next page"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </>
+              )}
+            </div>
           )}
         </div>
 
@@ -164,11 +230,12 @@ export const MarketplaceClient: FC = (): ReactElement => {
 
         {!isLoading && !isError && (
           <MarketplaceGrid
-            platforms={filteredPresences}
+            platforms={paginatedPresences}
             locale={locale}
             onReset={() => {
               setSearchQuery("");
               setSelectedCategories([]);
+              setCurrentPage(1);
             }}
           />
         )}

@@ -11,18 +11,13 @@ import { HeaderCard } from "../header-card";
 import { InstallVersionsCard } from "../install-versions-card";
 // import { PresenceVersionUpdatesCard } from "../presence-version-updates-card";
 import { SettingsCard } from "../settings-card";
-import { StatsCard } from "../stats-card";
 import { SupportedUrlsCard } from "../supported-urls-card";
-
 type Props = {
   presence: Presence;
   isInstalled: boolean;
   extDetected: boolean;
   needsUpdate: boolean;
-  installedVersion: string | null;
   loading: boolean;
-  totalInstalls: number;
-  savedRating: number;
   onInstall: () => void;
   onUninstall: () => void;
   onInstallVersion: (version: string) => void;
@@ -34,13 +29,11 @@ export const PresenceDetailContent: FC<Props> = ({
   extDetected,
   needsUpdate,
   loading,
-  totalInstalls,
-  savedRating,
   onInstall,
   onUninstall,
 }): ReactElement => {
   const locale = useLocale();
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
 
   return (
     <PageLayout>
@@ -49,7 +42,7 @@ export const PresenceDetailContent: FC<Props> = ({
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/library">
-                {t("breadcrumbHome")}
+                {t("breadcrumb-home")}
               </BreadcrumbLink>
             </BreadcrumbItem>
 
@@ -87,14 +80,6 @@ export const PresenceDetailContent: FC<Props> = ({
             {presence.settings && Object.keys(presence.settings).length > 0
               ? <SettingsCard platform={presence} />
               : <SupportedUrlsCard urls={presence.supportedUrls} />}
-
-            <StatsCard
-              platform={{ ...presence, totalInstalls }}
-              locale={locale}
-              slug={presence.slug}
-              canRate={extDetected && isInstalled}
-              savedRating={savedRating}
-            />
 
             <InstallVersionsCard platform={presence} />
 

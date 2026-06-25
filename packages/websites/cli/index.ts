@@ -10,7 +10,7 @@ import { Command } from "commander"
 import "dotenv/config"
 
 const program = new Command()
-  .name("presence")
+  .name("cli")
   .description("Nowly presence manager — create, build, validate, and test presences")
   .version("1.0.0")
 

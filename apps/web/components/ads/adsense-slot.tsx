@@ -2,6 +2,7 @@
 
 import { ADSENSE_CLIENT_ID, ADSENSE_ENABLED } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { useAdStatus } from "@/providers/ad-status-provider";
 import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 import { useEffect, useMemo, useRef } from "react";
@@ -29,16 +30,14 @@ export const AdSenseSlot: FC<Props> = ({
   minHeight = "180px",
   showLabel = true,
 }): ReactElement => {
-  if (!ADSENSE_ENABLED || process.env.NODE_ENV === "development") {
-    return <></>;
-  }
-
-  const t = useTranslations("Ads");
+  const t = useTranslations("ads");
+  const { loading, hasAds, adFree } = useAdStatus();
   const hasPushed = useRef(false);
   const isConfigured = useMemo(() => isConfiguredSlot(slot), [slot]);
+  const canRenderAds = ADSENSE_ENABLED && Boolean(ADSENSE_CLIENT_ID) && !loading && hasAds && !adFree;
 
   useEffect(() => {
-    if (!isConfigured || hasPushed.current) return;
+    if (!canRenderAds || !isConfigured || hasPushed.current) return;
 
     try {
       window.adsbygoogle = window.adsbygoogle || [];
@@ -47,7 +46,11 @@ export const AdSenseSlot: FC<Props> = ({
     } catch {
       hasPushed.current = false;
     }
-  }, [isConfigured]);
+  }, [canRenderAds, isConfigured]);
+
+  if (!canRenderAds) {
+    return <></>;
+  }
 
   return (
     <div

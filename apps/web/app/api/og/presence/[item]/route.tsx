@@ -13,9 +13,6 @@ type PresenceRelease = {
   metadata: PresenceMetadata
   totalInstalls?: number
   activeUsers?: number
-  rating?: number
-  ratingCount?: number
-  ratingDistribution?: Record<number, number>
   addedAt?: string
   lastUpdated?: string
 };
@@ -88,7 +85,7 @@ const renderPresenceOg = (presence: Presence): ImageResponse => {
         }}
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <img alt="Nowly" src="https://nowly.me/app_title_white.png" width={150} />
+          <img alt="Nowly" src="https://cdn.nowly.me/assets/app_title.png" width={150} />
         </div>
 
         <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 42 }}>
@@ -136,7 +133,7 @@ const renderPresenceOg = (presence: Presence): ImageResponse => {
                       src={
                         person.github
                           ? `https://github.com/${person.github}.png?size=92`
-                          : "https://nowly.me/app_navbar_mobile_icon_white.png"}
+                          : "https://cdn.nowly.me/assets/app_icon.png"}
                       width={45}
                       height={45}
                       alt=""
@@ -180,9 +177,6 @@ export const GET = async (_request: Request, { params }: Props) => {
       ...data.metadata,
       totalInstalls: data.totalInstalls,
       activeUsers: data.activeUsers,
-      rating: data.rating,
-      ratingCount: data.ratingCount,
-      ratingDistribution: data.ratingDistribution,
     });
 
     return renderPresenceOg(presence);

@@ -40,16 +40,16 @@ function formatRelativeTime(locale: string, generatedAt: string): string {
 }
 
 export default async function StatusPage(): Promise<ReactElement> {
-  const t = await getTranslations("StatusPage");
+  const t = await getTranslations("status-page");
   const locale = await getLocale();
   const report = await fetchStatusReport();
 
   const labels: Record<ServiceStatus, string> = {
-    operational: t("statusLabels.operational"),
-    slow: t("statusLabels.slow"),
-    degraded: t("statusLabels.degraded"),
-    down: t("statusLabels.down"),
-    unknown: t("statusLabels.unknown"),
+    operational: t("status-labels.operational"),
+    slow: t("status-labels.slow"),
+    degraded: t("status-labels.degraded"),
+    down: t("status-labels.down"),
+    unknown: t("status-labels.unknown"),
   };
 
   return (
@@ -71,7 +71,7 @@ export default async function StatusPage(): Promise<ReactElement> {
       <section className="overflow-hidden rounded-2xl border border-border bg-card">
         <div className="border-b border-border px-5 py-4">
           <h2 className="font-semibold text-foreground">
-            {t("checkedHistory", { time: formatRelativeTime(locale, report.generatedAt) })}
+            {report.generatedAt ? t("checked-history", { time: formatRelativeTime(locale, report.generatedAt) }) : t("last-checked")}
           </h2>
         </div>
 
@@ -100,7 +100,7 @@ export default async function StatusPage(): Promise<ReactElement> {
                     </h3>
 
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {latency ?? t("noData")}
+                      {latency ?? t("no-data")}
                     </p>
                   </div>
                 </div>
@@ -121,8 +121,8 @@ export default async function StatusPage(): Promise<ReactElement> {
                     service={service}
                     locale={locale}
                     labels={labels}
-                    noData={t("noData")}
-                    historyLabel={t("historyLabel")}
+                    noData={t("no-data")}
+                    historyLabel={t("history-label")}
                   />
                 </div>
               </article>

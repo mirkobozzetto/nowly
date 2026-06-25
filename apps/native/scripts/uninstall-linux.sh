@@ -14,7 +14,7 @@ MANIFEST_DIRS=(
   "${HOME}/.mozilla/native-messaging-hosts"
 )
 
-echo "Uninstalling Nowly Native Host..."
+echo "Uninstalling Nowly Host..."
 
 # Remove manifests
 for dir in "${MANIFEST_DIRS[@]}"; do

@@ -13,7 +13,7 @@ interface SponsorModalProps {
 }
 
 export function SponsorModal({ isOpen, onClose, downloadOnAction = false }: SponsorModalProps) {
-  const t = useTranslations("SponsorModal");
+  const t = useTranslations("sponsor-modal");
 
   const triggerDownload = () => {
     const a = document.createElement("a");

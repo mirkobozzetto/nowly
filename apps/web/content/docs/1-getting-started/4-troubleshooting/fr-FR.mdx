@@ -1,34 +1,60 @@
 ---
 title: Dépannage
-description: Résolvez les problèmes courants d'installation de Nowly, de détection d'extension, d'hôte natif et de Discord Rich Presence.
+description: Corrigez les problèmes Nowly Host absent, Discord Desktop fermé, présence absente, activité absente, URL non supportée et permissions manquantes.
 ---
 
-## Le statut Discord ne se met pas à jour
+## Commencer par le diagnostic
 
-Vérifiez d'abord ces éléments&nbsp;:
+Ouvrez le panneau latéral de l'extension et lisez chaque ligne séparément :
 
-- Discord Desktop est en cours d'exécution.
-- L'application hôte Nowly est installée.
-- L'extension navigateur Nowly est activée.
-- La presence pour le site web actuel est installée.
-- L'URL actuelle correspond aux URL prises en charge de la presence.
+- Extension installée
+- Scripts utilisateur actifs
+- Nowly Host détecté
+- Discord connecté
+- Présence installée
+- Activité détectée
 
-## Extension non détectée
+Ne vous fiez pas à un statut global. La ligne manquante indique la prochaine action.
 
-Rechargez la page après avoir installé ou activé l'extension. Les scripts de contenu du navigateur nécessitent généralement un rafraîchissement de la page avant d'être disponibles.
+## Nowly Host n'est pas détecté
 
-## Hôte natif introuvable
+Message affiché : **Nowly Host n'est pas détecté.**
 
-L'application hôte native est distincte de l'extension navigateur. Si le panneau de l'extension signale que l'hôte est manquant, réinstallez l'application hôte pour votre système d'exploitation.
+Installez Nowly Host depuis la [page Nowly Host](/host), puis cliquez sur **Vérifier la connexion** dans l'extension. Si vous venez de l'installer, fermez et rouvrez le panneau latéral.
 
-## Presence ne s'exécute pas
+## Discord Desktop est fermé
 
-La presence ne s'exécute que sur les URL prises en charge. Vérifiez la section URL prises en charge sur la page de détail de la presence et comparez-la avec l'URL actuelle du navigateur.
+Message affiché : **Nowly Host est installé mais Discord Desktop n'est pas ouvert.**
 
-## Problèmes IPC Discord
+Ouvrez Discord Desktop, attendez quelques secondes, puis cliquez sur **Vérifier la connexion**. Discord dans le navigateur ne peut pas recevoir les mises à jour Rich Presence locales.
 
-Nowly envoie l'activité au client de bureau Discord via IPC local. Si Discord a été démarré après Nowly, rechargez l'onglet actif ou redémarrez le navigateur.
+## Aucune présence n'est installée
 
-<CalloutWarning>
-Nowly ne peut pas mettre à jour Discord Rich Presence si l'application de bureau Discord est fermée.
-</CalloutWarning>
+Installez une présence depuis la bibliothèque. Pour le test le plus rapide, installez la [présence YouTube](/library/youtube), puis ouvrez YouTube.
+
+## Aucune activité n'est détectée
+
+Vérifiez que :
+
+- la présence correspondante est installée et activée
+- l'URL actuelle est compatible avec cette présence
+- les scripts utilisateur sont actifs
+- la page a été rechargée après l'installation de la présence
+
+## URL non supportée
+
+Ouvrez la page de détail de la présence et comparez votre URL actuelle avec la liste **URL compatibles**. Si le site a changé d'adresse ou de structure, signalez la présence depuis la page support.
+
+## Permissions manquantes
+
+Ouvrez les paramètres d'extension de votre navigateur et vérifiez que :
+
+- Nowly est activée
+- les scripts utilisateur sont autorisés
+- l'accès au site est autorisé pour le site actuel
+
+Après une modification de permission, rechargez l'onglet du site et rouvrez le panneau latéral de l'extension.
+
+## Copier un diagnostic support
+
+Le diagnostic de l'extension contient un bouton **Copier support**. Il copie l'état Nowly Host, Discord, présence et activité sans exposer de logs techniques.

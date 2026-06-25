@@ -5,8 +5,8 @@ import type { FC, ReactElement } from "react";
 const icons = [MonitorCheck, ShieldCheck, ServerOff] as const;
 
 export const HostTrust: FC = (): ReactElement => {
-  const t = useTranslations("HostPage");
-  const items = t.raw("trustItems") as Array<{
+  const t = useTranslations("host-page");
+  const items = t.raw("trust-items") as Array<{
     title: string
     description: string
   }>;
@@ -15,13 +15,13 @@ export const HostTrust: FC = (): ReactElement => {
     <section className="mb-16">
       <div className="mb-8">
         <span className="text-accent font-bold uppercase tracking-widest text-xs mb-4 block">
-          {t("trustBadge")}
+          {t("trust-badge")}
         </span>
         <h2 className="text-2xl font-bold tracking-tight mb-3">
-          {t("trustTitle")}
+          {t("trust-title")}
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          {t("trustDescription")}
+          {t("trust-description")}
         </p>
       </div>
 

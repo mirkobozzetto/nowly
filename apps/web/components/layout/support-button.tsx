@@ -8,8 +8,8 @@ import type { FC } from "react";
 import { useState } from "react";
 
 export const SupportButton: FC = () => {
+  const t = useTranslations("footer");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const t = useTranslations("Footer");
 
   const handleSupport = (): void => {
     setIsModalOpen(true);

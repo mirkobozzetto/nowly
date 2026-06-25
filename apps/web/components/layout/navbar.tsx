@@ -11,7 +11,7 @@ import type { FC, ReactElement } from "react";
 
 export const Navbar: FC = (): ReactElement => {
   const browser = useBrowser();
-  const t = useTranslations("Navbar");
+  const t = useTranslations("navbar");
 
   return (
     <nav
@@ -22,8 +22,8 @@ export const Navbar: FC = (): ReactElement => {
     >
       <div className="mx-auto w-full max-w-300 min-w-0 px-6">
         <div className="flex min-w-0 items-center justify-between">
-          <Link href="/" className="min-w-0 shrink-0">
-            <img src="/app_title_white.png" alt="Nowly" className="h-8 w-auto" />
+          <Link href="/" className="min-w-0 shrink-0 cursor-pointer select-none">
+            <img src="https://cdn.nowly.me/assets/app_title.png" alt="Nowly" className="h-8 w-auto" />
           </Link>
 
           {/* Mobile: hamburger menu */}
@@ -84,9 +84,9 @@ export const Navbar: FC = (): ReactElement => {
               <Download size={16} />
 
               <span className="hidden sm:inline">
-                {browser ? t("downloadFor", { browser }) : t("downloadDesktop")}
+                {browser ? t("download-for", { browser }) : t("download-desktop")}
               </span>
-              <span className="sm:hidden">{browser || t("downloadShort")}</span>
+              <span className="sm:hidden">{browser || t("download-short")}</span>
             </Link>
           </div>
         </div>

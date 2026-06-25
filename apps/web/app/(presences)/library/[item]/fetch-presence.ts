@@ -6,9 +6,6 @@ export interface PresenceRelease {
   metadata: PresenceMetadata
   totalInstalls?: number
   activeUsers?: number
-  rating?: number
-  ratingCount?: number
-  ratingDistribution?: Record<number, number>
   addedAt?: string
   lastUpdated?: string
 }

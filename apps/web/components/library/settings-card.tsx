@@ -18,7 +18,7 @@ const inferType = (value: unknown): string => {
 
 export const SettingsCard: FC<Props> = ({ platform }): ReactElement | null => {
   const locale = useLocale();
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
 
   if (!platform.settings || Object.keys(platform.settings).length === 0) return null;
 

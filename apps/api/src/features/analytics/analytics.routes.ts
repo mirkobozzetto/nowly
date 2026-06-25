@@ -1,25 +1,26 @@
-import { requireAnalyticsAccess } from "./analytics.middleware"
-import { analyticsRegistry, getAnalyticsMetric } from "./analytics.metric"
-import { deleteDeviceAnalytics, getMetricRows, recordAnalyticsEvents, syncDevice, upsertDevice } from "./analytics.service"
 import { clearActiveDevicesForDevice } from "@/features/presence/presence.repository"
+import { analyticsConsentBodySchema, analyticsEventsBodySchema, deviceSyncBodySchema } from "@nowly/shared/schemas"
 import type { FastifyInstance } from "fastify"
+import { analyticsRegistry, getAnalyticsMetric } from "./analytics.metric"
+import { requireAnalyticsAccess } from "./analytics.middleware"
+import { deleteDeviceAnalytics, exportDeviceAnalytics, getMetricRows, recordAnalyticsEvents, syncDevice, upsertDevice } from "./analytics.service"
+import { deriveDeviceToken, requireDeviceAccess } from "./device-token"
 
 export const analyticsRoutes = async (fastify: FastifyInstance) => {
   fastify.post("/consent", async (request, reply) => {
-    const body = request.body as { deviceId?: string; analyticsConsent?: boolean }
-    const deviceId = body.deviceId?.trim()
-    if (!deviceId) return reply.status(400).send({ error: "deviceId is required" })
+    const parsed = analyticsConsentBodySchema.safeParse(request.body)
+    if (!parsed.success) return reply.status(400).send({ error: "Invalid request body" })
+    if (!requireDeviceAccess(request, reply, parsed.data.deviceId)) return
 
-    await upsertDevice({ deviceId, analyticsConsent: body.analyticsConsent === true })
+    await upsertDevice({ deviceId: parsed.data.deviceId, analyticsConsent: parsed.data.analyticsConsent === true })
     return { ok: true }
   })
 
   fastify.post("/events", async (request, reply) => {
-    const body = request.body as { events?: unknown[] }
-    const events = Array.isArray(body.events) ? body.events : []
-    if (events.length > 100) return reply.status(400).send({ error: "Too many events" })
+    const parsed = analyticsEventsBodySchema.safeParse(request.body)
+    if (!parsed.success) return reply.status(400).send({ error: "Invalid request body" })
 
-    const result = await recordAnalyticsEvents(events as any)
+    const result = await recordAnalyticsEvents(parsed.data.events)
     return { ok: true, ...result }
   })
 
@@ -47,8 +48,19 @@ export const analyticsRoutes = async (fastify: FastifyInstance) => {
     return { slug, installs, activeUsers, ratings }
   })
 
-  fastify.delete<{ Params: { deviceId: string } }>("/device/:deviceId", async (request, _reply) => {
+  fastify.get<{ Params: { deviceId: string }; Querystring: { token?: string } }>("/device/:deviceId/export", async (request, reply) => {
     const deviceId = request.params.deviceId.trim()
+    if (!requireDeviceAccess(request, reply, deviceId)) return
+
+    const data = await exportDeviceAnalytics(deviceId)
+    if (!data) return reply.status(404).send({ error: "Device not found" })
+    return data
+  })
+
+  fastify.delete<{ Params: { deviceId: string }; Querystring: { token?: string } }>("/device/:deviceId", async (request, reply) => {
+    const deviceId = request.params.deviceId.trim()
+    if (!requireDeviceAccess(request, reply, deviceId)) return
+
     await deleteDeviceAnalytics(deviceId)
     return { ok: true }
   })
@@ -61,25 +73,17 @@ export const register = async (app: FastifyInstance): Promise<void> => {
 
 export const deviceRoutes = async (fastify: FastifyInstance) => {
   fastify.post("/sync", async (request, reply) => {
-    const body = request.body as {
-      deviceId?: string;
-      analyticsConsent?: boolean;
-      extensionVersion?: string;
-      nativeVersion?: string;
-      browser?: string;
-      os?: string;
-      locale?: string;
-      presences?: Array<{ slug: string; version?: string; enabled?: boolean; installed?: boolean }>
-    }
-    const deviceId = body.deviceId?.trim()
-    if (!deviceId) return reply.status(400).send({ error: "deviceId is required" })
+    const parsed = deviceSyncBodySchema.safeParse(request.body)
+    if (!parsed.success) return reply.status(400).send({ error: "Invalid request body" })
 
-    await syncDevice({ ...body, deviceId })
-    return { ok: true }
+    await syncDevice(parsed.data)
+    return { ok: true, deviceToken: deriveDeviceToken(parsed.data.deviceId) }
   })
 
-  fastify.delete<{ Params: { deviceId: string } }>("/:deviceId", async (request, _reply) => {
+  fastify.delete<{ Params: { deviceId: string }; Querystring: { token?: string } }>("/:deviceId", async (request, reply) => {
     const deviceId = request.params.deviceId.trim()
+    if (!requireDeviceAccess(request, reply, deviceId)) return
+
     await clearActiveDevicesForDevice(deviceId)
     await recordAnalyticsEvents([{ key: "uninstall_cleanup_received", deviceId, payload: { source: "device-delete" } }])
     return { ok: true }

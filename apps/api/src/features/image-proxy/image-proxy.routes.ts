@@ -48,9 +48,26 @@ const services: ImageProxyService[] = [
     hostSuffixes: ["apple.com", "tv.apple.com"],
   },
   {
+    id: "github",
+    hostSuffixes: [
+      "github.com",
+      "github.blog",
+      "githubassets.com",
+      "githubusercontent.com",
+      "githubnext.com",
+      "githubuniverse.com",
+    ],
+    headers: { "User-Agent": "Nowly/1.0" },
+  },
+  {
     id: "tiktok",
     hostSuffixes: ["tiktokcdn.com", "tiktokcdn-eu.com", "tiktokcdn-us.com", "tiktokv.com"],
     headers: { Referer: "https://www.tiktok.com/" },
+  },
+  {
+    id: "canalplus",
+    hostSuffixes: ["thumb.canalplus.pro"],
+    headers: { Referer: "https://www.canalplus.com/" },
   },
   {
     id: "generic",

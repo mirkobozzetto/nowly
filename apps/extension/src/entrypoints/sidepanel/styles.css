@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+:root, [data-theme="default"] {
+  --background: #050505;
+  --surface: #0a0a0c;
+  --card: #111113;
+  --card-2: #18181b;
+  --card-hover: #1f1f22;
+  --accent: #22d3ee;
+  --discord: #5865f2;
+  --success: #22c55e;
+  --destructive: #ef4444;
+  --foreground: #ffffff;
+  --muted-foreground: #a1a1aa;
+  --dim-foreground: #52525b;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.12);
+  --radius: 0.5rem;
+}
+
+[data-theme="donator"] {
+  --accent: #FEE961;
+}
+
+[data-theme="fleuri"] {
+  --accent: #DA47D0;
+}
+
+[data-theme="violet"] {
+  --accent: #A78BFA;
+}
+
+[data-theme="vert"] {
+  --accent: #4ADE80;
+}
+
+[data-theme="orange"] {
+  --accent: #FB923C;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-card-2: var(--card-2);
+  --color-card-hover: var(--card-hover);
+  --color-accent: var(--accent);
+  --color-discord: var(--discord);
+  --color-success: var(--success);
+  --color-destructive: var(--destructive);
+  --color-foreground: var(--foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-dim-foreground: var(--dim-foreground);
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+  --radius-lg: var(--radius);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--card-hover);
+  border-radius: 999px;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+main[data-bg-anim="true"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, color-mix(in srgb, var(--accent) 8%, transparent), transparent, color-mix(in srgb, var(--accent) 4%, transparent), transparent);
+  background-size: 400% 400%;
+  animation: bg-gradient-drift 15s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes bg-gradient-drift {
+  0%, 100% { background-position: 0% 50%; }
+  25% { background-position: 100% 0%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
+}

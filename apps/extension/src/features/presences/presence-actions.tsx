@@ -1,6 +1,7 @@
+import { Button } from "@/components/ui/button";
+import { t } from "@/shared/i18n";
 import { Power, Trash2, X } from "lucide-react";
 import type { FC, ReactElement } from "react";
-import { t } from "@/shared/i18n";
 
 type Props = {
   enabled: boolean;
@@ -18,8 +19,9 @@ export const PresenceActions: FC<Props> = ({ enabled, onClose, onRemove, onToggl
         : "pointer-events-none absolute inset-0 flex translate-x-full items-center justify-end gap-1.5 bg-linear-to-l from-card via-card/90 to-card/45 px-3 opacity-0 backdrop-blur-md transition-all"
     }
   >
-    <button
-      type="button"
+    <Button
+      variant="unstyled"
+      size="none"
       aria-label={enabled ? t("disable") : t("enable")}
       title={enabled ? t("disable") : t("enable")}
       onClick={onToggle}
@@ -27,9 +29,10 @@ export const PresenceActions: FC<Props> = ({ enabled, onClose, onRemove, onToggl
     >
       <Power className="h-4 w-4" />
       {enabled ? t("disable") : t("enable")}
-    </button>
-    <button
-      type="button"
+    </Button>
+    <Button
+      variant="unstyled"
+      size="none"
       aria-label={t("remove")}
       title={t("remove")}
       onClick={onRemove}
@@ -37,9 +40,10 @@ export const PresenceActions: FC<Props> = ({ enabled, onClose, onRemove, onToggl
     >
       <Trash2 className="h-4 w-4" />
       {t("uninstall")}
-    </button>
-    <button
-      type="button"
+    </Button>
+    <Button
+      variant="unstyled"
+      size="none"
       aria-label={t("close")}
       title={t("close")}
       onClick={onClose}
@@ -47,6 +51,6 @@ export const PresenceActions: FC<Props> = ({ enabled, onClose, onRemove, onToggl
     >
       <X className="h-4 w-4" />
       {t("close")}
-    </button>
+    </Button>
   </div>
 );

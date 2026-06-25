@@ -6,7 +6,7 @@ type HostHeroProps = {
 };
 
 export const HostHero: FC<HostHeroProps> = ({ children }): ReactElement => {
-  const t = useTranslations("HostPage");
+  const t = useTranslations("host-page");
 
   return (
     <div className="min-w-0 py-12 text-center">

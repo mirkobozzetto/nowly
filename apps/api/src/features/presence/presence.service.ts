@@ -22,8 +22,8 @@ const fetchText = async (url: string): Promise<string | null> => {
 
 export const buildRelease = async (slug: string, version?: string) => {
   const localMeta = getPresence(slug)
-  const redisMeta = await getPresenceMeta(slug)
-  const metadata = { ...(localMeta ?? {}), ...(redisMeta ?? {}) } as Record<string, unknown>
+  const storedMeta = await getPresenceMeta(slug)
+  const metadata = { ...(localMeta ?? {}), ...(storedMeta ?? {}) } as Record<string, unknown>
   if (!Object.keys(metadata).length) return null
 
   const stats = await getPresenceStats(slug)
@@ -86,9 +86,6 @@ export const buildRelease = async (slug: string, version?: string) => {
     signedAt,
     totalInstalls: stats.totalInstalls,
     activeUsers: stats.activeUsers,
-    rating: stats.rating,
-    ratingCount: stats.ratingCount,
-    ratingDistribution: stats.ratingDistribution,
     addedAt: stats.addedAt,
     lastUpdated: stats.lastUpdated,
   }

@@ -15,11 +15,10 @@ MANIFEST_DIRS=(
   "${HOME}/Library/Application Support/BraveSoftware/Brave-Browser/NativeMessagingHosts"
   "${HOME}/Library/Application Support/Microsoft Edge/NativeMessagingHosts"
 )
-
 # Firefox uses allowed_extensions (UUID) and a separate directory
 FIREFOX_MANIFEST_DIR="${HOME}/Library/Application Support/Mozilla/NativeMessagingHosts"
-FIREFOX_EXT_ID_DEV="abbegmindbabanjcabnmcjmamaoffbam"
-# FIREFOX_EXT_ID_PROD="nowly@nowly.me"  # TODO: ADD WHEN PUBLISHED
+FIREFOX_EXT_ID_DEV="{01146c8d-3101-0d92-01dc-29c0c0e5510c}"  # derived from Chrome dev ID abbegmindbabanjcabnmcjmamaoffbam
+FIREFOX_EXT_ID_PROD="nowly@nowly.me"  # AMO listing gecko.id
 
 if [ ! -f "$BINARY_SRC" ]; then
   echo "Error: binary not found at $BINARY_SRC"
@@ -71,7 +70,8 @@ FIREFOX_MANIFEST=$(cat <<FIREFOX_END
   "path": "${INSTALL_DIR}/${BINARY_NAME}",
   "type": "stdio",
   "allowed_extensions": [
-    "${FIREFOX_EXT_ID_DEV}"
+    "${FIREFOX_EXT_ID_DEV}",
+    "${FIREFOX_EXT_ID_PROD}"
   ]
 }
 FIREFOX_END

@@ -1,44 +1,61 @@
 ---
 title: Installation
-description: Install the Nowly browser extension and native host app on Windows, macOS, or Linux.
+description: Install the Nowly extension, enable user scripts, install Nowly Host, open Discord Desktop, and run your first test.
 ---
-
-## Overview
-
-Nowly requires two parts:
-
-- the browser extension
-- the native host app
-
-The extension detects website activity. The host app connects that activity to Discord.
 
 ## Requirements
 
-Before installing Nowly, make sure you have:
+Before starting, make sure you have:
 
-- a Chromium-based browser
-- Discord desktop app installed and running
-- the Nowly browser extension
-- the Nowly host app for your operating system
+- Chrome, Chromium, Brave, or Edge
+- Discord Desktop installed
+- Windows or Linux for Nowly Host
 
-## Install the Browser Extension
+## 1. Install the Extension
 
-Install the Nowly extension ([Chrome Web Store](https://github.com/nowly-presence/nowly/releases) — currently under review, or load unpacked for development). After installation, reload any open Nowly pages so the website can detect the extension.
+Install the Nowly extension from the Chrome Web Store. After installation, reload any open Nowly pages so the website can detect the extension.
 
-## Install the Native Host
+## 2. Enable User Scripts
 
-Download the host app from the [Nowly Host page](/host). Choose the package for your platform:
+Open the extension details page in your browser and enable user scripts for Nowly. This permission lets Nowly run installed presences on compatible websites.
 
-- Windows
-- macOS
-- Linux
+In the extension side panel, the diagnostic row **User scripts active** should turn green.
 
-The host app must be installed on the same machine as Discord.
+## 3. Install Nowly Host
 
-## Confirm Installation
+Download Nowly Host from the [Nowly Host page](/host).
 
-Install a presence, open a supported website, and check Discord. If the extension and host are connected, your Discord status should update automatically.
+- Windows: use the installer first. The portable zip is available for advanced/manual setups.
+- Linux: download the `.tar.gz` archive and follow the included install script.
 
-<CalloutInfo>
-If Discord does not update, open the extension panel first. It usually shows whether the extension, host, or installed presence is missing.
-</CalloutInfo>
+Nowly Host must be installed on the same machine as Discord Desktop.
+
+## 4. Open Discord Desktop
+
+Start Discord Desktop before testing. Browser Discord is not enough because Rich Presence is sent to the local Discord Desktop client.
+
+The extension distinguishes these two cases:
+
+- **Nowly Host is not detected.** Install Nowly Host, then click **Check connection**.
+- **Nowly Host is installed but Discord Desktop is not open.** Open Discord Desktop, then click **Check connection**.
+
+## 5. Install a Presence
+
+Open the [YouTube presence](/library/youtube) and click **Install**. YouTube is the recommended first test because it is quick to verify.
+
+## 6. Test on YouTube
+
+Open [YouTube](https://youtube.com), then open the extension side panel. The row **Activity detected** should turn green, and Discord should show your activity.
+
+## Check That Everything Works
+
+Use this checklist in the extension diagnostic:
+
+- Extension installed
+- User scripts active
+- Nowly Host detected
+- Discord connected
+- Presence installed
+- Activity detected
+
+When all six rows are green, Nowly is ready for everyday use.

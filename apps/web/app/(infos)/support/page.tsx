@@ -30,7 +30,7 @@ const generateMetadata = (): Metadata => {
 };
 
 const Page = async (): Promise<ReactElement> => {
-  const t = await getTranslations("SupportPage");
+  const t = await getTranslations("support-page");
 
   const cards: SupportCardProps[] = [
     {

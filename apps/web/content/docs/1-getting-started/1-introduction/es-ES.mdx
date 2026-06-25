@@ -1,37 +1,44 @@
 ---
 title: Introducción
-description: Aprende qué es Nowly, cómo funciona Discord Rich Presence y cómo las presences conectan sitios web compatibles con Discord.
+description: Aprende qué es Nowly, cómo funciona Discord Rich Presence y cómo Nowly Host conecta sitios compatibles con Discord.
 ---
 
 ## ¿Qué es Nowly?
 
-Nowly es una aplicación open source de Discord Rich Presence para la web. Detecta actividad en sitios web compatibles y muestra esa actividad en Discord a través de una extensión de navegador, una aplicación host nativa y presences instalables.
+Nowly muestra la actividad de sitios compatibles en Discord Rich Presence. La experiencia usa tres elementos visibles:
 
-## ¿Qué es una Presence?
+- la extensión Nowly para Chrome, Chromium, Brave y Edge
+- Nowly Host en Windows o Linux
+- presencias instalables desde la biblioteca de Nowly
 
-Una presence es una pequeña integración de JavaScript para un sitio web específico. Se ejecuta cuando un usuario visita una URL compatible, lee el estado útil de la página y envía datos de actividad a Nowly.
+## ¿Qué es una presencia?
 
-Las presences pueden mostrar:
+Una presencia es una pequeña integración JavaScript para un sitio web concreto. Se ejecuta cuando visitas una URL compatible, lee el estado útil de la página y envía la actividad a la extensión.
+
+Una presencia puede mostrar:
 
 - el nombre de la plataforma
-- el vídeo, stream, programa o título de página actual
-- nombres del autor, canal o creador
+- el vídeo, directo, programa, repositorio o título de página actual
+- nombres del autor, canal, creador o proyecto
 - marcas de tiempo de reproducción
 - recursos de la plataforma
-- botones que enlazan de vuelta al contenido
+- botones que enlazan al contenido
 
 ## Cómo funciona Nowly
 
-La extensión del navegador detecta sitios web compatibles y carga las presences instaladas. Una presence recopila datos de actividad de la página y envía un payload compatible con Discord.
+La extensión detecta sitios compatibles y carga tus presencias instaladas. La presencia prepara el payload de actividad compatible con Discord.
 
-La aplicación host nativa es el puente local entre el navegador y Discord. Recibe datos de actividad de la extensión y se comunica con el cliente de escritorio de Discord localmente.
+Nowly Host es el puente local entre el navegador y Discord Desktop. Recibe los datos de actividad de la extensión y los envía a Discord localmente.
 
-## Para quién es esta documentación
+## Primeros pasos
 
-Esta documentación es para usuarios que instalan Nowly y desarrolladores que crean presences.
+Sigue el flujo en este orden:
 
-Si solo quieres usar Nowly, comienza con Instalación. Si quieres crear una presence, continúa con Creando tu primera presence después de la configuración.
+1. Instalar la extensión.
+2. Activar los scripts de usuario.
+3. Instalar Nowly Host.
+4. Abrir Discord Desktop.
+5. Instalar una presencia.
+6. Probar en un sitio compatible, por ejemplo YouTube.
 
-## Próximos pasos
-
-Instala la extensión y la aplicación host nativa, luego explora la biblioteca de presences.
+Si falta algo, abre el panel lateral de la extensión. El diagnóstico muestra cada enlace por separado para saber exactamente qué corregir.
