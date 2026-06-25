@@ -29,10 +29,7 @@ export const serverEnv = createEnv({
     STATUS_SAMPLE_LIMIT: z.coerce.number().int().positive().default(168),
     AWS_ACCESS_KEY_ID: required.optional(),
     AWS_SECRET_ACCESS_KEY: required.optional(),
-    AWS_REGION: required.optional(),
-    AWS_SESSION_TOKEN: required.optional(),
-    AWS_SES_CONFIGURATION_SET: required.optional(),
-    AWS_SES_BASE_URL: z.string().trim().url().optional(),
+    AWS_REGION: z.string().trim().min(1).default("us-east-1"),
 
     SUPPORT_REDEEM_URL: z.string().trim().url().optional(),
   },

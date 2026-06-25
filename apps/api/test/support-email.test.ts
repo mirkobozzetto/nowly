@@ -27,7 +27,6 @@ describe("supporter pass email", () => {
 
     vi.stubEnv("AWS_ACCESS_KEY_ID", "aws-key")
     vi.stubEnv("AWS_SECRET_ACCESS_KEY", "aws-secret")
-    vi.stubEnv("AWS_REGION", "eu-west-3")
 
     vi.stubEnv("SUPPORT_REDEEM_URL", "https://nowly.me/support/redeem")
 
@@ -52,10 +51,8 @@ describe("supporter pass email", () => {
     expect(sesMock).toHaveBeenCalledWith({
       accessKeyId: "aws-key",
       secretAccessKey: "aws-secret",
-      region: "eu-west-3",
-      sessionToken: undefined,
-      configurationSetName: undefined,
-      baseUrl: undefined,
+      region: "us-east-1",
+
     })
     expect(createEmailClientMock).toHaveBeenCalledWith(expect.objectContaining({
       defaultAdapter: "ses",
