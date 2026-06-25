@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prisma:generate": "prisma generate"
+    "prisma:generate": "prisma generate",
+    "db:reset-dev": "tsx scripts/reset-dev-data.ts"
   },
   "dependencies": {
     "@fastify/cors": "^11.2.0",
