@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
-import { sendMessage, type NativeStatus } from "@/lib/messages";
+import type { NativeStatus } from "@/lib/messages";
 import { WEB_BASE_URL } from "@/shared/constants";
 import { resolveLocale, t, type LocalePreference } from "@/shared/i18n";
 import type { ExtensionSettings, PresenceDebug } from "@/shared/types";
@@ -55,7 +55,7 @@ export const SettingsView: FC<Props> = ({
   onSettingsChange,
 }): ReactElement => {
   const [isUnpacked, setIsUnpacked] = useState(false);
-  const [consentUrl, setConsentUrl] = useState(`${WEB_BASE_URL}/consent`);
+  const consentUrl = `${WEB_BASE_URL}/consent`;
   const localeOptions: Array<{ label: string; value: LocalePreference }> = [
     { label: t("locale-auto"), value: "browser" },
     { label: t("locale-fr"), value: "fr" },
@@ -65,14 +65,6 @@ export const SettingsView: FC<Props> = ({
 
   useEffect(() => {
     try { setIsUnpacked(!chrome.runtime.getManifest().update_url) } catch { setIsUnpacked(false) }
-  }, []);
-
-  useEffect(() => {
-    // The consent page authorizes data access with a per-device token, so the
-    // link must carry both the deviceId and the token built by the background.
-    void sendMessage<{ consentUrl: string }>("GET_PRIVACY_LINKS").then((result) => {
-      if (result?.consentUrl) setConsentUrl(result.consentUrl);
-    });
   }, []);
 
   const developerModeEnabled = settings.developerMode ?? isUnpacked;

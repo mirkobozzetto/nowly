@@ -5,6 +5,7 @@ const USER_SCRIPT_MESSAGE_SOURCE = "NOWLY_PRESENCE";
 const IS_UNPACKED = !chrome.runtime.getManifest().update_url;
 const RATINGS_KEY = "userRatings";
 const DEVICE_KEY = "deviceId";
+const DEVICE_TOKEN_KEY = "deviceToken";
 let MARKETPLACE_ORIGIN = new URL(WEB_BASE_URL).origin;
 const WEB_MESSAGE_TYPES = new Set([
   "INSTALL_PRESENCE",
@@ -15,6 +16,7 @@ const WEB_MESSAGE_TYPES = new Set([
   "SAVE_USER_RATING",
   "GET_USER_RATINGS",
   "GET_AD_STATUS",
+  "GET_DEVICE_INFO",
   "REDEEM_SUPPORT_CODE",
 ]);
 
@@ -160,6 +162,17 @@ window.addEventListener("message", (event: MessageEvent<WebMessage>) => {
           "*",
         );
       });
+    return;
+  }
+
+  if (msg.type === "GET_DEVICE_INFO") {
+    Promise.all([getDeviceId(), chrome.storage.local.get(DEVICE_TOKEN_KEY)]).then(([deviceId, tokenResult]) => {
+      const deviceToken = (tokenResult[DEVICE_TOKEN_KEY] as string | undefined) ?? null;
+      window.postMessage(
+        { source: EXT_WEB_SOURCE, type: "DEVICE_INFO", payload: { deviceId, deviceToken }, messageId: msg.messageId },
+        "*",
+      );
+    });
     return;
   }
 

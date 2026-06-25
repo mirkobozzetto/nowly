@@ -7,6 +7,7 @@ export type WebMessageType =
   | "SAVE_USER_RATING"
   | "GET_USER_RATINGS"
   | "GET_AD_STATUS"
+  | "GET_DEVICE_INFO"
   | "REDEEM_SUPPORT_CODE";
 
 export type ExtensionMessageType =
@@ -38,8 +39,7 @@ export type ExtensionMessageType =
   | "CLEAR_SNOOZE"
   | "SET_PRESENCE_SCHEDULE"
   | "GET_ANALYTICS_LOGS"
-  | "CLEAR_ANALYTICS_LOGS"
-  | "GET_PRIVACY_LINKS";
+  | "CLEAR_ANALYTICS_LOGS";
 
 export type UserScriptsStatus = {
   enabled: boolean;

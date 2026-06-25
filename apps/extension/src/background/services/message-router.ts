@@ -3,7 +3,7 @@ import { handleActivityUpdate, handleClearActivity } from "@/background/managers
 import { clearAnalyticsLogs, getAnalyticsLogs } from "@/background/analytics/analytics-log";
 import { trackAnalytics, trackExtensionOpen } from "@/background/analytics/analytics-tracker";
 import { getEffectiveApiUrl } from "@/background/services/api-state";
-import { buildDeviceUrl, getActiveDeviceId } from "@/background/services/device-sync";
+import { getActiveDeviceId } from "@/background/services/device-sync";
 import { postNative, reconnectNative, refreshNativeStatus, restartNative } from "@/background/services/native";
 import { checkUpdates, installPresence, togglePresence, uninstallPresence } from "@/background/managers/presence-manager";
 import { registerPresenceScript } from "@/background/runtime/presence-scripts";
@@ -84,10 +84,6 @@ export const registerRuntimeMessageRouter = (): void => {
       case "GET_NATIVE_STATUS":
         respond(sendResponse, refreshNativeStatus());
         return false;
-
-      case "GET_PRIVACY_LINKS":
-        buildDeviceUrl("/consent").then((consentUrl) => respond(sendResponse, { consentUrl }));
-        return true;
 
       case "GET_USER_SCRIPTS_STATUS":
         return respondWithUserScriptsStatus(sendResponse);
