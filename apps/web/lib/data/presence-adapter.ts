@@ -12,9 +12,6 @@ type ContributorInput = {
 type MetadataWithStats = Metadata & {
   totalInstalls?: number
   activeUsers?: number
-  rating?: number
-  ratingCount?: number
-  ratingDistribution?: Record<number, number>
 };
 
 const toContributor = (c: ContributorInput | undefined, fallbackName: string): Contributor => {
@@ -48,9 +45,6 @@ export const metadataToPlatform = (m: MetadataWithStats): Presence => {
     version: m.version ?? null,
     activeUsers: m.activeUsers ?? 0,
     totalInstalls: m.totalInstalls ?? 0,
-    rating: m.rating ?? 0,
-    ratingCount: m.ratingCount ?? 0,
-    ratingDistribution: m.ratingDistribution ?? {},
     addedAt: "2024-01-01",
     lastUpdated: new Date().toISOString().split("T")[0],
     supportedUrls: m.url,

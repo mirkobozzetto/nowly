@@ -13,9 +13,6 @@ type PresenceRelease = {
   metadata: PresenceMetadata
   totalInstalls?: number
   activeUsers?: number
-  rating?: number
-  ratingCount?: number
-  ratingDistribution?: Record<number, number>
   addedAt?: string
   lastUpdated?: string
 };
@@ -180,9 +177,6 @@ export const GET = async (_request: Request, { params }: Props) => {
       ...data.metadata,
       totalInstalls: data.totalInstalls,
       activeUsers: data.activeUsers,
-      rating: data.rating,
-      ratingCount: data.ratingCount,
-      ratingDistribution: data.ratingDistribution,
     });
 
     return renderPresenceOg(presence);

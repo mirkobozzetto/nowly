@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
 import { PresenceCardBody } from "./presence-card-body";
-import { PresenceCardStats } from "./presence-card-stats";
 import { PresenceCardThumbnail } from "./presence-card-thumbnail";
 
 type Props = {
@@ -33,8 +32,6 @@ export const PresenceCard: FC<Props> = ({ presence, locale }): ReactElement => {
 
       <div className="p-5">
         <PresenceCardBody presence={presence} locale={locale} />
-
-        <PresenceCardStats presence={presence} />
       </div>
     </Link>
   );

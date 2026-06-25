@@ -12,9 +12,6 @@ type UsePresenceStatusReturn = {
   installedVersion: string | null
   loading: boolean
   extDetected: boolean
-  totalInstalls: number
-  savedRating: number
-  deviceId: string | null
   diagnostic: ExtensionDiagnostic | null
   needsUpdate: boolean
   pendingVersion: string | null
@@ -37,9 +34,6 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
   const [installedVersion, setInstalledVersion] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [extDetected, setExtDetected] = useState(false);
-  const [totalInstalls] = useState(presence.totalInstalls);
-  const [savedRating, setSavedRating] = useState(0);
-  const [deviceId, setDeviceId] = useState<string | null>(null);
   const [diagnostic, setDiagnostic] = useState<ExtensionDiagnostic | null>(null);
 
   const [pendingVersion, setPendingVersion] = useState<string | null>(null);
@@ -78,11 +72,6 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
         }
 
         window.postMessage(
-          { source: EXT_SOURCE, type: "GET_USER_RATINGS", messageId: nextId() },
-          "*",
-        );
-
-        window.postMessage(
           { source: EXT_SOURCE, type: "GET_DIAGNOSTIC", messageId: nextId() },
           "*",
         );
@@ -90,18 +79,6 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
 
       if (msg.source === EXT_SOURCE && msg.type === "GET_DIAGNOSTIC_RESULT") {
         setDiagnostic((msg.payload ?? null) as ExtensionDiagnostic | null);
-      }
-
-      if (msg.source === EXT_SOURCE && msg.type === "USER_RATINGS") {
-        const payload = msg.payload as { ratings?: Record<string, number>; deviceId?: string } | undefined;
-
-        if (payload?.ratings?.[presence.slug]) {
-          setSavedRating(payload.ratings[presence.slug]);
-        }
-
-        if (payload?.deviceId) {
-          setDeviceId(payload.deviceId);
-        }
       }
 
       if (msg.source === EXT_SOURCE && msg.type === "INSTALLED_PRESENCES") {
@@ -281,9 +258,6 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
     installedVersion,
     loading,
     extDetected,
-    totalInstalls,
-    savedRating,
-    deviceId,
     diagnostic,
     needsUpdate,
     pendingVersion,

@@ -28,9 +28,6 @@ export const presenceRoutes = async (fastify: FastifyInstance) => {
         version: stats.version || "",
         totalInstalls: stats.totalInstalls,
         activeUsers: stats.activeUsers,
-        rating: stats.rating,
-        ratingCount: stats.ratingCount,
-        ratingDistribution: stats.ratingDistribution,
       }
     }))
 

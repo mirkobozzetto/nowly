@@ -1,9 +1,6 @@
 import { z } from "zod"
 import {
   MAX_ANALYTICS_EVENTS_PER_BATCH,
-  MAX_COMMENT_LENGTH,
-  RATING_MAX,
-  RATING_MIN,
   SLUG_MAX_LENGTH,
 } from "./constants"
 
@@ -17,14 +14,6 @@ import {
 export const slugSchema = z.string().trim().min(1).max(SLUG_MAX_LENGTH)
 
 export const localeRecordSchema = z.record(z.string(), z.string())
-
-/** POST /presences/:slug/comments */
-export const ratingCommentBodySchema = z.object({
-  rating: z.coerce.number().int().min(RATING_MIN).max(RATING_MAX),
-  comment: z.string().trim().max(MAX_COMMENT_LENGTH).optional(),
-  anonymous: z.boolean().optional(),
-})
-export type RatingCommentBody = z.infer<typeof ratingCommentBodySchema>
 
 /** POST /presences/active */
 export const presenceActiveBodySchema = z.object({

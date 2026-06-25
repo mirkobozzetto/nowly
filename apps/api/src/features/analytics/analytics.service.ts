@@ -308,16 +308,6 @@ export const getMetricRows = async (
     return rows.map((row) => ({ slug: row.slug, count: row._count._all }))
   }
 
-  if (key === "ratings") {
-    const rows = await prisma.rating.groupBy({
-      by: ["slug", "rating"],
-      where: slugFilter,
-      _count: { _all: true },
-      orderBy: [{ slug: "asc" }, { rating: "desc" }],
-    })
-    return rows.map((row) => ({ slug: row.slug, rating: row.rating, count: row._count._all }))
-  }
-
   const rows = await prisma.analyticsEvent.groupBy({
     by: ["key", "slug", "version", "payload"],
     where: { key, ...slugFilter, ...createdAtFilter },

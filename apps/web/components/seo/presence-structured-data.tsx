@@ -24,13 +24,6 @@ export const PresenceStructuredData: FC<Props> = ({ presence, slug }): ReactElem
           name: presence.author.name,
           url: presence.author.github ? `https://github.com/${presence.author.github}` : undefined,
         },
-        aggregateRating: presence.ratingCount
-          ? {
-              "@type": "AggregateRating",
-              ratingValue: presence.rating,
-              ratingCount: presence.ratingCount,
-            }
-          : undefined,
         offers: {
           "@type": "Offer",
           price: "0",

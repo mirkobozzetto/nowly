@@ -1,7 +1,7 @@
 import { ASSET_URL } from "@/lib/assets";
 import { getLocalizedDescription } from "@/lib/data/localized";
 import type { Presence } from "@/lib/data/presences";
-import { ArrowUpRight, Download, Star, Users } from "lucide-react";
+import { ArrowUpRight, Download, Users } from "lucide-react";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
 
@@ -64,11 +64,6 @@ export const PresenceLinkItem: FC<Props> = ({ presence, locale }) => {
           <span className="flex items-center gap-1.5">
             <Users className="size-3.5" />
             {numberFormat.format(presence.activeUsers)}
-          </span>
-
-          <span className="flex items-center gap-1.5">
-            <Star className="size-3.5" color={presence.iconColor} fill={presence.iconColor} />
-            {presence.rating.toLocaleString(locale, { maximumFractionDigits: 1 })}
           </span>
         </div>
       </div>

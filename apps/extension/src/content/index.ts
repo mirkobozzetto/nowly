@@ -3,7 +3,6 @@ import type { WebMessage } from "@/shared/types";
 
 const USER_SCRIPT_MESSAGE_SOURCE = "NOWLY_PRESENCE";
 const IS_UNPACKED = !chrome.runtime.getManifest().update_url;
-const RATINGS_KEY = "userRatings";
 const DEVICE_KEY = "deviceId";
 const DEVICE_TOKEN_KEY = "deviceToken";
 let MARKETPLACE_ORIGIN = new URL(WEB_BASE_URL).origin;
@@ -13,8 +12,6 @@ const WEB_MESSAGE_TYPES = new Set([
   "UNINSTALL_PRESENCE",
   "GET_INSTALLED",
   "GET_DIAGNOSTIC",
-  "SAVE_USER_RATING",
-  "GET_USER_RATINGS",
   "GET_AD_STATUS",
   "GET_DEVICE_INFO",
   "REDEEM_SUPPORT_CODE",
@@ -28,23 +25,12 @@ const sendRuntimeMessage = async <T = unknown>(message: Record<string, unknown>)
   }
 };
 
-const getUserRatings = async (): Promise<Record<string, number>> => {
-  const result = await chrome.storage.local.get(RATINGS_KEY);
-  return (result[RATINGS_KEY] ?? {}) as Record<string, number>;
-};
-
 const getDeviceId = async (): Promise<string> => {
   const result = await chrome.storage.local.get(DEVICE_KEY);
   if (result[DEVICE_KEY]) return result[DEVICE_KEY] as string;
   const id = crypto.randomUUID();
   await chrome.storage.local.set({ [DEVICE_KEY]: id });
   return id;
-};
-
-const saveUserRating = async (slug: string, rating: number): Promise<void> => {
-  const ratings = await getUserRatings();
-  ratings[slug] = rating;
-  await chrome.storage.local.set({ [RATINGS_KEY]: ratings });
 };
 
 const getAdStatus = async (): Promise<Record<string, unknown>> => {
@@ -125,28 +111,6 @@ window.addEventListener("message", (event: MessageEvent<WebMessage>) => {
 
   const msg = event.data;
   if (!msg.messageId) return;
-
-  if (msg.type === "SAVE_USER_RATING") {
-    const { slug, rating } = (msg.payload ?? {}) as { slug?: string; rating?: number };
-    if (slug && typeof rating === "number") {
-      saveUserRating(slug, rating);
-    }
-    window.postMessage(
-      { source: EXT_WEB_SOURCE, type: "SAVE_USER_RATING_RESULT", payload: { ok: true }, messageId: msg.messageId },
-      "*",
-    );
-    return;
-  }
-
-  if (msg.type === "GET_USER_RATINGS") {
-    Promise.all([getUserRatings(), getDeviceId()]).then(([ratings, deviceId]) => {
-      window.postMessage(
-        { source: EXT_WEB_SOURCE, type: "USER_RATINGS", payload: { ratings, deviceId }, messageId: msg.messageId },
-        "*",
-      );
-    });
-    return;
-  }
 
   if (msg.type === "GET_AD_STATUS") {
     getAdStatus()

@@ -22,9 +22,6 @@ export interface Presence {
   version: string | null
   activeUsers: number
   totalInstalls: number
-  rating: number
-  ratingCount: number
-  ratingDistribution: Record<number, number>
   addedAt: string
   lastUpdated: string
   supportedUrls: string[]

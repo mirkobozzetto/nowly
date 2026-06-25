@@ -86,9 +86,6 @@ export const buildRelease = async (slug: string, version?: string) => {
     signedAt,
     totalInstalls: stats.totalInstalls,
     activeUsers: stats.activeUsers,
-    rating: stats.rating,
-    ratingCount: stats.ratingCount,
-    ratingDistribution: stats.ratingDistribution,
     addedAt: stats.addedAt,
     lastUpdated: stats.lastUpdated,
   }
