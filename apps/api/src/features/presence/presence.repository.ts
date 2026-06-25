@@ -8,22 +8,6 @@ const iso = (value: Date | string | null | undefined): string | null => {
   return value instanceof Date ? value.toISOString() : new Date(value).toISOString()
 }
 
-const distributionFromRows = (rows: Array<{ rating: number; _count: { _all: number } }>): {
-  distribution: Record<number, number>;
-  total: number;
-  weightedSum: number
-} => {
-  const distribution: Record<number, number> = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
-  let total = 0
-  let weightedSum = 0
-  for (const row of rows) {
-    distribution[row.rating] = row._count._all
-    total += row._count._all
-    weightedSum += row.rating * row._count._all
-  }
-  return { distribution, total, weightedSum }
-}
-
 export const markActiveDevice = async (slug: string, deviceId: string, timestamp = Date.now()): Promise<void> => {
   const prisma = getPrisma()
   await prisma.presenceActiveDevice.upsert({
@@ -73,19 +57,12 @@ export const getGlobalPresenceStats = async (): Promise<GlobalPresenceStats> => 
 
 export const getPresenceStats = async (slug: string): Promise<PresenceStats> => {
   const prisma = getPrisma()
-  const [presence, totalInstalls, ratingRows] = await Promise.all([
-    prisma.presence.findUnique({ where: { slug } }),
-    prisma.devicePresence.count({ where: { slug, installed: true } }),
-    prisma.rating.groupBy({ by: ["rating"], where: { slug }, _count: { _all: true } }),
-  ])
-  const { distribution, total, weightedSum } = distributionFromRows(ratingRows)
+  const presence = await prisma.presence.findUnique({ where: { slug } })
+  const totalInstalls = await prisma.devicePresence.count({ where: { slug, installed: true } })
 
   return {
     totalInstalls,
     activeUsers: await getActiveUsers(slug),
-    rating: total > 0 ? Number((weightedSum / total).toFixed(1)) : 0,
-    ratingCount: total,
-    ratingDistribution: distribution,
     version: presence?.version ?? null,
     addedAt: iso(presence?.addedAt),
     lastUpdated: iso(presence?.updatedAt),
@@ -110,57 +87,6 @@ export const incrementInstalls = async (slug: string, deviceId?: string, version
 
 export const setActiveUsers = async (_slug: string, _count: number): Promise<void> => {
   return
-}
-
-export const submitRating = async (slug: string, _rating: number): Promise<{
-  avg: number; count: number; distribution: Record<number, number>
-}> => {
-  const stats = await getPresenceStats(slug)
-  return { avg: stats.rating, count: stats.ratingCount, distribution: stats.ratingDistribution }
-}
-
-export const hasDiscordRated = async (slug: string, discordId: string): Promise<boolean> => {
-  return (await getPrisma().rating.count({ where: { slug, discordUserId: discordId } })) > 0
-}
-
-export const markDiscordRated = async (_slug: string, _discordId: string): Promise<void> => {
-  return
-}
-
-export const getUserRating = async (slug: string, discordId: string): Promise<{
-  rating: number;
-  hasComment: boolean;
-  commentId?: string
-} | null> => {
-  const row = await getPrisma().rating.findUnique({
-    where: { slug_discordUserId: { slug, discordUserId: discordId } },
-  })
-
-  if (!row) return null
-
-  return {
-    rating: row.rating,
-    hasComment: row.hasComment,
-    commentId: row.commentId ?? undefined
-  }
-}
-
-export const setUserRating = async (
-  slug: string,
-  discordId: string,
-  rating: number,
-  hasComment: boolean,
-  commentId?: string,
-): Promise<void> => {
-  await getPrisma().rating.upsert({
-    where: { slug_discordUserId: { slug, discordUserId: discordId } },
-    create: { slug, discordUserId: discordId, rating, hasComment, commentId },
-    update: { rating, hasComment, commentId, updatedAt: new Date() },
-  })
-}
-
-export const removeUserRating = async (slug: string, discordId: string): Promise<void> => {
-  await getPrisma().rating.deleteMany({ where: { slug, discordUserId: discordId } })
 }
 
 export const setUpdated = async (slug: string, date?: string): Promise<void> => {

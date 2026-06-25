@@ -1,9 +1,6 @@
 export interface PresenceStats {
   totalInstalls: number
   activeUsers: number
-  rating: number
-  ratingCount: number
-  ratingDistribution: Record<number, number>
   version: string | null
   addedAt: string | null
   lastUpdated: string | null
@@ -34,18 +31,6 @@ export interface VersionEntry {
   aiGeneratedChangelog?: boolean
   createdAt?: string
   timestamp: number
-}
-
-export interface CommentEntry {
-  id: string
-  rating: number
-  comment?: string
-  authorId?: string
-  authorName?: string
-  authorAvatar?: string
-  anonymous?: boolean
-  createdAt: string
-  isOwn?: boolean
 }
 
 export type PresenceMeta = Record<string, any>
