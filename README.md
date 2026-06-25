@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="apps/web/public/app_title_white.png" height="94" alt="Nowly" />
+<img src="https://cdn.nowly.me/assets/app_title.png" height="94" alt="Nowly" />
 
 Open-source Discord Rich Presence for the modern web.
 
