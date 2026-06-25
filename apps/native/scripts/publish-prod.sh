@@ -13,7 +13,7 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 MONOREPO_ROOT="$(cd "$ROOT_DIR/../.." && pwd)"
 RELEASE_DIR="$ROOT_DIR/releases/$VERSION"
 
-echo "=== Publishing Nowly Native Host v$VERSION to CDN ==="
+echo "=== Publishing Nowly Host v$VERSION to CDN ==="
 echo ""
 
 # Check all required files exist
@@ -40,7 +40,7 @@ echo ""
 # Publish to CDN via internal CLI
 cd "$MONOREPO_ROOT"
 
-pnpm admin host:publish \
+pnpm internal-cli host:publish \
   --release-version "$VERSION" \
   --installer "$RELEASE_DIR/nowly-setup.exe" \
   --portable "$RELEASE_DIR/nowly-windows.zip" \

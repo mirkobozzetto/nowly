@@ -34,10 +34,10 @@ type StatusService = {
   url: string
 }
 
+import { serverEnv } from "@nowly/env/server"
+
 const REQUEST_TIMEOUT_MS = 5000
 const RECENT_SAMPLE_COUNT = 10
-const DEFAULT_INTERVAL_HOURS = 1
-const DEFAULT_SAMPLE_LIMIT = 168
 
 const sampleStore = new Map<StatusServiceId, StatusSample[]>()
 let lastCheckTimestamp: string | null = null
@@ -55,9 +55,9 @@ const parsePositiveNumber = (value: string | undefined, fallback: number): numbe
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
 }
 
-const getCheckIntervalHours = (): number => parsePositiveNumber(process.env.STATUS_CHECK_INTERVAL_HOURS, DEFAULT_INTERVAL_HOURS)
+const getCheckIntervalHours = (): number => serverEnv.STATUS_CHECK_INTERVAL_HOURS
 
-const getSampleLimit = (): number => Math.max(10, Math.floor(parsePositiveNumber(process.env.STATUS_SAMPLE_LIMIT, DEFAULT_SAMPLE_LIMIT)))
+const getSampleLimit = (): number => Math.max(10, serverEnv.STATUS_SAMPLE_LIMIT)
 
 export const classifyResponse = (ok: boolean, httpStatus: number | null, responseMs: number | null): Exclude<ServiceStatus, "unknown"> => {
   if (!ok || httpStatus === null || httpStatus >= 500 || responseMs === null) return "down"

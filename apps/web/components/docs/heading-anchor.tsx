@@ -1,3 +1,4 @@
+import { createHeadingId } from "@/lib/docs/types";
 import { cn } from "@/lib/utils";
 import { Link } from "lucide-react";
 import type { FC, ReactNode } from "react";
@@ -10,12 +11,7 @@ type HeadingAnchorProps = {
 };
 
 export const HeadingAnchor: FC<HeadingAnchorProps> = ({ as: Tag, id, children, className }) => {
-  const anchorId =
-    id ||
-    String(children)
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
+  const anchorId = id || createHeadingId(String(children));
 
   return (
     <Tag id={anchorId} className={cn("group relative scroll-mt-24", className)}>

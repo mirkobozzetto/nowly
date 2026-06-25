@@ -13,7 +13,7 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist"
 RELEASE_DIR="$ROOT_DIR/releases/$VERSION"
 
-echo "=== Nowly Native Host v$VERSION release ==="
+echo "=== Nowly Host v$VERSION release ==="
 echo ""
 
 # --------------- Build binaries ---------------

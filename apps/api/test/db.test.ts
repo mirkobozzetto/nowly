@@ -34,6 +34,19 @@ const mockPrisma = vi.hoisted(() => ({
     findMany: vi.fn(),
     delete: vi.fn(),
   },
+  supporterPass: {
+    create: vi.fn(),
+    findUnique: vi.fn(),
+  },
+  supporterDevice: {
+    count: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+  },
+  donationEvent: {
+    create: vi.fn(),
+    findUnique: vi.fn(),
+  },
 }))
 
 vi.mock("@/db/client", () => ({
@@ -69,6 +82,13 @@ import {
   submitComment,
   getComments,
 } from "@/features/rating/rating.repository"
+
+import {
+  createSupporterPass,
+  hasAdFreeAccess,
+  redeemSupporterCodeForDevice,
+  recordDonationAndCreatePass,
+} from "@/features/support/support.repository"
 
 describe("getPresenceStats", () => {
   beforeEach(() => { vi.clearAllMocks() })
@@ -557,5 +577,114 @@ describe("getVersionHistory", () => {
     expect(history).toHaveLength(2)
     expect(history[0].version).toBe("1.0.0")
     expect(history[1].version).toBe("0.9.0")
+  })
+})
+
+describe("supporter passes", () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it("creates a supporter pass with a generated code", async () => {
+    mockPrisma.supporterPass.create.mockResolvedValue({})
+
+    const pass = await createSupporterPass({ provider: "manual", maxDevices: 3 })
+
+    expect(pass.code).toMatch(/^NOWLY-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/)
+    expect(pass.maxDevices).toBe(3)
+    expect(mockPrisma.supporterPass.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        id: expect.any(String),
+        codeHash: expect.any(String),
+        provider: "manual",
+        maxDevices: 3,
+      }),
+    })
+  })
+
+  it("returns ad-free access when a device is linked to an active pass", async () => {
+    mockPrisma.supporterDevice.count.mockResolvedValue(1)
+
+    await expect(hasAdFreeAccess("device-1")).resolves.toBe(true)
+    expect(mockPrisma.supporterDevice.count).toHaveBeenCalledWith({
+      where: {
+        deviceId: "device-1",
+        pass: { status: "active" },
+      },
+    })
+  })
+
+  it("redeems a valid pass for a new device", async () => {
+    mockPrisma.supporterPass.findUnique.mockResolvedValue({
+      id: "pass-1",
+      status: "active",
+      maxDevices: 2,
+      devices: [],
+    })
+    mockPrisma.supporterDevice.create.mockResolvedValue({})
+
+    const result = await redeemSupporterCodeForDevice("NOWLY-AAAA-BBBB-CCCC", "device-1")
+
+    expect(result).toEqual({ ok: true, adFree: true, deviceCount: 1, maxDevices: 2 })
+    expect(mockPrisma.supporterDevice.create).toHaveBeenCalledWith({
+      data: { passId: "pass-1", deviceId: "device-1" },
+    })
+  })
+
+  it("does not consume a slot when the same device redeems again", async () => {
+    mockPrisma.supporterPass.findUnique.mockResolvedValue({
+      id: "pass-1",
+      status: "active",
+      maxDevices: 2,
+      devices: [{ passId: "pass-1", deviceId: "device-1" }],
+    })
+    mockPrisma.supporterDevice.update.mockResolvedValue({})
+
+    const result = await redeemSupporterCodeForDevice("NOWLY-AAAA-BBBB-CCCC", "device-1")
+
+    expect(result).toEqual({ ok: true, adFree: true, deviceCount: 1, maxDevices: 2 })
+    expect(mockPrisma.supporterDevice.create).not.toHaveBeenCalled()
+    expect(mockPrisma.supporterDevice.update).toHaveBeenCalled()
+  })
+
+  it("rejects a new device when the pass device limit is reached", async () => {
+    mockPrisma.supporterPass.findUnique.mockResolvedValue({
+      id: "pass-1",
+      status: "active",
+      maxDevices: 1,
+      devices: [{ passId: "pass-1", deviceId: "device-1" }],
+    })
+
+    const result = await redeemSupporterCodeForDevice("NOWLY-AAAA-BBBB-CCCC", "device-2")
+
+    expect(result).toEqual({ ok: false, error: "device_limit_reached", maxDevices: 1 })
+    expect(mockPrisma.supporterDevice.create).not.toHaveBeenCalled()
+  })
+
+  it("records a donation idempotently and creates a pass once", async () => {
+    mockPrisma.donationEvent.findUnique.mockResolvedValueOnce(null).mockResolvedValueOnce({ passId: "pass-1" })
+    mockPrisma.supporterPass.create.mockResolvedValue({})
+    mockPrisma.donationEvent.create.mockResolvedValue({})
+
+    const first = await recordDonationAndCreatePass({
+      provider: "kofi",
+      providerEventId: "event-1",
+      amount: "5",
+      currency: "eur",
+      donorEmail: "supporter@example.com",
+    })
+    const second = await recordDonationAndCreatePass({ provider: "kofi", providerEventId: "event-1" })
+
+    expect(first.created).toBe(true)
+    expect(first.code).toMatch(/^NOWLY-/)
+    expect(second).toEqual({ created: false, passId: "pass-1" })
+    expect(mockPrisma.supporterPass.create).toHaveBeenCalledTimes(1)
+    expect(mockPrisma.donationEvent.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        provider: "kofi",
+        providerEventId: "event-1",
+        amount: "5",
+        currency: "EUR",
+        donorEmailHash: expect.any(String),
+      }),
+    })
   })
 })

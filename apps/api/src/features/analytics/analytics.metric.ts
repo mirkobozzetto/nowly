@@ -50,14 +50,14 @@ export const analyticsRegistry = [
     label: "Extension install",
     description: "Extension installation lifecycle event.",
     group: "extension",
-    dimensions: ["extensionVersion", "browser", "os", "locale"],
+    dimensions: ["extensionVersion", "browser", "os", "locale", "source"],
   }),
   new Analytics({
     key: "extension_update",
     label: "Extension update",
     description: "Extension update lifecycle event.",
     group: "extension",
-    dimensions: ["extensionVersion", "previousVersion", "browser", "os", "locale"],
+    dimensions: ["extensionVersion", "previousVersion", "browser", "os", "locale", "source"],
   }),
   new Analytics({
     key: "extension_open",
@@ -304,7 +304,7 @@ export const analyticsRegistry = [
     label: "Display settings changed",
     description: "Display preference changed.",
     group: "settings",
-    dimensions: ["extensionVersion", "browser", "os", "displayMode", "separateActivePresence"],
+    dimensions: ["extensionVersion", "browser", "os", "displayMode", "separateActivePresence", "showPlayer"],
   }),
   new Analytics({
     key: "settings_language_changed",

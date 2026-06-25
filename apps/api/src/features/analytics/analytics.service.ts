@@ -1,5 +1,6 @@
 import { getPrisma, hasDatabase } from "@/db/client"
 import { getAnalyticsMetric } from "@/features/analytics/analytics.metric"
+import { cleanText, FORBIDDEN_PAYLOAD_KEYS_SET, MAX_ANALYTICS_EVENTS_PER_BATCH, MAX_ANALYTICS_EVENTS_PER_DEVICE_PER_MINUTE } from "@nowly/shared"
 import { Prisma } from "../../generated/prisma/client"
 
 type DeviceSyncPresence = {
@@ -34,31 +35,8 @@ export type AnalyticsRecordResult = {
   rejected: number
 }
 
-const MAX_EVENTS_PER_BATCH = 100
-const MAX_EVENTS_PER_DEVICE_PER_MINUTE = 120
+const MAX_RATE_LIMIT_BUCKETS = 50_000
 const rateLimitBuckets = new Map<string, { count: number; resetAt: number }>()
-const forbiddenPayloadKeys = new Set([
-  "url",
-  "href",
-  "title",
-  "query",
-  "search",
-  "content",
-  "channel",
-  "profile",
-  "ip",
-  "userAgent",
-  "history",
-  "discordId",
-  "discordUserId",
-])
-
-const cleanText = (value: unknown, max = 120): string | undefined => {
-  if (typeof value !== "string") return undefined
-  const trimmed = value.trim()
-  if (!trimmed) return undefined
-  return trimmed.slice(0, max)
-}
 
 const normalizeCreatedAt = (value: unknown): Date | undefined => {
   if (typeof value !== "string") return undefined
@@ -78,15 +56,26 @@ const parseMetricDate = (value: unknown): Date | undefined => {
   return Number.isNaN(date.getTime()) ? undefined : date
 }
 
+const pruneRateLimitBuckets = (now: number): void => {
+  for (const [key, bucket] of rateLimitBuckets) {
+    if (bucket.resetAt <= now) rateLimitBuckets.delete(key)
+  }
+  if (rateLimitBuckets.size >= MAX_RATE_LIMIT_BUCKETS) {
+    const oldestKey = rateLimitBuckets.keys().next().value
+    if (oldestKey) rateLimitBuckets.delete(oldestKey)
+  }
+}
+
 const takeRateLimitSlot = (deviceId: string | undefined): boolean => {
   if (!deviceId) return true
   const now = Date.now()
   const current = rateLimitBuckets.get(deviceId)
   if (!current || current.resetAt <= now) {
+    if (rateLimitBuckets.size >= MAX_RATE_LIMIT_BUCKETS) pruneRateLimitBuckets(now)
     rateLimitBuckets.set(deviceId, { count: 1, resetAt: now + 60_000 })
     return true
   }
-  if (current.count >= MAX_EVENTS_PER_DEVICE_PER_MINUTE) return false
+  if (current.count >= MAX_ANALYTICS_EVENTS_PER_DEVICE_PER_MINUTE) return false
   current.count += 1
   return true
 }
@@ -97,7 +86,7 @@ const allowedPayload = (key: string, payload: Record<string, unknown> = {}): Pri
 
   return Object.fromEntries(
     Object.entries(payload)
-      .filter(([payloadKey]) => allowedKeys.has(payloadKey) && !forbiddenPayloadKeys.has(payloadKey))
+      .filter(([payloadKey]) => allowedKeys.has(payloadKey) && !FORBIDDEN_PAYLOAD_KEYS_SET.has(payloadKey))
       .map(([payloadKey, value]) => [payloadKey, typeof value === "string" ? cleanText(value, 160) : value])
       .filter(([, value]) => typeof value === "string" || typeof value === "number" || typeof value === "boolean")
       .filter(([, value]) => value !== undefined),
@@ -139,6 +128,9 @@ export const syncDevice = async (input: DeviceSyncInput): Promise<void> => {
   for (const presence of input.presences) {
     const slug = cleanText(presence.slug, 80)?.toLowerCase()
     if (!slug) continue
+    const installed = presence.installed !== false
+    const enabled = installed && presence.enabled !== false
+    const uninstalledAt = installed ? null : new Date()
 
     await prisma.devicePresence.upsert({
       where: { deviceId_slug: { deviceId: input.deviceId, slug } },
@@ -146,16 +138,16 @@ export const syncDevice = async (input: DeviceSyncInput): Promise<void> => {
         deviceId: input.deviceId,
         slug,
         installedVersion: cleanText(presence.version ?? undefined, 60),
-        installed: presence.installed !== false,
-        enabled: presence.enabled !== false,
-        uninstalledAt: presence.installed === false ? new Date() : null,
+        installed,
+        enabled,
+        uninstalledAt,
       },
       update: {
         installedVersion: cleanText(presence.version ?? undefined, 60),
-        installed: presence.installed !== false,
-        enabled: presence.enabled !== false,
+        installed,
+        enabled,
         updatedAt: new Date(),
-        uninstalledAt: presence.installed === false ? new Date() : null,
+        uninstalledAt,
       },
     })
   }
@@ -176,7 +168,7 @@ export const recordAnalyticsEvents = async (events: AnalyticsEventInput[]): Prom
   const prisma = getPrisma()
   let inserted = 0
   let rejected = 0
-  for (const event of events.slice(0, MAX_EVENTS_PER_BATCH)) {
+  for (const event of events.slice(0, MAX_ANALYTICS_EVENTS_PER_BATCH)) {
     const key = cleanText(event.key, 100)
     const metric = key ? getAnalyticsMetric(key) : undefined
     if (!key || !metric) {
@@ -206,6 +198,53 @@ export const recordAnalyticsEvents = async (events: AnalyticsEventInput[]): Prom
   }
 
   return { inserted, rejected }
+}
+
+export const exportDeviceAnalytics = async (deviceId: string): Promise<Record<string, unknown> | null> => {
+  if (!hasDatabase()) return null
+
+  const prisma = getPrisma()
+  const device = await prisma.device.findUnique({ where: { deviceId } })
+  if (!device) return null
+
+  const presences = await prisma.devicePresence.findMany({ where: { deviceId } })
+  const events = await prisma.analyticsEvent.findMany({
+    where: { deviceId },
+    select: { id: true, key: true, slug: true, version: true, payload: true, createdAt: true },
+    orderBy: { createdAt: "asc" },
+  })
+
+  return {
+    exportedAt: new Date().toISOString(),
+    device: {
+      deviceId: device.deviceId,
+      analyticsConsent: device.analyticsConsent,
+      extensionVersion: device.extensionVersion,
+      nativeVersion: device.nativeVersion,
+      browser: device.browser,
+      os: device.os,
+      locale: device.locale,
+      firstSeenAt: device.firstSeenAt?.toISOString(),
+      lastSeenAt: device.lastSeenAt?.toISOString(),
+    },
+    presences: presences.map((p) => ({
+      slug: p.slug,
+      installedVersion: p.installedVersion,
+      installed: p.installed,
+      enabled: p.enabled,
+      installedAt: p.installedAt.toISOString(),
+      updatedAt: p.updatedAt?.toISOString(),
+      uninstalledAt: p.uninstalledAt?.toISOString(),
+    })),
+    events: events.map((e) => ({
+      id: e.id,
+      key: e.key,
+      slug: e.slug,
+      version: e.version,
+      payload: e.payload,
+      createdAt: e.createdAt?.toISOString(),
+    })),
+  }
 }
 
 export const deleteDeviceAnalytics = async (deviceId: string): Promise<void> => {

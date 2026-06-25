@@ -18,8 +18,8 @@ type Props = {
 
 export const CommentsClient: FC<Props> = ({ presence }): ReactElement => {
   const locale = useLocale();
-  const t = useTranslations("MarketplaceDetail");
-  const tCategories = useTranslations("MarketplacePage");
+  const t = useTranslations("marketplace-detail");
+  const tCategories = useTranslations("marketplace-page");
   const categoryLabel = tCategories(`categories.${presence.category}`);
 
   return (
@@ -29,7 +29,7 @@ export const CommentsClient: FC<Props> = ({ presence }): ReactElement => {
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/library">
-                {t("breadcrumbHome")}
+                {t("breadcrumb-home")}
               </BreadcrumbLink>
             </BreadcrumbItem>
 
@@ -83,7 +83,7 @@ export const CommentsClient: FC<Props> = ({ presence }): ReactElement => {
           </Card>
 
           <Card size="sm">
-            <CardTitle className="text-foreground normal-case tracking-normal">{t("commentsRatingDistribution")}</CardTitle>
+            <CardTitle className="text-foreground normal-case tracking-normal">{t("comments-rating-distribution")}</CardTitle>
             <RatingDistribution
               distribution={presence.ratingDistribution}
               totalCount={presence.ratingCount}

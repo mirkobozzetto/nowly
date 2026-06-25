@@ -4,7 +4,8 @@ import type { Presence } from "@/lib/data/presences";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { EXT_SOURCE, fireAndForget, nextId } from "./utils";
+import type { ExtensionDiagnostic } from "./extension-diagnostic";
+import { EXT_SOURCE, nextId } from "./utils";
 
 type UsePresenceStatusReturn = {
   isInstalled: boolean
@@ -14,6 +15,7 @@ type UsePresenceStatusReturn = {
   totalInstalls: number
   savedRating: number
   deviceId: string | null
+  diagnostic: ExtensionDiagnostic | null
   needsUpdate: boolean
   pendingVersion: string | null
   handleInstall: () => Promise<void>
@@ -29,15 +31,16 @@ type UsePresenceStatusReturn = {
 };
 
 export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn => {
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
 
   const [isInstalled, setIsInstalled] = useState(false);
   const [installedVersion, setInstalledVersion] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [extDetected, setExtDetected] = useState(false);
-  const [totalInstalls, setTotalInstalls] = useState(presence.totalInstalls);
+  const [totalInstalls] = useState(presence.totalInstalls);
   const [savedRating, setSavedRating] = useState(0);
   const [deviceId, setDeviceId] = useState<string | null>(null);
+  const [diagnostic, setDiagnostic] = useState<ExtensionDiagnostic | null>(null);
 
   const [pendingVersion, setPendingVersion] = useState<string | null>(null);
   const [showUninstallConfirm, setShowUninstallConfirm] = useState(false);
@@ -78,6 +81,15 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
           { source: EXT_SOURCE, type: "GET_USER_RATINGS", messageId: nextId() },
           "*",
         );
+
+        window.postMessage(
+          { source: EXT_SOURCE, type: "GET_DIAGNOSTIC", messageId: nextId() },
+          "*",
+        );
+      }
+
+      if (msg.source === EXT_SOURCE && msg.type === "GET_DIAGNOSTIC_RESULT") {
+        setDiagnostic((msg.payload ?? null) as ExtensionDiagnostic | null);
       }
 
       if (msg.source === EXT_SOURCE && msg.type === "USER_RATINGS") {
@@ -107,12 +119,26 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
       if (msg.source === EXT_SOURCE && msg.type === "INSTALL_PRESENCE_RESULT") {
         if (msg.payload?.ok) {
           setIsInstalled(true);
-          toast.success(t("installSuccess", { platform: presence.name }));
+          setInstalledVersion(presence.version ?? null);
+          setLoading(false);
+          if (!isInstalled) {
+            trackPublicAnalytics({
+              key: "marketplace_conversion",
+              slug: presence.slug,
+              version: presence.version ?? undefined,
+              payload: { source: "presence-detail" },
+            });
+          }
+          toast.success(t("install-success", { platform: presence.name }));
+          window.postMessage(
+            { source: EXT_SOURCE, type: "GET_DIAGNOSTIC", messageId: nextId() },
+            "*",
+          );
         } else {
           setIsInstalled(false);
           setInstalledVersion(null);
           setLoading(false);
-          toast.error(t("installError", { platform: presence.name }));
+          toast.error(t("install-error", { platform: presence.name }));
         }
       }
 
@@ -120,7 +146,11 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
         if (msg.payload?.ok) {
           setIsInstalled(false);
           setInstalledVersion(null);
-          toast.success(t("uninstallSuccess", { platform: presence.name }));
+          toast.success(t("uninstall-success", { platform: presence.name }));
+          window.postMessage(
+            { source: EXT_SOURCE, type: "GET_DIAGNOSTIC", messageId: nextId() },
+            "*",
+          );
         }
       }
     };
@@ -131,12 +161,11 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
       window.removeEventListener("message", handler);
       stopPing();
     };
-  }, [presence.name, presence.slug, t]);
+  }, [isInstalled, presence.name, presence.slug, presence.version, t]);
 
   const handleInstall = useCallback(async (): Promise<void> => {
     if (!extDetected) {
-      toast.info(t("extNotDetected"));
-      setIsInstalled((current) => !current);
+      toast.info(t("ext-not-detected"));
       return;
     }
 
@@ -154,21 +183,6 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
         { cache: "no-store" },
       ).then((response) => response.json());
 
-      if (!isInstalled) {
-        trackPublicAnalytics({
-          key: "marketplace_conversion",
-          slug: presence.slug,
-          version: presence.version ?? undefined,
-          payload: { source: "presence-detail" },
-        });
-        fireAndForget(`${API_BASE_URL}/presences/${presence.slug}/installs`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ deviceId, version: presence.version }),
-        });
-        setTotalInstalls((current) => current + 1);
-      }
-
       window.postMessage(
         {
           source: EXT_SOURCE,
@@ -182,14 +196,11 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
         "*",
       );
 
-      setIsInstalled(true);
-      setInstalledVersion(release.version ?? null);
     } catch {
-      toast.error(t("installError", { platform: presence.name }));
-    } finally {
+      toast.error(t("install-error", { platform: presence.name }));
       setLoading(false);
     }
-  }, [extDetected, isInstalled, needsUpdate, presence.name, presence.slug, presence.version, t]);
+  }, [extDetected, needsUpdate, presence.name, presence.slug, presence.version, t]);
 
   const handleUninstallRequest = useCallback((): void => {
     setShowUninstallConfirm(true);
@@ -249,9 +260,9 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
 
       setIsInstalled(true);
       setInstalledVersion(release.version ?? null);
-      toast.success(t("versionChanged", { platform: presence.name, version }));
+      toast.success(t("version-changed", { platform: presence.name, version }));
     } catch {
-      toast.error(t("versionChangeError", { platform: presence.name, version }));
+      toast.error(t("version-change-error", { platform: presence.name, version }));
     }
   }, [presence.name, presence.slug, t]);
 
@@ -273,6 +284,7 @@ export const usePresenceStatus = (presence: Presence): UsePresenceStatusReturn =
     totalInstalls,
     savedRating,
     deviceId,
+    diagnostic,
     needsUpdate,
     pendingVersion,
     handleInstall,

@@ -26,13 +26,13 @@ export const StarRatingInput: FC<Props> = ({
   onHover,
   onLeave,
 }) => {
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
 
   if (!canRate) return null;
 
   return (
     <div className="bg-card-2 border border-border rounded-lg p-3">
-      <p className="text-xs text-muted-foreground mb-2">{t("yourRating")}</p>
+      <p className="text-xs text-muted-foreground mb-2">{t("your-rating")}</p>
       <div className="flex items-center gap-1">
         {[1, 2, 3, 4, 5].map((star) => {
           const rated = userRating > 0;

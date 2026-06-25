@@ -198,7 +198,6 @@ func (c *Client) writeCommand(payload map[string]any) error {
 	if c.conn == nil {
 		return errors.New("discord ipc is not connected")
 	}
-	c.log("discord command -> %+v", payload)
 	if _, err := c.conn.Write(encode(opFrame, payload)); err != nil {
 		c.log("discord command write failed: %v", err)
 		return err
@@ -209,9 +208,9 @@ func (c *Client) writeCommand(payload map[string]any) error {
 		c.log("discord command read failed: %v", err)
 		return err
 	}
-	c.log("discord command <- op=%d data=%+v", packet.Op, packet.Data)
 
 	if event, _ := packet.Data["evt"].(string); event == "ERROR" {
+		c.log("discord command error response: op=%d data=%+v", packet.Op, packet.Data)
 		if data, ok := packet.Data["data"].(map[string]any); ok {
 			code := data["code"]
 			message := data["message"]

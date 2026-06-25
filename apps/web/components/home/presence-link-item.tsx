@@ -16,16 +16,13 @@ export const PresenceLinkItem: FC<Props> = ({ presence, locale }) => {
   return (
     <Link
       href={`/library/${presence.slug}`}
-      className="group relative overflow-hidden rounded-lg border border-border bg-card p-5 transition-all hover:bg-card-hover/45"
+      className="group relative isolate overflow-hidden rounded-lg border border-border bg-card p-5 transition-all hover:bg-card-hover/45"
     >
       <div
-        className="pointer-events-none absolute -right-16 -top-16 size-52 rounded-full opacity-10 blur-3xl transition-opacity group-hover:opacity-20"
-        style={{ backgroundColor: presence.iconColor }}
-      />
-
-      <div
-        className="pointer-events-none absolute -right-8 -top-8 size-12 rounded-full opacity-15 blur-xl transition-opacity group-hover:opacity-25"
-        style={{ backgroundColor: presence.iconColor }}
+        className="pointer-events-none absolute inset-0 opacity-10 transition-opacity group-hover:opacity-20"
+        style={{
+          background: `radial-gradient(circle at 88% 18%, ${presence.iconColor}, transparent 58%)`,
+        }}
       />
 
       <div className="relative flex h-full flex-col gap-5">
@@ -88,7 +85,7 @@ export const PresenceItemMore: FC<PresenceItemMoreProps> = ({ count, label }): R
   return (
     <Link
       href="/library"
-      className="group relative overflow-hidden rounded-lg border border-dashed border-border bg-card p-5 transition-all hover:bg-card-hover/45"
+      className="group relative isolate overflow-hidden rounded-lg border border-dashed border-border bg-card p-5 transition-all hover:bg-card-hover/45"
     >
       <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-primary/10 opacity-0 transition-opacity group-hover:opacity-100" />
 

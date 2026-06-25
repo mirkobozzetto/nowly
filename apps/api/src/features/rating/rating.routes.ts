@@ -1,42 +1,40 @@
 import { getPrisma } from "@/db/client"
-import { hashDiscordId, verifyToken } from "@/features/auth/auth.service"
+import { hashDiscordId, verifyToken, type DiscordUser } from "@/features/auth/auth.service"
 import {
   getPresenceStats, getUserRating,
   hasDiscordRated, markDiscordRated,
   removeUserRating, setUserRating,
   submitRating,
 } from "@/features/presence/presence.repository"
-import { submitComment, getComments } from "@/features/rating/rating.repository"
-import type { FastifyInstance } from "fastify"
+import { getComments, submitComment } from "@/features/rating/rating.repository"
+import { ratingCommentBodySchema } from "@nowly/shared/schemas"
+import type { FastifyInstance, FastifyRequest } from "fastify"
 
 export const register = async (app: FastifyInstance): Promise<void> => {
   await app.register(ratingRoutes, { prefix: "/presences" })
 }
 
+const getBearerUser = (request: FastifyRequest): DiscordUser | null => {
+  const header = request.headers.authorization ?? (request.headers["x-user-token"] as string | undefined)
+  if (!header?.startsWith("Bearer ")) return null
+  return verifyToken(header.slice(7))
+}
+
 export const ratingRoutes = async (fastify: FastifyInstance) => {
   fastify.post<{ Params: { slug: string } }>("/:slug/comments", async (request, reply) => {
     const slug = request.params.slug.toLowerCase()
-    const body = request.body as { rating?: number; comment?: string; anonymous?: boolean }
-    const rating = Number(body?.rating)
-    const commentText = body?.comment?.trim() ?? ""
-    const anonymous = body?.anonymous === true
 
-    if (rating < 1 || rating > 5 || !Number.isInteger(rating)) {
-      return reply.status(400).send({
-        error: "Rating must be an integer between 1 and 5"
-      })
+    const parsed = ratingCommentBodySchema.safeParse(request.body)
+    if (!parsed.success) {
+      return reply.status(400).send({ error: "Rating must be an integer between 1 and 5" })
     }
+    const rating = parsed.data.rating
+    const commentText = parsed.data.comment?.trim() ?? ""
+    const anonymous = parsed.data.anonymous === true
 
-    const auth = request.headers.authorization
-    if (!auth?.startsWith("Bearer ")) {
-      return reply.status(401).send({ error: "Authentication required" })
-    }
-
-    const discordUser = verifyToken(auth.slice(7))
+    const discordUser = getBearerUser(request)
     if (!discordUser) {
-      return reply.status(401).send({
-        error: "Invalid or expired token"
-      })
+      return reply.status(401).send({ error: "Authentication required" })
     }
 
     const alreadyRated = await hasDiscordRated(slug, discordUser.discordId)
@@ -88,14 +86,8 @@ export const ratingRoutes = async (fastify: FastifyInstance) => {
     const slug = request.params.slug.toLowerCase()
     const comments = await getComments(slug)
 
-    const userToken = (request.headers as Record<string, string>)["x-user-token"]
-    let currentRawId: string | null = null
-    if (userToken?.startsWith("Bearer ")) {
-      const discordUser = verifyToken(userToken.slice(7))
-      if (discordUser) {
-        currentRawId = discordUser.discordId
-      }
-    }
+    const discordUser = getBearerUser(request)
+    const currentRawId: string | null = discordUser?.discordId ?? null
 
     if (currentRawId) {
       const currentHash = hashDiscordId(currentRawId)
@@ -110,14 +102,9 @@ export const ratingRoutes = async (fastify: FastifyInstance) => {
 
   fastify.get<{ Params: { slug: string } }>("/:slug/my-rating", async (request, reply) => {
     const slug = request.params.slug.toLowerCase()
-    const auth = request.headers.authorization
-    if (!auth?.startsWith("Bearer ")) {
-      return reply.status(401).send({ error: "Authentication required" })
-    }
-
-    const discordUser = verifyToken(auth.slice(7))
+    const discordUser = getBearerUser(request)
     if (!discordUser) {
-      return reply.status(401).send({ error: "Invalid or expired token" })
+      return reply.status(401).send({ error: "Authentication required" })
     }
 
     const data = await getUserRating(slug, discordUser.discordId)
@@ -130,14 +117,9 @@ export const ratingRoutes = async (fastify: FastifyInstance) => {
 
   fastify.delete<{ Params: { slug: string } }>("/:slug/comments", async (request, reply) => {
     const slug = request.params.slug.toLowerCase()
-    const auth = request.headers.authorization
-    if (!auth?.startsWith("Bearer ")) {
-      return reply.status(401).send({ error: "Authentication required" })
-    }
-
-    const discordUser = verifyToken(auth.slice(7))
+    const discordUser = getBearerUser(request)
     if (!discordUser) {
-      return reply.status(401).send({ error: "Invalid or expired token" })
+      return reply.status(401).send({ error: "Authentication required" })
     }
 
     const userData = await getUserRating(slug, discordUser.discordId)

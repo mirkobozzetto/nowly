@@ -13,6 +13,7 @@ type DeleteStatus = "idle" | "loading" | "done" | "error" | "kept";
 const UninstallPage = () => {
   const searchParams = useSearchParams();
   const deviceId = useMemo(() => searchParams.get("deviceId")?.trim() ?? "", [searchParams]);
+  const token = useMemo(() => searchParams.get("token")?.trim() ?? "", [searchParams]);
   const [status, setStatus] = useState<Status>("idle");
   const [deleteStatus, setDeleteStatus] = useState<DeleteStatus>("idle");
 
@@ -24,6 +25,7 @@ const UninstallPage = () => {
     void fetch(`${API_BASE_URL}/devices/${encodeURIComponent(deviceId)}`, {
       method: "DELETE",
       cache: "no-store",
+      headers: token ? { "X-Device-Token": token } : undefined,
     })
       .then((response) => {
         setStatus(response.ok ? "done" : "error");
@@ -39,7 +41,7 @@ const UninstallPage = () => {
           payload: { source: "uninstall-page", stage: "active-cleanup" },
         });
       });
-  }, [deviceId, status]);
+  }, [deviceId, token, status]);
 
   return (
     <PageLayout>
@@ -89,6 +91,7 @@ const UninstallPage = () => {
                       void fetch(`${API_BASE_URL}/analytics/device/${encodeURIComponent(deviceId)}`, {
                         method: "DELETE",
                         cache: "no-store",
+                        headers: token ? { "X-Device-Token": token } : undefined,
                       })
                         .then((response) => {
                           setDeleteStatus(response.ok ? "done" : "error");

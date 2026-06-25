@@ -19,19 +19,26 @@ const generateMetadata = (): Metadata => {
 };
 
 const Page = (): ReactElement => {
-  const t = useTranslations("FaqPage");
+  const t = useTranslations("faq-page");
   const items = t.raw("items") as FaqItem[];
   const faqItems = items.map((item) => ({
     question: item.question,
     answer: item.answer.replace(/<[^>]*>/g, ""),
   }));
-  const contentItems = items.map((item) => ({
+  const contentItems = items.map((item, index) => ({
+    id: `faq-${index + 1}`,
     title: item.question,
     description: item.answer,
   }));
 
   return (
-    <StructuredContentPage title={t("title")} items={contentItems}>
+    <StructuredContentPage
+      badge={t("badge")}
+      title={t("title")}
+      description={t("description")}
+      items={contentItems}
+      showAnchorLinks
+    >
       <FaqStructuredData items={faqItems} />
     </StructuredContentPage>
   );

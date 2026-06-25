@@ -11,7 +11,7 @@ $RootDir = Split-Path -Parent $ScriptDir
 $DistDir = Join-Path $RootDir 'dist'
 $ReleaseDir = Join-Path (Join-Path $RootDir 'releases') $Version
 
-Write-Host "=== Nowly Native Host v$Version release ==="
+Write-Host "=== Nowly Host v$Version release ==="
 Write-Host ""
 
 # Build binaries

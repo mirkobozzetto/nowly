@@ -1,17 +1,8 @@
 import { serverEnv } from "@nowly/env/server"
+import { canonicalJson } from "@nowly/shared"
 import { createHash, createPrivateKey, sign } from "crypto"
 
-export const canonicalJson = (value: unknown): string => {
-  if (value === null || typeof value !== "object") return JSON.stringify(value)
-  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`
-
-  const object = value as Record<string, unknown>
-  return `{${Object.keys(object)
-    .filter((key) => object[key] !== undefined)
-    .sort()
-    .map((key) => `${JSON.stringify(key)}:${canonicalJson(object[key])}`)
-    .join(",")}}`
-}
+export { canonicalJson }
 
 export const sha256Base64Url = (input: string): string =>
   createHash("sha256").update(input, "utf8").digest("base64url")

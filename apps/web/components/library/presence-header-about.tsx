@@ -7,7 +7,7 @@ type Props = {
 };
 
 export const PresenceHeaderAbout: FC<Props> = ({ description }) => {
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
 
   return (
     <div className="mt-8 pt-8 border-t border-border">

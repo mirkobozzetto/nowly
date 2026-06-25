@@ -1,7 +1,7 @@
 ---
 title: 1.0.0
 date: June 10, 2026
-description: The first stable launch of Nowly, covering the browser extension, native host, public library, and publishing workflow.
+description: The first stable launch of Nowly, covering the browser extension, Nowly Host, public library, and publishing workflow.
 ---
 
 `1.0.0` is the point where Nowly became a complete product instead of a collection of separate pieces. It is the first stable launch and the baseline for everything that follows.
@@ -9,8 +9,8 @@ description: The first stable launch of Nowly, covering the browser extension, n
 <ReleaseTable
   headers={["Surface", "What shipped", "Why it matters"]}
   rows={[
-    ["Browser extension", "Detects supported websites, loads signed presences, and forwards activity to the native host.", "This is the user-facing entry point for all presence activity."],
-    ["Native host", "Bridges browser activity into Discord Rich Presence.", "Discord updates happen locally without turning the browser into the integration layer."],
+    ["Browser extension", "Detects supported websites, loads signed presences, and forwards activity to Nowly Host.", "This is the user-facing entry point for all presence activity."],
+    ["Nowly Host", "Bridges browser activity into Discord Rich Presence.", "Discord updates happen locally without turning the browser into the integration layer."],
     ["Public library", "Lists presences, shows detail pages, comments, ratings, and release history.", "Users can inspect a presence before installing it."],
     ["Presence lifecycle", "Supports install, update, disable, and uninstall flows.", "Presence management is exposed as a normal user workflow."],
     ["Documentation", "Covers setup, troubleshooting, presence development, and publishing.", "Contributors and users have a single place to look up the product behavior."],
@@ -20,16 +20,16 @@ description: The first stable launch of Nowly, covering the browser extension, n
 
 ## Browser extension
 
-The extension is the first visible piece of the system. It watches supported sites, installs the right presence bundle, and keeps activity moving to the native host without asking the user to manage the plumbing.
+The extension is the first visible piece of the system. It watches supported sites, installs the right presence bundle, and keeps activity moving to Nowly Host without asking the user to manage the plumbing.
 
 - Presences only run on matched websites.
 - The extension loads the correct signed bundle for the presence.
-- Activity is forwarded to Discord through the local native host.
+- Activity is forwarded to Discord through the local Nowly Host.
 - User script support is documented and gated because it is a sensitive permission.
 
-## Native host
+## Nowly Host
 
-The native companion is what turns page state into an actual Discord status. It keeps the browser layer focused and gives the system a clean handoff point.
+Nowly Host is what turns page state into an actual Discord status. It keeps the browser layer focused and gives the system a clean handoff point.
 
 - It receives presence payloads from the extension.
 - It translates those payloads into Discord Rich Presence updates.
@@ -61,7 +61,7 @@ install -> enable -> update -> disable -> uninstall
 
 The first stable release also established the support material around the product.
 
-- The onboarding flow explains the relationship between extension, native host, and presences.
+- The onboarding flow explains the relationship between extension, Nowly Host, and presences.
 - Troubleshooting covers the common failure modes instead of assuming the user can infer them.
 - Documentation explains the structure of a presence and how it is published.
 

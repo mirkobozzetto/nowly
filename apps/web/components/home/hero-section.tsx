@@ -8,11 +8,11 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import type { FC, ReactElement } from "react";
 import { useState } from "react";
-import { CompanionWindow } from "./companion-window";
+import { ExtensionPreview } from "./extension-preview";
 
 export const HeroSection: FC = (): ReactElement => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const t = useTranslations("HeroSection");
+  const t = useTranslations("hero-section");
 
   return (
     <>
@@ -29,7 +29,7 @@ export const HeroSection: FC = (): ReactElement => {
                 {t("title")}
                 <br />
                 <HighlightedText from="left" delay={0}>
-                  {t("titleAccent")}
+                  {t("title-accent")}
                 </HighlightedText>
               </h1>
 
@@ -47,7 +47,7 @@ export const HeroSection: FC = (): ReactElement => {
 
             {/* Visual */}
             <div className="hidden min-w-0 lg:block">
-              <CompanionWindow />
+        <ExtensionPreview />
             </div>
           </div>
         </div>

@@ -1,8 +1,9 @@
 import { DIST } from "@/discover"
 import { logger, spinner } from "@/logger"
-import { CopyObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
+import { CopyObjectCommand, GetObjectCommand, ListObjectsV2Command, PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { cliEnv } from "@nowly/env/cli"
 import { createHash } from "crypto"
+import esbuild from "esbuild"
 import { existsSync, readdirSync, readFileSync, statSync } from "fs"
 import { join, relative } from "path"
 
@@ -152,6 +153,325 @@ const purgeCloudflareFiles = async (urls: string[]): Promise<void> => {
     const text = await res.text().catch(() => "")
     throw new Error(`Cloudflare purge failed (${res.status}): ${text || res.statusText}`)
   }
+}
+
+type MinifyVersionBundlesOptions = {
+  dryRun?: boolean
+  slug?: string
+}
+
+type MinifyVersionBundlesResult = {
+  changed: number
+  failed: number
+  larger: number
+  scanned: number
+  skipped: number
+  unchanged: number
+  originalBytes: number
+  minifiedBytes: number
+  totalOriginalBytes: number
+  totalMinifiedBytes: number
+}
+
+type OptimizeAssetOptions = {
+  dryRun?: boolean
+  slug?: string
+}
+
+type OptimizeAssetResult = {
+  failed: number
+  invalidDimensions: number
+  larger: number
+  scanned: number
+  shrinkable: number
+  skipped: number
+  unchanged: number
+  originalBytes: number
+  optimizedBytes: number
+  shrinkableOriginalBytes: number
+  shrinkableOptimizedBytes: number
+}
+
+type SharpModule = {
+  default?: (input: Buffer) => SharpInstance
+}
+
+type SharpInstance = {
+  jpeg(options: { mozjpeg?: boolean; progressive?: boolean; quality?: number }): SharpInstance
+  metadata(): Promise<{ format?: string; width?: number; height?: number }>
+  png(options: { compressionLevel?: number; effort?: number; palette?: boolean }): SharpInstance
+  rotate(): SharpInstance
+  toBuffer(): Promise<Buffer>
+  webp(options: { effort?: number; lossless?: boolean; nearLossless?: boolean; quality?: number }): SharpInstance
+}
+
+const VERSIONED_BUNDLE_RE = /^presences\/([^/]+)\/versions\/([^/]+)\/bundle\.js$/
+const PRESENCE_ASSET_RE = /^presences\/([^/]+)\/(?:versions\/([^/]+)\/)?assets\/(.+)\.(png|jpe?g|webp)$/i
+const EXPECTED_ASSET_DIMENSIONS: Record<string, { width: number; height: number }> = {
+  icon: { width: 128, height: 128 },
+  logo: { width: 300, height: 300 },
+  thumbnail: { width: 1920, height: 1080 },
+}
+
+const basenameWithoutExtension = (path: string): string => {
+  const name = path.split("/").pop() ?? path
+  return name.replace(/\.[^.]+$/, "").toLowerCase()
+}
+
+const objectBodyToString = async (body: unknown): Promise<string> => {
+  if (!body) return ""
+  if (typeof body === "string") return body
+  if (body instanceof Uint8Array) return Buffer.from(body).toString("utf-8")
+  if (typeof (body as { transformToString?: unknown }).transformToString === "function") {
+    return (body as { transformToString: () => Promise<string> }).transformToString()
+  }
+  throw new Error("unsupported R2 object body")
+}
+
+const objectBodyToBuffer = async (body: unknown): Promise<Buffer> => {
+  if (!body) return Buffer.alloc(0)
+  if (Buffer.isBuffer(body)) return body
+  if (body instanceof Uint8Array) return Buffer.from(body)
+  if (typeof body === "string") return Buffer.from(body)
+  if (typeof (body as { transformToByteArray?: unknown }).transformToByteArray === "function") {
+    return Buffer.from(await (body as { transformToByteArray: () => Promise<Uint8Array> }).transformToByteArray())
+  }
+  throw new Error("unsupported R2 object body")
+}
+
+export const minifyVersionBundlesOnR2 = async (options: MinifyVersionBundlesOptions = {}): Promise<MinifyVersionBundlesResult> => {
+  const client = getClient()
+  const dryRun = options.dryRun !== false
+  const prefix = options.slug ? `presences/${options.slug}/versions/` : "presences/"
+  const result: MinifyVersionBundlesResult = {
+    changed: 0,
+    failed: 0,
+    larger: 0,
+    scanned: 0,
+    skipped: 0,
+    unchanged: 0,
+    originalBytes: 0,
+    minifiedBytes: 0,
+    totalOriginalBytes: 0,
+    totalMinifiedBytes: 0,
+  }
+  const purgedUrls: string[] = []
+
+  let continuationToken: string | undefined
+  do {
+    const list = await client.send(new ListObjectsV2Command({
+      Bucket: R2_BUCKET,
+      Prefix: prefix,
+      ContinuationToken: continuationToken,
+    }))
+
+    const keys = (list.Contents ?? [])
+      .map((object) => object.Key)
+      .filter((key): key is string => Boolean(key && VERSIONED_BUNDLE_RE.test(key)))
+
+    for (const key of keys) {
+      result.scanned++
+      try {
+        const object = await client.send(new GetObjectCommand({
+          Bucket: R2_BUCKET,
+          Key: key,
+        }))
+        const source = await objectBodyToString(object.Body)
+        const minified = (await esbuild.transform(source, {
+          legalComments: "none",
+          minify: true,
+          target: "es2022",
+        })).code
+
+        const originalBytes = Buffer.byteLength(source)
+        const minifiedBytes = Buffer.byteLength(minified)
+        result.totalOriginalBytes += originalBytes
+        result.totalMinifiedBytes += minifiedBytes
+
+        if (minifiedBytes >= originalBytes) {
+          if (minifiedBytes > originalBytes) result.larger++
+          else result.unchanged++
+          result.skipped++
+          continue
+        }
+
+        result.changed++
+        result.originalBytes += originalBytes
+        result.minifiedBytes += minifiedBytes
+
+        logger.info(`${dryRun ? "Would minify" : "Minifying"} ${key} (${(originalBytes / 1024).toFixed(1)} kB -> ${(minifiedBytes / 1024).toFixed(1)} kB)`)
+
+        if (!dryRun) {
+          await client.send(new PutObjectCommand({
+            Bucket: R2_BUCKET,
+            Key: key,
+            Body: minified,
+            ContentType: "application/javascript; charset=utf-8",
+            CacheControl: "public, max-age=31536000, immutable",
+          }))
+          purgedUrls.push(`${R2_PUBLIC_URL}/${key}`)
+        }
+      } catch (err: any) {
+        result.failed++
+        logger.warning(`Failed to minify ${key}: ${err.message ?? String(err)}`)
+      }
+    }
+
+    continuationToken = list.NextContinuationToken
+  } while (continuationToken)
+
+  if (!dryRun && purgedUrls.length > 0) {
+    await purgeCloudflareFiles(purgedUrls)
+  }
+
+  return result
+}
+
+export const optimizeAssetsOnR2 = async (options: OptimizeAssetOptions = {}): Promise<OptimizeAssetResult> => {
+  const sharpModule = await import("sharp").catch(() => null) as SharpModule | null
+  const sharp = sharpModule?.default
+  if (!sharp) {
+    throw new Error("sharp is required to optimize assets. Install/add sharp before running this command.")
+  }
+
+  const client = getClient()
+  const dryRun = options.dryRun === true
+  const prefix = options.slug ? `presences/${options.slug}/` : "presences/"
+  const result: OptimizeAssetResult = {
+    failed: 0,
+    invalidDimensions: 0,
+    larger: 0,
+    scanned: 0,
+    shrinkable: 0,
+    skipped: 0,
+    unchanged: 0,
+    originalBytes: 0,
+    optimizedBytes: 0,
+    shrinkableOriginalBytes: 0,
+    shrinkableOptimizedBytes: 0,
+  }
+  const purgedUrls: string[] = []
+
+  let continuationToken: string | undefined
+  do {
+    const list = await client.send(new ListObjectsV2Command({
+      Bucket: R2_BUCKET,
+      Prefix: prefix,
+      ContinuationToken: continuationToken,
+    }))
+
+    const keys = (list.Contents ?? [])
+      .map((object) => object.Key)
+      .filter((key): key is string => Boolean(key && PRESENCE_ASSET_RE.test(key)))
+
+    for (const key of keys) {
+      result.scanned++
+      try {
+        const match = key.match(PRESENCE_ASSET_RE)
+        const assetPath = match?.[3]
+        const assetKind = assetPath ? basenameWithoutExtension(assetPath) : undefined
+        const extension = match?.[4]?.toLowerCase()
+        const expected = assetKind ? EXPECTED_ASSET_DIMENSIONS[assetKind] : undefined
+        if (!assetPath || !extension) {
+          result.skipped++
+          continue
+        }
+
+        const object = await client.send(new GetObjectCommand({
+          Bucket: R2_BUCKET,
+          Key: key,
+        }))
+        const source = await objectBodyToBuffer(object.Body)
+        const image = sharp(source).rotate()
+        const metadata = await image.metadata()
+        const originalDimensions = metadata.width && metadata.height
+          ? { width: metadata.width, height: metadata.height }
+          : undefined
+
+        if (!originalDimensions) {
+          result.invalidDimensions++
+          logger.warning(`Skipping ${key}: missing image dimensions`)
+          continue
+        }
+
+        if (expected && (originalDimensions.width !== expected.width || originalDimensions.height !== expected.height)) {
+          result.invalidDimensions++
+          logger.warning(`Skipping ${key}: expected ${expected.width}x${expected.height}, got ${originalDimensions.width}x${originalDimensions.height}`)
+          continue
+        }
+
+        let optimized: Buffer
+        if (extension === "png") {
+          optimized = await sharp(source)
+            .rotate()
+            .png({ compressionLevel: 9, effort: 10, palette: false })
+            .toBuffer()
+        } else {
+          optimized = extension === "webp"
+            ? await sharp(source)
+              .rotate()
+              .webp({ effort: 6, nearLossless: true, quality: 95 })
+              .toBuffer()
+            : await sharp(source)
+              .rotate()
+              .jpeg({ mozjpeg: true, progressive: true, quality: 95 })
+              .toBuffer()
+        }
+
+        const optimizedMetadata = await sharp(optimized).metadata()
+        if (optimizedMetadata.width !== originalDimensions.width || optimizedMetadata.height !== originalDimensions.height) {
+          result.invalidDimensions++
+          logger.warning(`Skipping ${key}: optimized dimensions changed from ${originalDimensions.width}x${originalDimensions.height} to ${optimizedMetadata.width ?? "?"}x${optimizedMetadata.height ?? "?"}`)
+          continue
+        }
+
+        const originalBytes = source.byteLength
+        const optimizedBytes = optimized.byteLength
+        result.originalBytes += originalBytes
+        result.optimizedBytes += optimizedBytes
+
+        if (optimizedBytes < originalBytes) {
+          result.shrinkable++
+          result.shrinkableOriginalBytes += originalBytes
+          result.shrinkableOptimizedBytes += optimizedBytes
+          logger.info(`${dryRun ? "Would optimize" : "Optimizing"} ${key} (${(originalBytes / 1024).toFixed(1)} kB -> ${(optimizedBytes / 1024).toFixed(1)} kB)`)
+
+          if (!dryRun) {
+            await client.send(new PutObjectCommand({
+              Bucket: R2_BUCKET,
+              Key: key,
+              Body: optimized,
+              ContentType: extension === "png"
+                ? "image/png"
+                : extension === "webp"
+                  ? "image/webp"
+                  : "image/jpeg",
+              CacheControl: key.includes("/versions/")
+                ? "public, max-age=31536000, immutable"
+                : getCacheControl(key),
+            }))
+            purgedUrls.push(`${R2_PUBLIC_URL}/${key}`)
+          }
+        } else if (optimizedBytes > originalBytes) {
+          result.larger++
+        } else {
+          result.unchanged++
+        }
+      } catch (err: any) {
+        result.failed++
+        logger.warning(`Failed to simulate ${key}: ${err.message ?? String(err)}`)
+      }
+    }
+
+    continuationToken = list.NextContinuationToken
+  } while (continuationToken)
+
+  if (!dryRun && purgedUrls.length > 0) {
+    await purgeCloudflareFiles(purgedUrls)
+  }
+
+  result.skipped += result.invalidDimensions + result.larger + result.unchanged
+  return result
 }
 
 const archiveCurrentOnR2 = async (slug: string, oldVersion: string): Promise<number> => {

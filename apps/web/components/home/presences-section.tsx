@@ -27,7 +27,7 @@ const PresencesSectionSkeleton: FC = () => (
 );
 
 export const PresencesSection: FC = (): ReactElement => {
-  const t = useTranslations("PlatformsSection");
+  const t = useTranslations("platforms-section");
   const locale = useLocale();
   const { data: presences, isLoading } = usePresences();
 
@@ -39,7 +39,7 @@ export const PresencesSection: FC = (): ReactElement => {
         <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="max-w-150">
             <span className="text-accent font-bold uppercase tracking-widest text-xs mb-4 block">
-              {t("sectionLabel")}
+              {t("section-label")}
             </span>
 
             <h2 className="text-[2.5rem] mb-4">
@@ -53,7 +53,7 @@ export const PresencesSection: FC = (): ReactElement => {
 
           <Button asChild variant="outline" size="md" className="w-fit">
             <Link href="/library">
-              {t("libraryCta")}
+              {t("library-cta")}
               <ArrowRight className="size-4" />
             </Link>
           </Button>
@@ -65,7 +65,7 @@ export const PresencesSection: FC = (): ReactElement => {
           {!isLoading && available.length > 0 && (
             <div className="space-y-5">
               <p className="text-sm text-dim-foreground">
-                {t("servicesCount", { count: available.length })}
+                {t("services-count", { count: available.length })}
               </p>
 
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -73,7 +73,7 @@ export const PresencesSection: FC = (): ReactElement => {
                   <PresenceLinkItem key={presence.slug} presence={presence} locale={locale} />
                 ))}
 
-                {available.length > 8 && <PresenceItemMore count={available.length - 8} label={t("moreToDiscover")} />}
+                {available.length > 8 && <PresenceItemMore count={available.length - 8} label={t("more-to-discover")} />}
               </div>
             </div>
           )}

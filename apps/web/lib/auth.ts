@@ -22,15 +22,32 @@ export const clearToken = (): void => {
 
 export const getTokenFromUrl = (): string | null => {
   if (typeof window === "undefined") return null;
-  const params = new URLSearchParams(window.location.search);
-  return params.get("token");
+  const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : window.location.hash;
+  const fromHash = new URLSearchParams(hash).get("token");
+  if (fromHash) return fromHash;
+  return new URLSearchParams(window.location.search).get("token");
 };
 
 export const cleanupUrlToken = (): void => {
   if (typeof window === "undefined") return;
   const url = new URL(window.location.href);
+  let changed = false;
+
+  const hash = url.hash.startsWith("#") ? url.hash.slice(1) : url.hash;
+  const hashParams = new URLSearchParams(hash);
+  if (hashParams.has("token")) {
+    hashParams.delete("token");
+    const rest = hashParams.toString();
+    url.hash = rest ? `#${rest}` : "";
+    changed = true;
+  }
+
   if (url.searchParams.has("token")) {
     url.searchParams.delete("token");
+    changed = true;
+  }
+
+  if (changed) {
     window.history.replaceState({}, "", url.toString());
   }
 };

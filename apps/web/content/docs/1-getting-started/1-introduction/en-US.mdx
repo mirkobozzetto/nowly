@@ -1,37 +1,44 @@
 ---
 title: Introduction
-description: Learn what Nowly is, how Discord Rich Presence works, and how presences connect supported websites to Discord.
+description: Learn what Nowly is, how Discord Rich Presence works, and how Nowly Host connects supported websites to Discord.
 ---
 
 ## What is Nowly?
 
-Nowly is an open-source Discord Rich Presence app for the web. It detects activity on supported websites and shows that activity in Discord through a browser extension, a native host app, and installable presences.
+Nowly shows activity from supported websites in Discord Rich Presence. It uses three visible pieces:
+
+- the Nowly browser extension for Chrome, Chromium, Brave, and Edge
+- Nowly Host on Windows or Linux
+- installable presences from the Nowly library
 
 ## What is a Presence?
 
-A presence is a small JavaScript integration for a specific website. It runs when a user visits a supported URL, reads useful page state, and sends activity data to Nowly.
+A presence is a small JavaScript integration for a specific website. It runs when you visit a supported URL, reads useful page state, and sends activity data to the extension.
 
 Presences can display:
 
 - the platform name
-- the current video, stream, show, or page title
-- author, channel, or creator names
+- the current video, stream, show, repository, or page title
+- author, channel, creator, or project names
 - playback timestamps
 - platform assets
 - buttons that link back to content
 
 ## How Nowly Works
 
-The browser extension detects supported websites and loads installed presences. A presence gathers activity data from the page and sends a Discord-compatible payload.
+The browser extension detects supported websites and loads your installed presences. A presence prepares the Discord activity payload.
 
-The native host app is the local bridge between the browser and Discord. It receives activity data from the extension and communicates with the Discord desktop client locally.
+Nowly Host is the local bridge between the browser and Discord Desktop. It receives activity data from the extension and sends it to Discord locally.
 
-## Who This Documentation Is For
+## Start Here
 
-This documentation is for users installing Nowly and developers building presences.
+Follow the setup flow in this order:
 
-If you only want to use Nowly, start with Installation. If you want to build a presence, continue to Creating Your First Presence after setup.
+1. Install the extension.
+2. Enable user scripts.
+3. Install Nowly Host.
+4. Open Discord Desktop.
+5. Install a presence.
+6. Test on a compatible site, such as YouTube.
 
-## Next Steps
-
-Install the extension and native host app, then browse the presence library.
+If anything is missing, open the extension side panel. The diagnostic shows each link separately so you can see exactly what to fix.

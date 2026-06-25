@@ -21,3 +21,4 @@ extension-key.pem
 
 # Auto-generated extension source
 apps/extension/src/generated/*
+apps/extension/artifacts/

@@ -1,6 +1,6 @@
-# Nowly Native Host
+# Nowly Host
 
-Chromium Native Messaging host for Discord Rich Presence integration.
+Nowly Host bridges the Chromium extension with Discord Rich Presence.
 
 ## Contract
 
@@ -123,7 +123,7 @@ make release-prod HOST_VERSION=1.0.0
 This runs `scripts/release.sh` (or `release.ps1` on Windows) then `scripts/publish-prod.sh` (or `publish-prod.ps1`):
 
 1. **Release**: builds all platform binaries, creates the Inno Setup installer (if `iscc` is available), packages archives, generates `latest.json` → `releases/{version}/`
-2. **Publish**: uploads all artifacts to Cloudflare R2 via `pnpm admin host:publish`
+2. **Publish**: uploads all artifacts to Cloudflare R2 via `pnpm internal-cli host:publish`
 
 ### Host releases via git tags
 
@@ -136,12 +136,12 @@ git push origin host-v1.0.0
 
 The `Host Release` GitHub Action then builds and publishes automatically.
 
-The extension checks `https://cdn.nowly.me/installer/latest.json` for updates. Once the workflow updates `latest.json`, users with an older native host see the update prompt.
+The extension checks `https://cdn.nowly.me/installer/latest.json` for updates. Once the workflow updates `latest.json`, users with an older Nowly Host version see the update prompt.
 
 ### Manual publish
 
 ```bash
-pnpm admin host:publish --release-version 1.0.0 --installer releases/1.0.0/nowly-setup.exe --portable releases/1.0.0/nowly-windows.zip --linux releases/1.0.0/nowly-linux.tar.gz --macos releases/1.0.0/nowly-macos.tar.gz
+pnpm internal-cli host:publish --release-version 1.0.0 --installer releases/1.0.0/nowly-setup.exe --portable releases/1.0.0/nowly-windows.zip --linux releases/1.0.0/nowly-linux.tar.gz --macos releases/1.0.0/nowly-macos.tar.gz
 ```
 
 ### Linux

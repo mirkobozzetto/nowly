@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { uploadAllToR2, uploadHostReleaseToR2 } from "@nowly/websites/cli/r2"
+import { minifyVersionBundlesOnR2, optimizeAssetsOnR2, uploadAllToR2, uploadHostReleaseToR2 } from "@nowly/websites/cli/r2"
 import { registerPush } from "@nowly/websites/cli/commands/push"
 import { logger } from "@nowly/websites/cli/logger"
 import { existsSync } from "fs"
@@ -9,7 +9,7 @@ import { Command } from "commander"
 import "dotenv/config"
 
 const program = new Command()
-  .name("nowly-admin")
+  .name("internal-cli")
   .description("Nowly admin CLI — internal commands for releases, CDN sync, and publishing")
   .version("1.0.0")
 
@@ -41,8 +41,77 @@ program
   })
 
 program
+  .command("r2:minify-version-bundles")
+  .description("Minify historical R2 presence bundles under presences/*/versions/*/bundle.js")
+  .argument("[slug]", "Presence slug (optional — scans all if omitted)")
+  .option("--simulate", "Only print storage stats without modifying R2")
+  .action(async (slug: string | undefined, options: { simulate?: boolean }) => {
+    logger.newline()
+    logger.title(options.simulate ? "✦ Simulate R2 versioned bundle minification" : "✦ Minify R2 versioned presence bundles")
+
+    try {
+      const result = await minifyVersionBundlesOnR2({
+        dryRun: options.simulate === true,
+        slug,
+      })
+      const safeSavedBytes = result.originalBytes - result.minifiedBytes
+      const netSavedBytes = result.totalOriginalBytes - result.totalMinifiedBytes
+
+      logger.newline()
+      logger.success(`${result.scanned} versioned bundle${result.scanned > 1 ? "s" : ""} scanned`)
+      logger.success(`${result.changed} bundle${result.changed > 1 ? "s" : ""} ${options.simulate ? "would shrink" : "minified"}`)
+      if (result.larger > 0) logger.warning(`${result.larger} would grow and should be skipped`)
+      if (result.unchanged > 0) logger.info(`${result.unchanged} unchanged`)
+      if (result.failed > 0) logger.warning(`${result.failed} failed`)
+      logger.info(`Current scanned size: ${(result.totalOriginalBytes / 1024).toFixed(1)} kB`)
+      logger.info(`Minified theoretical size: ${(result.totalMinifiedBytes / 1024).toFixed(1)} kB`)
+      logger.success(`Safe saving if only smaller bundles are overwritten: ${(safeSavedBytes / 1024).toFixed(1)} kB`)
+      logger.info(`Net delta if every bundle were overwritten: ${(netSavedBytes / 1024).toFixed(1)} kB`)
+      if (options.simulate) logger.warning("Simulation only. No R2 object was modified.")
+    } catch (err: any) {
+      logger.error(err.message)
+      process.exit(1)
+    }
+  })
+
+program
+  .command("r2:optimize-assets")
+  .description("Optimize presence image assets on R2")
+  .argument("[slug]", "Presence slug (optional — scans all if omitted)")
+  .option("--simulate", "Only print storage stats without modifying R2")
+  .action(async (slug: string | undefined, options: { simulate?: boolean }) => {
+    logger.newline()
+    logger.title(options.simulate ? "✦ Simulate R2 presence asset optimization" : "✦ Optimize R2 presence assets")
+
+    try {
+      const result = await optimizeAssetsOnR2({
+        dryRun: options.simulate === true,
+        slug,
+      })
+      const savedBytes = result.shrinkableOriginalBytes - result.shrinkableOptimizedBytes
+      const netSavedBytes = result.originalBytes - result.optimizedBytes
+
+      logger.newline()
+      logger.success(`${result.scanned} asset${result.scanned > 1 ? "s" : ""} scanned`)
+      logger.success(`${result.shrinkable} asset${result.shrinkable > 1 ? "s" : ""} ${options.simulate ? "would shrink" : "optimized"}`)
+      if (result.larger > 0) logger.warning(`${result.larger} would grow and should be skipped`)
+      if (result.unchanged > 0) logger.info(`${result.unchanged} unchanged`)
+      if (result.invalidDimensions > 0) logger.warning(`${result.invalidDimensions} skipped because dimensions are not expected`)
+      if (result.failed > 0) logger.warning(`${result.failed} failed`)
+      logger.info(`Current optimizable size: ${(result.originalBytes / 1024).toFixed(1)} kB`)
+      logger.info(`Optimized theoretical size: ${(result.optimizedBytes / 1024).toFixed(1)} kB`)
+      logger.success(`Safe saving if only smaller assets are overwritten: ${(savedBytes / 1024).toFixed(1)} kB`)
+      logger.info(`Net delta if every valid asset were overwritten: ${(netSavedBytes / 1024).toFixed(1)} kB`)
+      if (options.simulate) logger.warning("Simulation only. No R2 object was modified.")
+    } catch (err: any) {
+      logger.error(err.message)
+      process.exit(1)
+    }
+  })
+
+program
   .command("host:publish")
-  .description("Upload Nowly native host release artifacts to Cloudflare R2")
+  .description("Upload Nowly Host release artifacts to Cloudflare R2")
   .requiredOption("--release-version <version>", "Host release version")
   .option("--installer <path>", "Path to nowly setup executable")
   .option("--portable <path>", "Path to Windows portable zip archive")
@@ -94,12 +163,14 @@ async function main() {
     logger.raw(chalk.cyan(chalk.bold("  ⚡ Nowly Admin CLI")))
     logger.raw(chalk.dim(`  ${"─".repeat(40)}`))
     logger.newline()
-    logger.info("Usage: pnpm admin <command>")
+    logger.info("Usage: pnpm internal-cli <command>")
     logger.newline()
     logger.raw(chalk.dim("  Commands:"))
     logger.raw(chalk.dim("    push           Build and push presence(s) to API"))
     logger.raw(chalk.dim("    r2:sync        Upload presence assets to CDN"))
-    logger.raw(chalk.dim("    host:publish   Publish native host release"))
+    logger.raw(chalk.dim("    r2:minify-version-bundles  Minify historical versioned bundles on R2"))
+    logger.raw(chalk.dim("    r2:optimize-assets  Optimize image assets on R2"))
+    logger.raw(chalk.dim("    host:publish   Publish Nowly Host release"))
     logger.newline()
   } else {
     await program.parseAsync()

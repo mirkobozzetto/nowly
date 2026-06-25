@@ -15,6 +15,8 @@ type Logger struct {
 	file *os.File
 }
 
+const maxLogSizeBytes int64 = 1024 * 1024
+
 func New() (*Logger, error) {
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
@@ -25,12 +27,28 @@ func New() (*Logger, error) {
 		return nil, err
 	}
 
-	file, err := os.OpenFile(filepath.Join(dir, "nowly-host.log"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	path := filepath.Join(dir, "nowly-host.log")
+	rotateIfNeeded(path)
+
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Logger{file: file}, nil
+}
+
+func rotateIfNeeded(path string) {
+	info, err := os.Stat(path)
+	if err != nil || info.Size() <= maxLogSizeBytes {
+		return
+	}
+
+	backupPath := path + ".1"
+	_ = os.Remove(backupPath)
+	if err := os.Rename(path, backupPath); err != nil {
+		_ = os.Truncate(path, 0)
+	}
 }
 
 func (l *Logger) Close() {

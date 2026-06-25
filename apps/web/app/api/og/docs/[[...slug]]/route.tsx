@@ -52,7 +52,7 @@ export const GET = async (req: Request, { params }: Props) => {
         tw={`relative flex h-full w-full flex-col p-20 ${mode === "dark" ? "text-white" : "text-black"}`}
       >
         <div tw="flex items-center">
-          <img alt="Nowly" src="https://nowly.me/app_title_white.png" width={150} />
+          <img alt="Nowly" src="https://cdn.nowly.me/assets/app_title.png" width={150} />
         </div>
 
         <div

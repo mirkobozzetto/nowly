@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a bug in the website, extension, API, or native host.
+description: Report a bug in the website, extension, API, or Nowly Host.
 title: "bug: "
 labels: ["bug"]
 body:

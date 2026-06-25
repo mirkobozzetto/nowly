@@ -1,5 +1,5 @@
 import { getPrisma } from "@/db/client"
-import type { PresenceMeta, PresenceStats, VersionEntry } from "./presence.types"
+import type { GlobalPresenceStats, PresenceMeta, PresenceStats, VersionEntry } from "./presence.types"
 
 const ACTIVE_DEVICE_STALE_MS = 12 * 60 * 1000
 
@@ -47,6 +47,28 @@ export const getActiveUsers = async (slug: string): Promise<number> => {
     where: { slug, lastSeenAt: { lt: new Date(Date.now() - ACTIVE_DEVICE_STALE_MS) } },
   })
   return prisma.presenceActiveDevice.count({ where: { slug } })
+}
+
+export const getGlobalPresenceStats = async (): Promise<GlobalPresenceStats> => {
+  const prisma = getPrisma()
+
+  await prisma.presenceActiveDevice.deleteMany({
+    where: { lastSeenAt: { lt: new Date(Date.now() - ACTIVE_DEVICE_STALE_MS) } },
+  })
+
+  const [totalUsers, activeUsers, activePresenceCount, installedPresenceCount] = await Promise.all([
+    prisma.device.count(),
+    prisma.presenceActiveDevice.groupBy({ by: ["deviceId"] }),
+    prisma.presenceActiveDevice.count(),
+    prisma.devicePresence.count({ where: { installed: true } }),
+  ])
+
+  return {
+    totalUsers,
+    activeUsers: activeUsers.length,
+    activePresenceCount,
+    installedPresenceCount,
+  }
 }
 
 export const getPresenceStats = async (slug: string): Promise<PresenceStats> => {

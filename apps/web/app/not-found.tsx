@@ -7,7 +7,7 @@ import Link from "next/link";
 import type { ReactElement } from "react";
 
 const NotFound = (): ReactElement => {
-  const t = useTranslations("NotFound");
+  const t = useTranslations("not-found");
 
   return (
     <div className="flex flex-1 items-center justify-center px-6">
@@ -24,7 +24,7 @@ const NotFound = (): ReactElement => {
 
         <Link href="/" className={buttonVariants({ variant: "primary", size: "md" })}>
           <Home className="w-4 h-4" />
-          {t("backToHome")}
+          {t("back-to-home")}
         </Link>
       </div>
     </div>

@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import type { FC, ReactElement } from "react";
 
 export const StepsSection: FC = (): ReactElement => {
-  const t = useTranslations("StepsSection");
+  const t = useTranslations("steps-section");
   const steps = t.raw("steps") as Array<{
     title: string
     description: string
@@ -13,7 +13,7 @@ export const StepsSection: FC = (): ReactElement => {
       <div className="relative z-2 mx-auto w-full max-w-300 min-w-0 px-6">
         <div className="mx-auto mb-16 max-w-150 text-center">
           <span className="text-accent font-bold uppercase tracking-widest text-xs mb-4 block">
-            {t("sectionLabel")}
+            {t("section-label")}
           </span>
           <h2 className="mb-4 text-balance text-[2.5rem]">
             {t("title")}

@@ -3,6 +3,7 @@ import { CtaSection } from "@/components/home/cta-section";
 import { FaqSection } from "@/components/home/faq-section";
 import { HeroSection } from "@/components/home/hero-section";
 import { PresencesSection } from "@/components/home/presences-section";
+import { StatsSection } from "@/components/home/stats-section";
 import { StepsSection } from "@/components/home/steps-section";
 import { HomeStructuredData } from "@/components/seo/home-structured-data";
 import { DEFAULT_SEO, createMetadata } from "@/lib/seo";
@@ -22,6 +23,7 @@ const Page: FC = (): ReactElement => {
     <main>
       <HomeStructuredData />
       <HeroSection />
+      <StatsSection />
       <PresencesSection />
       <AdSection />
       <StepsSection />

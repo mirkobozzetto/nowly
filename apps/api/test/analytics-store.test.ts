@@ -13,6 +13,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 const mockPrisma = vi.hoisted(() => ({
   device: {
     findUnique: vi.fn(),
+    upsert: vi.fn(),
+  },
+  devicePresence: {
+    upsert: vi.fn(),
   },
   analyticsEvent: {
     create: vi.fn(),
@@ -28,6 +32,8 @@ describe("analytics-store", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockPrisma.device.findUnique.mockResolvedValue({ analyticsConsent: true })
+    mockPrisma.device.upsert.mockResolvedValue({})
+    mockPrisma.devicePresence.upsert.mockResolvedValue({})
     mockPrisma.analyticsEvent.create.mockResolvedValue({})
   })
 
@@ -100,6 +106,33 @@ describe("analytics-store", () => {
     expect(mockPrisma.analyticsEvent.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         payload: { stage: "presence-error" },
+      }),
+    })
+  })
+
+  it("syncs an uninstall as installed false, enabled false, and uninstalledAt set", async () => {
+    const { syncDevice } = await import("@/features/analytics/analytics.service")
+
+    await syncDevice({
+      deviceId: "device-1",
+      presences: [{ slug: "YouTube", version: "1.2.3", enabled: true, installed: false }],
+    })
+
+    expect(mockPrisma.devicePresence.upsert).toHaveBeenCalledWith({
+      where: { deviceId_slug: { deviceId: "device-1", slug: "youtube" } },
+      create: expect.objectContaining({
+        deviceId: "device-1",
+        slug: "youtube",
+        installedVersion: "1.2.3",
+        installed: false,
+        enabled: false,
+        uninstalledAt: expect.any(Date),
+      }),
+      update: expect.objectContaining({
+        installedVersion: "1.2.3",
+        installed: false,
+        enabled: false,
+        uninstalledAt: expect.any(Date),
       }),
     })
   })

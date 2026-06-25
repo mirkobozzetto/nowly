@@ -1,31 +1,93 @@
-import { isValidRedirect, signToken, verifyToken, type DiscordUser } from "./auth.service"
 import { serverEnv } from "@nowly/env/server"
+import { randomBytes } from "crypto"
 import "dotenv/config"
-import type { FastifyInstance } from "fastify"
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify"
+import { isValidRedirect, signToken, verifyToken, type DiscordUser } from "./auth.service"
 
-const discordAuth = async (request: any, reply: any) => {
+const OAUTH_STATE_COOKIE = "nowly_oauth_state"
+const OAUTH_STATE_MAX_AGE_SECONDS = 600
+
+const parseCookies = (header: string | undefined): Record<string, string> => {
+  const out: Record<string, string> = {}
+  if (!header) return out
+  for (const part of header.split(";")) {
+    const idx = part.indexOf("=")
+    if (idx === -1) continue
+    const key = part.slice(0, idx).trim()
+    if (key) out[key] = decodeURIComponent(part.slice(idx + 1).trim())
+  }
+  return out
+}
+
+const isSecureRequest = (request: FastifyRequest): boolean =>
+  request.protocol === "https" || serverEnv.DISCORD_REDIRECT_URI.startsWith("https://")
+
+const setStateCookie = (request: FastifyRequest, reply: FastifyReply, nonce: string): void => {
+  const attrs = [
+    `${OAUTH_STATE_COOKIE}=${encodeURIComponent(nonce)}`,
+    "HttpOnly",
+    "Path=/",
+    "SameSite=Lax",
+    `Max-Age=${OAUTH_STATE_MAX_AGE_SECONDS}`,
+  ]
+  if (isSecureRequest(request)) attrs.push("Secure")
+  reply.header("Set-Cookie", attrs.join("; "))
+}
+
+const clearStateCookie = (reply: FastifyReply): void => {
+  reply.header("Set-Cookie", `${OAUTH_STATE_COOKIE}=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0`)
+}
+
+const encodeState = (redirect: string, nonce: string): string =>
+  Buffer.from(JSON.stringify({ r: redirect, n: nonce })).toString("base64url")
+
+const decodeState = (state: string | undefined): { r: string; n: string } | null => {
+  if (!state) return null
+  try {
+    const parsed = JSON.parse(Buffer.from(state, "base64url").toString("utf8")) as { r?: unknown; n?: unknown }
+    if (typeof parsed.r === "string" && typeof parsed.n === "string") return { r: parsed.r, n: parsed.n }
+    return null
+  } catch {
+    return null
+  }
+}
+
+const discordAuth = async (request: FastifyRequest, reply: FastifyReply) => {
   const redirect = (request.query as { redirect?: string }).redirect || "/"
   const origin = request.headers.origin as string | undefined
   if (!isValidRedirect(redirect, origin)) {
     return reply.status(400).send({ error: "Invalid redirect" })
   }
 
+  const nonce = randomBytes(24).toString("base64url")
+  setStateCookie(request, reply, nonce)
+
   const url = new URL("https://discord.com/api/oauth2/authorize")
   url.searchParams.set("client_id", serverEnv.DISCORD_CLIENT_ID)
   url.searchParams.set("response_type", "code")
   url.searchParams.set("redirect_uri", serverEnv.DISCORD_REDIRECT_URI)
   url.searchParams.set("scope", "identify")
-  url.searchParams.set("state", redirect)
+  url.searchParams.set("state", encodeState(redirect, nonce))
   url.searchParams.set("prompt", "none")
 
   return reply.redirect(url.toString())
 }
 
-const discordCallback = async (request: any, reply: any) => {
+const discordCallback = async (request: FastifyRequest, reply: FastifyReply) => {
   const query = request.query as { code?: string; state?: string }
-  const code = query.code
-  const redirect = isValidRedirect(query.state ?? "") ? query.state! : "/"
+  const fallbackRedirect = serverEnv.FRONTEND_URL || "/"
 
+  const state = decodeState(query.state)
+  const cookieNonce = parseCookies(request.headers.cookie)[OAUTH_STATE_COOKIE]
+  clearStateCookie(reply)
+
+  if (!state || !cookieNonce || state.n !== cookieNonce) {
+    return reply.redirect(`${fallbackRedirect}?error=invalid_state`)
+  }
+
+  const redirect = isValidRedirect(state.r) ? state.r : fallbackRedirect
+
+  const code = query.code
   if (!code) {
     return reply.redirect(`${redirect}?error=no_code`)
   }
@@ -73,10 +135,10 @@ const discordCallback = async (request: any, reply: any) => {
 
   const token = signToken(user)
 
-  return reply.redirect(`${redirect}?token=${token}`)
+  return reply.redirect(`${redirect}#token=${token}`)
 }
 
-const me = async (request: any, reply: any) => {
+const me = async (request: FastifyRequest, reply: FastifyReply) => {
   const auth = request.headers.authorization
   if (!auth?.startsWith("Bearer ")) {
     return reply.status(401).send({ error: "Missing or invalid token" })

@@ -14,7 +14,7 @@ type Props = {
 };
 
 export const DevelopmentCard: FC<Props> = ({ platform }): ReactElement => {
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
 
   return (
     <Card size="sm">
@@ -34,11 +34,11 @@ export const DevelopmentCard: FC<Props> = ({ platform }): ReactElement => {
       <div>
         <AuthorItem
           contributor={platform.author}
-          label={platform.contributors.length > 0 ? t("authorLabel") : undefined}
+          label={platform.contributors.length > 0 ? t("author-label") : undefined}
         />
 
         {platform.contributors.length > 0 && platform.contributors.map((contributor, index) => (
-          <AuthorItem key={index} contributor={contributor} label={t("contributorLabel")} />
+          <AuthorItem key={index} contributor={contributor} label={t("contributor-label")} />
         ))}
       </div>
     </Card>

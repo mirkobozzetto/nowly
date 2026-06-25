@@ -13,13 +13,11 @@ import { InstallVersionsCard } from "../install-versions-card";
 import { SettingsCard } from "../settings-card";
 import { StatsCard } from "../stats-card";
 import { SupportedUrlsCard } from "../supported-urls-card";
-
 type Props = {
   presence: Presence;
   isInstalled: boolean;
   extDetected: boolean;
   needsUpdate: boolean;
-  installedVersion: string | null;
   loading: boolean;
   totalInstalls: number;
   savedRating: number;
@@ -40,7 +38,7 @@ export const PresenceDetailContent: FC<Props> = ({
   onUninstall,
 }): ReactElement => {
   const locale = useLocale();
-  const t = useTranslations("MarketplaceDetail");
+  const t = useTranslations("marketplace-detail");
 
   return (
     <PageLayout>
@@ -49,7 +47,7 @@ export const PresenceDetailContent: FC<Props> = ({
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/library">
-                {t("breadcrumbHome")}
+                {t("breadcrumb-home")}
               </BreadcrumbLink>
             </BreadcrumbItem>
 

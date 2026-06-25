@@ -1,12 +1,21 @@
-import { ChevronDown, ExternalLink, Monitor, RefreshCw, ShieldCheck } from "lucide-react";
-import type { FC, ReactElement } from "react";
-import { LocaleFlag } from "@/components/locale-flag";
-import { NativeStatusButton } from "@/components/native-status-button";
+import { LocaleFlag } from "@/components/shared/locale-flag";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import type { NativeStatus } from "@/lib/messages";
 import { WEB_BASE_URL } from "@/shared/constants";
 import { resolveLocale, t, type LocalePreference } from "@/shared/i18n";
-import type { ExtensionSettings } from "@/shared/types";
-import { DisplaySettings } from "./display-settings";
+import type { ExtensionSettings, PresenceDebug } from "@/shared/types";
+import { ChevronDown, ExternalLink, RefreshCw } from "lucide-react";
+import type { FC, ReactElement } from "react";
+import { useEffect, useState } from "react";
+import { DebugPanel } from "@/features/settings/debug-panel";
+import { DisplaySettings } from "@/features/settings/display-settings";
+import { ThemeSelector } from "@/features/settings/theme-selector";
+import { ThemeUpsellCard } from "@/features/settings/theme-upsell-card";
 
 type HostVersionInfo = {
   currentVersion?: string;
@@ -15,162 +24,200 @@ type HostVersionInfo = {
 };
 
 type Props = {
-  checkUpdates: () => void;
-  checkHostUpdate: () => void;
+  adFree: boolean;
+  debug: PresenceDebug | null;
   hostVersionInfo: HostVersionInfo | null;
-  isCheckingUpdates: boolean;
   isCheckingHostVersion: boolean;
+  isLoading: boolean;
   localePreference: LocalePreference;
   nativeStatus: NativeStatus;
-  onConnect: () => void;
+  onCheckHostUpdate: () => Promise<void>;
+  onForceShowOnboarding: () => Promise<void>;
   onLocaleChange: (preference: LocalePreference) => void;
   settings: ExtensionSettings;
   onSettingsChange: (partial: Partial<ExtensionSettings>) => void;
 };
 
-const localeOptions: Array<{ label: string; value: LocalePreference }> = [
-  { label: "Auto", value: "browser" },
-  { label: "Français", value: "fr" },
-  { label: "English", value: "en" },
-  { label: "Español", value: "es" },
-];
-
-const marketplaceLocale = (preference: LocalePreference): "fr-FR" | "en-US" | "es-ES" => {
-  const locale = resolveLocale(preference);
-  if (locale === "fr") return "fr-FR";
-  if (locale === "es") return "es-ES";
-  return "en-US";
-};
+const hostUpdateActionClassName = "inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors sm:flex-1";
 
 export const SettingsView: FC<Props> = ({
-  checkUpdates,
-  checkHostUpdate,
+  adFree,
+  debug,
   hostVersionInfo,
-  isCheckingUpdates,
   isCheckingHostVersion,
+  isLoading,
   localePreference,
   nativeStatus,
-  onConnect,
+  onCheckHostUpdate,
+  onForceShowOnboarding,
   onLocaleChange,
   settings,
   onSettingsChange,
-}): ReactElement => (
-  <section className="flex min-h-0 flex-1 flex-col gap-3">
-    <section className="rounded-lg border border-border bg-card p-4">
-      <div className="mb-3 flex items-center gap-2">
-        <ShieldCheck className="h-4 w-4 text-accent" />
-        <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("connection")}</h2>
-      </div>
-      <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("connectionDescription")}</p>
-      <NativeStatusButton nativeStatus={nativeStatus} onConnect={onConnect} />
-    </section>
+}): ReactElement => {
+  const [isUnpacked, setIsUnpacked] = useState(false);
+  const consentUrl = `${WEB_BASE_URL}/consent`;
+  const localeOptions: Array<{ label: string; value: LocalePreference }> = [
+    { label: t("locale-auto"), value: "browser" },
+    { label: t("locale-fr"), value: "fr" },
+    { label: t("locale-en"), value: "en" },
+    { label: t("locale-es"), value: "es" },
+  ];
 
-    <section className="rounded-lg border border-border bg-card p-4">
-      <div className="mb-3 flex items-center gap-2">
-        <Monitor className="h-4 w-4 text-accent" />
-        <h2 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("hostVersion", { version: hostVersionInfo?.currentVersion ?? "?" })}</h2>
-      </div>
+  useEffect(() => {
+    try { setIsUnpacked(!chrome.runtime.getManifest().update_url) } catch { setIsUnpacked(false) }
+  }, []);
 
+  const developerModeEnabled = settings.developerMode ?? isUnpacked;
+
+  if (isLoading) {
+    return (
+      <section className="flex min-h-0 flex-1 flex-col gap-3">
+        <section className="rounded-lg border border-border bg-card p-4">
+          <Skeleton className="mb-2 h-3 w-1/4" />
+          <Skeleton className="mb-3 h-3 w-3/5" />
+          <Skeleton className="h-10 w-full" rounded="lg" />
+        </section>
+        <section className="rounded-lg border border-border bg-card p-4">
+          <Skeleton className="mb-2 h-3 w-1/5" />
+          <Skeleton className="mb-3 h-3 w-2/5" />
+          <Skeleton className="h-10 w-full" rounded="lg" />
+        </section>
+        <section className="rounded-lg border border-border bg-card p-4">
+          <Skeleton className="mb-2 h-3 w-1/5" />
+          <Skeleton className="mb-3 h-3 w-3/5" />
+          <Skeleton className="h-8 w-full" rounded="lg" />
+        </section>
+        <section className="rounded-lg border border-border bg-card p-4">
+          <Skeleton className="mb-2 h-3 w-1/4" />
+          <Skeleton className="mb-3 h-3 w-3/5" />
+          <Skeleton className="h-8 w-full" rounded="lg" />
+        </section>
+      </section>
+    );
+  }
+
+  return (
+    <section className="flex min-h-0 flex-1 flex-col gap-3">
       {hostVersionInfo?.updateAvailable ? (
-        <div className="mb-3 rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-xs text-warning">
-          <p className="font-medium">{t("hostUpdateAvailable", { latestVersion: hostVersionInfo.latestVersion })}</p>
+        <section className="rounded-lg border border-accent/20 bg-accent/5 p-4">
+          <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-accent">
+            {t("host-update-available", { latestVersion: hostVersionInfo.latestVersion })}
+          </h2>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <a
+              href="https://nowly.me/host"
+              target="_blank"
+              rel="noreferrer"
+              className={`${hostUpdateActionClassName} border border-accent/20 bg-accent/10 text-accent hover:bg-accent/20`}
+            >
+              {t("host-download-update")}
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+            <Button
+              variant="unstyled"
+              size="none"
+              onClick={() => { void onCheckHostUpdate(); }}
+              disabled={isCheckingHostVersion}
+              className={`${hostUpdateActionClassName} border border-border bg-card-2 text-muted-foreground hover:bg-card-hover hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60`}
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${isCheckingHostVersion ? "animate-spin" : ""}`} />
+              {t("host-check-update")}
+            </Button>
+          </div>
+        </section>
+      ) : null}
+
+      <section className="rounded-lg border border-border bg-card p-4">
+        <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("language")}</h2>
+        <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("language-description")}</p>
+        <div className="relative">
+          <Select
+            unstyled
+            value={localePreference}
+            onChange={(event) => onLocaleChange(event.target.value as LocalePreference)}
+            className="h-10 w-full appearance-none rounded-lg border border-border bg-card-2 px-3 pl-10 pr-10 text-sm text-foreground outline-none transition-colors hover:bg-card-hover focus:border-border-light"
+          >
+            {localeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </Select>
+          <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted-foreground">
+            <LocaleFlag locale={resolveLocale(localePreference)} />
+          </div>
+          <ChevronDown className="pointer-events-none absolute inset-y-0 right-3 my-auto h-4 w-4 text-muted-foreground" />
         </div>
-      ) : hostVersionInfo ? (
-        <p className="mb-3 text-xs text-muted-foreground">{t("hostUpToDate")}</p>
-      ) : isCheckingHostVersion ? (
-        <p className="mb-3 text-xs text-muted-foreground">...</p>
+      </section>
+
+      <DisplaySettings settings={settings} onSettingsChange={onSettingsChange} />
+
+      {adFree ? (
+        <ThemeSelector settings={settings} onSettingsChange={onSettingsChange} />
       ) : (
-        <p className="mb-3 text-xs text-muted-foreground">{t("hostVersion", { version: "?" })}</p>
+        <ThemeUpsellCard />
       )}
 
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          aria-label={t("checkHostUpdate")}
-          title={t("checkHostUpdate")}
-          onClick={checkHostUpdate}
-          disabled={isCheckingHostVersion}
-          className="inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card-2 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground disabled:opacity-50"
-        >
-          <RefreshCw className={`h-3.5 w-3.5 ${isCheckingHostVersion ? "animate-spin" : ""}`} />
-          {t("checkHostUpdate")}
-        </button>
-
-        {hostVersionInfo?.updateAvailable && (
-          <a
-            href={`${WEB_BASE_URL}/host`}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-accent/10 px-3 text-xs font-medium text-accent transition-colors hover:bg-accent/20"
-          >
-            {t("hostDownloadUpdate")}
-          </a>
-        )}
-      </div>
-    </section>
-
-    <section className="rounded-lg border border-border bg-card p-4">
-      <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("language")}</h2>
-      <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("languageDescription")}</p>
-      <div className="relative">
-        <select
-          value={localePreference}
-          onChange={(event) => onLocaleChange(event.target.value as LocalePreference)}
-          className="h-10 w-full appearance-none rounded-lg border border-border bg-card-2 px-3 pl-10 pr-10 text-sm text-foreground outline-none transition-colors hover:bg-card-hover focus:border-border-light"
-        >
-          {localeOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted-foreground">
-          <LocaleFlag locale={marketplaceLocale(localePreference)} />
+      <section className="rounded-lg border border-border bg-card p-4">
+        <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("features")}</h2>
+        <div className="grid gap-2">
+          <Label unstyled className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card-2 px-3 py-2">
+            <span className="min-w-0">
+              <span className="block text-xs font-medium text-foreground">{t("schedule-feature")}</span>
+              <span className="mt-0.5 block text-[11px] leading-4 text-muted-foreground">{t("schedule-feature-description")}</span>
+            </span>
+            <Switch
+              checked={settings.scheduleEnabled !== false}
+              onChange={(checked) => onSettingsChange({ scheduleEnabled: checked })}
+            />
+          </Label>
+          <Label unstyled className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card-2 px-3 py-2">
+            <span className="min-w-0">
+              <span className="block text-xs font-medium text-foreground">{t("developer-mode")}</span>
+              <span className="mt-0.5 block text-[11px] leading-4 text-muted-foreground">{t("developer-mode-description")}</span>
+            </span>
+            <Switch
+              checked={developerModeEnabled}
+              onChange={(checked) => onSettingsChange({ developerMode: checked })}
+            />
+          </Label>
         </div>
-        <ChevronDown className="pointer-events-none absolute inset-y-0 right-3 my-auto h-4 w-4 text-muted-foreground" />
-      </div>
-    </section>
+      </section>
 
-    <DisplaySettings settings={settings} onSettingsChange={onSettingsChange} />
+      <section className="rounded-lg border border-border bg-card p-4">
+        <Label unstyled className="flex cursor-pointer items-start justify-between gap-3">
+          <span className="min-w-0">
+            <span className="block text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("data-management")}</span>
+            <span className="mt-2 block text-xs font-medium text-foreground">{t("analytics-consent")}</span>
+            <span className="mt-1 block text-[11px] leading-4 text-muted-foreground">{t("analytics-description")}</span>
+          </span>
+          <Checkbox
+            ariaLabel={t("analytics-consent")}
+            checked={settings.analyticsConsent === true}
+            onChange={(checked) => onSettingsChange({ analyticsConsent: checked })}
+          />
+        </Label>
 
-    <section className="rounded-lg border border-border bg-card p-4">
-      <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("analytics")}</h2>
-      <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("analyticsDescription")}</p>
-      <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border bg-card-2 px-3 py-2">
-        <span className="text-xs font-medium text-foreground">{t("analyticsConsent")}</span>
-        <input
-          type="checkbox"
-          checked={settings.analyticsConsent === true}
-          onChange={(event) => onSettingsChange({ analyticsConsent: event.target.checked })}
-          className="h-4 w-4 accent-accent"
-        />
-      </label>
-    </section>
-
-    <section className="rounded-lg border border-border bg-card p-4">
-      <h2 className="mb-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">{t("marketplace")}</h2>
-      <p className="mb-3 text-xs leading-5 text-muted-foreground">{t("marketplaceDescription")}</p>
-      <div className="flex items-center gap-2">
         <a
-          href={`${WEB_BASE_URL}/${marketplaceLocale(localePreference)}/library`}
+          href={consentUrl}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card-2 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
+          className="mt-3 inline-flex h-8 items-center gap-2 rounded-lg border border-border bg-card-2 px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground"
         >
-          {t("openMarketplace")}
+          {t("data-management")}
           <ExternalLink className="h-3.5 w-3.5" />
         </a>
-        <button
-          type="button"
-          aria-label={t("checkUpdates")}
-          title={t("checkUpdates")}
-          onClick={checkUpdates}
-          disabled={isCheckingUpdates}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card-2 text-muted-foreground transition-colors hover:bg-card-hover hover:text-foreground disabled:opacity-50"
-        >
-          <RefreshCw className={`h-4 w-4 ${isCheckingUpdates ? "animate-spin" : ""}`} />
-        </button>
-      </div>
+      </section>
+
+      {developerModeEnabled ? (
+        <DebugPanel
+          debug={debug}
+          nativeStatus={nativeStatus}
+          onForceShowOnboarding={onForceShowOnboarding}
+          settings={settings}
+          onSettingsChange={onSettingsChange}
+        />
+      ) : null}
     </section>
-  </section>
-);
+  );
+};

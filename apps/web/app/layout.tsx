@@ -1,10 +1,10 @@
+import { AdblockNotice } from "@/components/layout/adblock-notice";
+import { CookieBanner } from "@/components/layout/cookie-banner";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { Toaster } from "@/components/ui/sonner";
-import { ADSENSE_CLIENT_ID, ADSENSE_ENABLED } from "@/lib/constants";
+import { ADSENSE_ENABLED } from "@/lib/constants";
 import { Providers } from "@/providers/providers";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import type { PropsWithChildren, ReactElement } from "react";
@@ -20,18 +20,9 @@ const Layout = async ({ children }: PropsWithChildren): Promise<ReactElement> =>
   return (
     <html
       lang={locale}
+      data-scroll-behavior="smooth"
       className={`${instrumentSans.variable} ${geist.variable} bg-background scroll-smooth`}
     >
-      <head>
-        {ADSENSE_ENABLED && process.env.NODE_ENV !== "development" && (
-          <script
-            async
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
-            crossOrigin="anonymous"
-          />
-        )}
-      </head>
-
       <body className="font-sans antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>
@@ -42,11 +33,10 @@ const Layout = async ({ children }: PropsWithChildren): Promise<ReactElement> =>
             </div>
 
             <Toaster />
+            <AdblockNotice enabled={ADSENSE_ENABLED} />
+            <CookieBanner />
           </Providers>
         </NextIntlClientProvider>
-
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );
