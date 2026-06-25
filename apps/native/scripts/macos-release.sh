@@ -9,8 +9,8 @@ RELEASE_DIR="$ROOT_DIR/releases/$VERSION"
 
 # Auto-detect version from git if not provided
 if [ -z "$VERSION" ]; then
-  if git describe --tags --match "host-v*" --always &>/dev/null 2>/dev/null; then
-    VERSION="$(git describe --tags --match "host-v*" --always 2>/dev/null | sed 's/^host-v//')"
+  if git describe --tags --match "native-v*" --always &>/dev/null 2>/dev/null; then
+    VERSION="$(git describe --tags --match "native-v*" --always 2>/dev/null | sed 's/^native-v//')"
   else
     VERSION="0.0.0-dev"
   fi
@@ -36,11 +36,11 @@ done
 mkdir -p "$RELEASE_DIR"
 
 # --------------- Step 1: Build both binaries ---------------
-echo "=== Step 1/4: Build Go binaries ==="
+echo "=== Step 1/6: Build Go binaries ==="
 bash "$SCRIPT_DIR/macos-build.sh" "$VERSION"
 
 # --------------- Step 2: Create universal binary ---------------
-echo "=== Step 2/4: Create universal binary ==="
+echo "=== Step 2/6: Create universal binary ==="
 UNIVERSAL="$DIST_DIR/nowly-host-darwin-universal"
 lipo -create \
   "$DIST_DIR/nowly-host-darwin" \
@@ -49,7 +49,7 @@ lipo -create \
 echo "   ✔ nowly-host-darwin-universal ($(du -h "$UNIVERSAL" | cut -f1))"
 
 # --------------- Step 3: Create .app bundle ---------------
-echo "=== Step 3/4: Create .app bundle ==="
+echo "=== Step 3/6: Create .app bundle ==="
 bash "$SCRIPT_DIR/macos-bundle.sh" "$VERSION" "universal" "$ICON_SOURCE"
 
 # --------------- Step 3.5: Sign .app (Developer ID) ---------------
@@ -60,7 +60,7 @@ if [ -n "${SIGN_IDENTITY:-}" ]; then
 fi
 
 # --------------- Step 4: Create DMG ---------------
-echo "=== Step 4/4: Create DMG ==="
+echo "=== Step 4/6: Create DMG ==="
 bash "$SCRIPT_DIR/macos-dmg.sh" "universal"
 
 # --------------- Step 4.5: Sign + notarize DMG ---------------

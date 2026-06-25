@@ -22,7 +22,7 @@ TARGET="${1:?usage: macos-sign.sh <path-to-.app-or-.dmg>}"
 case "$TARGET" in
   *.app)
     echo ">> Signing app (hardened runtime + secure timestamp): $TARGET"
-    # ponytail: no --entitlements file; a plain Go agent needs no hardened-runtime
+    # No --entitlements file needed; a plain Go agent has no hardened-runtime
     # exceptions. Add one (allow-jit etc.) only if a runtime restriction ever bites.
     codesign --force --timestamp --options runtime --sign "$SIGN_IDENTITY" "$TARGET"
     codesign --verify --strict --verbose=2 "$TARGET"
