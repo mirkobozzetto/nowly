@@ -1,0 +1,17 @@
+---
+title: 1.2.1
+date: 2026-06-25
+description: Hotfix release — removes dev environment variable leaks from production build and simplifies API configuration.
+---
+
+`1.2.1` is a maintenance release focused on fixing a production build issue where development environment variables were leaking into the Chrome Web Store artifact, and simplifying the API configuration surface by removing unnecessary environment variables.
+
+<ReleaseTable
+  headers={["Area", "What changed", "Why it matters"]}
+  rows={[
+    ["Extension build", "Removed `dotenv/config` import from the production build script. The `.env` file is no longer loaded during `build:extension`.", "Dev URLs (localhost) were being published to the Chrome Web Store instead of production URLs. This fix ensures the store artifact always uses `nowly.me`, `api.nowly.me`, and `cdn.nowly.me`."],
+    ["API environment", "Removed `AWS_SESSION_TOKEN`, `AWS_SES_CONFIGURATION_SET`, `AWS_SES_BASE_URL` env vars. Changed default `AWS_REGION` to `us-east-1`.", "Fewer required env vars to configure. The SDK defaults work without explicit values."],
+    ["API email config", "Hardcoded `SUPPORT_EMAIL_FROM` and `SUPPORT_EMAIL_REPLY_TO` as constants instead of env vars.", "No need to configure these — they never change between environments."],
+    ["Test reliability", "Added `test/setup.ts` to provide required env vars for all test files.", "Tests now pass on CI without a `.env` file."],
+  ]}
+/>
