@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import type { FC } from "react";
 
-const CARD_COUNT = 6;
+const CARD_COUNT = 9;
 
 export const MarketplaceGridSkeleton: FC = () => {
   return (
