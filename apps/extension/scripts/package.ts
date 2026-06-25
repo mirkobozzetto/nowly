@@ -61,9 +61,11 @@ const createZip = (sourceDir: string, outputPath: string): void => {
   rmSync(outputPath, { force: true });
 
   if (process.platform === "win32") {
-    execFileSync("tar.exe", ["-a", "-c", "-f", outputPath, "-C", sourceDir, "."], {
-      stdio: "inherit",
-    });
+    execFileSync("powershell.exe", [
+      "-NoProfile",
+      "-Command",
+      `Compress-Archive -Path "${sourceDir}\\*" -DestinationPath "${outputPath}"`,
+    ], { stdio: "inherit" });
     return;
   }
 
