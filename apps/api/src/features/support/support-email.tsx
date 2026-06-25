@@ -1,3 +1,6 @@
+const SUPPORT_EMAIL_FROM = "Nowly <no-reply@nowly.me>"
+const SUPPORT_EMAIL_REPLY_TO = "contact@nowly.me"
+
 import { serverEnv } from "@nowly/env/server"
 import { createEmailClient, type EmailClient } from "@opencoredev/email-sdk"
 import { ses } from "@opencoredev/email-sdk/ses"
@@ -201,7 +204,7 @@ export const sendSupporterPassEmail = async (input: SupporterPassEmailInput): Pr
   if (!to) return { sent: false, reason: "missing_recipient" }
 
   const client = getEmailClient()
-  if (!client || !serverEnv.SUPPORT_EMAIL_FROM) {
+  if (!client) {
     return { sent: false, reason: "not_configured" }
   }
 
@@ -213,9 +216,9 @@ export const sendSupporterPassEmail = async (input: SupporterPassEmailInput): Pr
     ])
 
     const result = await client.send({
-      from: serverEnv.SUPPORT_EMAIL_FROM,
+      from: SUPPORT_EMAIL_FROM,
       to,
-      replyTo: serverEnv.SUPPORT_EMAIL_REPLY_TO,
+      replyTo: SUPPORT_EMAIL_REPLY_TO,
       subject: "Your Nowly supporter pass key",
       html,
       text,

@@ -33,8 +33,7 @@ export const serverEnv = createEnv({
     AWS_SESSION_TOKEN: required.optional(),
     AWS_SES_CONFIGURATION_SET: required.optional(),
     AWS_SES_BASE_URL: z.string().trim().url().optional(),
-    SUPPORT_EMAIL_FROM: required.optional(),
-    SUPPORT_EMAIL_REPLY_TO: required.optional(),
+
     SUPPORT_REDEEM_URL: z.string().trim().url().optional(),
   },
   runtimeEnv: process.env,
