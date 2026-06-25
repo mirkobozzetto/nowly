@@ -33,11 +33,6 @@ export const FORBIDDEN_PAYLOAD_KEYS_SET: ReadonlySet<string> = new Set(FORBIDDEN
 export const MAX_ANALYTICS_EVENTS_PER_BATCH = 100
 export const MAX_ANALYTICS_EVENTS_PER_DEVICE_PER_MINUTE = 120
 
-/** Rating / comment bounds (shared by API validation and UI). */
-export const RATING_MIN = 1
-export const RATING_MAX = 5
-export const MAX_COMMENT_LENGTH = 1000
-
 /** Presence slug constraints. */
 export const SLUG_MAX_LENGTH = 80
 export const SLUG_PATTERN = /^[a-z0-9][a-z0-9-]*$/
